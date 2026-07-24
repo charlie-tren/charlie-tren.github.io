@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charlie Trenorden</title>
+<meta name="description" content="Charlie Trenorden - Sydney. I build small tools about how information reaches people: One Story, Crowdwise, Chronoscape.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Charlie Trenorden">
+<meta property="og:description" content="Small tools about how information reaches people - One Story, Crowdwise, Chronoscape.">
+<meta property="og:url" content="https://charlie-tren.github.io/">
+<meta property="og:image" content="https://charlie-tren.github.io/assets/one-story.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<script>
+  /* set theme before paint to avoid a flash */
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      var dark = saved ? saved === "dark"
+        : !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    --bg: #15120d; --raised: #1e1913; --ink: #ece6d9; --soft: #a0967f;
+    --faint: #6d6455; --rule: #332c21; --motif-bg: #221c14;
+    --accent: #82a8ca; --on-accent: #15120d;
+  }
+  :root[data-theme="dark"]  { --bg:#15120d; --raised:#1e1913; --ink:#ece6d9; --soft:#a0967f; --faint:#6d6455; --rule:#332c21; --motif-bg:#221c14; --accent:#82a8ca; --on-accent:#15120d; }
+  :root[data-theme="light"] { --bg:#f3f1e8; --raised:#fbfaf4; --ink:#1b1710; --soft:#5f584a; --faint:#8a8272; --rule:#ddd6c6; --motif-bg:#eef0f2; --accent:#3a5f80; --on-accent:#ffffff; }
+
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 400 18px/1.65 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    -webkit-font-smoothing: antialiased; transition: background .3s, color .3s;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
+
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 4.5rem; }
+  .wordmark { font: 600 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--soft); }
+  .toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem; font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
+  .toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+  .eyebrow { font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin: 0 0 1.3rem; }
+  h1 { font-weight: 400; font-size: clamp(2.5rem, 6.6vw, 4rem); line-height: 1.04; letter-spacing: -.015em; margin: 0 0 1.4rem; max-width: 16ch; text-wrap: balance; }
+  h1 em { font-style: italic; color: var(--accent); }
+  .lede { font-size: 1.2rem; color: var(--soft); max-width: 46ch; margin: 0; }
+
+  .links { display: flex; gap: 1.6rem; flex-wrap: wrap; font: 500 15px/1 ui-sans-serif, system-ui, sans-serif; padding: 2rem 0 0; border-top: 1px solid var(--rule); margin-top: 2.5rem; }
+  .links a { text-decoration: none; display: inline-flex; align-items: center; gap: .5rem; }
+  .links a span { border-bottom: 1.5px solid var(--accent); padding-bottom: 2px; transition: color .2s; }
+  .links a:hover span { color: var(--accent); }
+  .links svg { width: 16px; height: 16px; color: var(--accent); }
+
+  .section-label { font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 4rem 0 1.8rem; }
+
+  .proj { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: center; text-decoration: none; color: inherit; padding: 1.8rem 0; border-top: 1px solid var(--rule); }
+  .proj:last-of-type { border-bottom: 1px solid var(--rule); }
+  .proj:nth-child(even of .proj) { grid-template-columns: 1fr 320px; }
+  .proj:nth-child(even of .proj) .thumb { order: 2; }
+  .thumb { background: var(--motif-bg); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; aspect-ratio: 16 / 10; transition: border-color .25s, transform .25s; }
+  .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+  .thumb svg { display: block; width: 100%; height: 100%; }
+  .proj:hover .thumb { border-color: var(--accent); transform: translateY(-2px); }
+
+  .meta .head { display: flex; align-items: baseline; gap: .9rem; margin-bottom: .5rem; flex-wrap: wrap; }
+  .meta .name { font-size: 1.7rem; letter-spacing: -.01em; }
+  .meta .desc { color: var(--soft); font-size: 1.04rem; max-width: 46ch; margin: 0 0 .8rem; }
+  .meta .go { font: 500 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--accent); display: inline-flex; align-items: center; gap: .4rem; }
+  .arw { display: inline-block; transition: transform .25s; }
+  .proj:hover .meta .go .arw { transform: translateX(4px); }
+
+  .status { font: 600 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; padding: .35rem .6rem; border-radius: 4px; white-space: nowrap; }
+  .s-live { background: var(--accent); color: var(--on-accent); }
+  .s-wip { color: var(--faint); border: 1px solid var(--rule); }
+
+  .foot { margin-top: 4rem; color: var(--faint); font: 400 14px/1.6 ui-sans-serif, system-ui, sans-serif; }
+
+  .m-soft { stroke: var(--soft); opacity: .35; }
+  .m-fill { fill: var(--accent); }
+
+  @media (max-width: 680px) {
+    .wrap { padding-top: 1.6rem; }
+    .bar { margin-bottom: 3rem; }
+    .proj, .proj:nth-child(even of .proj) { grid-template-columns: 1fr; gap: 1.1rem; }
+    .proj:nth-child(even of .proj) .thumb { order: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .section-label, .proj { animation: rise .7s cubic-bezier(.2,.7,.3,1) both; }
+    .proj:nth-of-type(2) { animation-delay: .05s; }
+    .proj:nth-of-type(3) { animation-delay: .1s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <span class="wordmark">Charlie Trenorden</span>
+    <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
+  </div>
+
+  <p class="eyebrow">Sydney · Financial markets</p>
+  <h1>I build small tools about how <em>information</em> reaches people.</h1>
+  <p class="lede">Side projects, self-contained, each built to answer a question I actually had - about what's worth reading, what the crowd believes, and how the past connects up.</p>
+
+  <nav class="links" aria-label="Elsewhere">
+    <a href="https://www.linkedin.com/in/charlietrenorden/"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0-.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.76-2.05 4 0 4.74 2.63 4.74 6.05V21H19.6v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21H11.7z"/></svg><span>LinkedIn</span></a>
+    <a href="https://github.com/charlie-tren"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg><span>GitHub</span></a>
+    <a href="mailto:charlie.tren@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Email</span></a>
+  </nav>
+
+  <p class="section-label">Projects</p>
+
+  <a class="proj" href="https://the-one-story.github.io/">
+    <div class="thumb"><img src="assets/one-story.png" alt="Screenshot of the One Story homepage" loading="lazy" width="1280" height="800"></div>
+    <div class="meta">
+      <div class="head"><span class="name">One Story</span><span class="status s-live">Live</span></div>
+      <p class="desc">One story a day, chosen by a transparent scoring model. No feed, no attention-chasing, no LLM in the loop.</p>
+      <span class="go">Read it <span class="arw">→</span></span>
+    </div>
+  </a>
+
+  <a class="proj" href="https://macro-signals-web.vercel.app">
+    <div class="thumb"><img src="assets/crowdwise.png" alt="Screenshot of the Crowdwise dashboard" loading="lazy" width="1280" height="800"></div>
+    <div class="meta">
+      <div class="head"><span class="name">Crowdwise</span><span class="status s-live">Live</span></div>
+      <p class="desc">Reads macro prediction markets - Kalshi, Polymarket - and turns money-backed probabilities into plain-language signals.</p>
+      <span class="go">Open it <span class="arw">→</span></span>
+    </div>
+  </a>
+
+  <a class="proj" href="https://github.com/charlie-tren/chronoscape">
+    <div class="thumb">
+      <svg viewBox="0 0 300 188" role="img" aria-label="Chronoscape timeline motif">
+        <path d="M30 156 a120 120 0 0 1 240 0" fill="none" class="m-soft" stroke-width="1.5"/>
+        <path d="M60 156 a90 90 0 0 1 180 0" fill="none" class="m-soft" stroke-width="1.5"/>
+        <line x1="30" y1="96" x2="270" y2="96" stroke="var(--faint)" stroke-width="2" opacity=".6"/>
+        <g class="m-fill"><circle cx="70" cy="96" r="4"/><circle cx="128" cy="96" r="7"/><circle cx="186" cy="96" r="4"/><circle cx="238" cy="96" r="9"/></g>
+        <g stroke="var(--faint)" stroke-width="2" opacity=".5"><line x1="70" y1="88" x2="70" y2="104"/><line x1="128" y1="84" x2="128" y2="108"/><line x1="186" y1="88" x2="186" y2="104"/><line x1="238" y1="80" x2="238" y2="112"/></g>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="head"><span class="name">Chronoscape</span><span class="status s-wip">In progress</span></div>
+      <p class="desc">An interactive timeline of world history across countries - search it, filter it, explore it on a dark map. Still being built.</p>
+      <span class="go">See the code <span class="arw">→</span></span>
+    </div>
+  </a>
+
+  <p class="foot">Built and hosted by me · Sydney, Australia</p>
+</div>
+
+<script>
+  var root = document.documentElement;
+  var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
+  function sync() { lbl.textContent = root.getAttribute("data-theme") === "dark" ? "Dark" : "Light"; }
+  sync();
+  btn.addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") !== "dark";
+    root.setAttribute("data-theme", dark ? "dark" : "light");
+    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
+    sync();
+  });
+</script>
+</body>
+</html>
