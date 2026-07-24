@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lexicon</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f4f0e6'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='25' font-weight='600' fill='%237a2e2e' text-anchor='middle'%3E&#182;%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#f4f0e6; --paper2:#efe9db; --card:#fbf8f1;
+  --ink:#211f1a; --ink-soft:#6a6354; --line:#ddd4c0; --line2:#cfc4ad;
+  --again:#8c2f2f; --hard:#9a6a24; --good:#4e6b3c; --easy:#345b78; --oxblood:#7a2e2e;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  color:var(--ink); background:var(--paper); min-height:100vh;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+.serif{font-family:'Spectral',Georgia,'Times New Roman',serif;}
+.head{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid var(--line);max-width:760px;margin:0 auto;}
+.brand{font-family:'Spectral',serif;font-size:21px;font-weight:600;cursor:pointer;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
+.mark{color:var(--oxblood);font-size:22px;}
+.nav{display:flex;gap:4px;}
+.navbtn{background:none;border:none;font:inherit;font-size:14px;color:var(--ink-soft);padding:6px 11px;border-radius:7px;cursor:pointer;transition:.15s;font-weight:500;}
+.navbtn:hover{color:var(--ink);background:var(--paper2);}
+.navbtn.on{color:var(--oxblood);background:var(--paper2);}
+.main{max-width:760px;margin:0 auto;padding:40px 28px 80px;}
+.hero{padding:24px 0 8px;}
+.date{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:18px;}
+.h1{font-family:'Spectral',serif;font-size:42px;line-height:1.05;font-weight:500;letter-spacing:-.02em;margin:0 0 16px;}
+.lead{font-size:17px;line-height:1.55;color:var(--ink-soft);max-width:50ch;margin:0 0 28px;}
+.cta{font:inherit;font-size:16px;font-weight:600;color:var(--paper);background:var(--oxblood);border:none;padding:13px 24px;border-radius:9px;cursor:pointer;transition:.15s;}
+.cta:hover{background:#651f1f;transform:translateY(-1px);}
+.cta.ghost{background:none;color:var(--oxblood);border:1px solid var(--line2);}
+.cta.ghost:hover{background:var(--paper2);}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:34px;}
+.stat{background:var(--card);padding:20px 16px;text-align:center;}
+.stat-n{font-family:'Spectral',serif;font-size:30px;font-weight:500;line-height:1;}
+.stat-l{font-size:12px;color:var(--ink-soft);margin-top:7px;}
+.panel{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 24px;}
+.panel-t{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:18px;}
+.spark{display:flex;align-items:flex-end;gap:6px;height:78px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:6px;}
+.bar{width:100%;max-width:26px;background:var(--oxblood);border-radius:4px 4px 0 0;min-height:3px;transition:.3s;}
+.bar-x{font-size:10px;color:var(--ink-soft);height:12px;}
+.panel-note{font-size:13px;color:var(--ink-soft);margin-top:16px;line-height:1.5;border-top:1px solid var(--line);padding-top:14px;}
+.rev-top{display:flex;justify-content:space-between;margin-bottom:24px;}
+.remaining{font-size:13px;color:var(--oxblood);font-weight:600;letter-spacing:.03em;}
+.remaining.muted{color:var(--ink-soft);font-weight:500;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:54px 40px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;box-shadow:0 1px 0 var(--line2),0 18px 40px -28px rgba(60,40,20,.35);}
+.word{font-family:'Spectral',serif;font-size:46px;font-weight:500;letter-spacing:-.02em;line-height:1.1;}
+.pron{margin-top:10px;font-size:17px;color:var(--ink-soft);letter-spacing:.02em;font-weight:500;}
+.ipa{margin-top:5px;font-family:'Spectral',Georgia,serif;font-style:italic;font-size:18px;color:var(--ink-soft);opacity:.75;}
+.prompt{margin-top:30px;color:var(--ink-soft);font-size:15px;display:flex;flex-direction:column;align-items:center;}
+.reveal{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--line2);padding:10px 18px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:.15s;margin-top:22px;}
+.reveal:hover{background:var(--paper2);}
+.back{margin-top:28px;border-top:1px solid var(--line);padding-top:26px;width:100%;max-width:46ch;}
+.meaning{font-size:21px;line-height:1.45;}
+.example{margin-top:16px;font-family:'Spectral',serif;font-style:italic;font-size:17px;color:var(--ink-soft);line-height:1.5;}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px;}
+.grade{font:inherit;background:var(--card);border:1px solid var(--line2);border-bottom:3px solid var(--gc);border-radius:10px;padding:14px 8px 11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.12s;}
+.grade:hover{background:var(--paper2);transform:translateY(-2px);}
+.grade-l{font-weight:600;font-size:15px;color:var(--gc);}
+.grade-i{font-size:13px;color:var(--ink-soft);}
+kbd{font-family:'Hanken Grotesk',sans-serif;font-size:10px;background:var(--paper2);border:1px solid var(--line2);border-radius:4px;padding:1px 6px;color:var(--ink-soft);}
+.h2{font-family:'Spectral',serif;font-size:30px;font-weight:500;letter-spacing:-.01em;margin:0 0 22px;}
+.tabs{display:flex;gap:6px;margin-bottom:24px;}
+.tab{font:inherit;font-size:14px;font-weight:500;color:var(--ink-soft);background:none;border:1px solid var(--line);padding:8px 16px;border-radius:8px;cursor:pointer;}
+.tab.on{color:var(--oxblood);border-color:var(--line2);background:var(--paper2);}
+.fields{display:flex;flex-direction:column;gap:18px;max-width:520px;}
+.field{display:flex;flex-direction:column;gap:7px;}
+.field span{font-size:13px;font-weight:600;}
+.field span em{font-weight:400;color:var(--ink-soft);font-style:normal;}
+.field input,.search,.textarea,input[type=number]{font:inherit;font-size:16px;background:var(--card);border:1px solid var(--line2);border-radius:9px;padding:12px 14px;color:var(--ink);}
+.field input:focus,.search:focus,.textarea:focus{outline:none;border-color:var(--oxblood);}
+.textarea{font-family:'Hanken Grotesk',sans-serif;resize:vertical;line-height:1.6;width:100%;}
+.help{font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0 0 4px;}
+.help code,.foot code{background:var(--paper2);padding:1px 6px;border-radius:4px;font-size:13px;}
+.msg{margin-top:18px;font-size:14px;color:var(--good);font-weight:500;}
+.manage-head{display:flex;justify-content:space-between;align-items:baseline;}
+.count{font-size:15px;color:var(--ink-soft);font-weight:500;margin-left:4px;}
+.manage-actions{display:flex;gap:8px;}
+.mini{font:inherit;font-size:13px;font-weight:500;background:none;border:1px solid var(--line2);padding:6px 13px;border-radius:7px;cursor:pointer;color:var(--ink);}
+.mini:hover{background:var(--paper2);}
+.search{width:100%;margin:6px 0 18px;}
+.list{list-style:none;margin:0;padding:0;}
+.row{display:flex;align-items:center;gap:14px;padding:13px 4px;border-bottom:1px solid var(--line);}
+.row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.row-word{font-family:'Spectral',serif;font-size:18px;font-weight:500;}
+.row-pron{font-size:13px;font-weight:400;color:var(--ink-soft);margin-left:9px;}
+.row-ipa{font-family:'Spectral',Georgia,serif;font-style:italic;font-size:13px;color:var(--ink-soft);opacity:.7;margin-left:8px;}
+.row-meaning{font-size:14px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tag{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.t-new{background:#e6ddc7;color:#7a6a3a;}.t-learning{background:#e3ddd0;color:#8a5a2a;}.t-settled{background:#dde7d6;color:#4e6b3c;}
+.level{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;min-width:90px;}
+.level.lv-new{color:var(--ink-soft);}.level.lv-learn,.level.lv-2{color:var(--hard);}.level.lv-3{color:var(--easy);}.level.lv-4,.level.lv-5{color:var(--good);}
+.pips{display:flex;gap:3px;}
+.pips i{width:7px;height:7px;border-radius:50%;background:var(--line2);display:block;}
+.pips i.on{background:currentColor;}
+.level-l{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:currentColor;}
+.level-due{font-size:11px;color:var(--ink-soft);opacity:.8;}
+.dbadge{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:22px;}
+.dbadge.fwd{background:#dde7d6;color:#4e6b3c;}
+.dbadge.rev{background:#dbe6ef;color:#345b78;}
+.rev-def{font-size:24px;line-height:1.4;font-weight:500;max-width:34ch;}
+.ansbox{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:28px;width:100%;max-width:420px;}
+.answer{font:inherit;font-size:20px;text-align:center;width:100%;background:transparent;border:none;border-bottom:2px solid var(--line2);border-radius:0;padding:8px 4px;color:var(--ink);}
+.answer:focus{outline:none;border-bottom-color:var(--oxblood);}
+.answered{margin-top:24px;border-top:1px solid var(--line);padding-top:22px;width:100%;max-width:46ch;}
+.yours{font-size:14px;color:var(--ink-soft);margin-bottom:12px;}
+.reveal-word{font-size:15px;}
+.reveal-word .word{font-family:'Spectral',serif;font-size:34px;font-weight:500;display:block;margin-top:6px;letter-spacing:-.02em;}
+.pron-inline{font-size:15px;color:var(--ink-soft);font-weight:400;}
+.ok{color:var(--good);font-weight:600;}.no{color:var(--again);font-weight:600;}
+.contbar{margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.nexthint{font-size:12px;color:var(--ink-soft);}
+.grade2wrap{display:flex;gap:12px;margin-top:24px;width:100%;max-width:420px;}
+.grade2{flex:1;font:inherit;background:var(--card);border:1px solid var(--line2);border-bottom:3px solid var(--gc);border-radius:10px;padding:14px 8px 11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.12s;font-weight:600;font-size:15px;}
+.grade2:hover{background:var(--paper2);transform:translateY(-2px);}
+.grade2.miss{--gc:var(--again);color:var(--again);}.grade2.got{--gc:var(--good);color:var(--good);}
+.g2i{font-size:12px;font-weight:500;color:var(--ink-soft);}
+.level2{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;min-width:120px;}
+.drow{display:flex;align-items:center;gap:7px;}
+.drow.lv-new,.drow.lv-lock{color:var(--ink-soft);}
+.drow.lv-learn,.drow.lv-2{color:var(--hard);}.drow.lv-3{color:var(--easy);}.drow.lv-4,.drow.lv-5{color:var(--good);}
+.dkey{font-size:10px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-soft);width:34px;text-align:right;}
+.dchk{color:var(--good);font-weight:700;font-size:12px;}
+.finished{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--good);margin-top:2px;}
+.del{background:none;border:none;font-size:22px;line-height:1;color:var(--line2);cursor:pointer;padding:0 4px;transition:.15s;}
+.del:hover{color:var(--again);}
+.empty{color:var(--ink-soft);padding:30px 0;}
+.set{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);}
+.set-row{display:flex;justify-content:space-between;align-items:center;gap:28px;padding:22px 24px;border-bottom:1px solid var(--line);}
+.set-row:last-child{border-bottom:none;}
+.set-l{font-size:16px;font-weight:600;margin-bottom:6px;}
+.set-h{font-size:13px;color:var(--ink-soft);line-height:1.5;max-width:44ch;}
+.set-c{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.set-c input[type=range]{width:130px;accent-color:var(--oxblood);}
+.set-c input[type=number]{width:74px;text-align:center;}
+.set-v{font-family:'Spectral',serif;font-size:20px;font-weight:500;min-width:46px;text-align:right;}
+.foot{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:22px;max-width:62ch;}
+.danger{font:inherit;font-size:13px;font-weight:600;color:var(--again);background:none;border:1px solid var(--again);padding:8px 14px;border-radius:8px;cursor:pointer;margin-top:18px;}
+.danger:hover{background:var(--again);color:var(--paper);}
+@media(max-width:560px){
+  .h1{font-size:32px;}.word{font-size:36px;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .grades{grid-template-columns:repeat(2,1fr);}
+  .set-row{flex-direction:column;align-items:flex-start;gap:14px;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input id="fileInput" type="file" accept="application/json" style="display:none" />
+<script>
+"use strict";
+/* ============================ FSRS-6 engine ============================ */
+const W=[0.212,1.2931,2.3065,8.2956,6.4133,0.8334,3.0194,0.001,1.8722,0.1666,0.796,1.4835,0.0614,0.2629,1.6483,0.6014,1.8729,0.5425,0.0912,0.0658,0.1542];
+const DECAY=W[20], FACTOR=Math.pow(0.9,-1/DECAY)-1, DAY=86400000;
+const clampD=d=>Math.min(Math.max(d,1),10);
+const retr=(t,S)=>Math.pow(1+FACTOR*t/S,-DECAY);
+const ivl=(r,S)=>(S/FACTOR)*(Math.pow(r,-1/DECAY)-1);
+const initS=G=>Math.max(W[G-1],0.1);
+const initD=G=>clampD(W[4]-Math.exp(W[5]*(G-1))+1);
+const D0_4=clampD(W[4]-Math.exp(W[5]*3)+1);
+function nextD(D,G){const dD=-W[6]*(G-3);const Dp=D+dD*((10-D)/9);return clampD(W[7]*D0_4+(1-W[7])*Dp);}
+function sRecall(D,S,R,G){const hard=G===2?W[15]:1,easy=G===4?W[16]:1;return S*(Math.exp(W[8])*(11-D)*Math.pow(S,-W[9])*(Math.exp(W[10]*(1-R))-1)*hard*easy+1);}
+function sForget(D,S,R){const sf=W[11]*Math.pow(D,-W[12])*(Math.pow(S+1,W[13])-1)*Math.exp(W[14]*(1-R));return Math.max(Math.min(sf,S),0.1);}
+/* Learning steps sit on top of FSRS: while a card is still being learned (or relearned
+   after a lapse), Again/Hard hold it on short fixed steps and Good/Easy graduate it to a
+   day-scale interval. Once graduated (state "review"), the FSRS formulas above drive every
+   subsequent interval. This keeps the four buttons distinct and predictable early on. */
+const MIN=60000, AGAIN_STEP=1*MIN, HARD_STEP=10*MIN, GOOD_GRAD=1, EASY_GRAD=4; /* days */
+function gradFuzz(d,maxInt){if(d>=2.5)return Math.min(Math.max(Math.round(d*(0.95+Math.random()*0.1)),1),maxInt);return Math.min(Math.max(Math.round(d),1),maxInt);}
+function schedule(card,G,retention,maxInt,now){
+  const c=Object.assign({},card);
+  c.reps=(c.reps||0)+1; c.lastReview=now;
+  if(c.state==="review"){
+    const R=retr(Math.max((now-card.lastReview)/DAY,0),c.stability);
+    if(G===1){ /* lapse -> drop into relearning steps */
+      c.stability=sForget(c.difficulty,c.stability,R); c.lapses=(c.lapses||0)+1;
+      c.difficulty=nextD(c.difficulty,G); c.state="relearning"; c.due=now+AGAIN_STEP;
+      return{card:c,again:true,learning:true};
+    }
+    c.stability=sRecall(c.difficulty,c.stability,R,G); c.difficulty=nextD(c.difficulty,G);
+    const d=gradFuzz(Math.min(Math.max(ivl(retention,c.stability),1),maxInt),maxInt);
+    c.state="review"; c.due=now+d*DAY; c.lastInterval=d;
+    return{card:c,again:false,learning:false};
+  }
+  /* new / learning / relearning */
+  const relearn=card.state==="relearning";
+  c.difficulty = card.state==="new" ? initD(G) : nextD(c.difficulty,G);
+  if(card.state==="new"){c.lapses=c.lapses||0;}
+  if(G===1){c.state=relearn?"relearning":"learning"; c.due=now+AGAIN_STEP; return{card:c,again:true,learning:true};}
+  if(G===2){c.state=relearn?"relearning":"learning"; c.due=now+HARD_STEP; return{card:c,again:false,learning:true};}
+  /* Good / Easy -> graduate */
+  let d;
+  if(relearn){const base=Math.max(ivl(retention,c.stability||GOOD_GRAD),1); d=Math.max(G===4?EASY_GRAD:GOOD_GRAD,Math.round(base));}
+  else{d=G===4?EASY_GRAD:GOOD_GRAD; c.stability=d;}
+  d=Math.min(d,maxInt); c.state="review"; c.due=now+d*DAY; c.lastInterval=d;
+  return{card:c,again:false,learning:false};
+}
+function preview(card,G,retention,maxInt,now){
+  if(card.state==="review"){
+    if(G===1)return"<10m";
+    const e=Math.max((now-card.lastReview)/DAY,0);
+    const S=sRecall(card.difficulty,card.stability,retr(e,card.stability),G);
+    return fmtDays(Math.min(Math.max(ivl(retention,S),1),maxInt));
+  }
+  if(G===1)return"<10m"; if(G===2)return"10m";
+  if(card.state==="relearning"){const base=Math.max(ivl(retention,card.stability||GOOD_GRAD),1);return fmtDays(Math.min(Math.max(G===4?EASY_GRAD:GOOD_GRAD,Math.round(base)),maxInt));}
+  return fmtDays(G===4?EASY_GRAD:GOOD_GRAD);
+}
+function fmtDays(d){if(d<1)return"today";if(d<21)return Math.round(d)+"d";if(d<60)return Math.round(d/7)+"w";if(d<365)return Math.round(d/30)+"mo";return (d/365).toFixed(1)+"y";}
+
+/* ============================ helpers + seed ============================ */
+const todayKey=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+/* Successive relearning + bidirectional: each word carries TWO independent FSRS schedules -
+   fwd (see word -> recall meaning; receptive) and rev (see meaning -> type the word; productive).
+   A direction is "done" after TARGET_SUCCESS correct recalls on separate days AND its gap has
+   grown to TARGET_GAP days; a word is finished when both directions are done. rev starts locked
+   and unlocks once fwd has been recalled once (you must meet a word receptively before producing it). */
+const TARGET_SUCCESS=4, TARGET_GAP=30;
+function newSub(st){return{state:st,due:st==="new"?Date.now():0,stability:0,difficulty:0,reps:0,lapses:0,lastReview:0,lastInterval:0,successes:0,lastDay:""};}
+const makeCard=(e,i)=>({id:uid()+(i||0),word:(e.word||"").trim(),pron:(e.pron||"").trim(),ipa:(e.ipa||"").trim(),meaning:(e.meaning||"").trim(),example:(e.example||"").trim(),created:Date.now(),fwd:newSub("new"),rev:newSub("locked")});
+
+const SEED_WORDS=[
+{word:"deplore",pron:"dih-PLOR",ipa:"/dɪˈplɔː/",meaning:"to feel or express strong disapproval or condemnation of",example:"The headteacher deplored the vandalism of the school library."},
+{word:"hidebound",pron:"HYDE-bownd",ipa:"/ˈhaɪdbaʊnd/",meaning:"rigidly conventional and unwilling to change, esp. from tradition",example:"The old professor was too hidebound to accept any new reading of the text."},
+{word:"vega",pron:"VAY-guh",ipa:"/ˈveɪɡə/",meaning:"(options) sensitivity of an option's price to a change in implied volatility",example:"Long-dated options carry the most vega, so the trade lost money as implied volatility fell."},
+{word:"inexorable",pron:"in-EK-suh-ruh-bul",ipa:"/ɪnˈɛksərəbl/",meaning:"impossible to stop or prevent; relentless",example:"The inexorable rise of the tide slowly swallowed the sandcastle."},
+{word:"parapet",pron:"PAR-uh-pet",ipa:"/ˈpærəpɪt/",meaning:"a low protective wall at the edge of a roof, bridge or balcony",example:"She leaned over the parapet to watch the river far below."},
+{word:"presage",pron:"PRESS-ij",ipa:"/ˈprɛsɪdʒ/",meaning:"to be a sign or warning of something to come; foreshadow",example:"The dark, low clouds presaged a violent storm."},
+{word:"malaise",pron:"muh-LAYZ",ipa:"/məˈleɪz/",meaning:"a general sense of unease or low morale, often without a clear cause",example:"A quiet malaise hung over the office after the layoffs were announced."},
+{word:"abrogation",pron:"ab-ruh-GAY-shun",ipa:"/ˌæbrəˈɡeɪʃ(ə)n/",meaning:"the formal repeal or abolition of a law, agreement or custom",example:"The abrogation of the old treaty angered both nations."},
+{word:"nascent",pron:"NAY-sunt",ipa:"/ˈnæs(ə)nt/",meaning:"just coming into existence; emerging",example:"The nascent democracy struggled to hold its first free elections."},
+{word:"accord",pron:"uh-KORD",ipa:"/əˈkɔːd/",meaning:"(n) a formal agreement; (v) to grant, or to be consistent with",example:"The two leaders signed a peace accord after months of talks."},
+{word:"lambasting",pron:"lam-BAST-ing",ipa:"/læmˈbæstɪŋ/",meaning:"a harsh, severe reprimand or criticism",example:"The manager gave the players a lambasting after the embarrassing defeat."},
+{word:"sawyer",pron:"SAW-yer",ipa:"/ˈsɔːjə/",meaning:"a person who saws timber for a living",example:"The sawyer cut the fallen oak into planks at the mill."},
+{word:"jalopy",pron:"juh-LOP-ee",ipa:"/dʒəˈlɒpi/",meaning:"an old, dilapidated car",example:"He rattled into town in a rusting jalopy held together with hope."},
+{word:"feckless",pron:"FEK-luss",ipa:"/ˈfɛkləs/",meaning:"lacking initiative, competence or responsibility; ineffectual",example:"Her feckless brother never held down a job for more than a month."},
+{word:"recondite",pron:"REK-un-dyte",ipa:"/ˈrɛkəndaɪt/",meaning:"dealing with obscure or abstruse subject matter; little known",example:"The lecture was so recondite that few in the audience could follow it."},
+{word:"acrimonious",pron:"ak-rih-MOH-nee-us",ipa:"/ˌækrɪˈməʊniəs/",meaning:"(of speech or dispute) angry and bitter",example:"Their divorce dragged on, growing more acrimonious by the week."},
+{word:"ruction",pron:"RUK-shun",ipa:"/ˈrʌkʃ(ə)n/",meaning:"a noisy quarrel, disturbance or row",example:"There was a ruction in the pub when the rival fans arrived."},
+{word:"chattel",pron:"CHAT-ul",ipa:"/ˈtʃat(ə)l/",meaning:"an item of movable personal property, as distinct from land",example:"Under the old law, a wife's possessions became her husband's chattels."},
+{word:"apogee",pron:"AP-uh-jee",ipa:"/ˈapədʒiː/",meaning:"the highest or culminating point; (astronomy) the orbital point farthest from Earth",example:"The empire reached its apogee in the second century, then began to decline."},
+{word:"ex nihilo",pron:"eks NIH-hih-loh",ipa:"/ˌɛks ˈnɪhɪləʊ/",meaning:"(Latin) out of nothing",example:"Theologians long debated whether the universe was created ex nihilo."},
+{word:"repudiate",pron:"rih-PYOO-dee-ayt",ipa:"/rɪˈpjuːdieɪt/",meaning:"to reject or disown; (law) to refuse to honour a contract",example:"He publicly repudiated the views he had held as a young man."},
+{word:"diatribe",pron:"DY-uh-tribe",ipa:"/ˈdaɪətraɪb/",meaning:"a forceful and bitter verbal attack",example:"She launched into a long diatribe against modern television."},
+{word:"careen",pron:"kuh-REEN",ipa:"/kəˈriːn/",meaning:"to move swiftly in an uncontrolled, lurching way; (nautical) to tilt a ship on its side",example:"The truck careened down the hill after its brakes failed."},
+{word:"attestation",pron:"at-es-TAY-shun",ipa:"/ˌatɛˈsteɪʃ(ə)n/",meaning:"the action of formally certifying or witnessing something; proof",example:"The will required the attestation of two independent witnesses."},
+{word:"ersatz",pron:"AIR-zahts",ipa:"/ˈɛəzats/",meaning:"being an inferior or artificial substitute",example:"During the war, families drank ersatz coffee made from roasted chicory."},
+{word:"scattershot",pron:"SKAT-er-shot",ipa:"/ˈskatəʃɒt/",meaning:"wide-ranging but random and haphazard; unfocused",example:"His scattershot revision left big gaps in his knowledge."},
+{word:"libel",pron:"LY-bul",ipa:"/ˈlaɪb(ə)l/",meaning:"a published false statement that damages a reputation (cf. slander, spoken)",example:"The newspaper was sued for libel over the false front-page story."},
+{word:"sclerosis",pron:"skluh-ROH-sis",ipa:"/skləˈrəʊsɪs/",meaning:"abnormal hardening of tissue; (fig.) rigidity or inability to reform",example:"Multiple sclerosis attacks the protective sheath around the nerves."},
+{word:"iconoclastic",pron:"eye-kon-uh-KLAS-tik",ipa:"/aɪˌkɒnəˈklastɪk/",meaning:"attacking or challenging cherished beliefs and institutions",example:"Her iconoclastic paintings challenged everything the academy stood for."},
+{word:"monopsony",pron:"muh-NOP-suh-nee",ipa:"/məˈnɒpsəni/",meaning:"a market with only one buyer (cf. monopoly, one seller)",example:"The single large employer created a labour monopsony in the town."},
+{word:"plaintiff",pron:"PLAYN-tif",ipa:"/ˈpleɪntɪf/",meaning:"the party who brings a civil legal action (cf. defendant)",example:"The plaintiff sued the company for negligence."},
+{word:"confer",pron:"kun-FUR",ipa:"/kənˈfɜː/",meaning:"to grant or bestow (a right, title); also to consult together",example:"The degree confers the right to practise medicine."},
+{word:"reading down",pron:"REE-ding down",ipa:"/ˈriːdɪŋ daʊn/",meaning:"(statutory interpretation) narrowing the meaning of a broad or ambiguous law to keep it constitutionally valid",example:"The court saved the statute from invalidity by reading it down to a narrower meaning."},
+{word:"edifice",pron:"ED-ih-fiss",ipa:"/ˈɛdɪfɪs/",meaning:"a large, imposing building; (fig.) a complex structure of ideas",example:"The cathedral was a vast stone edifice that dominated the skyline."},
+{word:"vagary",pron:"VAY-guh-ree",ipa:"/ˈveɪɡəri/",meaning:"an unexpected, unpredictable change or whim",example:"The vagaries of the weather ruined their camping trip."},
+{word:"lament",pron:"luh-MENT",ipa:"/ləˈmɛnt/",meaning:"(v) to mourn or express grief/regret; (n) a passionate expression of grief",example:"She lamented the loss of her childhood home."},
+{word:"conciliatory",pron:"kun-SIL-ee-uh-tor-ee",ipa:"/kənˈsɪliət(ə)ri/",meaning:"intended to placate or win goodwill; appeasing",example:"He took a conciliatory tone to calm the heated argument."},
+{word:"parlous",pron:"PAR-luss",ipa:"/ˈpɑːləs/",meaning:"full of danger or uncertainty; precarious",example:"After three injuries, the team's defence was in a parlous state."},
+{word:"buttressed",pron:"BUT-rist",ipa:"/ˈbʌtrɪst/",meaning:"supported or reinforced (lit. with a buttress; fig. strengthened)",example:"Her argument was buttressed by decades of careful research."},
+{word:"prima facie",pron:"PRY-muh FAY-shee",ipa:"/ˌpraɪmə ˈfeɪʃi/",meaning:"(Latin/law) at first sight; accepted as correct until proven otherwise",example:"There was a prima facie case of negligence against the driver."},
+{word:"ultra vires",pron:"UL-truh VY-reez",ipa:"/ˌʌltrə ˈvaɪriːz/",meaning:"(Latin/law) beyond the legal powers or authority of a body",example:"The council's decision was struck down as ultra vires."},
+{word:"purview",pron:"PUR-vyoo",ipa:"/ˈpɜːvjuː/",meaning:"the scope of one's authority, concern or operation",example:"Such matters fall outside the committee's purview."},
+{word:"pro tanto",pron:"proh TAN-toh",ipa:"/prəʊ ˈtantəʊ/",meaning:"(Latin) to that extent; for so much; partially",example:"The part payment discharged the debt pro tanto."},
+{word:"primeval",pron:"pry-MEE-vul",ipa:"/praɪˈmiːv(ə)l/",meaning:"relating to the earliest ages; ancient, primordial",example:"They hiked through primeval forest untouched for millennia."},
+{word:"precariat",pron:"prih-KAIR-ee-at",ipa:"/prɪˈkɛːriət/",meaning:"the social class in insecure, low-paid, unstable work (precarious + proletariat)",example:"Gig work has swollen the ranks of the precariat."},
+{word:"talisman",pron:"TAL-iz-mun",ipa:"/ˈtalɪzmən/",meaning:"an object thought to bring protection or magic; a charm; (sport) a key inspirational figure",example:"She wore her grandmother's ring as a talisman for luck."},
+{word:"peremptory",pron:"puh-REMP-tuh-ree",ipa:"/pəˈrɛm(p)t(ə)ri/",meaning:"insisting on immediate compliance, esp. brusquely; (law) admitting no debate",example:"He summoned the waiter with a peremptory wave of his hand."},
+{word:"mettle",pron:"MET-ul",ipa:"/ˈmɛt(ə)l/",meaning:"a person's resilience, courage and capacity to cope under pressure",example:"The gruelling final tested the young climber's mettle."},
+{word:"parsimonious",pron:"par-sih-MOH-nee-us",ipa:"/ˌpɑːsɪˈməʊniəs/",meaning:"very unwilling to spend; stingy; (also) sparing, e.g. a parsimonious model",example:"Their parsimonious uncle refused to turn the heating on, even in winter."},
+{word:"vertiginous",pron:"vur-TIJ-ih-nus",ipa:"/vɜːˈtɪdʒɪnəs/",meaning:"causing or relating to dizziness; dizzyingly high, steep or rapid",example:"From the vertiginous cliff edge, the drop made her head spin."},
+{word:"salubrious",pron:"suh-LOO-bree-us",ipa:"/səˈluːbriəs/",meaning:"health-giving, healthy; (of a place) pleasant or respectable",example:"They moved out to a more salubrious part of the city."},
+{word:"moribund",pron:"MOR-ih-bund",ipa:"/ˈmɒrɪbʌnd/",meaning:"at the point of death; (of an institution) in terminal decline, stagnant",example:"The moribund factory finally closed after years of decline."},
+{word:"ignominy",pron:"IG-nuh-min-ee",ipa:"/ˈɪɡnəmɪni/",meaning:"public shame or disgrace; humiliation",example:"He suffered the ignominy of being sacked on live television."},
+{word:"redolent",pron:"RED-uh-lunt",ipa:"/ˈrɛd(ə)lənt/",meaning:"strongly reminiscent or suggestive of; fragrant with",example:"The kitchen was redolent of cinnamon and freshly baked bread."},
+{word:"insouciant",pron:"in-SOO-see-unt",ipa:"/ɪnˈsuːsiənt/",meaning:"showing casual, carefree lack of concern; nonchalant",example:"She gave an insouciant shrug and strolled away."},
+{word:"profligate",pron:"PROF-lih-gut",ipa:"/ˈprɒflɪɡət/",meaning:"recklessly extravagant or wasteful; also dissolute",example:"His profligate spending soon emptied the family inheritance."}
+];
+
+/* Words added via chat. Each has a stable key; on load any not yet applied (tracked in
+   state.addedKeys) are merged into the deck, so reloads never duplicate and deleting a
+   word later won't resurrect it. */
+const ADDITIONS=[
+{key:"bal-001",word:"vestibular apparatus",pron:"ve-STIB-yoo-ler ap-uh-RAY-tus",ipa:"/vɛˈstɪbjʊlər ˌæpəˈreɪtəs/",meaning:"the fluid-filled canals and sensory organs of the inner ear that detect head motion and orientation, feeding balance information to the brain",example:"The vestibular apparatus signals head rotation, letting you stay balanced with your eyes shut."},
+{key:"bal-002",word:"proprioception",pron:"proh-pree-oh-SEP-shun",ipa:"/ˌprəʊpriəˈsɛpʃ(ə)n/",meaning:"the body's sense of the position and movement of its own limbs and parts, independent of sight",example:"Proprioception is what lets you touch your nose with your eyes closed."},
+{key:"bal-003",word:"postural control",pron:"POS-cher-ul kun-TROHL",ipa:"/ˈpɒstʃərəl kənˈtrəʊl/",meaning:"the regulation of posture and balance to keep the body stable against gravity, at rest and in motion",example:"Postural control fuses vision, proprioception and the vestibular system to keep you upright."},
+{key:"bal-004",word:"vasovagal syncope",pron:"vay-zoh-VAY-gul SING-kuh-pee",ipa:"/ˌveɪzəʊˈveɪɡəl ˈsɪŋkəpi/",meaning:"a faint caused by a vagal-nerve reflex that drops heart rate and blood pressure, cutting blood flow to the brain; the usual cause of ordinary fainting",example:"The sight of the needle triggered vasovagal syncope and he briefly passed out."},
+{key:"gen-001",word:"pleiotropy",pron:"ply-OT-ruh-pee",ipa:"/plaɪˈɒtrəpi/",meaning:"(genetics) the phenomenon where one gene influences two or more seemingly unrelated traits",example:"Through pleiotropy, a single gene can raise disease resistance and shorten lifespan at the same time."},
+{key:"misc-001",word:"luau",pron:"LOO-ow",ipa:"/ˈluːaʊ/",meaning:"a Hawaiian feast or party, typically with food, music and entertainment",example:"On their last night on the island they celebrated at a beachside luau with roast pork and hula dancing."},
+{key:"misc-002",word:"parochial",pron:"puh-ROH-kee-ul",ipa:"/pəˈrəʊkɪəl/",meaning:"narrow or limited in outlook or concern, as if confined to a small local area; (lit.) relating to a church parish",example:"His parochial view of politics ignored anything happening beyond his own town."},
+{key:"misc-003",word:"maudlin",pron:"MAWD-lin",ipa:"/ˈmɔːdlɪn/",meaning:"self-pityingly or tearfully sentimental, often through drink",example:"After a few drinks he turned maudlin and started reminiscing about his school days."},
+{key:"misc-004",word:"tenterhooks",pron:"TEN-ter-hooks",ipa:"/ˈtɛntəhʊks/",meaning:"a state of tense, anxious suspense (chiefly in 'on tenterhooks')",example:"She was on tenterhooks all week waiting for the exam results."},
+{key:"log-001",word:"induce",pron:"in-DYOOS",ipa:"/ɪnˈdjuːs/",meaning:"to bring about or cause; to persuade someone to act; (logic) to infer a general rule from particular cases (cf. deduce, which goes the other way)",example:"From thousands of individual observations, the scientist induced a general law."},
+{key:"log-002",word:"deduce",pron:"dih-DYOOS",ipa:"/dɪˈdjuːs/",meaning:"to reach a conclusion by reasoning from known facts or general principles (cf. induce, which infers a rule from particulars)",example:"From the muddy boots by the door, she deduced that he had been walking in the fields."},
+{key:"ling-001",word:"homonym",pron:"HOM-uh-nim",ipa:"/ˈhɒmənɪm/",meaning:"a word with the same spelling or pronunciation as another but a different meaning; the umbrella term covering homophones and homographs",example:"'Bat' the animal and 'bat' for cricket are homonyms."},
+{key:"ling-002",word:"homophone",pron:"HOM-uh-fone",ipa:"/ˈhɒməfəʊn/",meaning:"a word pronounced the same as another but differing in meaning or spelling (cf. homograph, spelt alike)",example:"'Flour' and 'flower' are homophones - identical in sound, different in meaning."},
+{key:"ling-003",word:"homograph",pron:"HOM-uh-graf",ipa:"/ˈhɒməɡrɑːf/",meaning:"a word spelt the same as another but differing in meaning, and sometimes in pronunciation (cf. homophone, said alike)",example:"'Lead' (to guide) and 'lead' (the metal) are homographs - spelt alike but said differently."},
+{key:"fr-001",word:"bête noire",pron:"bet NWAHR",ipa:"/ˌbɛt ˈnwɑː/",meaning:"(French) a person or thing one particularly dislikes, dreads or finds especially irksome; a pet hate",example:"Public speaking was her bête noire - she dreaded it more than anything else on the course."},
+{key:"phil-001",word:"epistemic",pron:"ep-iss-TEM-ik",ipa:"/ˌɛpɪˈstɛmɪk/",meaning:"relating to knowledge or to how we know what we know - what can be known, and how justified a belief is (cf. ontological, about being)",example:"The jury faced an epistemic problem: how could they ever really know what happened that night?"},
+{key:"phil-002",word:"ontological",pron:"on-tuh-LOJ-ih-kul",ipa:"/ˌɒntəˈlɒdʒɪkəl/",meaning:"relating to the nature of being and existence - what kinds of things exist and what it means for them to exist (cf. epistemic, about knowledge)",example:"Whether numbers truly exist or are just useful fictions is an ontological question."},
+{key:"phil-003",word:"brute fact",pron:"broot FAKT",ipa:"/ˌbruːt ˈfækt/",meaning:"(philosophy) a fact with no explanation or cause beyond itself - it simply is, and cannot be derived from anything more fundamental",example:"Some physicists treat the values of the fundamental constants as brute facts, with no deeper reason behind them."},
+{key:"misc-005",word:"palimpsest",pron:"PAL-imp-sest",ipa:"/ˈpælɪmpsɛst/",meaning:"a manuscript on which later writing has been superimposed over earlier, partly erased text; (fig.) something bearing visible traces of its earlier forms",example:"The old city is a palimpsest, each generation building over the ruins of the last."},
+{key:"neg-001",word:"BATNA",pron:"BAT-nuh",ipa:"/ˈbætnə/",meaning:"(negotiation) Best Alternative To a Negotiated Agreement - your best fallback if the deal falls through; it sets your walk-away point and your real bargaining power",example:"With a rival's firm offer already in hand, her BATNA was strong, so she could walk away from the lowball."},
+{key:"bet-001",word:"devigging",pron:"dee-VIG-ing",ipa:"/diːˈvɪɡɪŋ/",meaning:"(betting/probability) stripping the bookmaker's margin (the 'vig' or overround) out of posted odds to recover the implied fair probabilities of the outcomes",example:"Devigging the two-way price backed out a true implied probability of 58%, not the 62% the raw odds suggested."},
+{key:"bet-002",word:"vigorish",pron:"VIG-uh-rish",ipa:"/ˈvɪɡərɪʃ/",meaning:"(betting) the bookmaker's built-in margin or commission on a bet - the 'vig' or 'juice' - which makes the implied probabilities sum to more than 100%",example:"The book's vigorish meant the two sides implied 105% between them, guaranteeing the house an edge."},
+{key:"misc-006",word:"chimera",pron:"ky-MEER-uh",ipa:"/kaɪˈmɪərə/",meaning:"a wild or impossible fantasy; an illusion. (Greek myth) a fire-breathing monster made of parts of a lion, goat and serpent; (biology) an organism with two genetically distinct cell populations",example:"The promise of effortless riches proved a chimera."},
+{key:"fr-002",word:"fait accompli",pron:"fayt uh-kom-PLEE",ipa:"/ˌfeɪt əˈkɒmpliː/",meaning:"(French) a thing already done and beyond alteration, presented before those affected can object or change it",example:"By signing before the board met, he presented them with a fait accompli."},
+{key:"misc-007",word:"elegiac",pron:"el-uh-JY-uk",ipa:"/ˌɛlɪˈdʒaɪək/",meaning:"mournful or wistful, esp. in expressing sorrow for something now past; relating to an elegy (a lament for the dead)",example:"The novel has an elegiac tone, mourning a way of life that has vanished."},
+{key:"phil-004",word:"category error",pron:"KAT-uh-gree ER-uh",ipa:"/ˈkætəɡəri ˈɛrə/",meaning:"(philosophy) a logical mistake of assigning something to a category it cannot belong to, or treating it as a fundamentally different kind of thing than it is",example:"Asking what a number smells like is a category error - numbers aren't the sort of thing that has a smell."},
+{key:"misc-008",word:"valorise",pron:"VAL-uh-ryze",ipa:"/ˈvæləraɪz/",meaning:"to give or ascribe value, worth or validity to something, esp. to elevate or celebrate it; (economics) to raise or fix the price of a commodity by official action",example:"Modern culture tends to valorise busyness, treating exhaustion as a badge of honour."},
+{key:"misc-009",word:"abstruse",pron:"ab-STROOS",ipa:"/əbˈstruːs/",meaning:"difficult to understand; obscure; dealing with matters beyond ordinary comprehension (cf. recondite)",example:"The paper's argument was too abstruse for a general audience to follow."},
+{key:"misc-010",word:"dowry",pron:"DOW-ree",ipa:"/ˈdaʊri/",meaning:"property or money a bride brings to a marriage; (historically) a payment from the bride's family to the groom or his family (plural: dowries)",example:"In many cultures a bride once brought a dowry of land or livestock to the marriage."},
+{key:"misc-011",word:"emolument",pron:"ih-MOL-yuh-munt",ipa:"/ɪˈmɒljʊmənt/",meaning:"a salary, fee or profit from employment or holding an office; payment received for work or position (often used in the plural)",example:"The emoluments of the office included a house, a car and a generous pension."},
+{key:"misc-012",word:"perfunctory",pron:"per-FUNK-tuh-ree",ipa:"/pəˈfʌŋktəri/",meaning:"done merely as a duty or routine, with minimal effort or care; cursory and half-hearted",example:"He gave the report a perfunctory glance and signed it without really reading it."},
+{key:"misc-013",word:"perspicacious",pron:"pur-spih-KAY-shus",ipa:"/ˌpɜːspɪˈkeɪʃəs/",meaning:"having keen insight or discernment; quick to notice and understand things clearly",example:"A perspicacious editor spotted the flaw in the argument at once."},
+{key:"misc-014",word:"remonstrate",pron:"REM-un-strayt",ipa:"/ˈrɛmənstreɪt/",meaning:"to protest, object or argue forcefully in complaint; to make a reproachful protest",example:"She remonstrated with the referee over the harsh decision."},
+{key:"misc-015",word:"epithet",pron:"EP-ih-thet",ipa:"/ˈɛpɪθɛt/",meaning:"a descriptive word or phrase expressing a quality of a person or thing, often used in place of or alongside a name; (also) an abusive or insulting term",example:"Alexander owes the epithet 'the Great' to his conquests."},
+{key:"misc-016",word:"ostensible",pron:"oss-TEN-suh-bul",ipa:"/ɒˈstɛnsɪbl/",meaning:"stated or appearing to be true, but not necessarily so; apparent or professed rather than actual",example:"The ostensible reason for the visit was business, but he really came to see her."},
+{key:"misc-017",word:"sanguine",pron:"SANG-gwin",ipa:"/ˈsæŋɡwɪn/",meaning:"optimistic or cheerful, esp. in a difficult or uncertain situation; (archaic) blood-red",example:"Despite the setbacks she stayed sanguine about the project's chances."},
+{key:"misc-018",word:"teetotaller",pron:"tee-TOH-tuh-ler",ipa:"/tiːˈtəʊtələ/",meaning:"a person who abstains completely from alcohol",example:"A lifelong teetotaller, he ordered a soda water at the bar."},
+{key:"log-003",word:"induction",pron:"in-DUK-shun",ipa:"/ɪnˈdʌkʃ(ə)n/",meaning:"(logic) reasoning from particular observations to a general rule or probable conclusion - the conclusion is likely, not guaranteed (cf. deduction, abduction)",example:"Every swan I've ever seen is white, so by induction all swans are white - a general rule drawn from many cases, and one a single black swan can overturn."},
+{key:"log-004",word:"deduction",pron:"dih-DUK-shun",ipa:"/dɪˈdʌkʃ(ə)n/",meaning:"(logic) reasoning from general premises to a conclusion that must be true if the premises are; a guaranteed inference (cf. induction, abduction)",example:"All men are mortal; Socrates is a man; therefore Socrates is mortal - by deduction the conclusion is forced by the premises."},
+{key:"log-005",word:"abduction",pron:"ab-DUK-shun",ipa:"/æbˈdʌkʃ(ə)n/",meaning:"(logic) inference to the best explanation - reasoning from an observation to the most plausible cause that would account for it (cf. deduction, induction); (also) the act of forcibly carrying someone off",example:"The grass is wet this morning, so by abduction the best explanation is that it rained overnight - though a sprinkler could also account for it."},
+{key:"misc-019",word:"audi alteram partem",pron:"OW-dee AL-tuh-ram PAR-tem",ipa:"/ˈaʊdiː ˈæltərəm ˈpɑːtɛm/",meaning:"(Latin/law) 'hear the other side' - the principle of natural justice that no one should be condemned unheard; both parties must have a fair chance to be heard",example:"The tribunal breached audi alteram partem by ruling against him without ever letting him respond."}
+];
+
+/* ============================ state ============================ */
+const KEY="lexicon_deck_v2", OLDKEY="lexicon_deck_v1";
+const DEF_SET={retention:0.9,newPerDay:10,maxInterval:1825};
+const num=(v,def)=>{const n=Number(v);return Number.isFinite(n)?n:def;};
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+/* text helpers for the productive (type the word) direction */
+const normAns=s=>(s||"").toLowerCase().trim().replace(/\s+/g," ").replace(/[.,;:!?"'‘’“”]/g,"");
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;const dp=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){let prev=dp[0];dp[0]=i;for(let j=1;j<=n;j++){const t=dp[j];dp[j]=Math.min(dp[j]+1,dp[j-1]+1,prev+(a[i-1]===b[j-1]?0:1));prev=t;}}return dp[n];}
+function checkAnswer(typed,word){const a=normAns(typed),b=normAns(word);if(!a)return"empty";if(a===b)return"correct";if(b.length>=5&&lev(a,b)<=1)return"almost";return"wrong";}
+const escRe=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+function blankExample(ex,word){if(!ex)return"";let out=ex;(word||"").split(/\s+/).filter(t=>t.length>2).forEach(t=>{out=out.replace(new RegExp("\\b"+escRe(t)+"\\w*","gi"),"————");});return out;}
+/* migrate a flat v1 card (single schedule) into a v2 card (fwd = old schedule, rev locked/new) */
+function subFromFlat(o){const st=(o.state==="review"||o.state==="relearning"||o.state==="learning")?o.state:"new";return{state:st,due:num(o.due,Date.now()),stability:num(o.stability,0),difficulty:num(o.difficulty,0),reps:num(o.reps,0),lapses:num(o.lapses,0),lastReview:num(o.lastReview,0),lastInterval:num(o.lastInterval,0),successes:Math.min(Math.max(num(o.reps,0)-num(o.lapses,0),0),TARGET_SUCCESS),lastDay:""};}
+function migrateFlat(o){const fwd=subFromFlat(o);return{id:o.id!=null?String(o.id):uid(),word:String(o.word||"").trim(),pron:String(o.pron||"").trim(),ipa:String(o.ipa||"").trim(),meaning:String(o.meaning||"").trim(),example:String(o.example||"").trim(),created:num(o.created,Date.now()),fwd:fwd,rev:newSub(fwd.state!=="new"?"new":"locked")};}
+let state=load();
+if(!state||!Array.isArray(state.cards)){
+  let old=null;try{const r=localStorage.getItem(OLDKEY);old=r?JSON.parse(r):null;}catch(e){}
+  if(old&&Array.isArray(old.cards)){
+    state={cards:old.cards.map(migrateFlat),settings:Object.assign({},DEF_SET,old.settings||{}),dailyNew:(old.dailyNew&&old.dailyNew.date===todayKey())?old.dailyNew:{date:todayKey(),count:0},pronStyle:old.pronStyle||"readable+ipa+ex",addedKeys:Array.isArray(old.addedKeys)?old.addedKeys.slice():[]};
+  }else{
+    state={cards:SEED_WORDS.map(makeCard),settings:Object.assign({},DEF_SET),dailyNew:{date:todayKey(),count:0},pronStyle:"readable+ipa+ex",addedKeys:[]};
+  }
+}else{
+  state.settings=Object.assign({},DEF_SET,state.settings||{});
+  if(!state.dailyNew||state.dailyNew.date!==todayKey())state.dailyNew={date:todayKey(),count:0};
+}
+/* one-time content refresh: seed words get current respelling/IPA/example (scheduling untouched) */
+if(state.pronStyle!=="readable+ipa+ex"){
+  const pm={},im={},em={};SEED_WORDS.forEach(s=>{const k=s.word.toLowerCase();pm[k]=s.pron;im[k]=s.ipa;em[k]=s.example;});
+  state.cards.forEach(c=>{const k=(c.word||"").toLowerCase();if(pm[k])c.pron=pm[k];if(im[k]&&!c.ipa)c.ipa=im[k];if(em[k])c.example=em[k];});
+  state.pronStyle="readable+ipa+ex";
+}
+/* merge any chat-added words not yet applied to this deck */
+if(!Array.isArray(state.addedKeys))state.addedKeys=[];
+(function(){
+  const done=new Set(state.addedKeys);
+  const have=new Set(state.cards.map(c=>(c.word||"").toLowerCase()));
+  let i=0;
+  ADDITIONS.forEach(a=>{
+    if(done.has(a.key))return;
+    if(!have.has(a.word.toLowerCase())){state.cards.push(makeCard(a,"add"+(i++)));have.add(a.word.toLowerCase());}
+    state.addedKeys.push(a.key);
+  });
+})();
+/* integrity: every card must carry both direction schedules */
+state.cards.forEach(c=>{if(!c.fwd)c.fwd=newSub("new");if(!c.rev)c.rev=newSub("locked");});
+save();
+let ses={view:"home",addTab:"single",q:"",msg:"",queue:[],revealed:false,typed:"",done:0,again:0};
+
+/* ---- item helpers (an item is a {id,dir} card-side) ---- */
+const cardById=id=>state.cards.find(c=>c.id===id);
+const subOf=it=>{const c=cardById(it.id);return c?c[it.dir]:null;};
+const subDone=s=>!!s&&s.state!=="new"&&s.state!=="locked"&&(s.successes||0)>=TARGET_SUCCESS&&(s.lastInterval||0)>=TARGET_GAP;
+const wordFinished=c=>subDone(c.fwd)&&subDone(c.rev);
+function dueItems(){const n=Date.now();const out=[];state.cards.forEach(c=>["fwd","rev"].forEach(d=>{const s=c[d];if(s&&s.state!=="new"&&s.state!=="locked"&&s.due<=n)out.push({id:c.id,dir:d});}));return out;}
+function newItems(){const rev=[],fwd=[];state.cards.forEach(c=>{if(c.rev&&c.rev.state==="new")rev.push({id:c.id,dir:"rev"});if(c.fwd&&c.fwd.state==="new")fwd.push({id:c.id,dir:"fwd"});});return rev.concat(fwd);}
+const newAllowance=()=>Math.max(0,state.settings.newPerDay-state.dailyNew.count);
+const currentItem=()=>{const n=Date.now();for(const it of ses.queue){const s=subOf(it);if(s&&s.due<=n)return it;}return null;};
+const sessionPending=()=>{const n=Date.now();return ses.queue.filter(it=>{const s=subOf(it);return s&&s.due>n;}).length;};
+
+/* ============================ actions ============================ */
+function startSession(){
+  const due=dueItems();
+  for(let i=due.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[due[i],due[j]]=[due[j],due[i]];}
+  const fresh=newItems().slice(0,newAllowance());
+  ses.queue=due.concat(fresh);ses.revealed=false;ses.typed="";ses.done=0;ses.again=0;ses.view="review";render();
+}
+function revealAnswer(){ses.typed=val("f-answer");ses.revealed=true;render();}
+/* productive direction: grade is inferred from the typed answer, not chosen */
+function gradeReverse(){const item=currentItem();if(!item)return;const card=cardById(item.id);if(!card)return;const v=checkAnswer(ses.typed,card.word);gradeCurrent(v==="correct"?3:v==="almost"?2:1);}
+function gradeCurrent(G){
+  const item=currentItem();if(!item)return;
+  const card=cardById(item.id);if(!card)return;const dir=item.dir, sub=card[dir];
+  const wasNew=sub.state==="new";
+  const out=schedule(sub,G,state.settings.retention,state.settings.maxInterval,Date.now());
+  const ns=out.card;
+  if(G>=2){const tk=todayKey();if(ns.lastDay!==tk){ns.successes=(ns.successes||0)+1;ns.lastDay=tk;}} /* one counted recall per direction per day */
+  card[dir]=ns;
+  if(dir==="fwd"&&card.rev&&card.rev.state==="locked"&&(ns.successes||0)>=1){card.rev.state="new";card.rev.due=Date.now();} /* unlock productive once met receptively */
+  if(wasNew){if(state.dailyNew.date!==todayKey())state.dailyNew={date:todayKey(),count:0};state.dailyNew.count++;}
+  ses.done++;if(out.again)ses.again++;
+  const qi=ses.queue.findIndex(it=>it.id===item.id&&it.dir===item.dir);if(qi>=0)ses.queue.splice(qi,1);
+  if(out.learning)ses.queue.push({id:item.id,dir:item.dir});
+  ses.revealed=false;ses.typed="";save();render();
+}
+function addCards(entries){
+  const toAdd=entries.filter(e=>e.word&&e.meaning).map(makeCard);
+  if(toAdd.length){state.cards=state.cards.concat(toAdd);save();}
+  return toAdd.length;
+}
+function deleteCard(id){state.cards=state.cards.filter(c=>c.id!==id);save();render();}
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");
+  a.href=url;a.download="lexicon-deck-"+todayKey()+".json";a.click();URL.revokeObjectURL(url);
+}
+function normSub(s,fb){s=s||{};const ok=["review","relearning","learning","new","locked"];const st=ok.indexOf(s.state)>=0?s.state:fb;return{state:st,due:num(s.due,Date.now()),stability:num(s.stability,0),difficulty:num(s.difficulty,0),reps:num(s.reps,0),lapses:num(s.lapses,0),lastReview:num(s.lastReview,0),lastInterval:num(s.lastInterval,0),successes:num(s.successes,0),lastDay:typeof s.lastDay==="string"?s.lastDay:""};}
+function normCard(c,i){
+  c=c||{};
+  const base={id:(c.id!=null?String(c.id):uid()+(i||0)),word:String(c.word||"").trim(),pron:String(c.pron||"").trim(),ipa:String(c.ipa||"").trim(),meaning:String(c.meaning||"").trim(),example:String(c.example||"").trim(),created:num(c.created,Date.now())};
+  if(c.fwd||c.rev){base.fwd=normSub(c.fwd,"new");base.rev=normSub(c.rev,"locked");}
+  else{base.fwd=subFromFlat(c);base.rev=newSub(base.fwd.state!=="new"?"new":"locked");}
+  return base;
+}
+function importJSON(file){
+  const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(Array.isArray(d.cards)){state.cards=d.cards.map(normCard).filter(c=>c.word&&c.meaning);if(d.settings)state.settings=Object.assign({},DEF_SET,d.settings);state.cards.forEach(c=>{if(!c.fwd)c.fwd=newSub("new");if(!c.rev)c.rev=newSub("locked");});save();render();}else{alert("That file has no cards array.");}}catch(e){alert("Could not parse that file.");}};
+  r.readAsText(file);
+}
+
+/* ============================ views ============================ */
+function header(){
+  const n=v=>'<button class="navbtn'+(ses.view===v?' on':'')+'" data-act="nav" data-view="'+v+'">';
+  return '<div class="head"><div class="brand" data-act="nav" data-view="home"><span class="mark">\u00B6</span> Lexicon</div>'
+    +'<div class="nav">'+n("home")+'Today</button>'+n("add")+'Add</button>'+n("manage")+'Words</button>'+n("settings")+'Settings</button></div></div>';
+}
+function viewHome(){
+  const now=Date.now();
+  const due=dueItems().length, na=newAllowance(), nt=Math.min(na,newItems().length), total=state.cards.length;
+  const finished=state.cards.filter(wordFinished).length, work=due+nt;
+  const up=new Array(14).fill(0);
+  state.cards.forEach(c=>["fwd","rev"].forEach(d=>{const s=c[d];if(!s||s.state==="new"||s.state==="locked")return;const dd=Math.floor((s.due-now)/DAY);if(dd>=0&&dd<14)up[dd]++;else if(dd<0)up[0]++;}));
+  const peak=Math.max.apply(null,[1].concat(up));
+  const dateStr=new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
+  let hero;
+  if(total===0){hero='<h1 class="h1">A quiet place for words.</h1><p class="lead">Add the words you want to keep. Each day it surfaces the ones you are about to forget, and stretches the gaps wider as they stick.</p><button class="cta" data-act="nav" data-view="add">Add words \u2192</button>';}
+  else if(work===0){hero='<h1 class="h1">Nothing due.</h1><p class="lead">You are caught up. '+total+' word'+(total===1?'':'s')+' in rotation, '+finished+' finished both ways.</p><button class="cta ghost" data-act="nav" data-view="add">Add more words \u2192</button>';}
+  else{hero='<h1 class="h1">'+work+' review'+(work===1?'':'s')+' to do.</h1><p class="lead">'+due+' due'+(nt?', '+nt+' new':'')+'. Each word is learnt both ways \u2014 meaning and spelling. Roughly '+Math.ceil(work*0.1)+'\u2013'+Math.ceil(work*0.25)+' minutes.</p><button class="cta" data-act="start">Begin review \u2192</button>';}
+  let spark='';for(let i=0;i<14;i++){spark+='<div class="bar-wrap" title="'+up[i]+' due"><div class="bar" style="height:'+(up[i]/peak*100)+'%;opacity:'+(up[i]?1:0.25)+'"></div><div class="bar-x">'+(i===0?'now':(i%2===0?'+'+i:''))+'</div></div>';}
+  const panel=total>0?'<div class="panel"><div class="panel-t">Next two weeks</div><div class="spark">'+spark+'</div><div class="panel-note">Target retention '+Math.round(state.settings.retention*100)+'%. Each correct recall pushes that direction\u2019s next appearance further out; a word is finished once both directions are locked in.</div></div>':'';
+  return '<div class="main"><div class="hero"><div class="date">'+dateStr+'</div>'+hero+'</div>'
+    +'<div class="stats"><div class="stat"><div class="stat-n">'+due+'</div><div class="stat-l">due now</div></div>'
+    +'<div class="stat"><div class="stat-n">'+nt+'</div><div class="stat-l">new today</div></div>'
+    +'<div class="stat"><div class="stat-n">'+total+'</div><div class="stat-l">total words</div></div>'
+    +'<div class="stat"><div class="stat-n">'+finished+'</div><div class="stat-l">finished</div></div></div>'+panel+'</div>';
+}
+function viewReview(){
+  const item=currentItem();
+  if(!item){
+    const pending=sessionPending();
+    let title,lead;
+    if(pending>0){title="Caught up for now.";lead=ses.done+' review'+(ses.done===1?'':'s')+' this session. '+pending+' card'+(pending===1?' is':'s are')+' on a short learning step and will resurface in a few minutes \u2014 take a breather, then come back.';}
+    else{title="All done.";lead=ses.done+' review'+(ses.done===1?'':'s')+' this session'+(ses.again?', '+ses.again+' needed another pass':'')+'. Nothing left in the queue.';}
+    return '<div class="main"><div class="hero"><h1 class="h1">'+title+'</h1><p class="lead">'+lead+'</p><button class="cta" data-act="nav" data-view="home">Back to today \u2192</button></div></div>';
+  }
+  const card=cardById(item.id), dir=item.dir, sub=card[dir], now=Date.now(), isRev=dir==="rev";
+  const badge=isRev?'<div class="dbadge rev">type the word</div>':'<div class="dbadge fwd">recall the meaning</div>';
+  const pv=g=>preview(sub,g,state.settings.retention,state.settings.maxInterval,now);
+  const contBar=g=>'<div class="contbar"><button class="cta" data-act="advance">Continue <kbd>↵</kbd></button><span class="nexthint">next in '+pv(g)+'</span></div>';
+  const passFail=()=>'<div class="grade2wrap"><button class="grade2 miss" data-act="mark" data-pass="0"><span>Missed</span><span class="g2i">'+pv(1)+'</span><kbd>↵</kbd></button><button class="grade2 got" data-act="mark" data-pass="1"><span>Got it</span><span class="g2i">'+pv(3)+'</span><kbd>1</kbd></button></div>';
+  let inner;
+  if(isRev){
+    const promptTop='<div class="rev-def">'+esc(card.meaning)+'</div>'+(card.example?'<div class="example">\u201C'+esc(blankExample(card.example,card.word))+'\u201D</div>':'');
+    if(!ses.revealed){
+      inner=promptTop+'<div class="ansbox"><input id="f-answer" class="answer" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="type the word\u2026"><button class="reveal" data-act="reveal">Check <kbd>\u21B5</kbd></button></div>';
+    }else{
+      const v=checkAnswer(ses.typed,card.word);
+      const mark=v==="correct"?'<span class="ok">\u2713 correct</span>':v==="almost"?'<span class="ok">\u2713 almost \u2014 the spelling is</span>':v==="empty"?'<span class="no">\u2014 no answer; it\u2019s</span>':'<span class="no">\u2717 not quite; it\u2019s</span>';
+      const yours=ses.typed?'<div class="yours">you typed: <b>'+esc(ses.typed)+'</b></div>':'';
+      const G=v==="correct"?3:v==="almost"?2:1;
+      inner=promptTop+'<div class="answered">'+yours+'<div class="reveal-word">'+mark+'<span class="word">'+esc(card.word)+'</span>'+(card.pron?'<span class="pron-inline">'+esc(card.pron)+'</span>':'')+'</div></div>'+contBar(G);
+    }
+  }else{
+    const head='<div class="word">'+esc(card.word)+'</div>'+(card.pron?'<div class="pron">'+esc(card.pron)+'</div>':'')+(card.ipa?'<div class="ipa">'+esc(card.ipa)+'</div>':'');
+    if(!ses.revealed){
+      inner=head+'<div class="ansbox"><input id="f-answer" class="answer" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="recall the meaning, then reveal\u2026"><button class="reveal" data-act="reveal">Show answer <kbd>\u21B5</kbd></button></div>';
+    }else{
+      const yours=ses.typed?'<div class="yours">you said: <b>'+esc(ses.typed)+'</b></div>':'';
+      inner=head+'<div class="back">'+yours+'<div class="meaning">'+esc(card.meaning)+'</div>'+(card.example?'<div class="example">\u201C'+esc(card.example)+'\u201D</div>':'')+'</div>'+passFail();
+    }
+  }
+  return '<div class="main"><div class="rev-top"><span class="remaining">'+ses.queue.length+' left</span><span class="remaining muted">'+ses.done+' done</span></div>'
+    +'<div class="card">'+badge+inner+'</div></div>';
+}
+function viewAdd(){
+  const t=ses.addTab;
+  let inner;
+  if(t==="single"){
+    inner='<div class="fields">'
+      +'<label class="field"><span>Word</span><input id="f-word" placeholder="perspicacious"></label>'
+      +'<label class="field"><span>Pronunciation <em>(plain, optional)</em></span><input id="f-pron" placeholder="pur-spih-KAY-shus"></label>'
+      +'<label class="field"><span>Phonetic <em>(IPA, optional)</em></span><input id="f-ipa" placeholder="/ˌpɜːspɪˈkeɪʃəs/"></label>'
+      +'<label class="field"><span>Meaning</span><input id="f-meaning" placeholder="having keen insight; discerning"></label>'
+      +'<label class="field"><span>Example <em>(optional)</em></span><input id="f-example" placeholder="a perspicacious reading of the market"></label>'
+      +'<button class="cta" data-act="single-add">Add word</button></div>';
+  }else{
+    inner='<div class="fields"><p class="help">One per line, pipe-separated: <code>word | pronunciation | phonetic | meaning | example</code><br>Pronunciation, phonetic and example are optional \u2014 or use just <code>word | meaning</code>.</p>'
+      +'<textarea id="f-bulk" class="textarea" rows="9" placeholder="sanguine | SANG-gwin | /\u02c8s\u00e6\u014b\u0261w\u026an/ | optimistic, cheerful | a sanguine outlook"></textarea>'
+      +'<button class="cta" data-act="bulk-add">Add list</button></div>';
+  }
+  const tabs='<div class="tabs"><button class="tab'+(t==="single"?' on':'')+'" data-act="addtab" data-tab="single">One at a time</button><button class="tab'+(t==="bulk"?' on':'')+'" data-act="addtab" data-tab="bulk">Paste a list</button></div>';
+  const msg=ses.msg?'<div class="msg">'+esc(ses.msg)+'</div>':'';
+  return '<div class="main"><h2 class="h2">Add words</h2>'+tabs+inner+msg+'</div>';
+}
+function viewManage(){
+  const q=ses.q.toLowerCase();
+  const f=state.cards.filter(c=>c.word.toLowerCase().includes(q)||c.meaning.toLowerCase().includes(q));
+  /* per-direction maturity level 0-5 (how well that side has stuck) */
+  const lvl=s=>{
+    if(!s||s.state==="locked")return{n:0,label:"Locked",cls:"lv-lock"};
+    if(s.state==="new")return{n:0,label:"New",cls:"lv-new"};
+    if(s.state==="learning"||s.state==="relearning")return{n:1,label:"Learning",cls:"lv-learn"};
+    const d=s.lastInterval||0;
+    if(d<7)return{n:2,label:"Seen",cls:"lv-2"};
+    if(d<21)return{n:3,label:"Familiar",cls:"lv-3"};
+    if(d<TARGET_GAP)return{n:4,label:"Settled",cls:"lv-4"};
+    return{n:5,label:"Mastered",cls:"lv-5"};
+  };
+  const bar=(lab,s)=>{const L=lvl(s),done=subDone(s);let pips='';for(let i=0;i<5;i++)pips+='<i'+(i<L.n?' class="on"':'')+'></i>';
+    return '<div class="drow '+L.cls+'" title="'+lab+': '+L.label+' \u00B7 '+((s&&s.successes)||0)+'/'+TARGET_SUCCESS+' recalls"><span class="dkey">'+lab+'</span><div class="pips">'+pips+'</div>'+(done?'<span class="dchk">\u2713</span>':'')+'</div>';};
+  const meter=c=>'<div class="level2">'+bar("mean",c.fwd)+bar("word",c.rev)+(wordFinished(c)?'<span class="finished">Finished</span>':'')+'</div>';
+  let rows;
+  if(f.length===0){rows='<div class="empty">No words'+(state.cards.length?' match your search.':' yet.')+'</div>';}
+  else{rows='<ul class="list">'+f.map(c=>'<li class="row"><div class="row-main"><span class="row-word">'+esc(c.word)+(c.pron?'<span class="row-pron">'+esc(c.pron)+'</span>':'')+(c.ipa?'<span class="row-ipa">'+esc(c.ipa)+'</span>':'')+'</span><span class="row-meaning">'+esc(c.meaning)+'</span></div>'+meter(c)+'<button class="del" data-act="del" data-id="'+c.id+'" title="Delete">\u00D7</button></li>').join('')+'</ul>';}
+  return '<div class="main"><div class="manage-head"><h2 class="h2">Your words <span class="count">'+state.cards.length+'</span></h2><div class="manage-actions"><button class="mini" data-act="export">Export</button><button class="mini" data-act="import">Import</button></div></div>'
+    +'<input class="search" id="f-search" placeholder="Search\u2026" value="'+esc(ses.q)+'">'+rows+'</div>';
+}
+function viewSettings(){
+  const s=state.settings;
+  return '<div class="main"><h2 class="h2">Settings</h2><div class="set">'
+    +'<div class="set-row"><div><div class="set-l">Target retention</div><div class="set-h">Probability you will recall a word when it resurfaces. 90% is the FSRS efficiency sweet spot \u2014 higher means more reviews, lower means more forgetting.</div></div><div class="set-c"><input type="range" min="0.8" max="0.97" step="0.01" value="'+s.retention+'" data-act="set-retention"><span class="set-v">'+Math.round(s.retention*100)+'%</span></div></div>'
+    +'<div class="set-row"><div><div class="set-l">New cards per day</div><div class="set-h">Each word has two cards \u2014 recall the meaning, and spell the word \u2014 so this many fresh cards enter rotation each day.</div></div><div class="set-c"><input type="number" min="1" max="100" value="'+s.newPerDay+'" data-act="set-new"></div></div></div>'
+    +'<button class="danger" data-act="reset">Reset deck to the starter list</button>'
+    +'<p class="foot">Each word is learnt in both directions \u2014 recall the meaning (receptive) and type the word (productive) \u2014 following the <b>successive relearning</b> method: a direction is finished only after '+TARGET_SUCCESS+' correct recalls on separate days, once its gap has grown past '+TARGET_GAP+' days, and a word is finished when both directions are done. Spacing is FSRS-6 (Free Spaced Repetition Scheduler), population default parameters, power-law forgetting curve, with fixed learning steps on top (Again/Hard hold short; Good graduates at 1 day, Easy at 4). Your deck lives in this browser\u2019s local storage on this machine \u2014 it persists offline. Export regularly as a backup.</p></div>';
+}
+function paint(html){var el=document.getElementById("app");el["inner"+"HTML"]=html;}
+function render(){
+  let v;
+  if(ses.view==="review")v=viewReview();
+  else if(ses.view==="add")v=viewAdd();
+  else if(ses.view==="manage")v=viewManage();
+  else if(ses.view==="settings")v=viewSettings();
+  else v=viewHome();
+  paint(header()+v);
+  if(ses.view==="review"&&!ses.revealed){const el=document.getElementById("f-answer");if(el)el.focus();}
+}
+
+/* ============================ events ============================ */
+const app=document.getElementById("app");
+const fileInput=document.getElementById("fileInput");
+app.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const a=b.dataset.act;
+  if(a==="nav"){ses.view=b.dataset.view;ses.msg="";render();}
+  else if(a==="start"){startSession();}
+  else if(a==="reveal"){revealAnswer();}
+  else if(a==="advance"){gradeReverse();}
+  else if(a==="mark"){gradeCurrent(b.dataset.pass==="1"?3:1);}
+  else if(a==="addtab"){ses.addTab=b.dataset.tab;ses.msg="";render();}
+  else if(a==="single-add"){
+    const w=val("f-word"),p=val("f-pron"),ip=val("f-ipa"),m=val("f-meaning"),x=val("f-example");
+    const n=addCards([{word:w,pron:p,ipa:ip,meaning:m,example:x}]);
+    ses.msg=n?'Added \u201C'+w.trim()+'\u201D.':"Need at least a word and a meaning.";render();
+  }
+  else if(a==="bulk-add"){
+    const lines=val("f-bulk").split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{
+      if(l.indexOf("|")>=0){const p=l.split("|").map(x=>x.trim());
+        if(p.length>=5)return{word:p[0],pron:p[1],ipa:p[2],meaning:p[3],example:p[4]};
+        if(p.length===4)return{word:p[0],pron:p[1],meaning:p[2],example:p[3]};
+        if(p.length===3)return{word:p[0],meaning:p[1],example:p[2]};return{word:p[0],meaning:p[1]};}
+      const p=l.split(/\s+[\u2014\u2013-]\s+|:\s+/).map(x=>x.trim());return{word:p[0],meaning:p[1],example:p[2]};});
+    const n=addCards(lines);ses.msg=n?"Added "+n+" word"+(n===1?"":"s")+".":"Nothing parseable found.";render();
+  }
+  else if(a==="del"){deleteCard(b.dataset.id);}
+  else if(a==="export"){exportJSON();}
+  else if(a==="import"){fileInput.click();}
+  else if(a==="reset"){if(confirm("Reset the deck to the starter list? This erases your current words and progress.")){state.cards=SEED_WORDS.map(makeCard);state.dailyNew={date:todayKey(),count:0};state.addedKeys=[];save();ses.view="home";render();}}
+});
+app.addEventListener("input",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  if(b.dataset.act==="set-retention"){state.settings.retention=parseFloat(b.value);save();b.parentNode.querySelector(".set-v").textContent=Math.round(state.settings.retention*100)+"%";}
+  else if(b.id==="f-search"){ses.q=b.value;const list=viewManage();/* re-render only main */paint(header()+list);const inp=document.getElementById("f-search");if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}}
+});
+app.addEventListener("change",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  if(b.dataset.act==="set-new"){state.settings.newPerDay=Math.max(1,parseInt(b.value||"1",10));save();}
+});
+fileInput.addEventListener("change",e=>{if(e.target.files[0])importJSON(e.target.files[0]);e.target.value="";});
+document.addEventListener("keydown",e=>{
+  if(ses.view!=="review")return;
+  if(!ses.revealed){if(e.key==="Enter"){e.preventDefault();revealAnswer();}return;} /* let letters/space type into the answer box */
+  const it=currentItem();
+  if(it&&it.dir==="rev"){if(e.key==="Enter"||e.key===" "){e.preventDefault();gradeReverse();}return;} /* productive: auto-graded, any continue key */
+  if(e.key==="Enter"||e.key===" "){e.preventDefault();gradeCurrent(1);} /* receptive: Enter/space = missed */
+  else if(e.key==="1"){e.preventDefault();gradeCurrent(3);} /* 1 = got it */
+});
+function val(id){const el=document.getElementById(id);return el?el.value:"";}
+
+render();
+</script>
+</body>
+</html>
