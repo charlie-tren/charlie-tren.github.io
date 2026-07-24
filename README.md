@@ -12,7 +12,7 @@ Personal hub - a single landing page linking to my projects, built to attach to 
 |---|---|---|
 | One Story | Live | https://the-one-story.github.io/ |
 | Crowdwise | Live | https://crowdwise-live.vercel.app |
-| Chronoscape | In progress | https://github.com/charlie-tren/chronoscape |
+| Chronoscape | In progress | https://chronoscape.streamlit.app/ |
 
 ## Updating
 
