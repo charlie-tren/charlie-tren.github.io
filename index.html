@@ -86,6 +86,16 @@
 
   .foot { margin-top: 4rem; color: var(--faint); font: 400 14px/1.6 ui-sans-serif, system-ui, sans-serif; }
 
+  /* also-built: compact, non-clickable overview entries */
+  .also-label { font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 4.5rem 0 .7rem; }
+  .also-intro { color: var(--soft); font-size: .98rem; margin: 0 0 1.4rem; max-width: 56ch; }
+  .also-item { padding: 1.25rem 0; border-top: 1px solid var(--rule); }
+  .also-item:last-of-type { border-bottom: 1px solid var(--rule); }
+  .also-head { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; margin-bottom: .4rem; }
+  .also-name { font-size: 1.28rem; letter-spacing: -.01em; }
+  .also-desc { color: var(--soft); font-size: .99rem; max-width: 62ch; margin: 0; }
+  .tag { font: 600 10.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; padding: .3rem .5rem; border-radius: 4px; white-space: nowrap; color: var(--faint); border: 1px solid var(--rule); }
+
   @media (max-width: 680px) {
     .wrap { padding-top: 1.6rem; }
     .bar { margin-bottom: 3rem; }
@@ -154,6 +164,34 @@
       <span class="go">Open it <span class="arw">→</span></span>
     </div>
   </a>
+
+  <p class="also-label">Also built</p>
+  <p class="also-intro">Internal tools and personal projects - not public, so no live links, but a fuller picture of what I build.</p>
+
+  <div class="also-item">
+    <div class="also-head"><span class="also-name">Parallax</span><span class="tag">Personal project</span></div>
+    <p class="also-desc">A systematic momentum trading system - a market screener feeding a multi-gate risk "kill-chain", position sizing, and an automated daily review. Python · Streamlit · SQLite.</p>
+  </div>
+
+  <div class="also-item">
+    <div class="also-head"><span class="also-name">All-Weather</span><span class="tag">Personal project</span></div>
+    <p class="also-desc">A risk-parity portfolio engine - target-weight allocation with automated rebalancing and a backtest harness. Python.</p>
+  </div>
+
+  <div class="also-item">
+    <div class="also-head"><span class="also-name">Vantage</span><span class="tag">Internal tool</span></div>
+    <p class="also-desc">A Bloomberg-powered market-analytics dashboard - curves, volatility and cross-asset risk signals across FX, rates and commodities.</p>
+  </div>
+
+  <div class="also-item">
+    <div class="also-head"><span class="also-name">Overlay &amp; hedging ops</span><span class="tag">Internal tool</span></div>
+    <p class="also-desc">Operational dashboards for running hedging programmes across institutional mandates - hedge ratios, mark-to-market, rollover scheduling and hedge-effectiveness monitoring.</p>
+  </div>
+
+  <div class="also-item">
+    <div class="also-head"><span class="also-name">Signal pipelines</span><span class="tag">Internal tool</span></div>
+    <p class="also-desc">Data pipelines that surface market and corporate-activity signals from public sources into a daily digest.</p>
+  </div>
 
   <p class="foot">Built and hosted by me · Sydney, Australia</p>
 </div>
