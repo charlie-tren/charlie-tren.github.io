@@ -11,7 +11,7 @@ Personal hub - a single landing page linking to my projects, built to attach to 
 | Project | Status | Link |
 |---|---|---|
 | One Story | Live | https://the-one-story.github.io/ |
-| Crowdwise | Live | https://macro-signals-web.vercel.app |
+| Crowdwise | Live | https://crowdwise-live.vercel.app |
 | Chronoscape | In progress | https://github.com/charlie-tren/chronoscape |
 
 ## Updating
