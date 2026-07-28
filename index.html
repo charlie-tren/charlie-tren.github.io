@@ -87,7 +87,7 @@
   .foot { margin-top: 4rem; color: var(--faint); font: 400 14px/1.6 ui-sans-serif, system-ui, sans-serif; }
 
   /* also-built: compact, non-clickable overview entries */
-  .also-label { font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 4.5rem 0 .7rem; }
+  .also-label { font: 600 15px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--soft); margin: 4.8rem 0 .8rem; }
   .also-intro { color: var(--soft); font-size: .98rem; margin: 0 0 1.4rem; max-width: 56ch; }
   .also-item { padding: 1.25rem 0; border-top: 1px solid var(--rule); }
   .also-item:last-of-type { border-bottom: 1px solid var(--rule); }
@@ -106,7 +106,6 @@
   .also-points { list-style: none; margin: 0 0 .75rem; padding: 0; display: grid; gap: .42rem; max-width: 64ch; }
   .also-points li { color: var(--soft); font-size: .93rem; line-height: 1.45; padding-left: 1.15rem; position: relative; }
   .also-points li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 1.5px; background: var(--accent); }
-  .also-points li b { color: var(--ink); font-weight: 600; font-size: .82rem; letter-spacing: .02em; text-transform: uppercase; margin-right: .15rem; }
   .also-tech { color: var(--faint); font: 500 11.5px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: .01em; margin: 0; }
 
   @media (max-width: 680px) {
@@ -193,11 +192,11 @@
     <div class="also-head"><span class="also-name">Parallax</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A systematic momentum/trend system for equity CFDs.</p>
     <ul class="also-points">
-      <li><b>Screeners</b> breakout, compression, pullback, near-high</li>
-      <li><b>Score + gate</b> a chart-quant score feeding a 14-gate risk "kill-chain"</li>
-      <li><b>Sizing</b> regime-aware, under correlation and concentration caps</li>
-      <li><b>Exits</b> structural trailing stops with a break-even ratchet</li>
-      <li><b>Backtest</b> point-in-time harness with cost/friction modelling; daily-review loop + decision log</li>
+      <li>Breakout, compression, pullback and near-high screeners</li>
+      <li>A chart-quant score feeding a 14-gate risk "kill-chain"</li>
+      <li>Regime-aware position sizing, capped for correlation and concentration</li>
+      <li>Structural trailing stops with a break-even ratchet on exits</li>
+      <li>A point-in-time backtest with cost and friction modelling, plus a daily-review loop and decision log</li>
     </ul>
     <p class="also-tech">Bloomberg · TradingView · Yahoo · Python · Streamlit · SQLite</p>
   </div>
@@ -206,10 +205,10 @@
     <div class="also-head"><span class="also-name">All-Weather</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A risk-parity "all-weather" portfolio allocator.</p>
     <ul class="also-points">
-      <li><b>Optimiser</b> rolling weight optimiser over a regime model</li>
-      <li><b>Signals</b> an ensemble of yield and drawdown-momentum</li>
-      <li><b>Sizing</b> against a drawdown budget, with a precomputed contribution schedule</li>
-      <li><b>Backtest</b> stats harness; CFD implementation</li>
+      <li>A rolling weight optimiser over a regime model</li>
+      <li>A signal ensemble of yield and drawdown-momentum</li>
+      <li>Sizing against a drawdown budget, with a precomputed contribution schedule</li>
+      <li>A backtest and stats harness, implemented over CFDs</li>
     </ul>
     <p class="also-tech">Python · Streamlit</p>
   </div>
@@ -218,9 +217,9 @@
     <div class="also-head"><span class="also-name">BTC Analyser</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A Bitcoin accumulation model - scores where BTC sits in its cycle and sizes contributions accordingly.</p>
     <ul class="also-points">
-      <li><b>Signals</b> MVRV-Z, Mayer multiple, Puell, realised-price ratio, 2-year MA, Fear &amp; Greed</li>
-      <li><b>Score + gate</b> blended into a composite score, gated by a risk kill-chain</li>
-      <li><b>Sizing</b> leverage- and liquidation-aware contribution sizing</li>
+      <li>On-chain and cycle signals - MVRV-Z, Mayer multiple, Puell, realised-price ratio, 2-year MA and Fear &amp; Greed</li>
+      <li>Blended into a composite score, then gated by a risk kill-chain</li>
+      <li>Leverage- and liquidation-aware contribution sizing</li>
     </ul>
     <p class="also-tech">Binance · CoinMetrics · on-chain data · Python</p>
   </div>
@@ -229,24 +228,37 @@
     <div class="also-head"><span class="also-name">Vantage</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A packaged Bloomberg-powered markets-analytics desktop app - ~20 modules.</p>
     <ul class="also-points">
-      <li><b>Rates</b> yield-curve &amp; global-rates monitors, rate futures, yield-curve-shock</li>
-      <li><b>Vol</b> implied-vol and FX-vol surfaces</li>
-      <li><b>Valuation</b> carry, historical valuation, analyst-upside, return-potential, value-momentum, pairs-trading backtester</li>
-      <li><b>Tools</b> Monte-Carlo price simulator, drawdown analyser, FX forecasts &amp; correlation, G20/macro dashboards</li>
-      <li><b>Build</b> cached Bloomberg data layer into per-module calc engines; standalone Windows app (PyInstaller) with auth/entitlements and a usage meter</li>
+      <li>Yield-curve and global-rates monitors, rate futures and yield-curve shock</li>
+      <li>Implied-vol and FX-vol surfaces</li>
+      <li>Carry, historical-valuation, analyst-upside, return-potential and value-momentum screens, plus a pairs-trading backtester</li>
+      <li>A Monte-Carlo price simulator, a drawdown analyser, FX forecasts and G20/macro dashboards</li>
+      <li>A cached Bloomberg data layer feeding per-module calc engines, packaged to a standalone Windows app (PyInstaller) with auth/entitlements and a usage meter</li>
     </ul>
     <p class="also-tech">Python · Streamlit</p>
+  </div>
+
+  <div class="also-item">
+    <div class="also-head"><span class="also-name">Lighthouse</span><span class="tag">Personal project</span></div>
+    <p class="also-lead">A personal investment decision system - part analytical workbench, part decision journal.</p>
+    <ul class="also-points">
+      <li>Screens and values a multi-asset universe - equities, macro, FX, crypto, super and CFDs - replacing an Excel workflow</li>
+      <li>Valuation lenses for DCF, fundamentals history, moat and quality, return-potential and drawdown</li>
+      <li>A buy-gate, kill-chain, sell-triggers and prohibitions govern each decision</li>
+      <li>A decision journal of theses, trades, outcomes and reviews, for backtesting the methodology behind them</li>
+      <li>Pure-Python core, a SQLite journal (alembic) with nightly backup, and a Bloomberg + Excel data layer</li>
+    </ul>
+    <p class="also-tech">Bloomberg · Python · Streamlit · SQLite</p>
   </div>
 
   <div class="also-item">
     <div class="also-head"><span class="also-name">Overlay &amp; Hedging Ops</span><span class="tag">Internal tool</span></div>
     <p class="also-lead">An operations platform for hedging programmes across institutional mandates.</p>
     <ul class="also-points">
-      <li><b>Ingest</b> position and rate data from custodian/admin feeds and monitored inboxes</li>
-      <li><b>Compute</b> daily revaluations and MTM</li>
-      <li><b>Manage</b> rollover scheduling, hedge ratios and effectiveness</li>
-      <li><b>Output</b> reports off an operations dashboard</li>
-      <li><b>Runs on</b> parsers, a calc engine, scheduled daily/EOD jobs</li>
+      <li>Ingests position and rate data from custodian/admin feeds and monitored inboxes</li>
+      <li>Computes daily revaluations and mark-to-market</li>
+      <li>Schedules rollovers and tracks hedge ratios and effectiveness</li>
+      <li>Tracks fund NAV, performance, flows, leverage and risk analytics</li>
+      <li>Reports off an operations dashboard, driven by parsers, a calc engine and scheduled daily/EOD jobs</li>
     </ul>
     <p class="also-tech">Python · Streamlit</p>
   </div>
@@ -255,10 +267,10 @@
     <div class="also-head"><span class="also-name">Signal Pipelines</span><span class="tag">Internal tool</span></div>
     <p class="also-lead">Scheduled pipelines that turn public sources into a ranked daily digest.</p>
     <ul class="also-points">
-      <li><b>Ingest</b> scrape public filings and job/ATS feeds</li>
-      <li><b>Process</b> enrich and dedupe records, incl. PDF body-fetch</li>
-      <li><b>Score</b> relevance against a configurable rule set</li>
-      <li><b>Deliver</b> a ranked daily digest to Teams</li>
+      <li>Scrapes public filings and job/ATS feeds</li>
+      <li>Enriches and dedupes records, including PDF body-fetch</li>
+      <li>Scores for relevance against a configurable rule set</li>
+      <li>Pushes a ranked daily digest to Teams</li>
     </ul>
     <p class="also-tech">Config-driven · tested · Python</p>
   </div>
