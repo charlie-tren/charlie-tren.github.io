@@ -128,11 +128,19 @@
   <nav class="links" aria-label="Elsewhere">
     <a href="https://www.linkedin.com/in/charlietrenorden/"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0-.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.76-2.05 4 0 4.74 2.63 4.74 6.05V21H19.6v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21H11.7z"/></svg><span>LinkedIn</span></a>
     <a href="https://github.com/charlie-tren"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg><span>GitHub</span></a>
-    <a href="https://thinkerings.substack.com/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Writing</span></a>
     <a href="mailto:charlie.tren@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Email</span></a>
   </nav>
 
   <p class="section-label">Projects</p>
+
+  <a class="proj" href="https://crowdwise-live.vercel.app">
+    <div class="thumb"><img src="assets/crowdwise.png" alt="Screenshot of the Crowdwise dashboard" loading="lazy" width="1280" height="800"></div>
+    <div class="meta">
+      <div class="head"><span class="name">Crowdwise</span><span class="status s-live">Live</span></div>
+      <p class="desc">Live odds on macro events - Fed decisions, inflation, recession - from real-money prediction markets like Kalshi and Polymarket.</p>
+      <span class="go">Open it <span class="arw">→</span></span>
+    </div>
+  </a>
 
   <a class="proj" href="https://the-one-story.github.io/">
     <div class="thumb"><img src="assets/one-story.png" alt="Screenshot of the One Story homepage" loading="lazy" width="1280" height="800"></div>
@@ -143,12 +151,12 @@
     </div>
   </a>
 
-  <a class="proj" href="https://crowdwise-live.vercel.app">
-    <div class="thumb"><img src="assets/crowdwise.png" alt="Screenshot of the Crowdwise dashboard" loading="lazy" width="1280" height="800"></div>
+  <a class="proj" href="https://thinkerings.substack.com/">
+    <div class="thumb"><img src="assets/thinkerings.png" alt="Screenshot of the Thinkerings blog" loading="lazy" width="1280" height="800"></div>
     <div class="meta">
-      <div class="head"><span class="name">Crowdwise</span><span class="status s-live">Live</span></div>
-      <p class="desc">Live odds on macro events - Fed decisions, inflation, recession - from real-money prediction markets like Kalshi and Polymarket.</p>
-      <span class="go">Open it <span class="arw">→</span></span>
+      <div class="head"><span class="name">Thinkerings</span><span class="status s-live">Live</span></div>
+      <p class="desc">My Substack - essays on travel, tech, and whatever tangent I'm on.</p>
+      <span class="go">Read it <span class="arw">→</span></span>
     </div>
   </a>
 
@@ -175,7 +183,7 @@
 
   <div class="also-item">
     <div class="also-head"><span class="also-name">Parallax</span><span class="tag">Personal project</span></div>
-    <p class="also-desc">A systematic momentum trading system - a market screener feeding a multi-gate risk "kill-chain", position sizing, and an automated daily review. Python · Streamlit · SQLite.</p>
+    <p class="also-desc">A systematic momentum/trend system for equity CFDs. Screeners (breakout, compression, pullback, near-high) feed a chart-quant scorer and a 14-gate risk "kill-chain"; survivors get regime-aware sizing under correlation and concentration caps, with structural trailing stops and a break-even ratchet on exits. Point-in-time backtest harness with cost and friction modelling, a daily-review loop and a decision log. Bloomberg, TradingView and Yahoo data. Python · Streamlit · SQLite.</p>
     <div class="flow" aria-label="Pipeline: screener, risk kill-chain, position sizing, daily review">
       <span class="node">Screener</span><span class="arw2">→</span>
       <span class="node">Risk kill-chain</span><span class="arw2">→</span>
@@ -186,7 +194,7 @@
 
   <div class="also-item">
     <div class="also-head"><span class="also-name">All-Weather</span><span class="tag">Personal project</span></div>
-    <p class="also-desc">A risk-parity portfolio engine - target-weight allocation with automated rebalancing and a backtest harness. Python.</p>
+    <p class="also-desc">A risk-parity "all-weather" allocator - a rolling weight optimiser over a regime model and a signal ensemble (yield, drawdown-momentum), sized against a drawdown budget, with a precomputed contribution schedule. Backtest and stats harness, CFD implementation. Python · Streamlit.</p>
     <div class="flow" aria-label="Pipeline: risk-parity allocation, auto-rebalance, backtest">
       <span class="node">Risk-parity weights</span><span class="arw2">→</span>
       <span class="node">Auto-rebalance</span><span class="arw2">→</span>
