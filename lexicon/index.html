@@ -141,9 +141,13 @@ kbd{font-family:'Hanken Grotesk',sans-serif;font-size:10px;background:var(--pape
 .set-h{font-size:13px;color:var(--ink-soft);line-height:1.5;max-width:44ch;}
 .set-c{display:flex;align-items:center;gap:14px;flex-shrink:0;}
 .set-c input[type=range]{width:130px;accent-color:var(--oxblood);}
+.set-c input[type=checkbox]{width:18px;height:18px;accent-color:var(--oxblood);cursor:pointer;}
 .set-c input[type=number]{width:74px;text-align:center;}
 .set-v{font-family:'Spectral',serif;font-size:20px;font-weight:500;min-width:46px;text-align:right;}
 .foot{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:22px;max-width:62ch;}
+.topbar{max-width:760px;margin:0 auto;padding:14px 28px 0;}
+.topbar a{font-size:13px;color:var(--ink-soft);text-decoration:none;transition:.15s;display:inline-flex;align-items:center;gap:5px;}
+.topbar a:hover{color:var(--oxblood);}
 .danger{font:inherit;font-size:13px;font-weight:600;color:var(--again);background:none;border:1px solid var(--again);padding:8px 14px;border-radius:8px;cursor:pointer;margin-top:18px;}
 .danger:hover{background:var(--again);color:var(--paper);}
 @media(max-width:560px){
@@ -334,12 +338,58 @@ const ADDITIONS=[
 {key:"log-003",word:"induction",pron:"in-DUK-shun",ipa:"/ɪnˈdʌkʃ(ə)n/",meaning:"(logic) reasoning from particular observations to a general rule or probable conclusion - the conclusion is likely, not guaranteed (cf. deduction, abduction)",example:"Every swan I've ever seen is white, so by induction all swans are white - a general rule drawn from many cases, and one a single black swan can overturn."},
 {key:"log-004",word:"deduction",pron:"dih-DUK-shun",ipa:"/dɪˈdʌkʃ(ə)n/",meaning:"(logic) reasoning from general premises to a conclusion that must be true if the premises are; a guaranteed inference (cf. induction, abduction)",example:"All men are mortal; Socrates is a man; therefore Socrates is mortal - by deduction the conclusion is forced by the premises."},
 {key:"log-005",word:"abduction",pron:"ab-DUK-shun",ipa:"/æbˈdʌkʃ(ə)n/",meaning:"(logic) inference to the best explanation - reasoning from an observation to the most plausible cause that would account for it (cf. deduction, induction); (also) the act of forcibly carrying someone off",example:"The grass is wet this morning, so by abduction the best explanation is that it rained overnight - though a sprinkler could also account for it."},
-{key:"misc-019",word:"audi alteram partem",pron:"OW-dee AL-tuh-ram PAR-tem",ipa:"/ˈaʊdiː ˈæltərəm ˈpɑːtɛm/",meaning:"(Latin/law) 'hear the other side' - the principle of natural justice that no one should be condemned unheard; both parties must have a fair chance to be heard",example:"The tribunal breached audi alteram partem by ruling against him without ever letting him respond."}
+{key:"misc-019",word:"audi alteram partem",pron:"OW-dee AL-tuh-ram PAR-tem",ipa:"/ˈaʊdiː ˈæltərəm ˈpɑːtɛm/",meaning:"(Latin/law) 'hear the other side' - the principle of natural justice that no one should be condemned unheard; both parties must have a fair chance to be heard",example:"The tribunal breached audi alteram partem by ruling against him without ever letting him respond."},
+{key:"law-001",word:"habeas corpus",pron:"HAY-bee-us KOR-pus",ipa:"/ˌheɪbiəs ˈkɔːpəs/",meaning:"(Latin/law) 'you shall have the body' - a writ requiring that a detained person be brought before a court to test whether the imprisonment is lawful",example:"His lawyers filed for habeas corpus, forcing the state to justify holding him without charge."},
+{key:"law-002",word:"force majeure",pron:"forss ma-ZHUR",ipa:"/ˌfɔːs mæˈʒɜː/",meaning:"(French/law) an unforeseeable event beyond anyone's control - war, disaster - that excuses a party from performing a contract",example:"The supplier invoked force majeure when the flood shut the factory for a month."},
+{key:"misc-020",word:"threadbare",pron:"THRED-bair",ipa:"/ˈθrɛdbɛː/",meaning:"(of fabric) worn thin so the threads show through; (fig.) feeble or unconvincing through overuse",example:"He offered the same threadbare excuse, and this time no one believed it."},
+{key:"misc-021",word:"languish",pron:"LANG-gwish",ipa:"/ˈlæŋɡwɪʃ/",meaning:"to lose vitality and grow weak or listless; to be left in a difficult or neglected state for a long time (often 'languishing')",example:"The bill languished in committee for years without ever coming to a vote."},
+{key:"misc-022",word:"provenance",pron:"PROV-uh-nunss",ipa:"/ˈprɒvənəns/",meaning:"the origin or earliest known history of something; the documented record of ownership used to establish an artwork's authenticity",example:"The painting's provenance traced it to a Venetian collection in the 1600s."},
+{key:"misc-023",word:"ouroboros",pron:"oor-uh-BOR-us",ipa:"/ˌʊərəˈbɒrəs/",meaning:"an ancient symbol of a serpent or dragon devouring its own tail, representing cyclicality, self-reference and eternal renewal",example:"The plot loops back on itself like an ouroboros, ending exactly where it began."},
+{key:"misc-024",word:"ilk",pron:"ilk",ipa:"/ɪlk/",meaning:"a type or kind, esp. of people or things regarded with mild disdain ('and others of that ilk')",example:"He had no patience for pundits and others of that ilk."},
+{key:"misc-025",word:"missive",pron:"MISS-iv",ipa:"/ˈmɪsɪv/",meaning:"a letter or written message, esp. a long, formal or official one",example:"She fired off an indignant missive to the editor the same afternoon."},
+{key:"misc-026",word:"unbridled",pron:"un-BRY-duld",ipa:"/ʌnˈbraɪdəld/",meaning:"unrestrained; uncontrolled, esp. of strong feelings or behaviour",example:"He greeted the news with unbridled enthusiasm."},
+{key:"dip-001",word:"detente",pron:"day-TONT",ipa:"/deɪˈtɒnt/",meaning:"an easing of hostility or strained relations, esp. between states (cf. rapprochement)",example:"The summit marked a cautious detente between the two old rivals."},
+{key:"misc-027",word:"draconian",pron:"druh-KOH-nee-un",ipa:"/drəˈkəʊniən/",meaning:"(of laws or measures) excessively harsh or severe",example:"The regime imposed draconian penalties for even minor offences."},
+{key:"misc-028",word:"scion",pron:"SY-un",ipa:"/ˈsaɪən/",meaning:"a descendant or young member of a notable family; (botany) a shoot or twig used for grafting",example:"A scion of a banking dynasty, he inherited both the fortune and the name."},
+{key:"misc-029",word:"debauch",pron:"dih-BAWCH",ipa:"/dɪˈbɔːtʃ/",meaning:"to corrupt morally; to indulge in sensual pleasure to excess; (n) a bout of such indulgence",example:"A weekend of debauch left them exhausted and broke."},
+{key:"misc-030",word:"doldrums",pron:"DOL-drumz",ipa:"/ˈdɒldrəmz/",meaning:"a state of stagnation, inactivity or low spirits; (nautical) an equatorial belt of calms and light winds",example:"Sales were stuck in the doldrums all through the summer."},
+{key:"misc-031",word:"holacracy",pron:"hoh-LAK-ruh-see",ipa:"/hɒˈlækrəsi/",meaning:"a system of decentralised management in which authority is distributed across self-organising teams rather than a management hierarchy",example:"The startup ran on holacracy, with no managers and roles defined by the work itself."},
+{key:"misc-032",word:"opine",pron:"oh-PYNE",ipa:"/əʊˈpaɪn/",meaning:"to state as one's opinion; to hold forth or express a view",example:"The columnist opined that the policy would backfire within a year."},
+{key:"misc-033",word:"buttress",pron:"BUT-riss",ipa:"/ˈbʌtrəs/",meaning:"(n) a projecting stone or brick support built against a wall; (v, fig.) to support, strengthen or reinforce an argument or claim",example:"Fresh evidence buttressed the prosecution's case."},
+{key:"misc-034",word:"capitulation",pron:"kuh-pit-yuh-LAY-shun",ipa:"/kəˌpɪtjʊˈleɪʃ(ə)n/",meaning:"the act of surrendering or ceasing to resist, often on agreed terms; (markets) a sharp sell-off as holders finally give up",example:"The garrison's capitulation ended the siege after ninety days."},
+{key:"misc-035",word:"manifold",pron:"MAN-ih-fohld",ipa:"/ˈmænɪfəʊld/",meaning:"(adj) many and varied; of many kinds; (n) a pipe or chamber with several openings, as in an engine",example:"The difficulties of the expedition were manifold."},
+{key:"misc-036",word:"beleaguered",pron:"bih-LEE-gurd",ipa:"/bɪˈliːɡəd/",meaning:"beset with difficulties or under sustained pressure or attack; besieged",example:"The beleaguered manager faced calls to resign after a fifth straight loss."},
+{key:"dip-002",word:"rapprochement",pron:"ra-PROSH-mon",ipa:"/ræˈprɒʃmɒ̃/",meaning:"a re-establishment of friendly relations, esp. between states after a period of hostility (cf. detente)",example:"Trade talks signalled a slow rapprochement between the former adversaries."},
+{key:"misc-037",word:"guff",pron:"guff",ipa:"/ɡʌf/",meaning:"(informal) nonsense; empty or foolish talk",example:"Don't give me that guff - just tell me what actually happened."},
+{key:"misc-038",word:"barmy",pron:"BAR-mee",ipa:"/ˈbɑːmi/",meaning:"(British informal) mad, foolish or eccentric; crazy",example:"You'd be barmy to sell now, with prices still climbing."},
+{key:"phil-005",word:"philosophical zombie",pron:"fil-uh-SOF-ih-kul ZOM-bee",ipa:"/ˌfɪləˈsɒfɪkəl ˈzɒmbi/",meaning:"(philosophy of mind) a hypothetical being physically identical to a conscious person but with no inner experience - used to probe whether consciousness is more than physical function",example:"A philosophical zombie would flinch and say 'ouch', yet feel nothing at all."},
+{key:"neuro-001",word:"hippocampus",pron:"hip-oh-KAM-pus",ipa:"/ˌhɪpəˈkæmpəs/",meaning:"a curved structure in the brain's temporal lobe central to forming new long-term memories and to spatial navigation (cf. neocortex)",example:"Damage to the hippocampus can leave someone unable to form any new memories."},
+{key:"neuro-002",word:"neocortex",pron:"NEE-oh-kor-teks",ipa:"/ˌniːəʊˈkɔːtɛks/",meaning:"the outer layer of the mammalian brain responsible for higher functions - perception, reasoning, language and conscious thought (cf. hippocampus)",example:"Complex planning and language depend on the neocortex."},
+{key:"neuro-003",word:"anterograde amnesia",pron:"AN-ter-oh-grayd am-NEE-zhuh",ipa:"/ˈæntərəʊɡreɪd æmˈniːʒə/",meaning:"loss of the ability to form NEW memories after the onset of the condition, while older memories stay intact (cf. retrograde amnesia)",example:"With anterograde amnesia he could recall his childhood but forgot each new conversation within minutes."},
+{key:"neuro-004",word:"retrograde amnesia",pron:"RET-roh-grayd am-NEE-zhuh",ipa:"/ˈrɛtrəʊɡreɪd æmˈniːʒə/",meaning:"loss of memories formed BEFORE the onset of the condition, while the ability to form new memories remains (cf. anterograde amnesia)",example:"The blow caused retrograde amnesia - she could learn new faces but had lost all memory of the accident itself."},
+{key:"misc-039",word:"indelible",pron:"in-DEL-ih-bul",ipa:"/ɪnˈdɛlɪbl/",meaning:"impossible to remove, erase or forget; making marks that cannot be washed out",example:"The trip left an indelible impression on her."},
+{key:"misc-040",word:"heterodox",pron:"HET-uh-ruh-doks",ipa:"/ˈhɛtərədɒks/",meaning:"not conforming with accepted or orthodox beliefs or standards; unorthodox (opp. orthodox)",example:"His heterodox views put him at odds with the mainstream of the profession."},
+{key:"dip-003",word:"brinkmanship",pron:"BRINK-mun-ship",ipa:"/ˈbrɪŋkmənʃɪp/",meaning:"the practice of pushing a dangerous situation to the very edge of disaster to force a favourable outcome",example:"The debt-ceiling standoff was pure brinkmanship, settled minutes before default."},
+{key:"misc-041",word:"gallows",pron:"GAL-ohz",ipa:"/ˈɡæləʊz/",meaning:"a wooden frame used for execution by hanging; (attrib.) 'gallows humour' - grim joking in the face of danger or death",example:"The condemned man was led to the gallows at dawn."},
+{key:"misc-042",word:"vicissitude",pron:"vih-SISS-ih-tyood",ipa:"/vɪˈsɪsɪtjuːd/",meaning:"a change of circumstances or fortune, esp. an unwelcome one; (usually plural) the ups and downs of life",example:"They stayed together through all the vicissitudes of a long marriage."},
+{key:"misc-043",word:"equanimity",pron:"ek-wuh-NIM-ih-tee",ipa:"/ˌɛkwəˈnɪmɪti/",meaning:"calmness and composure, esp. under strain; evenness of temper",example:"She received the diagnosis with remarkable equanimity."},
+{key:"misc-044",word:"neophyte",pron:"NEE-oh-fyte",ipa:"/ˈniːəfaɪt/",meaning:"a beginner or novice; a person newly converted to a belief or newly admitted to a group",example:"As a neophyte on the trading floor, he watched the veterans closely."},
+{key:"misc-045",word:"elocution",pron:"el-uh-KYOO-shun",ipa:"/ˌɛləˈkjuːʃ(ə)n/",meaning:"the skill of clear, correct and expressive speech, esp. formal pronunciation and delivery",example:"Elocution lessons smoothed out his accent for the stage."},
+{key:"misc-046",word:"clandestine",pron:"klan-DES-tin",ipa:"/klænˈdɛstɪn/",meaning:"kept secret or done secretively, esp. because illicit or not permitted",example:"They held clandestine meetings to plan the takeover."},
+{key:"misc-047",word:"placate",pron:"pluh-KAYT",ipa:"/pləˈkeɪt/",meaning:"to soothe or pacify someone; to make less angry or hostile (cf. conciliatory)",example:"He offered a full refund to placate the furious customer."},
+{key:"misc-048",word:"bellwether",pron:"BEL-weth-er",ipa:"/ˈbɛlwɛðə/",meaning:"a leading indicator of a trend; something that signals which way things will go (from the lead sheep that wears a bell)",example:"That swing state is a bellwether for the whole election."},
+{key:"misc-049",word:"primogeniture",pron:"pry-moh-JEN-ih-cher",ipa:"/ˌpraɪməˈdʒɛnɪtʃə/",meaning:"the right of the firstborn (esp. the eldest son) to inherit the entire estate; the state of being the firstborn",example:"Under primogeniture the title and lands passed to the eldest son alone."},
+{key:"misc-050",word:"belie",pron:"bih-LY",ipa:"/bɪˈlaɪ/",meaning:"to give a false impression of; to contradict or show to be untrue",example:"Her steady voice belied how frightened she really was."},
+{key:"misc-051",word:"corollary",pron:"kuh-ROL-uh-ree",ipa:"/kəˈrɒləri/",meaning:"a proposition that follows naturally or directly from one already proved; a direct consequence or logical result of something else",example:"Higher interest rates were a corollary of the central bank's fight against inflation."},
+{key:"misc-052",word:"flooding the zone",pron:"FLUD-ing thuh ZOHN",ipa:"/ˈflʌdɪŋ ðə ˈzəʊn/",meaning:"a strategy of overwhelming an audience with a high volume of content - often contradictory or misleading - so opponents can't respond and the truth becomes hard to discern (from 'flooding the zone with...')",example:"Rather than deny the story, they flooded the zone with a dozen competing versions until no one knew what to believe."},
+{key:"fr-003",word:"l'esprit de l'escalier",pron:"less-PREE duh less-kal-YAY",ipa:"/lɛsˌpriː də lɛskaˈljeɪ/",meaning:"(French, literally 'staircase wit') the experience of thinking of the perfect reply or retort too late - only after the moment has passed",example:"Only on the drive home, in a fit of l'esprit de l'escalier, did she think of the crushing comeback."},
+{key:"phil-006",word:"panpsychism",pron:"pan-SY-kiz-um",ipa:"/pænˈsaɪkɪzəm/",meaning:"(philosophy of mind) the view that mind or consciousness is a fundamental and ubiquitous feature of all matter - that everything, down to particles, has some form of experience",example:"Panpsychism sidesteps the hard problem of consciousness by making mind basic to reality rather than something that emerges only in brains."},
+{key:"phil-007",word:"straussian interpretation",pron:"STROW-see-un in-ter-pruh-TAY-shun",ipa:"/ˈstraʊsiən ɪnˌtɜːprɪˈteɪʃ(ə)n/",meaning:"a reading (after Leo Strauss) that seeks a hidden, esoteric meaning deliberately concealed beneath a text's surface - on the view that some writers wrote 'between the lines' to shield controversial truths from persecution",example:"On a Straussian interpretation, the essay's bland conclusion masks a far more radical argument meant for careful readers."}
 ];
 
 /* ============================ state ============================ */
 const KEY="lexicon_deck_v2", OLDKEY="lexicon_deck_v1";
-const DEF_SET={retention:0.9,newPerDay:10,maxInterval:1825};
+const DEF_SET={retention:0.9,newPerDay:10,maxInterval:1825,autoBackup:true};
 const num=(v,def)=>{const n=Number(v);return Number.isFinite(n)?n:def;};
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
@@ -421,7 +471,7 @@ function gradeCurrent(G){
   ses.done++;if(out.again)ses.again++;
   const qi=ses.queue.findIndex(it=>it.id===item.id&&it.dir===item.dir);if(qi>=0)ses.queue.splice(qi,1);
   if(out.learning)ses.queue.push({id:item.id,dir:item.dir});
-  ses.revealed=false;ses.typed="";save();render();
+  ses.revealed=false;ses.typed="";save();maybeBackup();render();
 }
 function addCards(entries){
   const toAdd=entries.filter(e=>e.word&&e.meaning).map(makeCard);
@@ -434,6 +484,9 @@ function exportJSON(){
   const url=URL.createObjectURL(blob);const a=document.createElement("a");
   a.href=url;a.download="lexicon-deck-"+todayKey()+".json";a.click();URL.revokeObjectURL(url);
 }
+/* automatic backup: once per day (on the first review), download a dated snapshot of the whole deck */
+function doBackup(){try{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="lexicon-backup-"+todayKey()+".json";a.click();URL.revokeObjectURL(url);state.backupDate=todayKey();save();return true;}catch(e){return false;}}
+function maybeBackup(){if(!state.settings.autoBackup)return;if(state.backupDate===todayKey())return;doBackup();}
 function normSub(s,fb){s=s||{};const ok=["review","relearning","learning","new","locked"];const st=ok.indexOf(s.state)>=0?s.state:fb;return{state:st,due:num(s.due,Date.now()),stability:num(s.stability,0),difficulty:num(s.difficulty,0),reps:num(s.reps,0),lapses:num(s.lapses,0),lastReview:num(s.lastReview,0),lastInterval:num(s.lastInterval,0),successes:num(s.successes,0),lastDay:typeof s.lastDay==="string"?s.lastDay:""};}
 function normCard(c,i){
   c=c||{};
@@ -559,10 +612,12 @@ function viewSettings(){
   const s=state.settings;
   return '<div class="main"><h2 class="h2">Settings</h2><div class="set">'
     +'<div class="set-row"><div><div class="set-l">Target retention</div><div class="set-h">Probability you will recall a word when it resurfaces. 90% is the FSRS efficiency sweet spot \u2014 higher means more reviews, lower means more forgetting.</div></div><div class="set-c"><input type="range" min="0.8" max="0.97" step="0.01" value="'+s.retention+'" data-act="set-retention"><span class="set-v">'+Math.round(s.retention*100)+'%</span></div></div>'
-    +'<div class="set-row"><div><div class="set-l">New cards per day</div><div class="set-h">Each word has two cards \u2014 recall the meaning, and spell the word \u2014 so this many fresh cards enter rotation each day.</div></div><div class="set-c"><input type="number" min="1" max="100" value="'+s.newPerDay+'" data-act="set-new"></div></div></div>'
+    +'<div class="set-row"><div><div class="set-l">New cards per day</div><div class="set-h">Each word has two cards \u2014 recall the meaning, and spell the word \u2014 so this many fresh cards enter rotation each day.</div></div><div class="set-c"><input type="number" min="1" max="100" value="'+s.newPerDay+'" data-act="set-new"></div></div>'
+    +'<div class="set-row"><div><div class="set-l">Automatic backup</div><div class="set-h">Once a day, the first time you review, the app saves a dated copy of your whole deck to your Downloads folder. Keep Downloads (or the file) in a synced folder like OneDrive for offsite backup. Last backup: '+(state.backupDate||'never')+'.</div></div><div class="set-c"><input type="checkbox" '+(s.autoBackup?'checked ':'')+'data-act="set-backup"><button class="mini" data-act="backup-now">Back up now</button></div></div></div>'
     +'<button class="danger" data-act="reset">Reset deck to the starter list</button>'
     +'<p class="foot">Each word is learnt in both directions \u2014 recall the meaning (receptive) and type the word (productive) \u2014 following the <b>successive relearning</b> method: a direction is finished only after '+TARGET_SUCCESS+' correct recalls on separate days, once its gap has grown past '+TARGET_GAP+' days, and a word is finished when both directions are done. Spacing is FSRS-6 (Free Spaced Repetition Scheduler), population default parameters, power-law forgetting curve, with fixed learning steps on top (Again/Hard hold short; Good graduates at 1 day, Easy at 4). Your deck lives in this browser\u2019s local storage on this machine \u2014 it persists offline. Export regularly as a backup.</p></div>';
 }
+function topLink(){return '<div class="topbar"><a href="https://charlie-tren.github.io/">← Other projects</a></div>';}
 function paint(html){var el=document.getElementById("app");el["inner"+"HTML"]=html;}
 function render(){
   let v;
@@ -571,7 +626,7 @@ function render(){
   else if(ses.view==="manage")v=viewManage();
   else if(ses.view==="settings")v=viewSettings();
   else v=viewHome();
-  paint(header()+v);
+  paint(topLink()+header()+v);
   if(ses.view==="review"&&!ses.revealed){const el=document.getElementById("f-answer");if(el)el.focus();}
 }
 
@@ -603,17 +658,19 @@ app.addEventListener("click",e=>{
   }
   else if(a==="del"){deleteCard(b.dataset.id);}
   else if(a==="export"){exportJSON();}
+  else if(a==="backup-now"){doBackup();render();}
   else if(a==="import"){fileInput.click();}
   else if(a==="reset"){if(confirm("Reset the deck to the starter list? This erases your current words and progress.")){state.cards=SEED_WORDS.map(makeCard);state.dailyNew={date:todayKey(),count:0};state.addedKeys=[];save();ses.view="home";render();}}
 });
 app.addEventListener("input",e=>{
   const b=e.target.closest("[data-act]");if(!b)return;
   if(b.dataset.act==="set-retention"){state.settings.retention=parseFloat(b.value);save();b.parentNode.querySelector(".set-v").textContent=Math.round(state.settings.retention*100)+"%";}
-  else if(b.id==="f-search"){ses.q=b.value;const list=viewManage();/* re-render only main */paint(header()+list);const inp=document.getElementById("f-search");if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}}
+  else if(b.id==="f-search"){ses.q=b.value;const list=viewManage();/* re-render only main */paint(topLink()+header()+list);const inp=document.getElementById("f-search");if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}}
 });
 app.addEventListener("change",e=>{
   const b=e.target.closest("[data-act]");if(!b)return;
   if(b.dataset.act==="set-new"){state.settings.newPerDay=Math.max(1,parseInt(b.value||"1",10));save();}
+  else if(b.dataset.act==="set-backup"){state.settings.autoBackup=!!b.checked;save();}
 });
 fileInput.addEventListener("change",e=>{if(e.target.files[0])importJSON(e.target.files[0]);e.target.value="";});
 document.addEventListener("keydown",e=>{
