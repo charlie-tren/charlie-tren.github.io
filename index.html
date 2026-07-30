@@ -87,8 +87,8 @@
   .foot { margin-top: 4rem; color: var(--faint); font: 400 14px/1.6 ui-sans-serif, system-ui, sans-serif; }
 
   /* also-built: compact, non-clickable overview entries */
-  .also-label { font: 600 15px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--soft); margin: 4.8rem 0 1.4rem; }
   .also-item { padding: 1.25rem 0; border-top: 1px solid var(--rule); }
+  .also-item:first-of-type { border-top: none; }
   .also-item:last-of-type { border-bottom: 1px solid var(--rule); }
   .also-head { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; margin-bottom: .4rem; }
   .also-name { font-size: 1.28rem; letter-spacing: -.01em; }
@@ -192,8 +192,6 @@
       <span class="go">Open it <span class="arw">→</span></span>
     </div>
   </a>
-
-  <p class="also-label">Also built</p>
 
   <div class="also-item">
     <div class="also-head"><span class="also-name">Lighthouse</span><span class="tag">Personal project</span></div>
