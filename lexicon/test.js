@@ -89,6 +89,15 @@ const suite = `
   state.settings.autoBackup=false; state.backupDate=""; maybeBackup(); A(state.backupDate==="", "maybeBackup skips when disabled");
   state.settings.autoBackup=true;
 
+  // ---- storage persistence request is safe when unsupported ----
+  A(typeof requestPersistence==="function", "requestPersistence defined");
+  var threw=false; try{requestPersistence();}catch(e){threw=true;}
+  A(threw===false, "requestPersistence never throws (no navigator.storage)");
+
+  // ---- hub link lives in the toolbar ----
+  A(header().indexOf("Other Projects")>=0 && header().indexOf("charlie-tren.github.io")>=0, "hub link in nav");
+  A(header().indexOf("Other Projects")>header().indexOf("Settings"), "hub link sits after Settings");
+
   // ---- STABILITY FUZZ: 3000 random reviews, assert invariants never break ----
   var seed=987654321; function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;}
   var VALID={learning:1,relearning:1,review:1}; var bad=0, t0=1e12;
