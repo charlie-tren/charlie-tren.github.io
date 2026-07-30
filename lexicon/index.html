@@ -25,7 +25,9 @@ body{
 .head{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid var(--line);max-width:760px;margin:0 auto;}
 .brand{font-family:'Spectral',serif;font-size:21px;font-weight:600;cursor:pointer;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
 .mark{color:var(--oxblood);font-size:22px;}
-.nav{display:flex;gap:4px;}
+.nav{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
+.navlink{text-decoration:none;opacity:.75;}
+.navlink:hover{opacity:1;}
 .navbtn{background:none;border:none;font:inherit;font-size:14px;color:var(--ink-soft);padding:6px 11px;border-radius:7px;cursor:pointer;transition:.15s;font-weight:500;}
 .navbtn:hover{color:var(--ink);background:var(--paper2);}
 .navbtn.on{color:var(--oxblood);background:var(--paper2);}
@@ -145,9 +147,6 @@ kbd{font-family:'Hanken Grotesk',sans-serif;font-size:10px;background:var(--pape
 .set-c input[type=number]{width:74px;text-align:center;}
 .set-v{font-family:'Spectral',serif;font-size:20px;font-weight:500;min-width:46px;text-align:right;}
 .foot{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:22px;max-width:62ch;}
-.topbar{max-width:760px;margin:0 auto;padding:14px 28px 0;}
-.topbar a{font-size:13px;color:var(--ink-soft);text-decoration:none;transition:.15s;display:inline-flex;align-items:center;gap:5px;}
-.topbar a:hover{color:var(--oxblood);}
 .danger{font:inherit;font-size:13px;font-weight:600;color:var(--again);background:none;border:1px solid var(--again);padding:8px 14px;border-radius:8px;cursor:pointer;margin-top:18px;}
 .danger:hover{background:var(--again);color:var(--paper);}
 @media(max-width:560px){
@@ -505,7 +504,8 @@ function importJSON(file){
 function header(){
   const n=v=>'<button class="navbtn'+(ses.view===v?' on':'')+'" data-act="nav" data-view="'+v+'">';
   return '<div class="head"><div class="brand" data-act="nav" data-view="home"><span class="mark">\u00B6</span> Lexicon</div>'
-    +'<div class="nav">'+n("home")+'Today</button>'+n("add")+'Add</button>'+n("manage")+'Words</button>'+n("settings")+'Settings</button></div></div>';
+    +'<div class="nav">'+n("home")+'Today</button>'+n("add")+'Add</button>'+n("manage")+'Words</button>'+n("settings")+'Settings</button>'
+    +'<a class="navbtn navlink" href="https://charlie-tren.github.io/">Other Projects ↗</a></div></div>';
 }
 function viewHome(){
   const now=Date.now();
@@ -617,7 +617,8 @@ function viewSettings(){
     +'<button class="danger" data-act="reset">Reset deck to the starter list</button>'
     +'<p class="foot">Each word is learnt in both directions \u2014 recall the meaning (receptive) and type the word (productive) \u2014 following the <b>successive relearning</b> method: a direction is finished only after '+TARGET_SUCCESS+' correct recalls on separate days, once its gap has grown past '+TARGET_GAP+' days, and a word is finished when both directions are done. Spacing is FSRS-6 (Free Spaced Repetition Scheduler), population default parameters, power-law forgetting curve, with fixed learning steps on top (Again/Hard hold short; Good graduates at 1 day, Easy at 4). Your deck lives in this browser\u2019s local storage on this machine \u2014 it persists offline. Export regularly as a backup.</p></div>';
 }
-function topLink(){return '<div class="topbar"><a href="https://charlie-tren.github.io/">← Other projects</a></div>';}
+/* ask the browser to keep our localStorage out of its eviction pool (best effort, no prompt in Chrome) */
+function requestPersistence(){try{if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().then(function(){},function(){});}}catch(e){}}
 function paint(html){var el=document.getElementById("app");el["inner"+"HTML"]=html;}
 function render(){
   let v;
@@ -626,7 +627,7 @@ function render(){
   else if(ses.view==="manage")v=viewManage();
   else if(ses.view==="settings")v=viewSettings();
   else v=viewHome();
-  paint(topLink()+header()+v);
+  paint(header()+v);
   if(ses.view==="review"&&!ses.revealed){const el=document.getElementById("f-answer");if(el)el.focus();}
 }
 
@@ -665,7 +666,7 @@ app.addEventListener("click",e=>{
 app.addEventListener("input",e=>{
   const b=e.target.closest("[data-act]");if(!b)return;
   if(b.dataset.act==="set-retention"){state.settings.retention=parseFloat(b.value);save();b.parentNode.querySelector(".set-v").textContent=Math.round(state.settings.retention*100)+"%";}
-  else if(b.id==="f-search"){ses.q=b.value;const list=viewManage();/* re-render only main */paint(topLink()+header()+list);const inp=document.getElementById("f-search");if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}}
+  else if(b.id==="f-search"){ses.q=b.value;const list=viewManage();/* re-render only main */paint(header()+list);const inp=document.getElementById("f-search");if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}}
 });
 app.addEventListener("change",e=>{
   const b=e.target.closest("[data-act]");if(!b)return;
@@ -683,6 +684,7 @@ document.addEventListener("keydown",e=>{
 });
 function val(id){const el=document.getElementById(id);return el?el.value:"";}
 
+requestPersistence();
 render();
 </script>
 </body>
