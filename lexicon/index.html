@@ -25,9 +25,8 @@ body{
 .head{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid var(--line);max-width:760px;margin:0 auto;}
 .brand{font-family:'Spectral',serif;font-size:21px;font-weight:600;cursor:pointer;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
 .mark{color:var(--oxblood);font-size:22px;}
-.nav{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
-.navlink{text-decoration:none;opacity:.75;}
-.navlink:hover{opacity:1;}
+.nav{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;align-items:center;}
+.navlink{text-decoration:none;display:inline-flex;align-items:center;}
 .navbtn{background:none;border:none;font:inherit;font-size:14px;color:var(--ink-soft);padding:6px 11px;border-radius:7px;cursor:pointer;transition:.15s;font-weight:500;}
 .navbtn:hover{color:var(--ink);background:var(--paper2);}
 .navbtn.on{color:var(--oxblood);background:var(--paper2);}
@@ -505,7 +504,7 @@ function header(){
   const n=v=>'<button class="navbtn'+(ses.view===v?' on':'')+'" data-act="nav" data-view="'+v+'">';
   return '<div class="head"><div class="brand" data-act="nav" data-view="home"><span class="mark">\u00B6</span> Lexicon</div>'
     +'<div class="nav">'+n("home")+'Today</button>'+n("add")+'Add</button>'+n("manage")+'Words</button>'+n("settings")+'Settings</button>'
-    +'<a class="navbtn navlink" href="https://charlie-tren.github.io/">Other Projects ↗</a></div></div>';
+    +'<a class="navbtn navlink" href="https://charlie-tren.github.io/">Other Projects</a></div></div>';
 }
 function viewHome(){
   const now=Date.now();
