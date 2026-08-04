@@ -32,13 +32,15 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
       so the per-project CNAME value can't be read - use the CLI. (3) Setting a custom
       domain on a Pages repo makes the old `.github.io` redirect IMMEDIATELY, so DNS must
       exist first or a live site goes dark.
-- [ ] **Brevo newsletter template still links to the old host** - One Story's canonical is
-      now `one-story.charlietrenorden.com` (repo commit fb8241a) but the Brevo template
-      and any saved campaign content still point at `the-one-story.github.io`. It
-      redirects, so nothing is broken. Charlie's to change - Brevo UI, not a repo.
 - [ ] **Regenerate One Story's `index.html`** - `render.py` now emits the new og:url /
       og:image, but the committed `index.html` keeps the old ones until the daily 20:00 UTC
       cron rebuilds. Self-resolving; just don't be surprised by the diff.
+- [ ] **Lexicon lives in two places** - private `charlie-tren/lexicon` repo vs the copy
+      served from this repo at `/lexicon`. Verified 04/08/2026: the hub copy is AHEAD
+      (index.html 83,884 vs lexicon.html 83,748; test.js 7,479 vs 6,894; TODO 4,041 vs
+      1,500) and the private repo has not been pushed since 30/07. Recommendation: archive
+      the private repo (reversible, keeps history) and treat the hub copy as canonical.
+      `gh repo archive charlie-tren/lexicon`.
 - [ ] **Bump Chronoscape pill** from "In progress" to "Live" once it covers more than
       Iceland + Taiwan.
 - [x] ~~**Favicon**~~ - done: "aperture" mark (slate broken ring + centre dot), inline SVG.
@@ -60,14 +62,6 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
 - [x] ~~**T8**~~ - CLOSED 30/07/2026, out of scope. Earlier note said "not found on disk";
       that was wrong - it exists, but it's internal Rochford client work rather than a
       personal project, so it isn't hub material. No further action.
-- [ ] **LinkedIn caption for the site** - Charlie asked 30/07/2026 what to put on the
-      LinkedIn media item. His draft ("Equity Research & Markets Tooling ... Lighthouse,
-      Parallax and Vantage") only names the three markets tools, but the site LEADS with
-      Crowdwise / One Story / Thinkerings / Lexicon / Chronoscape, so the caption
-      undersells the breadth a visitor actually lands on. Two drafts were offered (a
-      breadth-matching one and a markets-tilted one); he hasn't picked. Decide, then keep
-      the caption and the hero in sync if either changes.
-      URL to use is now **https://charlietrenorden.com** (updated 04/08/2026).
 - [ ] **Optional:** a dedicated OG social-share image (currently `og:image` reuses the
       One Story screenshot).
 - [ ] **Lexicon** source is now public in this repo (`/lexicon`). If it ever gains an API
