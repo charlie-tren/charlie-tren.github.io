@@ -95,7 +95,7 @@ const suite = `
   A(threw===false, "requestPersistence never throws (no navigator.storage)");
 
   // ---- hub link lives in the toolbar ----
-  A(header().indexOf("Other Projects")>=0 && header().indexOf("charlie-tren.github.io")>=0, "hub link in nav");
+  A(header().indexOf("Other Projects")>=0 && header().indexOf("charlietrenorden.com")>=0, "hub link in nav");
   A(header().indexOf("Other Projects")>header().indexOf("Settings"), "hub link sits after Settings");
 
   // ---- STABILITY FUZZ: 3000 random reviews, assert invariants never break ----

@@ -4,7 +4,8 @@ Personal hub - a single landing page linking to my projects, built to attach to 
 
 - Static one-pager, no build step. Just `index.html` + `assets/`.
 - Dark editorial theme (slate accent), follows the viewer's OS light/dark preference with a manual toggle.
-- Hosted on GitHub Pages at https://charlie-tren.github.io/ (custom domain TBD).
+- Hosted on GitHub Pages at https://charlietrenorden.com/ (custom domain, registered 04/08/2026;
+  the old https://charlie-tren.github.io/ still redirects there).
 
 ## Projects linked
 
@@ -12,7 +13,7 @@ Personal hub - a single landing page linking to my projects, built to attach to 
 |---|---|---|
 | One Story | Live | https://the-one-story.github.io/ |
 | Crowdwise | Live | https://crowdwise-live.vercel.app |
-| Lexicon | Live | https://charlie-tren.github.io/lexicon/ (self-hosted in this repo, `/lexicon`) |
+| Lexicon | Live | https://charlietrenorden.com/lexicon/ (self-hosted in this repo, `/lexicon`) |
 | Chronoscape | In progress | https://chronoscape.streamlit.app/ |
 
 ## "Also built" (overview only, no links)
