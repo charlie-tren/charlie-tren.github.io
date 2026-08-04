@@ -20,6 +20,25 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
       cert. NOT done deliberately: the cards in `index.html` still link straight to each
       destination rather than via `/<slug>`, to avoid an extra hop on the primary
       navigation. Flip them if you'd rather every click go through the hub domain.
+- [x] ~~**Subdomains for every project**~~ - DONE 04/08/2026. `crowdwise.` and `dcf.`
+      (Vercel), `one-story.` and `aftertimes.` (GitHub Pages) all live with certs, and the
+      hub cards + short-URL redirects now route through them. Chronoscape and Thinkerings
+      stay redirect-only: Streamlit Community Cloud has no documented custom-domain
+      support and Substack charges US$50.
+      GOTCHAS: (1) Vercel's CLI recommends `A 76.76.21.21` for a subdomain but their docs
+      say subdomains want a CNAME - the A record routes traffic fine, yet the certificate
+      never provisioned on its own. `vercel certs issue <host>` fixed it in seconds; don't
+      wait it out. (2) The Vercel dashboard is unreachable behind a 2FA setup interstitial,
+      so the per-project CNAME value can't be read - use the CLI. (3) Setting a custom
+      domain on a Pages repo makes the old `.github.io` redirect IMMEDIATELY, so DNS must
+      exist first or a live site goes dark.
+- [ ] **Brevo newsletter template still links to the old host** - One Story's canonical is
+      now `one-story.charlietrenorden.com` (repo commit fb8241a) but the Brevo template
+      and any saved campaign content still point at `the-one-story.github.io`. It
+      redirects, so nothing is broken. Charlie's to change - Brevo UI, not a repo.
+- [ ] **Regenerate One Story's `index.html`** - `render.py` now emits the new og:url /
+      og:image, but the committed `index.html` keeps the old ones until the daily 20:00 UTC
+      cron rebuilds. Self-resolving; just don't be surprised by the diff.
 - [ ] **Bump Chronoscape pill** from "In progress" to "Live" once it covers more than
       Iceland + Taiwan.
 - [x] ~~**Favicon**~~ - done: "aperture" mark (slate broken ring + centre dot), inline SVG.
