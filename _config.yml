@@ -1,0 +1,10 @@
+# Keep repo-only files out of the published site.
+# GitHub Pages serves every file in the repo by default, so without this
+# TODO.md and README.md are fetchable at charlietrenorden.com/TODO.md.
+# They are still public in the repo itself - this is defence in depth,
+# not secrecy. Never commit anything here you wouldn't publish.
+exclude:
+  - README.md
+  - TODO.md
+  - lexicon/TODO.md
+  - lexicon/test.js
