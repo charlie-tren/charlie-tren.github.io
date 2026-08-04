@@ -11,8 +11,8 @@ Personal hub - a single landing page linking to my projects, built to attach to 
 
 | Project | Status | Link |
 |---|---|---|
-| One Story | Live | https://the-one-story.github.io/ |
-| Crowdwise | Live | https://crowdwise-live.vercel.app |
+| One Story | Live | https://one-story.charlietrenorden.com/ |
+| Crowdwise | Live | https://crowdwise.charlietrenorden.com/ |
 | Lexicon | Live | https://charlietrenorden.com/lexicon/ (self-hosted in this repo, `/lexicon`) |
 | Chronoscape | In progress | https://chronoscape.streamlit.app/ |
 
@@ -24,16 +24,20 @@ GitHub Pages can only host one repo, so a real subpath isn't possible for the ot
 
 | Path | Goes to |
 |---|---|
-| `/crowdwise` | https://crowdwise-live.vercel.app/ |
-| `/dcf-studio` | https://dcf-studio.vercel.app/ |
-| `/one-story` | https://the-one-story.github.io/ |
-| `/the-aftertimes` | https://the-aftertimes.github.io/ |
+| `/crowdwise` | https://crowdwise.charlietrenorden.com/ |
+| `/dcf-studio` | https://dcf.charlietrenorden.com/ |
+| `/one-story` | https://one-story.charlietrenorden.com/ |
+| `/the-aftertimes` | https://aftertimes.charlietrenorden.com/ |
 | `/thinkerings` | https://thinkerings.substack.com/ |
 | `/chronoscape` | https://chronoscape.streamlit.app/ |
 | `/lexicon` | served here for real, not a redirect |
 
 If a target's URL changes, edit the slug's `index.html` - the URL appears three times
-in it (canonical, meta-refresh, script).
+in it four times (canonical, meta-refresh, the visible link, and the script).
+
+Subdomains (added 04/08/2026): crowdwise / dcf -> Vercel via `A 76.76.21.21`;
+one-story / aftertimes -> GitHub Pages via CNAME. Vercel needed
+`vercel certs issue <host>` - the cert did not provision on its own.
 
 ## "Also built" (overview only, no links)
 
