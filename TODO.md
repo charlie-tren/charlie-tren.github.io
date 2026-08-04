@@ -35,12 +35,13 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
 - [ ] **Regenerate One Story's `index.html`** - `render.py` now emits the new og:url /
       og:image, but the committed `index.html` keeps the old ones until the daily 20:00 UTC
       cron rebuilds. Self-resolving; just don't be surprised by the diff.
-- [ ] **Lexicon lives in two places** - private `charlie-tren/lexicon` repo vs the copy
-      served from this repo at `/lexicon`. Verified 04/08/2026: the hub copy is AHEAD
-      (index.html 83,884 vs lexicon.html 83,748; test.js 7,479 vs 6,894; TODO 4,041 vs
-      1,500) and the private repo has not been pushed since 30/07. Recommendation: archive
-      the private repo (reversible, keeps history) and treat the hub copy as canonical.
-      `gh repo archive charlie-tren/lexicon`.
+- [x] ~~**Lexicon lives in two places**~~ - CLOSED 04/08/2026, already resolved. The
+      private `charlie-tren/lexicon` repo was ALREADY archived before this was raised;
+      `gh repo archive` reported it as a no-op. The hub copy at `/lexicon` is canonical
+      and is the one being served (and is ahead: index.html 83,884 vs 83,748, test.js
+      7,479 vs 6,894). Nothing to do.
+      Why it was raised at all: the `gh repo list` I audited with silently fell back to a
+      query WITHOUT `isArchived`, so archived repos looked live. Ask for the field.
 - [ ] **Bump Chronoscape pill** from "In progress" to "Live" once it covers more than
       Iceland + Taiwan.
 - [x] ~~**Favicon**~~ - done: "aperture" mark (slate broken ring + centre dot), inline SVG.
