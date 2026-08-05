@@ -43,12 +43,17 @@ Four gotchas if you edit it.
    ```
    msedge.exe --headless=new --disable-gpu --hide-scrollbars \
      --force-device-scale-factor=1.5 --screenshot="assets/beyond-small-talk.png" \
-     --window-size=1280,800 "http://127.0.0.1:8899/beyond-small-talk/_shot.html"
+     --window-size=860,538 "http://127.0.0.1:8899/beyond-small-talk/_shot.html"
    ```
 
    Pinning the box is necessary because the browser window won't give a viewport taller
    than 667. Do it this way rather than via devtools screenshots - those produced a frame
    with the top bar duplicated and the footer missing, then hung outright.
+
+   Shoot at 860x538, NOT at 1280x800. The page is mostly deliberate empty space, so a
+   wide shot shrinks to an empty rectangle in a 320px card. The narrower frame keeps the
+   16:10 ratio while making the type fill it. Use a question that wraps to three lines
+   for the same reason - a one-liner leaves a hole where `.qwrap` reserves its height.
 
 ## Short URLs
 

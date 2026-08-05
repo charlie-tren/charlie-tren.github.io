@@ -107,6 +107,17 @@ Priority order as listed.
       journal made public and stripped back to one table.
       Note the real cost: this publishes the misses too. That is the point, and it is
       also the reason to be sure before starting.
+      INTEGRATE WITH LIGHTHOUSE rather than building a second store. Lighthouse already
+      holds the theses, the falsifiers and the outcomes in its journal, so the ledger
+      should be a published VIEW of that, not a parallel one - a thesis gets written once,
+      in Lighthouse, and the page renders whatever is flagged public. Anything else means
+      double entry, and double entry means the public copy quietly drifts from the real
+      one, which destroys the whole point of a scorecard.
+      Decide when building: (a) what marks an entry public - a column in the journal, or
+      an explicit export step; (b) how it publishes, given the journal is a gitignored
+      SQLite DB and this site is static, so it needs an export to JSON committed here
+      rather than a live DB read; (c) what stays private - position sizes and P&L almost
+      certainly, since the hit-rate and the calibration curve are the point, not the book.
 
 - [ ] **Promote Lighthouse and Parallax out of the text-only block.** Structural, and
       arguably higher return than any new project above. The five most substantial things
