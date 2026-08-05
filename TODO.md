@@ -65,5 +65,53 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
       personal project, so it isn't hub material. No further action.
 - [ ] **Optional:** a dedicated OG social-share image (currently `og:image` reuses the
       One Story screenshot).
+
+## New project ideas (added 05/08/2026)
+
+Three new builds for the hub, all aimed at the same gap: every project that demonstrates
+long/short equity judgement currently sits in the text-only "personal project" block, so
+it is unclickable and unverifiable to a visitor. These are the clickable versions.
+Priority order as listed.
+
+- [ ] **Short Book** - the missing half of the public work. Everything on the site today
+      is constructive; nothing shows the other side of the trade. A page surfacing names
+      that screen for deteriorating quality:
+      - Accruals diverging from cash flow
+      - Receivables / inventory growing faster than revenue
+      - Rising share count against falling ROIC
+      - Capitalised-cost creep
+      - Margin peak coinciding with multiple peak
+
+      Each name gets a card stating the specific flag that fired, plus a chart, framed
+      explicitly as "this is a flag, not a thesis". Novel because near enough every
+      retail-facing screener is long-only. Reuses Parallax's screener plumbing and
+      Lighthouse's kill-chain framing. Highest-signal artefact on this list for a
+      multi-manager pod interview.
+
+- [ ] **Consensus Drift** - track sell-side estimate movement over time and plot the
+      REVISION PATH, not the level. Revisions trend; the interesting picture is where
+      price has moved and estimates have not, or the reverse. Core visual is a scatter of
+      3-month price change against 3-month FY2 EPS revision with the four quadrants
+      labelled, refreshed weekly.
+      BLOCKER TO SOLVE FIRST: data. Bloomberg is work-licensed and cannot feed a public
+      site. Either find a free estimates source or hand-maintain a narrow universe of
+      ~40 names. Decide this before writing any code - it determines whether the project
+      is viable at all.
+
+- [ ] **Thesis Ledger** - a public, timestamped decision journal. Post a thesis with the
+      falsifier stated UP FRONT ("wrong if gross margin has not recovered above X by
+      Q3"), then the page marks each one resolved / broken / pending against price and
+      the stated trigger, and shows a running hit-rate and calibration curve.
+      Genuinely novel: plenty of people publish calls, nobody publishes their own
+      scorecard with the invalidation written before the outcome. It is Lighthouse's
+      journal made public and stripped back to one table.
+      Note the real cost: this publishes the misses too. That is the point, and it is
+      also the reason to be sure before starting.
+
+- [ ] **Promote Lighthouse and Parallax out of the text-only block.** Structural, and
+      arguably higher return than any new project above. The five most substantial things
+      built are currently the only ones a visitor cannot see. A read-only demo on
+      synthetic or lagged data would do it; a static walkthrough page with real
+      screenshots would do it more cheaply.
 - [ ] **Lexicon** source is now public in this repo (`/lexicon`). If it ever gains an API
       call, key, or a personal default deck, rework how it's hosted before pushing.
