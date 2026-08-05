@@ -115,3 +115,30 @@ Priority order as listed.
       screenshots would do it more cheaply.
 - [ ] **Lexicon** source is now public in this repo (`/lexicon`). If it ever gains an API
       call, key, or a personal default deck, rework how it's hosted before pushing.
+
+## Non-finance project ideas (added 05/08/2026)
+
+The site is a personal site, not a finance portfolio. These fit the quiet single-purpose
+register of Lexicon / Fathom / One Story rather than the markets work.
+
+- [ ] **Loop** - give it a start point and a distance, and it generates a running or
+      walking route that is a genuine LOOP of that length, not an out-and-back.
+      Real gap: most route tools make you draw the route yourself, and the ones that
+      auto-generate tend to produce a there-and-back-again.
+      - Input: a dropped pin (or geolocation) plus a target distance
+      - Output: a closed circuit within a tolerance of that distance, drawn on a map
+      - Nice-to-haves once v1 works: prefer parks and paths over arterial roads, avoid
+        repeating the same street, an elevation profile, and a GPX export
+      Data is OpenStreetMap. The interesting part is the routing problem - finding a
+      closed circuit of a target length is not a shortest-path problem, so expect to
+      generate candidate loops and score them rather than solve it directly.
+
+- [ ] **Telephone** - paste a passage, watch it degrade as it is translated through a
+      chain of languages and back to English, with the text shown at every hop so the
+      drift is visible as it happens.
+      A toy, and deliberately so. Should be an afternoon, not a project.
+      - Show each intermediate language and its output, not just the final mangled text
+      - Let the user set the number of hops
+      - Some measure of how far it has drifted from the original would make it land
+      Decide the translation source before starting - this is the only real dependency,
+      and a free/keyless one keeps it hostable alongside everything else.
