@@ -142,3 +142,18 @@ register of Lexicon / Fathom / One Story rather than the markets work.
       - Some measure of how far it has drifted from the original would make it land
       Decide the translation source before starting - this is the only real dependency,
       and a free/keyless one keeps it hostable alongside everything else.
+
+- [ ] **Oldest Near You** - drop a pin, get everything around you ranked by age. The
+      oldest building, wall, tree, road, pub. Natural sibling to Chronoscape.
+      Checked 05/08/2026: per-city building-age maps exist and OSM's `start_date` powers
+      them, but no "rank what is near me by age" tool turned up. The idea survives.
+      DO THIS FIRST, before any code: probe how much `start_date` / `building:age` data
+      OSM actually holds for Sydney. Coverage is known to be thin outside a handful of
+      well-mapped cities (the Netherlands, Lviv). If Sydney is sparse, the project dies
+      there and that is fine - better to find out in an Overpass query than after a
+      week's work.
+      Shape once the data checks out:
+      - Overpass query in a radius around the pin, filtered to anything carrying a date
+      - Ranked list, oldest first, each entry with what it is and how it is dated
+      - Show the dating confidence - "1857" and "19th century" are not the same claim
+      - Map alongside the list, since the spatial pattern is half the interest
