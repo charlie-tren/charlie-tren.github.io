@@ -46,9 +46,13 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
       Iceland + Taiwan.
 - [x] ~~**Favicon**~~ - done: "aperture" mark (slate broken ring + centre dot), inline SVG.
 - [ ] **Refresh screenshots** in `assets/` as the linked sites change (Crowdwise,
-      Chronoscape, Lexicon, One Story). Re-shoot via chrome-devtools `take_screenshot`
-      at ~1280 wide (aspect <1.6 so the 16:10 card crops from the top), filePath into the
-      workspace root, then move.
+      Chronoscape, Lexicon, One Story). Shoot at 16:10 (the card ratio) so nothing crops.
+      CORRECTED 05/08/2026 - the old instruction here said to use chrome-devtools
+      `take_screenshot`, and that method failed three ways in one sitting: a frame with
+      the top bar duplicated and the footer missing, then a viewport capture at the wrong
+      aspect with the footer cut, then the tool hung outright. Use headless Edge instead -
+      it is deterministic and repeatable. Full command in the README under Beyond Small
+      Talk. (The old note also said "aspect <1.6", which reads backwards: 16:10 IS 1.6.)
 - [ ] **Essays & books section** (asked 30/07/2026, scope settled 04/08/2026). A section
       where Charlie writes short reviews of what he's reading at the moment - essays and
       books by other people, with his own take on each. This resolves the earlier open
@@ -63,8 +67,16 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
 - [x] ~~**T8**~~ - CLOSED 30/07/2026, out of scope. Earlier note said "not found on disk";
       that was wrong - it exists, but it's internal Rochford client work rather than a
       personal project, so it isn't hub material. No further action.
-- [ ] **Optional:** a dedicated OG social-share image (currently `og:image` reuses the
-      One Story screenshot).
+- [x] ~~**Optional:** a dedicated OG social-share image~~ - DONE, already shipped in
+      commits #1 and #2 (`assets/og-card.png`, rendered natively at 2x). Verified
+      05/08/2026: the file exists and `index.html` points `og:image` at it. The item was
+      just never ticked, and its parenthetical "currently reuses the One Story screenshot"
+      had been wrong for two commits.
+- [x] ~~**Beyond Small Talk**~~ - DONE 05/08/2026, commits 0ddb96c + 3654d4a. A
+      random-question page at `/beyond-small-talk`, genuinely hosted here like `/lexicon`,
+      with a card in Projects. 56 questions over a shuffle bag. Named by Charlie after
+      "Fathom" was rejected; see the README for the two layout gotchas and the re-shoot
+      command.
 
 ## New project ideas (added 05/08/2026)
 
@@ -130,7 +142,7 @@ Priority order as listed.
 ## Non-finance project ideas (added 05/08/2026)
 
 The site is a personal site, not a finance portfolio. These fit the quiet single-purpose
-register of Lexicon / Fathom / One Story rather than the markets work.
+register of Lexicon / Beyond Small Talk / One Story rather than the markets work.
 
 - [ ] **Loop** - give it a start point and a distance, and it generates a running or
       walking route that is a genuine LOOP of that length, not an out-and-back.
