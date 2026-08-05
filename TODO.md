@@ -42,17 +42,31 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
       7,479 vs 6,894). Nothing to do.
       Why it was raised at all: the `gh repo list` I audited with silently fell back to a
       query WITHOUT `isArchived`, so archived repos looked live. Ask for the field.
+- [ ] **Chronoscape sleeps on Streamlit Community Cloud** (found 06/08/2026). The app had
+      idled out - visitors clicking the card get Streamlit's "Zzzz - this app has gone to
+      sleep... Would you like to wake it back up?" screen, not the app. It wakes on a click,
+      but that is a poor landing from a portfolio page. NOTE: my earlier link check passed it
+      because it returned HTTP 303, which I read as a normal redirect - status codes do not
+      prove a page is healthy, only fetching the body does.
+      Options: (a) accept it, (b) a weekly GitHub Actions cron in the `chronoscape` repo that
+      curls the URL to keep it warm - that repo is PUBLIC so Actions minutes are free, (c)
+      move it off Streamlit Community Cloud. Charlie's call - (b) is a standing automation.
 - [ ] **Bump Chronoscape pill** from "In progress" to "Live" once it covers more than
       Iceland + Taiwan.
 - [x] ~~**Favicon**~~ - done: "aperture" mark (slate broken ring + centre dot), inline SVG.
-- [ ] **Refresh screenshots** in `assets/` as the linked sites change (Crowdwise,
-      Chronoscape, Lexicon, One Story). Shoot at 16:10 (the card ratio) so nothing crops.
-      CORRECTED 05/08/2026 - the old instruction here said to use chrome-devtools
-      `take_screenshot`, and that method failed three ways in one sitting: a frame with
-      the top bar duplicated and the footer missing, then a viewport capture at the wrong
-      aspect with the footer cut, then the tool hung outright. Use headless Edge instead -
-      it is deterministic and repeatable. Full command in the README under Beyond Small
-      Talk. (The old note also said "aspect <1.6", which reads backwards: 16:10 IS 1.6.)
+- [ ] **Refresh screenshots** in `assets/` as the linked sites change. Shoot at 16:10 (the
+      card ratio) so nothing crops. Use headless Edge, NOT chrome-devtools `take_screenshot`
+      (see the 05/08/2026 correction; the devtools route produced a duplicated top bar, a
+      wrong-aspect viewport capture, then hung).
+      DONE 06/08/2026 for crowdwise, dcf-studio, one-story, the-aftertimes and lexicon -
+      all now exactly 1280x800. Command used:
+      `msedge.exe --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1
+      --virtual-time-budget=12000 --screenshot=<out> --window-size=1280,800 <url>`
+      **`--virtual-time-budget` matters** - without it Crowdwise captured before its charts
+      rendered and the lower third came out empty.
+      STILL 1.465/1.488 and therefore cropped: `thinkerings.png`, `chronoscape.png`. Both
+      re-shot and both rejected on inspection - Substack threw its subscribe modal over the
+      page, and Chronoscape was asleep (see below). Re-shoot when those two are shootable.
 - [ ] **Essays & books section** (asked 30/07/2026, scope settled 04/08/2026). A section
       where Charlie writes short reviews of what he's reading at the moment - essays and
       books by other people, with his own take on each. This resolves the earlier open
