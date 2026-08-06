@@ -17,7 +17,7 @@ Personal hub - a single landing page linking to my projects, built to attach to 
 | The Aftertimes | Live | https://aftertimes.charlietrenorden.com/ |
 | Thinkerings | Live | https://thinkerings.substack.com/ |
 | Lexicon | Live | https://charlietrenorden.com/lexicon/ (self-hosted in this repo, `/lexicon`) |
-| Chronoscape | In progress | https://chronoscape.streamlit.app/ |
+| Chronoscape | In progress | https://chronoscape.charlietrenorden.com/ |
 | Beyond Small Talk | Live | https://charlietrenorden.com/beyond-small-talk/ (self-hosted in this repo, `/beyond-small-talk`) |
 
 `Beyond Small Talk` is a single-file random-question page - one question at a time, click or
@@ -74,7 +74,7 @@ GitHub Pages can only host one repo, so a real subpath isn't possible for the ot
 | `/one-story` | https://one-story.charlietrenorden.com/ |
 | `/the-aftertimes` | https://aftertimes.charlietrenorden.com/ |
 | `/thinkerings` | https://thinkerings.substack.com/ |
-| `/chronoscape` | https://chronoscape.streamlit.app/ |
+| `/chronoscape` | https://chronoscape.charlietrenorden.com/ |
 | `/lexicon` | served here for real, not a redirect |
 
 If a target's URL changes, edit the slug's `index.html` - the URL appears three times
