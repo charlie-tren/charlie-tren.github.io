@@ -55,6 +55,12 @@ Four gotchas if you edit it.
    16:10 ratio while making the type fill it. Use a question that wraps to three lines
    for the same reason - a one-liner leaves a hole where `.qwrap` reserves its height.
 
+## Notes and roadmap
+
+Open items and project ideas live in the **private** repo `charlie-tren/hub-notes`,
+not here - this repo is public, and a roadmap in a public repo is a published roadmap.
+Moved 06/08/2026.
+
 ## Short URLs
 
 Every project has a shareable path on the hub domain. All but `/lexicon` are static
