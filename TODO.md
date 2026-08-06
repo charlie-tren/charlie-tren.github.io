@@ -32,9 +32,9 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
       so the per-project CNAME value can't be read - use the CLI. (3) Setting a custom
       domain on a Pages repo makes the old `.github.io` redirect IMMEDIATELY, so DNS must
       exist first or a live site goes dark.
-- [ ] **Regenerate One Story's `index.html`** - `render.py` now emits the new og:url /
-      og:image, but the committed `index.html` keeps the old ones until the daily 20:00 UTC
-      cron rebuilds. Self-resolving; just don't be surprised by the diff.
+- [x] ~~**Regenerate One Story's `index.html`**~~ - DONE 06/08/2026, self-resolved as
+      expected. Verified by fetching the live page, not by assuming the cron ran: it now
+      serves `og:url` and `og:image` on `one-story.charlietrenorden.com`.
 - [x] ~~**Lexicon lives in two places**~~ - CLOSED 04/08/2026, already resolved. The
       private `charlie-tren/lexicon` repo was ALREADY archived before this was raised;
       `gh repo archive` reported it as a no-op. The hub copy at `/lexicon` is canonical
