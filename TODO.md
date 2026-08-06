@@ -44,13 +44,30 @@ Deferred work for the personal hub (charlie-tren.github.io). None blocking - the
       query WITHOUT `isArchived`, so archived repos looked live. Ask for the field.
 - [ ] **Chronoscape sleeps on Streamlit Community Cloud** (found 06/08/2026). The app had
       idled out - visitors clicking the card get Streamlit's "Zzzz - this app has gone to
-      sleep... Would you like to wake it back up?" screen, not the app. It wakes on a click,
-      but that is a poor landing from a portfolio page. NOTE: my earlier link check passed it
-      because it returned HTTP 303, which I read as a normal redirect - status codes do not
-      prove a page is healthy, only fetching the body does.
-      Options: (a) accept it, (b) a weekly GitHub Actions cron in the `chronoscape` repo that
-      curls the URL to keep it warm - that repo is PUBLIC so Actions minutes are free, (c)
-      move it off Streamlit Community Cloud. Charlie's call - (b) is a standing automation.
+      sleep... Would you like to wake it back up?" screen, not the app. NOTE: the earlier
+      link check passed it on an HTTP 303, which was read as a normal redirect - status
+      codes do not prove a page is healthy, only fetching the body does.
+      RESEARCHED 06/08/2026 (docs.streamlit.io/deploy/streamlit-community-cloud/manage-your-app):
+      apps sleep after **12 hours without traffic**, not days, and waking requires a VIEWER
+      TO CLICK "Yes, get this app back up!" - it does not self-wake. So a keep-warm job has
+      to run at least every ~6h, and if it ever misses a 12h window the app sleeps and
+      cannot recover itself.
+      **UNVERIFIED and load-bearing:** whether a plain `curl` counts as "traffic" here.
+      Streamlit runs over websockets, so the metric may be SESSIONS, not HTTP GETs. If so a
+      curl cron goes green forever while the app sleeps anyway - worse than knowing. Do not
+      ship the curl version without testing it against a real 12h+ idle window.
+      Options:
+        (a) accept it - the card already reads "In progress";
+        (b) **Playwright in a GitHub Actions cron every 6h** in the `chronoscape` repo -
+            loads the page, establishes a real session, clicks the wake button if present.
+            Self-heals, ~40s/run, ~120 runs/month, and that repo is PUBLIC so minutes are
+            free. This is the only version worth building;
+        (c) pull the card until Chronoscape covers more than Iceland + Taiwan;
+        (d) move it off Streamlit Community Cloud.
+      Tension worth naming: Streamlit hibernates apps "to conserve resources and allow the
+      best communal use of the platform". 4 loads/day is trivial, but a job whose only
+      purpose is to defeat hibernation works against what the free tier asks. Charlie's
+      call - it is a standing automation, so it does not get built without a yes.
 - [ ] **Bump Chronoscape pill** from "In progress" to "Live" once it covers more than
       Iceland + Taiwan.
 - [x] ~~**Favicon**~~ - done: "aperture" mark (slate broken ring + centre dot), inline SVG.
