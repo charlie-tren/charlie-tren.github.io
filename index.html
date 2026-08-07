@@ -132,6 +132,12 @@
     @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   }
 </style>
+<!-- Cloudflare Web Analytics. Feeds the private stats dashboard, which runs one
+     account-wide query and splits by requestHost, so this is deliberately the same
+     token as every other site in the estate rather than a per-site one. Cookieless,
+     no personal data, ~10KB deferred. The redirect stubs under /crowdwise/, /stats/
+     and friends deliberately do NOT carry it - they bounce before it could fire. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "32b821209b5441a08df42ccf61c9e6c2"}'></script>
 </head>
 <body>
 <div class="wrap">
