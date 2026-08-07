@@ -78,7 +78,21 @@ DISMISS = {
 # so there is margin available to spend.
 FIT = ["lexicon", "chronoscape"]
 VIEW_FIT = {"width": 1800, "height": 1150}
-MAX_WIDEN = 1.35        # how much side margin the frame may spend before the type gets too small
+MAX_WIDEN = 1.22        # how much side margin the frame may spend before the type gets too small
+
+# JS run after load, before the shot. A page that shows something at random should
+# not leave its card to chance - Beyond Small Talk drew "What's the highest you've
+# ever been?", which is not the line to lead a public site with.
+PREPARE = {
+    # Set the text, then restore the page's own class contract: "q" plus a len-*
+    # bucket that drives the type size. Setting only the bucket dropped the base
+    # class and the question rendered at body size.
+    "beyond-small-talk": """() => {
+        const q = document.getElementById('q');
+        q.textContent = 'What are you pretending not to know?';
+        q.className = 'q len-s';
+    }""",
+}
 
 # Sites that look better - or are designed - dark. Playwright emulates light by
 # default, so a site that keys off prefers-color-scheme renders in its light theme
@@ -275,6 +289,9 @@ def main():
                 except Exception:                    # noqa: BLE001
                     pass                             # the modal may not have shown
 
+            if slug in PREPARE:
+                page.evaluate(PREPARE[slug])
+                page.wait_for_timeout(300)
 
             im = framed(page, slug, tmp / f"{slug}.png", scale)
             if im.width > TARGET_W:
