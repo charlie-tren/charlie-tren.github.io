@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Site stats</title>
-<link rel="canonical" href="https://site-stats-cus.pages.dev/">
-<meta http-equiv="refresh" content="0; url=https://site-stats-cus.pages.dev/">
+<link rel="canonical" href="https://stats.charlietrenorden.com/">
+<meta http-equiv="refresh" content="0; url=https://stats.charlietrenorden.com/">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%231a212b'/><path d='M72.5 37 A26 26 0 1 0 72.5 63' fill='none' stroke='%2382a8ca' stroke-width='13' stroke-linecap='round'/><circle cx='50' cy='50' r='6.5' fill='%2382a8ca'/></svg>">
 <style>
@@ -18,12 +18,13 @@
 </style>
 </head>
 <body>
-  <!-- A redirect, not a host: the apex is GitHub Pages on a DNS-only record, so a real
-       subpath here cannot route to Cloudflare Pages without proxying the apex - which
-       breaks the GitHub certificate. Same pattern as the other short URLs in this repo.
+  <!-- A short URL, kept for muscle memory - the real host is
+       stats.charlietrenorden.com, which the footer links to directly. A subpath on the
+       apex cannot serve Pages content itself: the apex is GitHub Pages on a DNS-only
+       record, and proxying it would break the GitHub certificate.
        The destination is gated, so this being public gives nothing away: anyone without
        the key lands on a 404. -->
-  <p>Taking you to the stats - <a href="https://site-stats-cus.pages.dev/">continue</a> if nothing happens.</p>
-  <script>location.replace("https://site-stats-cus.pages.dev/");</script>
+  <p>Taking you to the stats - <a href="https://stats.charlietrenorden.com/">continue</a> if nothing happens.</p>
+  <script>location.replace("https://stats.charlietrenorden.com/");</script>
 </body>
 </html>
