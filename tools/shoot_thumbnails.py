@@ -19,6 +19,12 @@ Three things this handles that a naive screenshot does not:
 3. **Churn.** A re-shoot of an unchanged page still produces different bytes, so
    a weekly job would commit noise forever. Anything under MIN_DIFF against the
    current file is left alone.
+
+Run it from Actions, not from a laptop. Linux and Windows hint fonts differently,
+so a local shot of an UNCHANGED page reads as a ~27-point difference against a
+CI-shot one and vice versa - alternating between the two would commit a new
+thumbnail every run. Use `gh workflow run "Refresh card thumbnails"` for a manual
+refresh; keep local runs for developing this script.
 """
 
 import subprocess
