@@ -9,13 +9,17 @@ the same on a laptop and in Actions with no dev server.
 
 Three things this handles that a naive screenshot does not:
 
-1. **Side gutters.** Most of these sites centre their content in a max-width
-   column, so a 1280-wide shot is mostly empty background - One Story was 49%
-   dead space (657px of content in a 1280px frame). The shot is taken at 2x and
-   cropped to the content column, so the text is legible at card size.
-2. **The interesting bit is below the fold** on some pages. `FOCUS` shoots a
-   named element instead of the top of the page - Consensus Drift's masthead and
-   filter dropdowns made for a thumbnail with no chart in it.
+1. **Dead margin.** These sites centre their content in a max-width column and
+   most open with a chunk of space above the masthead, so a plain 1280x800 shot is
+   largely background - One Story was 49% empty either side plus 80px above. The
+   crop is driven by the real content bounding box, measured in the page: the union
+   of every visible text node, image, control and SVG, clipped to the viewport.
+   An earlier version looked for flat-coloured edge columns instead, which missed
+   Lexicon entirely because one full-width element defeated the test.
+2. **The interesting bit is below the fold** on some pages. `ANCHOR` frames on a
+   named element - Consensus Drift's masthead and filter dropdowns made for a
+   thumbnail with no chart in it - and `context_above` keeps some of the page
+   chrome in shot so the card still reads as a website rather than a bare graph.
 3. **Churn.** A re-shoot of an unchanged page still produces different bytes, so
    a weekly job would commit noise forever. Anything under MIN_DIFF against the
    current file is left alone.
@@ -55,9 +59,12 @@ SITES = {
 # stale within 24 hours. Everything else only moves when its code does.
 DAILY = ["one-story", "the-aftertimes"]
 
-# Pages whose top is a masthead rather than the product. Shoot this element.
-FOCUS = {
-    "consensus-drift": "svg",       # the quadrant chart IS the product
+# Pages whose top is a masthead rather than the product: frame on an element
+# instead. `context_above` is the share of the frame height spent on whatever sits
+# above that element, so the card shows a website with a chart in it rather than a
+# chart on its own.
+ANCHOR = {
+    "consensus-drift": {"selector": "svg", "context_above": 0.30},
 }
 
 VIEW = {"width": 1280, "height": 800}
@@ -68,31 +75,46 @@ MARGIN_FRAC = 0.04       # breathing room either side of the content column
 MIN_DIFF = 2.0           # mean channel difference below this counts as no change
 
 
-def gutters(im):
-    """Columns at each edge that are a single flat colour top to bottom."""
-    w, h = im.size
-    px = im.load()
+# Measured in the page rather than guessed from pixels: the union of every
+# visible text node, image, control and SVG, clipped to the viewport. That is the
+# real content box, so cropping to it removes both the max-width side gutters and
+# the dead space above a masthead in one step.
+CONTENT_BOX_JS = """() => {
+  const vw = innerWidth, vh = innerHeight;
+  let x0 = vw, y0 = vh, x1 = 0, y1 = 0, n = 0;
+  document.querySelectorAll('*').forEach(e => {
+    const tag = e.tagName;
+    if (tag === 'SCRIPT' || tag === 'STYLE') return;
+    const hasText = [...e.childNodes].some(c => c.nodeType === 3 && c.textContent.trim());
+    const isVisual = ['IMG', 'SVG', 'CANVAS', 'INPUT', 'SELECT', 'BUTTON'].includes(tag);
+    if (!hasText && !isVisual) return;
+    const r = e.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return;
+    if (r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) return;
+    x0 = Math.min(x0, Math.max(0, r.left));
+    y0 = Math.min(y0, Math.max(0, r.top));
+    x1 = Math.max(x1, Math.min(vw, r.right));
+    y1 = Math.max(y1, Math.min(vh, r.bottom));
+    n++;
+  });
+  return n ? {x0, y0, x1, y1} : null;
+}"""
 
-    def flat(x):
-        c = px[x, 0]
-        return all(px[x, y] == c for y in range(0, h, 5))
 
-    left = 0
-    while left < w // 2 and flat(left):
-        left += 1
-    right = w - 1
-    while right > w // 2 and flat(right):
-        right -= 1
-    return left, right
+def crop_16x10(im, x0, y0, w, h_avail):
+    """Crop a 16:10 frame of width w starting at (x0, y0), at 2x scale."""
+    h = min(w * 10 / 16, h_avail)
+    return im.crop(tuple(round(v * SCALE) for v in (x0, y0, x0 + w, y0 + h)))
 
 
 def framed(page, slug, raw):
     """Return the cropped 16:10 image for one site."""
-    if slug in FOCUS:
+    if slug in ANCHOR:
+        cfg = ANCHOR[slug]
         # Playwright's own `clip` cannot reach below the fold - a tall element
         # came back silently truncated - so scroll it into view, shoot the
         # viewport, and crop with PIL.
-        el = page.locator(FOCUS[slug]).first
+        el = page.locator(cfg["selector"]).first
         el.scroll_into_view_if_needed()
         page.wait_for_timeout(600)
         box = el.bounding_box()                  # viewport-relative
@@ -104,17 +126,23 @@ def framed(page, slug, raw):
         x1 = min(VIEW["width"], box["x"] + box["width"] + pad)
         w = x1 - x0
         h = min(w * 10 / 16, VIEW["height"])
-        y0 = max(0, min(box["y"] + box["height"] / 2 - h / 2, VIEW["height"] - h))
-        return im.crop(tuple(round(v * SCALE) for v in (x0, y0, x0 + w, y0 + h)))
+        # Start the frame above the element so the card keeps some page chrome.
+        y0 = max(0, min(box["y"] - h * cfg.get("context_above", 0),
+                        VIEW["height"] - h))
+        return crop_16x10(im, x0, y0, w, VIEW["height"] - y0)
 
     page.screenshot(path=str(raw))
     im = Image.open(raw).convert("RGB")
-    w, h = im.size
-    left, right = gutters(im)
-    pad = int((right - left + 1) * MARGIN_FRAC)
-    x0 = max(0, left - pad)
-    x1 = min(w, right + 1 + pad)
-    return im.crop((x0, 0, x1, min(h, round((x1 - x0) * 10 / 16))))
+    box = page.evaluate(CONTENT_BOX_JS)
+    if not box:
+        return crop_16x10(im, 0, 0, VIEW["width"], VIEW["height"])
+
+    pad = (box["x1"] - box["x0"]) * MARGIN_FRAC
+    x0 = max(0, box["x0"] - pad)
+    x1 = min(VIEW["width"], box["x1"] + pad)
+    # Only a little of the top margin is kept - it is nearly always dead space.
+    y0 = max(0, box["y0"] - pad / 2)
+    return crop_16x10(im, x0, y0, x1 - x0, VIEW["height"] - y0)
 
 
 def changed_enough(new, dest):
