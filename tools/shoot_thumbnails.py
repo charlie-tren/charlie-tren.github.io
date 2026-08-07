@@ -68,11 +68,16 @@ DISMISS = {
 
 # Some pages put more above the fold than fits a 16:10 frame at the width of
 # their content column, so the crop lopped the bottom off. Zooming the page out
-# fits more in without widening the frame back out into the dead margin.
-ZOOM = {
-    "lexicon": 0.60,
-    "chronoscape": 0.72,
-}
+# fits more in without widening the frame back into the dead margin.
+#
+# ZOOMING CANNOT FIX THIS. It shrinks width and height by the same factor, so the
+# content's aspect ratio is unchanged and a too-tall page stays too tall - three
+# hand-picked zoom values for Lexicon all still clipped, and so did a solved one.
+# What actually fits tall content into a 16:10 frame is a WIDER frame: include some
+# of the side margin back, up to height x 16/10. These pages get a wider viewport
+# so there is margin available to spend.
+FIT = ["lexicon", "chronoscape"]
+VIEW_FIT = {"width": 1800, "height": 1150}
 
 # Sites that look better - or are designed - dark. Playwright emulates light by
 # default, so a site that keys off prefers-color-scheme renders in its light theme
@@ -123,13 +128,43 @@ CONTENT_BOX_JS = """() => {
 }"""
 
 
-def crop_16x10(im, x0, y0, w, h_avail):
-    """Crop a 16:10 frame of width w starting at (x0, y0), at 2x scale."""
+# Like CONTENT_BOX_JS but the bottom is NOT clipped to the viewport - the whole
+# point is to find content that falls below the fold. Capped at scrollHeight,
+# because an inner scrolling list reports element bottoms far past the page:
+# Chronoscape's event list measured 6374px against a 1060px document.
+FIT_BOX_JS = """() => {
+  const vw = innerWidth;
+  let x0 = vw, x1 = 0, bottom = 0;
+  document.querySelectorAll('*').forEach(e => {
+    const tag = e.tagName;
+    if (tag === 'SCRIPT' || tag === 'STYLE') return;
+    const hasText = [...e.childNodes].some(c => c.nodeType === 3 && c.textContent.trim());
+    const isVisual = ['IMG', 'SVG', 'CANVAS', 'INPUT', 'SELECT', 'BUTTON'].includes(tag);
+    if (!hasText && !isVisual) return;
+    const r = e.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return;
+    if (r.right < 0 || r.left > vw) return;
+    x0 = Math.min(x0, Math.max(0, r.left));
+    x1 = Math.max(x1, Math.min(vw, r.right));
+    bottom = Math.max(bottom, r.bottom);
+  });
+  return {width: x1 - x0, height: Math.min(bottom, document.documentElement.scrollHeight)};
+}"""
+
+
+def content_height(page):
+    """How far the content really reaches, ignoring the fold."""
+    box = page.evaluate(FIT_BOX_JS)
+    return (box or {}).get("height") or 0
+
+
+def crop_16x10(im, x0, y0, w, h_avail, scale=SCALE):
+    """Crop a 16:10 frame of width w starting at (x0, y0), in CSS pixels."""
     h = min(w * 10 / 16, h_avail)
-    return im.crop(tuple(round(v * SCALE) for v in (x0, y0, x0 + w, y0 + h)))
+    return im.crop(tuple(round(v * scale) for v in (x0, y0, x0 + w, y0 + h)))
 
 
-def framed(page, slug, raw):
+def framed(page, slug, raw, scale=SCALE):
     """Return the cropped 16:10 image for one site."""
     if slug in ANCHOR:
         cfg = ANCHOR[slug]
@@ -151,20 +186,33 @@ def framed(page, slug, raw):
         # Start the frame above the element so the card keeps some page chrome.
         y0 = max(0, min(box["y"] - h * cfg.get("context_above", 0),
                         VIEW["height"] - h))
-        return crop_16x10(im, x0, y0, w, VIEW["height"] - y0)
+        return crop_16x10(im, x0, y0, w, VIEW["height"] - y0, scale)
 
     page.screenshot(path=str(raw))
     im = Image.open(raw).convert("RGB")
     box = page.evaluate(CONTENT_BOX_JS)
     if not box:
-        return crop_16x10(im, 0, 0, VIEW["width"], VIEW["height"])
+        return crop_16x10(im, 0, 0, VIEW["width"], VIEW["height"], scale)
 
+    view = VIEW_FIT if slug in FIT else VIEW
     pad = (box["x1"] - box["x0"]) * MARGIN_FRAC
     x0 = max(0, box["x0"] - pad)
-    x1 = min(VIEW["width"], box["x1"] + pad)
+    x1 = min(view["width"], box["x1"] + pad)
+
+    if slug in FIT:
+        # Widen the frame until the content's real height fits inside it, spending
+        # the side margin rather than shrinking the page. Centred on the content so
+        # the extra space is taken evenly from both sides.
+        need = (content_height(page) - box["y0"]) * 16 / 10
+        if need > x1 - x0:
+            mid = (x0 + x1) / 2
+            half = min(need, view["width"]) / 2
+            x0 = max(0, min(mid - half, view["width"] - min(need, view["width"])))
+            x1 = min(view["width"], x0 + min(need, view["width"]))
+
     # Only a little of the top margin is kept - it is nearly always dead space.
     y0 = max(0, box["y0"] - pad / 2)
-    return crop_16x10(im, x0, y0, x1 - x0, VIEW["height"] - y0)
+    return crop_16x10(im, x0, y0, x1 - x0, view["height"] - y0, scale)
 
 
 def changed_enough(new, dest):
@@ -196,9 +244,14 @@ def main():
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        ctx = browser.new_context(viewport=VIEW, device_scale_factor=SCALE)
-        page = ctx.new_page()
+        # A context per site: zooming a page out shrinks its content box in CSS
+        # pixels, so a fixed 2x shot of a zoomed page lands well under the width a
+        # retina card needs. FIT sites get a higher device scale to cancel that.
         for slug in slugs:
+            scale = SCALE
+            ctx = browser.new_context(viewport=VIEW_FIT if slug in FIT else VIEW,
+                                      device_scale_factor=scale)
+            page = ctx.new_page()
             page.emulate_media(color_scheme=SCHEME.get(slug, "light"))
             try:
                 page.goto(SITES[slug], wait_until="networkidle", timeout=60000)
@@ -216,11 +269,8 @@ def main():
                 except Exception:                    # noqa: BLE001
                     pass                             # the modal may not have shown
 
-            if slug in ZOOM:
-                page.evaluate("z => document.documentElement.style.zoom = z", ZOOM[slug])
-                page.wait_for_timeout(500)           # let reflow settle before measuring
 
-            im = framed(page, slug, tmp / f"{slug}.png")
+            im = framed(page, slug, tmp / f"{slug}.png", scale)
             if im.width > TARGET_W:
                 im = im.resize((TARGET_W, round(im.height * TARGET_W / im.width)),
                                Image.LANCZOS)

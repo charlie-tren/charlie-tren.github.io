@@ -98,13 +98,6 @@
   .also-desc { color: var(--soft); font-size: .99rem; max-width: 62ch; margin: 0; }
   .tag { font: 600 10.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; padding: .3rem .5rem; border-radius: 4px; white-space: nowrap; color: var(--faint); border: 1px solid var(--rule); }
 
-  /* schematic motif for the projects with no public site - drawn, not screenshotted,
-     so nothing from a Bloomberg-fed or position-holding app is ever published */
-  .also-item { display: grid; grid-template-columns: 1fr 168px; gap: 1.6rem; align-items: start; }
-  /* motif sits on the right, but stays first in the DOM so a screen reader
-     and the no-CSS fallback both hit the heading before the picture */
-  .also-motif { order: 2; background: var(--motif-bg); border: 1px solid var(--rule); border-radius: 6px; aspect-ratio: 16 / 10; overflow: hidden; }
-  .also-motif svg { display: block; width: 100%; height: 100%; }
 
   /* also-built: scannable lead + bullet list */
   .also-lead { color: var(--ink); font-size: 1rem; margin: 0 0 .7rem; max-width: 64ch; }
@@ -118,8 +111,6 @@
     .bar { margin-bottom: 3rem; }
     .proj, .proj:nth-child(even of .proj) { grid-template-columns: 1fr; gap: 1.1rem; }
     .proj:nth-child(even of .proj) .thumb { order: 0; }
-    .also-item { grid-template-columns: 1fr; gap: 1rem; }
-    .also-motif { order: 0; max-width: 220px; }
   }
   @media (prefers-reduced-motion: no-preference) {
     .section-label, .proj { animation: rise .7s cubic-bezier(.2,.7,.3,1) both; }
@@ -202,7 +193,7 @@
   </a>
 
   <a class="proj" href="lexicon/">
-    <div class="thumb"><img src="assets/lexicon.webp" alt="Screenshot of the Lexicon vocabulary review app" loading="lazy" width="912" height="570"></div>
+    <div class="thumb"><img src="assets/lexicon.webp" alt="Screenshot of the Lexicon vocabulary review app" loading="lazy" width="1400" height="875"></div>
     <div class="meta">
       <div class="head"><span class="name">Lexicon</span><span class="status s-live">Live</span></div>
       <p class="desc">A quiet place for words - a spaced-repetition vocabulary tool. Add a word, review what's due, and learn each one both ways: meaning and spelling.</p>
@@ -229,111 +220,90 @@
   </a>
 
   <div class="also-item">
-    <div class="also-motif" role="img" aria-label="Schematic: a five-stage gate narrowing to a single decision"><svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="16" width="120" height="8" rx="2" fill="var(--rule)"/><rect x="31" y="30" width="98" height="8" rx="2" fill="var(--rule)"/><rect x="42" y="44" width="76" height="8" rx="2" fill="var(--rule)"/><rect x="53" y="58" width="54" height="8" rx="2" fill="var(--rule)"/><rect x="64" y="72" width="32" height="8" rx="2" fill="var(--accent)"/><circle cx="80" cy="90" r="3.5" fill="var(--accent)"/></svg></div>
-    <div class="also-body">
-      <div class="also-head"><span class="also-name">Lighthouse</span><span class="tag">Personal project</span></div>
-      <p class="also-lead">A personal investment decision system - part analytical workbench, part decision journal.</p>
-      <ul class="also-points">
-        <li>Screens and values a multi-asset universe - equities, macro, FX, crypto, super and CFDs - replacing an Excel workflow</li>
-        <li>Valuation lenses for DCF, fundamentals history, moat and quality, return-potential and drawdown</li>
-        <li>A buy-gate, kill-chain, sell-triggers and prohibitions govern each decision</li>
-        <li>A decision journal of theses, trades, outcomes and reviews, for backtesting the methodology behind them</li>
-        <li>Pure-Python core, a SQLite journal (alembic) with nightly backup, and a Bloomberg + Excel data layer</li>
-      </ul>
-      <p class="also-tech">Bloomberg · Python · Streamlit · SQLite</p>
-    </div>
+    <div class="also-head"><span class="also-name">Lighthouse</span><span class="tag">Personal project</span></div>
+    <p class="also-lead">A personal investment decision system - part analytical workbench, part decision journal.</p>
+    <ul class="also-points">
+      <li>Screens and values a multi-asset universe - equities, macro, FX, crypto, super and CFDs - replacing an Excel workflow</li>
+      <li>Valuation lenses for DCF, fundamentals history, moat and quality, return-potential and drawdown</li>
+      <li>A buy-gate, kill-chain, sell-triggers and prohibitions govern each decision</li>
+      <li>A decision journal of theses, trades, outcomes and reviews, for backtesting the methodology behind them</li>
+      <li>Pure-Python core, a SQLite journal (alembic) with nightly backup, and a Bloomberg + Excel data layer</li>
+    </ul>
+    <p class="also-tech">Bloomberg · Python · Streamlit · SQLite</p>
   </div>
 
   <div class="also-item">
-    <div class="also-motif" role="img" aria-label="Schematic: a price breakout with a stepped trailing stop beneath it"><svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg"><polyline points="10,80 27,72 44,76 61,58 78,63 95,44 112,49 129,28 146,20" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><path d="M10 90 H44 V84 H78 V70 H112 V56 H146" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="4 3"/><circle cx="129" cy="28" r="3.2" fill="var(--accent)"/></svg></div>
-    <div class="also-body">
-      <div class="also-head"><span class="also-name">Parallax</span><span class="tag">Personal project</span></div>
-      <p class="also-lead">A systematic momentum/trend system for equity CFDs.</p>
-      <ul class="also-points">
-        <li>Breakout, compression, pullback and near-high screeners</li>
-        <li>A chart-quant score feeding a 14-gate risk "kill-chain"</li>
-        <li>Regime-aware position sizing, capped for correlation and concentration</li>
-        <li>Structural trailing stops with a break-even ratchet on exits</li>
-        <li>A point-in-time backtest with cost and friction modelling, plus a daily-review loop and decision log</li>
-      </ul>
-      <p class="also-tech">Bloomberg · TradingView · Yahoo · Python · Streamlit · SQLite</p>
-    </div>
+    <div class="also-head"><span class="also-name">Parallax</span><span class="tag">Personal project</span></div>
+    <p class="also-lead">A systematic momentum/trend system for equity CFDs.</p>
+    <ul class="also-points">
+      <li>Breakout, compression, pullback and near-high screeners</li>
+      <li>A chart-quant score feeding a 14-gate risk "kill-chain"</li>
+      <li>Regime-aware position sizing, capped for correlation and concentration</li>
+      <li>Structural trailing stops with a break-even ratchet on exits</li>
+      <li>A point-in-time backtest with cost and friction modelling, plus a daily-review loop and decision log</li>
+    </ul>
+    <p class="also-tech">Bloomberg · TradingView · Yahoo · Python · Streamlit · SQLite</p>
   </div>
 
   <div class="also-item">
-    <div class="also-motif" role="img" aria-label="Schematic: stacked portfolio weights rebalancing across six periods"><svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="72" width="14" height="19" rx="1.5" fill="var(--accent)"/><rect x="14" y="46" width="14" height="25" rx="1.5" fill="var(--rule)"/><rect x="14" y="28" width="14" height="17" rx="1.5" fill="var(--faint)"/><rect x="14" y="14" width="14" height="13" rx="1.5" fill="var(--rule)"/><rect x="38" y="68" width="14" height="23" rx="1.5" fill="var(--accent)"/><rect x="38" y="48" width="14" height="19" rx="1.5" fill="var(--rule)"/><rect x="38" y="26" width="14" height="21" rx="1.5" fill="var(--faint)"/><rect x="38" y="14" width="14" height="11" rx="1.5" fill="var(--rule)"/><rect x="62" y="74" width="14" height="17" rx="1.5" fill="var(--accent)"/><rect x="62" y="44" width="14" height="29" rx="1.5" fill="var(--rule)"/><rect x="62" y="28" width="14" height="15" rx="1.5" fill="var(--faint)"/><rect x="62" y="14" width="14" height="13" rx="1.5" fill="var(--rule)"/><rect x="86" y="66" width="14" height="25" rx="1.5" fill="var(--accent)"/><rect x="86" y="48" width="14" height="17" rx="1.5" fill="var(--rule)"/><rect x="86" y="28" width="14" height="19" rx="1.5" fill="var(--faint)"/><rect x="86" y="14" width="14" height="13" rx="1.5" fill="var(--rule)"/><rect x="110" y="70" width="14" height="21" rx="1.5" fill="var(--accent)"/><rect x="110" y="46" width="14" height="23" rx="1.5" fill="var(--rule)"/><rect x="110" y="32" width="14" height="13" rx="1.5" fill="var(--faint)"/><rect x="110" y="14" width="14" height="17" rx="1.5" fill="var(--rule)"/><rect x="134" y="76" width="14" height="15" rx="1.5" fill="var(--accent)"/><rect x="134" y="48" width="14" height="27" rx="1.5" fill="var(--rule)"/><rect x="134" y="28" width="14" height="19" rx="1.5" fill="var(--faint)"/><rect x="134" y="14" width="14" height="13" rx="1.5" fill="var(--rule)"/></svg></div>
-    <div class="also-body">
-      <div class="also-head"><span class="also-name">All-Weather Allocator</span><span class="tag">Personal project</span></div>
-      <p class="also-lead">A risk-parity "all-weather" portfolio allocator.</p>
-      <ul class="also-points">
-        <li>A rolling weight optimiser over a regime model</li>
-        <li>A signal ensemble of yield and drawdown-momentum</li>
-        <li>Sizing against a drawdown budget, with a precomputed contribution schedule</li>
-        <li>A backtest and stats harness, implemented over CFDs</li>
-      </ul>
-      <p class="also-tech">Python · Streamlit</p>
-    </div>
+    <div class="also-head"><span class="also-name">All-Weather Allocator</span><span class="tag">Personal project</span></div>
+    <p class="also-lead">A risk-parity "all-weather" portfolio allocator.</p>
+    <ul class="also-points">
+      <li>A rolling weight optimiser over a regime model</li>
+      <li>A signal ensemble of yield and drawdown-momentum</li>
+      <li>Sizing against a drawdown budget, with a precomputed contribution schedule</li>
+      <li>A backtest and stats harness, implemented over CFDs</li>
+    </ul>
+    <p class="also-tech">Python · Streamlit</p>
   </div>
 
   <div class="also-item">
-    <div class="also-motif" role="img" aria-label="Schematic: a cycle dial with the needle part way round"><svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg"><path d="M28 80 A 52 52 0 0 1 132 80" fill="none" stroke="var(--rule)" stroke-width="7" stroke-linecap="round"/><path d="M28 80 A 52 52 0 0 1 62 31" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round"/><line x1="80" y1="80" x2="104" y2="42" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><circle cx="80" cy="80" r="4" fill="var(--ink)"/></svg></div>
-    <div class="also-body">
-      <div class="also-head"><span class="also-name">BTC Analyser</span><span class="tag">Personal project</span></div>
-      <p class="also-lead">A Bitcoin accumulation model - scores where BTC sits in its cycle and sizes contributions accordingly.</p>
-      <ul class="also-points">
-        <li>On-chain and cycle signals - MVRV-Z, Mayer multiple, Puell, realised-price ratio, 2-year MA and Fear &amp; Greed</li>
-        <li>Blended into a composite score, then gated by a risk kill-chain</li>
-        <li>Leverage- and liquidation-aware contribution sizing</li>
-      </ul>
-      <p class="also-tech">Binance · CoinMetrics · On-chain Data · Python</p>
-    </div>
+    <div class="also-head"><span class="also-name">BTC Analyser</span><span class="tag">Personal project</span></div>
+    <p class="also-lead">A Bitcoin accumulation model - scores where BTC sits in its cycle and sizes contributions accordingly.</p>
+    <ul class="also-points">
+      <li>On-chain and cycle signals - MVRV-Z, Mayer multiple, Puell, realised-price ratio, 2-year MA and Fear &amp; Greed</li>
+      <li>Blended into a composite score, then gated by a risk kill-chain</li>
+      <li>Leverage- and liquidation-aware contribution sizing</li>
+    </ul>
+    <p class="also-tech">Binance · CoinMetrics · On-chain Data · Python</p>
   </div>
 
   <div class="also-item">
-    <div class="also-motif" role="img" aria-label="Schematic: a grid of modules sitting on one shared data layer"><svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="12" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="41" y="12" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="68" y="12" width="22" height="14" rx="2.5" fill="var(--accent)"/><rect x="95" y="12" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="122" y="12" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="14" y="32" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="41" y="32" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="68" y="32" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="95" y="32" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="122" y="32" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="14" y="52" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="41" y="52" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="68" y="52" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="95" y="52" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="122" y="52" width="22" height="14" rx="2.5" fill="var(--rule)"/><rect x="14" y="80" width="132" height="8" rx="2.5" fill="var(--faint)"/></svg></div>
-    <div class="also-body">
-      <div class="also-head"><span class="also-name">Vantage</span><span class="tag">Personal project</span></div>
-      <p class="also-lead">A packaged Bloomberg-powered markets-analytics desktop app - ~20 modules.</p>
-      <ul class="also-points">
-        <li>Yield-curve and global-rates monitors, rate futures and yield-curve shock</li>
-        <li>Implied-vol and FX-vol surfaces</li>
-        <li>Carry, historical-valuation, analyst-upside, return-potential and value-momentum screens, plus a pairs-trading backtester</li>
-        <li>A Monte-Carlo price simulator, a drawdown analyser, FX forecasts and G20/macro dashboards</li>
-        <li>A cached Bloomberg data layer feeding per-module calc engines, packaged to a standalone Windows app (PyInstaller) with auth/entitlements and a usage meter</li>
-      </ul>
-      <p class="also-tech">Python · Streamlit</p>
-    </div>
+    <div class="also-head"><span class="also-name">Vantage</span><span class="tag">Personal project</span></div>
+    <p class="also-lead">A packaged Bloomberg-powered markets-analytics desktop app - ~20 modules.</p>
+    <ul class="also-points">
+      <li>Yield-curve and global-rates monitors, rate futures and yield-curve shock</li>
+      <li>Implied-vol and FX-vol surfaces</li>
+      <li>Carry, historical-valuation, analyst-upside, return-potential and value-momentum screens, plus a pairs-trading backtester</li>
+      <li>A Monte-Carlo price simulator, a drawdown analyser, FX forecasts and G20/macro dashboards</li>
+      <li>A cached Bloomberg data layer feeding per-module calc engines, packaged to a standalone Windows app (PyInstaller) with auth/entitlements and a usage meter</li>
+    </ul>
+    <p class="also-tech">Python · Streamlit</p>
   </div>
 
   <div class="also-item">
-    <div class="also-motif" role="img" aria-label="Schematic: a hedge ratio inside its tolerance band"><svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="30" width="132" height="16" rx="3" fill="var(--rule)"/><rect x="14" y="30" width="92" height="16" rx="3" fill="var(--accent)"/><line x1="84" y1="22" x2="84" y2="54" stroke="var(--faint)" stroke-width="1.4" stroke-dasharray="3 3"/><line x1="120" y1="22" x2="120" y2="54" stroke="var(--faint)" stroke-width="1.4" stroke-dasharray="3 3"/><rect x="14" y="66" width="132" height="6" rx="3" fill="var(--rule)"/><rect x="14" y="66" width="58" height="6" rx="3" fill="var(--faint)"/><rect x="14" y="82" width="132" height="6" rx="3" fill="var(--rule)"/><rect x="14" y="82" width="104" height="6" rx="3" fill="var(--faint)"/></svg></div>
-    <div class="also-body">
-      <div class="also-head"><span class="also-name">Overlay &amp; Hedging Ops</span><span class="tag">Internal tool</span></div>
-      <p class="also-lead">An operations platform for hedging programmes across institutional mandates.</p>
-      <ul class="also-points">
-        <li>Ingests position and rate data from custodian/admin feeds and monitored inboxes</li>
-        <li>Computes daily revaluations and mark-to-market</li>
-        <li>Schedules rollovers and tracks hedge ratios and effectiveness</li>
-        <li>Tracks fund NAV, performance, flows, leverage and risk analytics</li>
-        <li>Reports off an operations dashboard, driven by parsers, a calc engine and scheduled daily/EOD jobs</li>
-      </ul>
-      <p class="also-tech">Python · Streamlit</p>
-    </div>
+    <div class="also-head"><span class="also-name">Overlay &amp; Hedging Ops</span><span class="tag">Internal tool</span></div>
+    <p class="also-lead">An operations platform for hedging programmes across institutional mandates.</p>
+    <ul class="also-points">
+      <li>Ingests position and rate data from custodian/admin feeds and monitored inboxes</li>
+      <li>Computes daily revaluations and mark-to-market</li>
+      <li>Schedules rollovers and tracks hedge ratios and effectiveness</li>
+      <li>Tracks fund NAV, performance, flows, leverage and risk analytics</li>
+      <li>Reports off an operations dashboard, driven by parsers, a calc engine and scheduled daily/EOD jobs</li>
+    </ul>
+    <p class="also-tech">Python · Streamlit</p>
   </div>
 
   <div class="also-item">
-    <div class="also-motif" role="img" aria-label="Schematic: many sources narrowing to a short ranked digest"><svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="2.6" fill="var(--faint)"/><circle cx="34" cy="14" r="2.6" fill="var(--faint)"/><circle cx="57" cy="14" r="2.6" fill="var(--faint)"/><circle cx="80" cy="14" r="2.6" fill="var(--faint)"/><circle cx="102" cy="14" r="2.6" fill="var(--faint)"/><circle cx="124" cy="14" r="2.6" fill="var(--faint)"/><circle cx="147" cy="14" r="2.6" fill="var(--faint)"/><circle cx="23" cy="27" r="2.6" fill="var(--faint)"/><circle cx="46" cy="27" r="2.6" fill="var(--faint)"/><circle cx="68" cy="27" r="2.6" fill="var(--faint)"/><circle cx="90" cy="27" r="2.6" fill="var(--faint)"/><circle cx="113" cy="27" r="2.6" fill="var(--faint)"/><circle cx="136" cy="27" r="2.6" fill="var(--faint)"/><circle cx="158" cy="27" r="2.6" fill="var(--faint)"/><path d="M14 44 L80 60 L146 44" fill="none" stroke="var(--rule)" stroke-width="1.6"/><rect x="28" y="68" width="104" height="7" rx="2" fill="var(--accent)"/><rect x="39" y="79" width="82" height="7" rx="2" fill="var(--rule)"/><rect x="50" y="90" width="60" height="7" rx="2" fill="var(--rule)"/></svg></div>
-    <div class="also-body">
-      <div class="also-head"><span class="also-name">Signal Pipelines</span><span class="tag">Internal tool</span></div>
-      <p class="also-lead">Scheduled pipelines that turn public sources into a ranked daily digest.</p>
-      <ul class="also-points">
-        <li>Scrapes public filings and job/ATS feeds</li>
-        <li>Enriches and dedupes records, including PDF body-fetch</li>
-        <li>Scores for relevance against a configurable rule set</li>
-        <li>Pushes a ranked daily digest to Teams</li>
-      </ul>
-      <p class="also-tech">Python</p>
-    </div>
+    <div class="also-head"><span class="also-name">Signal Pipelines</span><span class="tag">Internal tool</span></div>
+    <p class="also-lead">Scheduled pipelines that turn public sources into a ranked daily digest.</p>
+    <ul class="also-points">
+      <li>Scrapes public filings and job/ATS feeds</li>
+      <li>Enriches and dedupes records, including PDF body-fetch</li>
+      <li>Scores for relevance against a configurable rule set</li>
+      <li>Pushes a ranked daily digest to Teams</li>
+    </ul>
+    <p class="also-tech">Python</p>
   </div>
 
   <p class="foot">Sydney, Australia</p>
