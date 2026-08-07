@@ -196,7 +196,7 @@
   </a>
 
   <a class="proj" href="lexicon/">
-    <div class="thumb"><img src="assets/lexicon.webp" alt="Screenshot of the Lexicon vocabulary review app" loading="lazy" width="1400" height="875"></div>
+    <div class="thumb"><img src="assets/lexicon.webp" alt="Screenshot of the Lexicon vocabulary review app" loading="lazy" width="1400" height="874"></div>
     <div class="meta">
       <div class="head"><span class="name">Lexicon</span><span class="status s-live">Live</span></div>
       <p class="desc">A quiet place for words - a spaced-repetition vocabulary tool. Add a word, review what's due, and learn each one both ways: meaning and spelling.</p>
@@ -310,13 +310,35 @@
   </div>
 
   <p class="foot">Sydney, Australia
-    <!-- Gated: opens only for a browser holding the key cookie, 404s for everyone
-         else, so it is safe to link from a public page. -->
-    <span class="sep">&middot;</span><a class="quiet" href="https://site-stats-cus.pages.dev/">Stats</a>
+    <!-- Hidden unless this browser has been opted in with #stats-on. The flag only
+         controls whether the LINK is shown; the page itself is gated server-side, so
+         a reader who forges the flag still gets a 404. -->
+    <span id="statsLink" hidden><span class="sep">&middot;</span><a class="quiet" href="https://stats.charlietrenorden.com/">Stats</a></span>
   </p>
 </div>
 
 <script>
+  /* Show the stats link only on a browser that has opted in: load the site once
+     with #stats-on. This is presentation, not security - the dashboard is gated
+     server-side and 404s for anyone without the key cookie. */
+  function syncStatsLink() {
+    try {
+      if (location.hash === "#stats-on") {
+        localStorage.setItem("stats", "1");
+        history.replaceState(null, "", location.pathname);
+      } else if (location.hash === "#stats-off") {
+        localStorage.removeItem("stats");
+        history.replaceState(null, "", location.pathname);
+      }
+      document.getElementById("statsLink").hidden =
+        localStorage.getItem("stats") !== "1";
+    } catch (e) { /* private mode: leave it hidden */ }
+  }
+  /* also on hashchange: adding the hash to a page already open is a same-document
+     navigation, so nothing re-runs on its own */
+  window.addEventListener("hashchange", syncStatsLink);
+  syncStatsLink();
+
   var root = document.documentElement;
   var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
   function sync() { lbl.textContent = root.getAttribute("data-theme") === "dark" ? "Dark" : "Light"; }
