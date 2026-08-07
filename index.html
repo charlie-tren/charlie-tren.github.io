@@ -312,8 +312,11 @@
   <p class="foot">Sydney, Australia
     <!-- Hidden unless this browser has been opted in with #stats-on. The flag only
          controls whether the LINK is shown; the page itself is gated server-side, so
-         a reader who forges the flag still gets a 404. -->
-    <span id="statsLink" hidden><span class="sep">&middot;</span><a class="quiet" href="https://stats.charlietrenorden.com/">Stats</a></span>
+         a reader who forges the flag still gets a 404.
+         Points at the pages.dev host, not stats.charlietrenorden.com: the Pages project
+         has that custom domain registered but the DNS record does not exist yet, so the
+         subdomain does not resolve. Switch once the CNAME is in. -->
+    <span id="statsLink" hidden><span class="sep">&middot;</span><a class="quiet" href="https://site-stats-cus.pages.dev/">Stats</a></span>
   </p>
 </div>
 
