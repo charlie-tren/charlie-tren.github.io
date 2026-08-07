@@ -76,12 +76,19 @@
   .thumb svg { display: block; width: 100%; height: 100%; }
   .proj:hover .thumb { border-color: var(--accent); transform: translateY(-2px); }
 
+  /* Text aligned to the OUTER page edge: odd rows put the thumbnail on the left, so
+     their text is right aligned; even rows are the mirror. Both page edges stay crisp
+     and both ragged edges face the gutter, so each pairing reads as deliberate.
+     NOTE this keys off nth-child, so adding or removing a card flips every row below
+     it - check the whole section after any change here. */
+  .proj:nth-child(odd of .proj) .meta { text-align: right; }
+  .proj:nth-child(odd of .proj) .meta .head { justify-content: flex-end; }
+  .proj:nth-child(odd of .proj) .meta .desc { margin-left: auto; }
+
   .meta .head { display: flex; align-items: baseline; gap: .9rem; margin-bottom: .5rem; flex-wrap: wrap; }
   .meta .name { font-size: 1.7rem; letter-spacing: -.01em; }
   .meta .desc { color: var(--soft); font-size: 1.04rem; max-width: 46ch; margin: 0 0 .8rem; }
   .meta .go { font: 500 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--accent); display: inline-flex; align-items: center; gap: .4rem; }
-  .arw { display: inline-block; transition: transform .25s; }
-  .proj:hover .meta .go .arw { transform: translateX(4px); }
 
   .status { font: 600 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; padding: .35rem .6rem; border-radius: 4px; white-space: nowrap; }
   .s-live { background: var(--accent); color: var(--on-accent); }
@@ -114,6 +121,9 @@
     .bar { margin-bottom: 3rem; }
     .proj, .proj:nth-child(even of .proj) { grid-template-columns: 1fr; gap: 1.1rem; }
     .proj:nth-child(even of .proj) .thumb { order: 0; }
+    .proj:nth-child(odd of .proj) .meta,
+    .proj:nth-child(odd of .proj) .meta .head { text-align: left; justify-content: flex-start; }
+    .proj:nth-child(odd of .proj) .meta .desc { margin-left: 0; }
   }
   @media (prefers-reduced-motion: no-preference) {
     .section-label, .proj { animation: rise .7s cubic-bezier(.2,.7,.3,1) both; }
@@ -146,7 +156,7 @@
     <div class="meta">
       <div class="head"><span class="name">Crowdwise</span><span class="status s-live">Live</span></div>
       <p class="desc">Live odds on macro events - Fed decisions, inflation, recession - from real-money prediction markets like Kalshi and Polymarket.</p>
-      <span class="go">Visit site <span class="arw">→</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
@@ -155,7 +165,7 @@
     <div class="meta">
       <div class="head"><span class="name">DCF Studio</span><span class="status s-live">Live</span></div>
       <p class="desc">Type a company, get a discounted-cashflow valuation - with every assumption, driver and step of the workings on show rather than a single black-box number.</p>
-      <span class="go">Visit site <span class="arw">→</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
@@ -164,7 +174,7 @@
     <div class="meta">
       <div class="head"><span class="name">Consensus Drift</span><span class="status s-live">Live</span></div>
       <p class="desc">Analyst earnings estimates plotted against what the share price actually did, across five equity markets.</p>
-      <span class="go">Visit site <span class="arw">&#8594;</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
@@ -173,7 +183,7 @@
     <div class="meta">
       <div class="head"><span class="name">The Lindy Curve</span><span class="status s-live">Live</span></div>
       <p class="desc">Every book on Project Gutenberg by age against how many people are reading it this month. Move one threshold and the answer changes sign.</p>
-      <span class="go">Visit site <span class="arw">&#8594;</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
@@ -182,7 +192,7 @@
     <div class="meta">
       <div class="head"><span class="name">One Story</span><span class="status s-live">Live</span></div>
       <p class="desc">One story a day, chosen by a transparent scoring model. No feed, no attention-chasing, no LLM in the loop.</p>
-      <span class="go">Visit site <span class="arw">→</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
@@ -191,7 +201,7 @@
     <div class="meta">
       <div class="head"><span class="name">The Aftertimes</span><span class="status s-live">Live</span></div>
       <p class="desc">Tomorrow's headlines, a little early - one machine-written news dispatch a day, datelined from a random point in the future.</p>
-      <span class="go">Visit site <span class="arw">&rarr;</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
@@ -200,7 +210,7 @@
     <div class="meta">
       <div class="head"><span class="name">Thinkerings</span><span class="status s-live">Live</span></div>
       <p class="desc">My Substack - essays on travel, tech, and whatever tangent I'm on.</p>
-      <span class="go">Visit site <span class="arw">→</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
@@ -209,7 +219,7 @@
     <div class="meta">
       <div class="head"><span class="name">Lexicon</span><span class="status s-live">Live</span></div>
       <p class="desc">A quiet place for words - a spaced-repetition vocabulary tool. Add a word, review what's due, and learn each one both ways: meaning and spelling.</p>
-      <span class="go">Visit site <span class="arw">→</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
@@ -218,7 +228,7 @@
     <div class="meta">
       <div class="head"><span class="name">Chronoscape</span><span class="status s-wip">In progress</span></div>
       <p class="desc">Pick a country, get its history as a timeline you can walk through on a map.</p>
-      <span class="go">Visit site <span class="arw">→</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
@@ -227,7 +237,7 @@
     <div class="meta">
       <div class="head"><span class="name">Beyond Small Talk</span><span class="status s-live">Live</span></div>
       <p class="desc">Questions for getting to know someone properly. One at a time, drawn at random.</p>
-      <span class="go">Visit site <span class="arw">→</span></span>
+      <span class="go">Visit site</span>
     </div>
   </a>
 
