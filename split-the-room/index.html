@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Split the Room</title>
+<meta name="description" content="Statements that split a room down the middle. One at a time, drawn at random. Agree or disagree.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Split the Room">
+<meta property="og:description" content="Statements that split a room down the middle. One at a time, drawn at random. Agree or disagree.">
+<meta property="og:url" content="https://charlietrenorden.com/split-the-room/">
+<meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<!-- favicon: "aperture" mark - matches the hub -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%231a212b'/><path d='M72.5 37 A26 26 0 1 0 72.5 63' fill='none' stroke='%2382a8ca' stroke-width='13' stroke-linecap='round'/><circle cx='50' cy='50' r='6.5' fill='%2382a8ca'/></svg>">
+<script>
+  /* set theme before paint to avoid a flash - same key as the hub */
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      var dark = saved ? saved === "dark"
+        : !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<link rel="stylesheet" href="/assets/room.css">
+<!-- Cloudflare Web Analytics - same estate-wide token as the hub root. See index.html. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "32b821209b5441a08df42ccf61c9e6c2"}'></script>
+</head>
+<body>
+<div class="page">
+  <div class="bar">
+    <a class="home" href="/"><span class="back">&larr;</span>Other projects</a>
+    <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
+  </div>
+
+  <nav class="tabs" aria-label="Modes">
+    <a class="tab" href="/beyond-small-talk/">Beyond small talk</a>
+    <a class="tab" href="/split-the-room/" aria-current="page">Split the room</a>
+  </nav>
+
+  <button class="stage" id="stage" type="button" aria-label="Show another statement">
+    <div class="qwrap"><p class="q len-s" id="q" aria-live="polite">&nbsp;</p></div>
+    <span class="hint">Another statement <span class="arw">&rarr;</span></span>
+  </button>
+
+  <p class="foot">Agree or disagree, then argue about it. These ones are mine.</p>
+</div>
+
+<script>
+window.ROOM = { items: [
+  "It's acceptable to lie to someone to protect their feelings.",
+  "You owe your parents nothing.",
+  "Ghosting is sometimes the kindest option.",
+  "Having children is a selfish act.",
+  "You should tell a friend when you think their partner is wrong for them.",
+  "Ambition is a personality flaw.",
+  "You should never get back together with an ex."
+] };
+</script>
+<script src="/assets/room.js"></script>
+</body>
+</html>

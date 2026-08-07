@@ -1,0 +1,98 @@
+/* Shared shell for the two "one thing at a time" pages: /beyond-small-talk and
+   /split-the-room. Extracted rather than duplicated - the pages are near identical,
+   so an inline copy in each would drift the first time one of them was tweaked.
+   The theme-init script stays inline in each page; it has to run before paint. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg: #0f1319; --ink: #e6e9ee; --soft: #8a94a3;
+  --faint: #5d6675; --rule: #262d38; --accent: #82a8ca;
+}
+:root[data-theme="dark"]  { --bg:#0f1319; --ink:#e6e9ee; --soft:#8a94a3; --faint:#5d6675; --rule:#262d38; --accent:#82a8ca; }
+:root[data-theme="light"] { --bg:#eef0f3; --ink:#14171c; --soft:#565d68; --faint:#868d99; --rule:#d7dbe2; --accent:#3a5f80; }
+
+html { -webkit-text-size-adjust: 100%; height: 100%; }
+body {
+  margin: 0; min-height: 100%; background: var(--bg); color: var(--ink);
+  font: 400 18px/1.65 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  -webkit-font-smoothing: antialiased; transition: background .3s, color .3s;
+  -webkit-tap-highlight-color: transparent;
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+
+.page { min-height: 100vh; min-height: 100dvh; max-width: 860px; margin: 0 auto;
+        padding: 2.2rem 1.5rem 2rem; display: flex; flex-direction: column; }
+
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+/* navigation, not a title - kept lighter than the tabs */
+.home { font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--soft); text-decoration: none;
+        display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; }
+.home:hover { color: var(--accent); }
+.home .back { color: var(--accent); font-size: 14px; }
+.toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
+          border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem;
+          font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em;
+          display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
+.toggle:hover { color: var(--ink); border-color: var(--accent); }
+.toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+/* Mode tabs. These are real links to real pages, so each mode has its own URL and
+   the browser back button works. They also serve as the page's name, which is why
+   there is no separate eyebrow. They sit OUTSIDE .stage deliberately - .stage is a
+   <button>, and a link inside a button is invalid and would fire both. */
+.tabs { display: flex; gap: 1.7rem; margin: 2.6rem 0 0; flex-wrap: wrap; }
+.tab { font: 600 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .16em;
+       text-transform: uppercase; color: var(--faint); text-decoration: none;
+       padding-bottom: .55rem; border-bottom: 2px solid transparent;
+       transition: color .2s, border-color .2s; }
+.tab:hover { color: var(--soft); }
+.tab[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* the whole middle of the page is the target */
+/* font/color must be inherited explicitly - a button takes neither from body */
+.stage { flex: 1; display: flex; flex-direction: column; justify-content: center;
+         align-items: flex-start; gap: 2rem; cursor: pointer; padding: 2.5rem 0;
+         border: none; background: none; text-align: left; width: 100%;
+         font: inherit; color: inherit; -webkit-appearance: none; appearance: none; }
+
+/* fixed box: the hint must not shift when the line length changes */
+.qwrap { width: 100%; min-height: 225px; display: flex; align-items: flex-start; }
+
+.q { font-weight: 400; line-height: 1.2; letter-spacing: -.015em; margin: 0;
+     text-wrap: balance; transition: opacity .2s ease; }
+.q.out { opacity: 0; }
+
+/* font steps by length, so long ones stay inside the same box */
+.q.len-s  { font-size: clamp(2rem,   5.6vw, 3rem);   max-width: 19ch; }
+.q.len-m  { font-size: clamp(1.8rem, 4.8vw, 2.5rem); max-width: 22ch; }
+.q.len-l  { font-size: clamp(1.5rem, 3.9vw, 2.1rem); max-width: 26ch; }
+.q.len-xl { font-size: clamp(1.3rem, 3.3vw, 1.8rem); max-width: 30ch; }
+
+.hint { font: 500 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--faint);
+        display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; }
+.hint .arw { color: var(--accent); transition: transform .25s; display: inline-block; }
+.stage:hover .hint { color: var(--soft); }
+.stage:hover .hint .arw { transform: translateX(4px); }
+
+/* Present on BOTH pages even though only one carries a credit - an absent footer
+   would change the stage height and make the content jump when switching tabs. */
+.foot { border-top: 1px solid var(--rule); padding-top: 1.4rem; margin: 0;
+        color: var(--faint); font: 400 13px/1.6 ui-sans-serif, system-ui, sans-serif; }
+.foot a { text-decoration: none; border-bottom: 1px solid var(--rule); padding-bottom: 1px;
+          transition: color .2s, border-color .2s; }
+.foot a:hover { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 680px) {
+  .page { padding-top: 1.6rem; }
+  .tabs { margin-top: 2rem; gap: 1.3rem; }
+  .stage { padding: 2rem 0; gap: 1.6rem; }
+  .qwrap { min-height: 175px; }
+  .q.len-s, .q.len-m, .q.len-l, .q.len-xl { max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .q { transition: none; }
+  .q.out { opacity: 1; }
+}

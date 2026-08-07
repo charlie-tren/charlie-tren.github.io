@@ -24,89 +24,7 @@
     } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
   })();
 </script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; }
-
-  :root {
-    --bg: #0f1319; --ink: #e6e9ee; --soft: #8a94a3;
-    --faint: #5d6675; --rule: #262d38; --accent: #82a8ca;
-  }
-  :root[data-theme="dark"]  { --bg:#0f1319; --ink:#e6e9ee; --soft:#8a94a3; --faint:#5d6675; --rule:#262d38; --accent:#82a8ca; }
-  :root[data-theme="light"] { --bg:#eef0f3; --ink:#14171c; --soft:#565d68; --faint:#868d99; --rule:#d7dbe2; --accent:#3a5f80; }
-
-  html { -webkit-text-size-adjust: 100%; height: 100%; }
-  body {
-    margin: 0; min-height: 100%; background: var(--bg); color: var(--ink);
-    font: 400 18px/1.65 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
-    -webkit-font-smoothing: antialiased; transition: background .3s, color .3s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  a { color: inherit; }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
-
-  .page { min-height: 100vh; min-height: 100dvh; max-width: 860px; margin: 0 auto;
-          padding: 2.2rem 1.5rem 2rem; display: flex; flex-direction: column; }
-
-  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-  /* navigation, not a title - kept lighter than the page's own name */
-  .home { font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
-          text-transform: uppercase; color: var(--soft); text-decoration: none;
-          display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; }
-  .home:hover { color: var(--accent); }
-  .home .back { color: var(--accent); font-size: 14px; }
-  .toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
-            border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem;
-            font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em;
-            display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
-  .toggle:hover { color: var(--ink); border-color: var(--accent); }
-  .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-
-  /* the whole middle of the page is the target */
-  /* font/color must be inherited explicitly - a button takes neither from body */
-  .stage { flex: 1; display: flex; flex-direction: column; justify-content: center;
-           align-items: flex-start; gap: 2rem; cursor: pointer; padding: 3rem 0;
-           border: none; background: none; text-align: left; width: 100%;
-           font: inherit; color: inherit; -webkit-appearance: none; appearance: none; }
-
-  .eyebrow { font: 600 15px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .2em;
-             text-transform: uppercase; color: var(--accent); margin: 0; }
-
-  /* fixed box: the eyebrow and hint must not shift when the question changes length */
-  .qwrap { width: 100%; min-height: 225px; display: flex; align-items: flex-start; }
-
-  .q { font-weight: 400; line-height: 1.2; letter-spacing: -.015em; margin: 0;
-       text-wrap: balance; transition: opacity .2s ease; }
-  .q.out { opacity: 0; }
-
-  /* font steps by question length, so long ones stay inside the same box */
-  .q.len-s  { font-size: clamp(2rem,   5.6vw, 3rem);   max-width: 19ch; }
-  .q.len-m  { font-size: clamp(1.8rem, 4.8vw, 2.5rem); max-width: 22ch; }
-  .q.len-l  { font-size: clamp(1.5rem, 3.9vw, 2.1rem); max-width: 26ch; }
-  .q.len-xl { font-size: clamp(1.3rem, 3.3vw, 1.8rem); max-width: 30ch; }
-
-  .hint { font: 500 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--faint);
-          display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; }
-  .hint .arw { color: var(--accent); transition: transform .25s; display: inline-block; }
-  .stage:hover .hint { color: var(--soft); }
-  .stage:hover .hint .arw { transform: translateX(4px); }
-
-  .foot { border-top: 1px solid var(--rule); padding-top: 1.4rem; margin: 0;
-          color: var(--faint); font: 400 13px/1.6 ui-sans-serif, system-ui, sans-serif; }
-  .foot a { text-decoration: none; border-bottom: 1px solid var(--rule); padding-bottom: 1px;
-            transition: color .2s, border-color .2s; }
-  .foot a:hover { color: var(--accent); border-color: var(--accent); }
-
-  @media (max-width: 680px) {
-    .page { padding-top: 1.6rem; }
-    .stage { padding: 2rem 0; gap: 1.6rem; }
-    .qwrap { min-height: 175px; }
-    .q.len-s, .q.len-m, .q.len-l, .q.len-xl { max-width: none; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .q { transition: none; }
-    .q.out { opacity: 1; transform: none; }
-  }
-</style>
+<link rel="stylesheet" href="/assets/room.css">
 <!-- Cloudflare Web Analytics - same estate-wide token as the hub root. See index.html. -->
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "32b821209b5441a08df42ccf61c9e6c2"}'></script>
 </head>
@@ -117,8 +35,12 @@
     <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
   </div>
 
+  <nav class="tabs" aria-label="Modes">
+    <a class="tab" href="/beyond-small-talk/" aria-current="page">Beyond small talk</a>
+    <a class="tab" href="/split-the-room/">Split the room</a>
+  </nav>
+
   <button class="stage" id="stage" type="button" aria-label="Show another question">
-    <span class="eyebrow">Beyond Small Talk</span>
     <div class="qwrap"><p class="q len-s" id="q" aria-live="polite">&nbsp;</p></div>
     <span class="hint">Another question <span class="arw">&rarr;</span></span>
   </button>
@@ -127,134 +49,65 @@
 </div>
 
 <script>
-(function () {
-  var QUESTIONS = [
-    "How are you mad?",
-    "If you had the option to know the date of your death, would you want to?",
-    "What do you believe but cannot prove?",
-    "To what extent do people change?",
-    "What would you regret if you died tomorrow?",
-    "What is the most worthwhile conversation you've had recently?",
-    "What's the drunkest you've ever been?",
-    "What's the highest you've ever been?",
-    "If you could go back five years, what would you do differently?",
-    "What's the best advice you've ever received?",
-    "What is the most valuable object you own?",
-    "Would you rather lose your sight or your memories?",
-    "Would you rather have access to all the music ever recorded but no musical ability, or be able to play any instrument perfectly but never listen to a recording again?",
-    "You die, and you have the option to follow one person for the day after your death. Who do you choose, and why?",
-    "What is the luckiest thing that has happened to you?",
-    "Do you consider yourself a lucky person?",
-    "What are you pretending not to know?",
-    "What do people consistently get wrong about you?",
-    "Who do you envy, and for what?",
-    "Who would you call at 3am, and would they answer?",
-    "What's the closest you've come to dying?",
-    "Which of your parents are you more like, and how do you feel about that?",
-    "What would have to happen for you to call your life a failure?",
-    "What do you find beautiful that most people don't?",
-    "What's a decision you made quickly that shaped your whole life?",
-    "What are you still angry about?",
-    "What did your childhood teach you that you've had to unlearn?",
-    "Who do you miss but wouldn't contact?",
-    "When have you been genuinely afraid?",
-    "Given the choice of anyone in the world, whom would you want as a dinner guest?",
-    "Would you like to be famous? In what way?",
-    "Before making a telephone call, do you ever rehearse what you are going to say? Why?",
-    "What would constitute a perfect day for you?",
-    "When did you last sing to yourself? To someone else?",
-    "If you could live to 90 and keep either the mind or the body of a 30-year-old for the last 60 years, which would you want?",
-    "Do you have a secret hunch about how you will die?",
-    "For what in your life do you feel most grateful?",
-    "If you could change anything about the way you were raised, what would it be?",
-    "Take four minutes and tell the person you're with your life story, in as much detail as possible.",
-    "If you could wake up tomorrow having gained any one quality or ability, what would it be?",
-    "If a crystal ball could tell you the truth about yourself, your life, the future or anything else, what would you want to know?",
-    "Is there something you've dreamed of doing for a long time? Why haven't you done it?",
-    "What is the greatest accomplishment of your life?",
-    "What do you value most in a friendship?",
-    "What is your most treasured memory?",
-    "What is your most terrible memory?",
-    "If you knew that in one year you would die suddenly, would you change anything about the way you are living now? Why?",
-    "What does friendship mean to you?",
-    "How close and warm is your family? Do you feel your childhood was happier than most other people's?",
-    "How do you feel about your relationship with your mother?",
-    "Share an embarrassing moment in your life.",
-    "When did you last cry in front of another person? By yourself?",
-    "What, if anything, is too serious to be joked about?",
-    "If you were to die this evening with no opportunity to communicate with anyone, what would you most regret not having told someone? Why haven't you told them yet?",
-    "Your house, containing everything you own, catches fire. After saving your loved ones and pets, you have time for one final dash to save a single item. What would it be? Why?",
-    "Of all the people in your family, whose death would you find most disturbing? Why?"
-  ];
-
-  var qEl = document.getElementById("q");
-  var stage = document.getElementById("stage");
-  var bag = [], last = null;
-
-  /* shuffle bag: every question shows once before any repeats */
-  function refill() {
-    bag = QUESTIONS.slice();
-    for (var i = bag.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var t = bag[i]; bag[i] = bag[j]; bag[j] = t;
-    }
-    /* don't let a new bag open on the question just shown */
-    if (bag.length > 1 && bag[bag.length - 1] === last) {
-      var swap = bag.pop(); bag.unshift(swap);
-    }
-  }
-
-  function draw() {
-    if (!bag.length) refill();
-    last = bag.pop();
-    return last;
-  }
-
-  /* shorter questions get bigger type; the box height stays fixed either way */
-  function bucket(t) {
-    var n = t.length;
-    return n <= 45 ? "len-s" : n <= 80 ? "len-m" : n <= 120 ? "len-l" : "len-xl";
-  }
-
-  function paint(text) {
-    qEl.textContent = text;
-    qEl.className = "q " + bucket(text);   /* also clears .out, fading it back in */
-  }
-
-  var busy = false;
-  function next(animate) {
-    if (busy) return;
-    if (!animate) { paint(draw()); return; }
-    busy = true;
-    qEl.classList.add("out");
-    setTimeout(function () {
-      paint(draw());
-      busy = false;
-    }, 200);
-  }
-
-  stage.addEventListener("click", function () { next(true); });
-  document.addEventListener("keydown", function (e) {
-    if (e.key === " " || e.key === "ArrowRight" || e.key === "ArrowDown") {
-      e.preventDefault();
-      next(true);
-    }
-  });
-
-  next(false);
-
-  /* theme toggle - shares localStorage with the hub */
-  var root = document.documentElement;
-  var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
-  function sync() { lbl.textContent = root.getAttribute("data-theme") === "dark" ? "Dark" : "Light"; }
-  sync();
-  btn.addEventListener("click", function () {
-    var dark = root.getAttribute("data-theme") !== "dark";
-    root.setAttribute("data-theme", dark ? "dark" : "light");
-    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
-    sync();
-  });
-})();
+window.ROOM = { items: [
+  "How are you mad?",
+  "If you had the option to know the date of your death, would you want to?",
+  "What do you believe but cannot prove?",
+  "To what extent do people change?",
+  "What would you regret if you died tomorrow?",
+  "What is the most worthwhile conversation you've had recently?",
+  "What's the drunkest you've ever been?",
+  "What's the highest you've ever been?",
+  "If you could go back five years, what would you do differently?",
+  "What's the best advice you've ever received?",
+  "What is the most valuable object you own?",
+  "Would you rather lose your sight or your memories?",
+  "Would you rather have access to all the music ever recorded but no musical ability, or be able to play any instrument perfectly but never listen to a recording again?",
+  "You die, and you have the option to follow one person for the day after your death. Who do you choose, and why?",
+  "What is the luckiest thing that has happened to you?",
+  "Do you consider yourself a lucky person?",
+  "What are you pretending not to know?",
+  "What do people consistently get wrong about you?",
+  "Who do you envy, and for what?",
+  "Who would you call at 3am, and would they answer?",
+  "What's the closest you've come to dying?",
+  "Which of your parents are you more like, and how do you feel about that?",
+  "What would have to happen for you to call your life a failure?",
+  "What do you find beautiful that most people don't?",
+  "What's a decision you made quickly that shaped your whole life?",
+  "What are you still angry about?",
+  "What did your childhood teach you that you've had to unlearn?",
+  "Who do you miss but wouldn't contact?",
+  "When have you been genuinely afraid?",
+  "Given the choice of anyone in the world, whom would you want as a dinner guest?",
+  "Would you like to be famous? In what way?",
+  "Before making a telephone call, do you ever rehearse what you are going to say? Why?",
+  "What would constitute a perfect day for you?",
+  "When did you last sing to yourself? To someone else?",
+  "If you could live to 90 and keep either the mind or the body of a 30-year-old for the last 60 years, which would you want?",
+  "Do you have a secret hunch about how you will die?",
+  "For what in your life do you feel most grateful?",
+  "If you could change anything about the way you were raised, what would it be?",
+  "Take four minutes and tell the person you're with your life story, in as much detail as possible.",
+  "If you could wake up tomorrow having gained any one quality or ability, what would it be?",
+  "If a crystal ball could tell you the truth about yourself, your life, the future or anything else, what would you want to know?",
+  "Is there something you've dreamed of doing for a long time? Why haven't you done it?",
+  "What is the greatest accomplishment of your life?",
+  "What do you value most in a friendship?",
+  "What is your most treasured memory?",
+  "What is your most terrible memory?",
+  "If you knew that in one year you would die suddenly, would you change anything about the way you are living now? Why?",
+  "What does friendship mean to you?",
+  "How close and warm is your family? Do you feel your childhood was happier than most other people's?",
+  "How do you feel about your relationship with your mother?",
+  "Share an embarrassing moment in your life.",
+  "When did you last cry in front of another person? By yourself?",
+  "What, if anything, is too serious to be joked about?",
+  "If you were to die this evening with no opportunity to communicate with anyone, what would you most regret not having told someone? Why haven't you told them yet?",
+  "Your house, containing everything you own, catches fire. After saving your loved ones and pets, you have time for one final dash to save a single item. What would it be? Why?",
+  "Of all the people in your family, whose death would you find most disturbing? Why?"
+] };
 </script>
+<script src="/assets/room.js"></script>
 </body>
 </html>
