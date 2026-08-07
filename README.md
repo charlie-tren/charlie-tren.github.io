@@ -20,23 +20,43 @@ Personal hub - a single landing page linking to my projects, built to attach to 
 | Chronoscape | In progress | https://chronoscape.charlietrenorden.com/ |
 | Beyond Small Talk | Live | https://charlietrenorden.com/beyond-small-talk/ (self-hosted in this repo, `/beyond-small-talk`) |
 
-`Beyond Small Talk` is a single-file random-question page - one question at a time, click or
-tap for another. It draws from a shuffle bag over 56 questions, so every question shows once
-before any repeats, and a fresh bag never opens on the question just shown. Add or remove
-entries in the `QUESTIONS` array in `beyond-small-talk/index.html`; nothing else needs
-touching. A few questions come from Aron et al. (1997), credited and linked in the footer.
+| Split the Room | Live | https://charlietrenorden.com/split-the-room/ (self-hosted in this repo, `/split-the-room`) |
 
-Four gotchas if you edit it.
+### Beyond Small Talk and Split the Room
 
-1. The question sits inside a `<button>`, which inherits neither `font` nor `color` from
-   `body`. Both are set explicitly on `.stage` - don't drop them, or the question renders
-   in the browser's default button font.
-2. `.qwrap` has a fixed `min-height` (225px desktop, 175px mobile) so the eyebrow and the
-   hint don't shift when question length changes. If you add a question longer than the
-   current longest, re-check it still fits - the tightest margin is 18px at 900px wide.
-3. Font size steps by question length via the `len-s`/`len-m`/`len-l`/`len-xl` classes,
-   assigned in `bucket()`. The thresholds and the CSS must stay in sync.
-4. To re-shoot `assets/beyond-small-talk.png`: copy `index.html` to a temp `_shot.html`,
+**Two pages, one shell.** Both show one line at a time and swap it on click or tap:
+`/beyond-small-talk` is questions, `/split-the-room` is agree-or-disagree statements. Each
+draws from its own shuffle bag, so every line shows once before any repeats and a fresh bag
+never opens on the line just shown. A few of the questions come from Aron et al. (1997),
+credited and linked in that page's footer; the statements are Charlie's.
+
+They are **deliberately two real pages rather than one page with tabs**, so each mode has
+its own URL, its own title and its own link preview, and the back button works. The tabs are
+plain `<a>` links between them. Because the URL is the state, there is no stored "last tab" -
+that would be actively wrong, since the hub card points at `/beyond-small-talk/` and should
+always open questions.
+
+The shared shell lives in `assets/room.css` and `assets/room.js`; each page supplies only its
+own content via `window.ROOM = { items: [...] }` before loading the script. **Add or remove
+lines in that array - nothing else needs touching.** The shell was extracted rather than
+copied precisely because two near-identical inline copies would drift the first time one was
+edited.
+
+Five gotchas if you edit them.
+
+1. The line sits inside a `<button>`, which inherits neither `font` nor `color` from
+   `body`. Both are set explicitly on `.stage` - don't drop them, or it renders in the
+   browser's default button font.
+2. `.qwrap` has a fixed `min-height` (225px desktop, 175px mobile) so the tabs and the
+   hint don't shift when line length changes. If you add a line longer than the current
+   longest, re-check it still fits - the tightest margin is 18px at 900px wide.
+3. Font size steps by length via the `len-s`/`len-m`/`len-l`/`len-xl` classes, assigned in
+   `bucket()` in `room.js`. The thresholds there and the CSS must stay in sync.
+4. **The tabs must stay outside `.stage`.** `.stage` is a `<button>`; a link inside a button
+   is invalid HTML, and clicking a tab would also fire the next-line handler.
+5. Card thumbnails are now produced by `tools/shoot_thumbnails.py`, which pins the question
+   via `#q` and `.q.len-s` (see its `PREPARE` map) so the card never draws a random line.
+   Keep that id and those classes. To re-shoot by hand instead: copy `index.html` to a temp `_shot.html`,
    inject a style pinning `html/body` to exactly 1280x800 plus a script forcing dark theme
    and one fixed question, then run headless Edge and delete the temp file:
 
