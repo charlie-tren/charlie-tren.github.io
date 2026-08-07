@@ -1,0 +1,60 @@
+name: Refresh card thumbnails
+
+# One Story and The Aftertimes both republish at 20:00 UTC, so the daily shot
+# waits an hour and a bit for their crons to land and Pages to rebuild. Odd
+# minutes on purpose: GitHub's scheduler runs late and drops on-the-hour jobs.
+on:
+  schedule:
+    - cron: "37 21 * * *"      # daily - the two sites that change every day
+    - cron: "43 21 * * 1"      # Mondays - all nine, in case a site was redesigned
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "daily, weekly, or a single slug"
+        required: false
+        default: weekly
+
+jobs:
+  shoot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          pip install --quiet playwright pillow
+          playwright install --with-deps chromium
+
+      - name: Pick the target
+        id: target
+        run: |
+          if [ -n "${{ inputs.target }}" ]; then
+            echo "value=${{ inputs.target }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "43 21 * * 1" ]; then
+            echo "value=weekly" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=daily" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Shoot
+        run: python tools/shoot_thumbnails.py ${{ steps.target.outputs.value }}
+
+      - name: Commit anything that actually changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets
+          # The script leaves visually-identical shots alone, so an empty diff
+          # here is the normal outcome on a quiet week - not a failure.
+          if git diff --cached --quiet; then
+            echo "No thumbnail changed."
+            exit 0
+          fi
+          git commit -m "Refresh card thumbnails (${{ steps.target.outputs.value }})"
+          git push
