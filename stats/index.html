@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site stats</title>
+<link rel="canonical" href="https://site-stats-cus.pages.dev/">
+<meta http-equiv="refresh" content="0; url=https://site-stats-cus.pages.dev/">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%231a212b'/><path d='M72.5 37 A26 26 0 1 0 72.5 63' fill='none' stroke='%2382a8ca' stroke-width='13' stroke-linecap='round'/><circle cx='50' cy='50' r='6.5' fill='%2382a8ca'/></svg>">
+<style>
+  html { color-scheme: dark light; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+         background: #0f1319; color: #8a94a3;
+         font: 400 17px/1.6 "Iowan Old Style", Palatino, Georgia, serif; }
+  a { color: #82a8ca; }
+  @media (prefers-color-scheme: light) { body { background: #eef0f3; color: #565d68; } a { color: #3a5f80; } }
+</style>
+</head>
+<body>
+  <!-- A redirect, not a host: the apex is GitHub Pages on a DNS-only record, so a real
+       subpath here cannot route to Cloudflare Pages without proxying the apex - which
+       breaks the GitHub certificate. Same pattern as the other short URLs in this repo.
+       The destination is gated, so this being public gives nothing away: anyone without
+       the key lands on a 404. -->
+  <p>Taking you to the stats - <a href="https://site-stats-cus.pages.dev/">continue</a> if nothing happens.</p>
+  <script>location.replace("https://site-stats-cus.pages.dev/");</script>
+</body>
+</html>
