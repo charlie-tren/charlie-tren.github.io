@@ -88,6 +88,9 @@
   .s-wip { color: var(--faint); border: 1px solid var(--rule); }
 
   .foot { margin-top: 4rem; color: var(--faint); font: 400 14px/1.6 ui-sans-serif, system-ui, sans-serif; }
+  .foot .sep { margin: 0 .5rem; opacity: .5; }
+  .foot .quiet { color: var(--faint); text-decoration: none; }
+  .foot .quiet:hover { color: var(--accent); }
 
   /* also-built: compact, non-clickable overview entries */
   .also-item { padding: 1.25rem 0; border-top: 1px solid var(--rule); }
@@ -306,7 +309,11 @@
     <p class="also-tech">Python</p>
   </div>
 
-  <p class="foot">Sydney, Australia</p>
+  <p class="foot">Sydney, Australia
+    <!-- Gated: opens only for a browser holding the key cookie, 404s for everyone
+         else, so it is safe to link from a public page. -->
+    <span class="sep">&middot;</span><a class="quiet" href="https://site-stats-cus.pages.dev/">Stats</a>
+  </p>
 </div>
 
 <script>

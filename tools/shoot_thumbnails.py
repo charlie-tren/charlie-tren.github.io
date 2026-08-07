@@ -78,6 +78,7 @@ DISMISS = {
 # so there is margin available to spend.
 FIT = ["lexicon", "chronoscape"]
 VIEW_FIT = {"width": 1800, "height": 1150}
+MAX_WIDEN = 1.35        # how much side margin the frame may spend before the type gets too small
 
 # Sites that look better - or are designed - dark. Playwright emulates light by
 # default, so a site that keys off prefers-color-scheme renders in its light theme
@@ -203,7 +204,12 @@ def framed(page, slug, raw, scale=SCALE):
         # Widen the frame until the content's real height fits inside it, spending
         # the side margin rather than shrinking the page. Centred on the content so
         # the extra space is taken evenly from both sides.
-        need = (content_height(page) - box["y0"]) * 16 / 10
+        #
+        # Capped: widening all the way makes the content small in the card - Lexicon
+        # went from clipped to unreadably zoomed out at full widening. Past the cap,
+        # accept that the last few pixels of the page fall outside the frame.
+        need = min((content_height(page) - box["y0"]) * 16 / 10,
+                   (x1 - x0) * MAX_WIDEN)
         if need > x1 - x0:
             mid = (x0 + x1) / 2
             half = min(need, view["width"]) / 2
