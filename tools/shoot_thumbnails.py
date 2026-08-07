@@ -50,7 +50,9 @@ SITES = {
     # a country page, not the picker - the landing page is three pills and a
     # half-empty card, which made for a thumbnail showing none of the product
     "chronoscape": "https://chronoscape.charlietrenorden.com/iceland/",
-    "thinkerings": "https://thinkerings.substack.com/",
+    # /archive rather than the root: Substack puts a subscribe interstitial over
+    # the home page, and DISMISS only clears it once the post list is what loads
+    "thinkerings": "https://thinkerings.substack.com/archive",
     "lexicon": "https://charlietrenorden.com/lexicon/",
     "beyond-small-talk": "https://charlietrenorden.com/beyond-small-talk/",
 }
@@ -58,6 +60,26 @@ SITES = {
 # One Story and The Aftertimes republish every day, so their thumbnails are
 # stale within 24 hours. Everything else only moves when its code does.
 DAILY = ["one-story", "the-aftertimes"]
+
+# A modal or interstitial in the way. Clicked, then given a moment to clear.
+DISMISS = {
+    "thinkerings": "text=No thanks",     # Substack's subscribe interstitial
+}
+
+# Some pages put more above the fold than fits a 16:10 frame at the width of
+# their content column, so the crop lopped the bottom off. Zooming the page out
+# fits more in without widening the frame back out into the dead margin.
+ZOOM = {
+    "lexicon": 0.60,
+    "chronoscape": 0.72,
+}
+
+# Sites that look better - or are designed - dark. Playwright emulates light by
+# default, so a site that keys off prefers-color-scheme renders in its light theme
+# unless told otherwise.
+SCHEME = {
+    "beyond-small-talk": "dark",
+}
 
 # Pages whose top is a masthead rather than the product: frame on an element
 # instead. `context_above` is the share of the frame height spent on whatever sits
@@ -177,6 +199,7 @@ def main():
         ctx = browser.new_context(viewport=VIEW, device_scale_factor=SCALE)
         page = ctx.new_page()
         for slug in slugs:
+            page.emulate_media(color_scheme=SCHEME.get(slug, "light"))
             try:
                 page.goto(SITES[slug], wait_until="networkidle", timeout=60000)
             except Exception as exc:                # noqa: BLE001
@@ -185,6 +208,17 @@ def main():
                 print(f"{slug:<18} SKIPPED - {type(exc).__name__}: {exc}"[:140])
                 continue
             page.wait_for_timeout(2500)             # client-drawn charts
+
+            if slug in DISMISS:
+                try:
+                    page.click(DISMISS[slug], timeout=4000)
+                    page.wait_for_timeout(900)
+                except Exception:                    # noqa: BLE001
+                    pass                             # the modal may not have shown
+
+            if slug in ZOOM:
+                page.evaluate("z => document.documentElement.style.zoom = z", ZOOM[slug])
+                page.wait_for_timeout(500)           # let reflow settle before measuring
 
             im = framed(page, slug, tmp / f"{slug}.png")
             if im.width > TARGET_W:

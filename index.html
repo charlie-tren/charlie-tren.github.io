@@ -100,8 +100,10 @@
 
   /* schematic motif for the projects with no public site - drawn, not screenshotted,
      so nothing from a Bloomberg-fed or position-holding app is ever published */
-  .also-item { display: grid; grid-template-columns: 168px 1fr; gap: 1.6rem; align-items: start; }
-  .also-motif { background: var(--motif-bg); border: 1px solid var(--rule); border-radius: 6px; aspect-ratio: 16 / 10; overflow: hidden; }
+  .also-item { display: grid; grid-template-columns: 1fr 168px; gap: 1.6rem; align-items: start; }
+  /* motif sits on the right, but stays first in the DOM so a screen reader
+     and the no-CSS fallback both hit the heading before the picture */
+  .also-motif { order: 2; background: var(--motif-bg); border: 1px solid var(--rule); border-radius: 6px; aspect-ratio: 16 / 10; overflow: hidden; }
   .also-motif svg { display: block; width: 100%; height: 100%; }
 
   /* also-built: scannable lead + bullet list */
@@ -117,7 +119,7 @@
     .proj, .proj:nth-child(even of .proj) { grid-template-columns: 1fr; gap: 1.1rem; }
     .proj:nth-child(even of .proj) .thumb { order: 0; }
     .also-item { grid-template-columns: 1fr; gap: 1rem; }
-    .also-motif { max-width: 220px; }
+    .also-motif { order: 0; max-width: 220px; }
   }
   @media (prefers-reduced-motion: no-preference) {
     .section-label, .proj { animation: rise .7s cubic-bezier(.2,.7,.3,1) both; }
@@ -182,7 +184,7 @@
   </a>
 
   <a class="proj" href="https://aftertimes.charlietrenorden.com/">
-    <div class="thumb"><img src="assets/the-aftertimes.webp" alt="Screenshot of The Aftertimes homepage" loading="lazy" width="1400" height="875"></div>
+    <div class="thumb"><img src="assets/the-aftertimes.webp" alt="Screenshot of The Aftertimes homepage" loading="lazy" width="1400" height="874"></div>
     <div class="meta">
       <div class="head"><span class="name">The Aftertimes</span><span class="status s-live">Live</span></div>
       <p class="desc">Tomorrow's headlines, a little early - one machine-written news dispatch a day, datelined from a random point in the future.</p>
@@ -200,7 +202,7 @@
   </a>
 
   <a class="proj" href="lexicon/">
-    <div class="thumb"><img src="assets/lexicon.webp" alt="Screenshot of the Lexicon vocabulary review app" loading="lazy" width="1400" height="875"></div>
+    <div class="thumb"><img src="assets/lexicon.webp" alt="Screenshot of the Lexicon vocabulary review app" loading="lazy" width="912" height="570"></div>
     <div class="meta">
       <div class="head"><span class="name">Lexicon</span><span class="status s-live">Live</span></div>
       <p class="desc">A quiet place for words - a spaced-repetition vocabulary tool. Add a word, review what's due, and learn each one both ways: meaning and spelling.</p>
