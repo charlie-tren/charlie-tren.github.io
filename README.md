@@ -56,24 +56,18 @@ Five gotchas if you edit them.
    is invalid HTML, and clicking a tab would also fire the next-line handler.
 5. Card thumbnails are now produced by `tools/shoot_thumbnails.py`, which pins the question
    via `#q` and `.q.len-s` (see its `PREPARE` map) so the card never draws a random line.
-   Keep that id and those classes. To re-shoot by hand instead: copy `index.html` to a temp `_shot.html`,
-   inject a style pinning `html/body` to exactly 1280x800 plus a script forcing dark theme
-   and one fixed question, then run headless Edge and delete the temp file:
+   Keep that id and those classes. **Use the script - do not re-shoot by hand.** This
+   section used to give a `msedge --headless=new --screenshot` command; that no longer
+   works. Retested 08/08/2026: Edge writes no file at all and reports no error, which is
+   the worst possible failure because a stale PNG stays in place and the shot looks done.
+   The devtools screenshot tool is not a fallback either - it produced a frame with the
+   top bar duplicated and the footer missing, then hung.
 
-   ```
-   msedge.exe --headless=new --disable-gpu --hide-scrollbars \
-     --force-device-scale-factor=1.5 --screenshot="assets/beyond-small-talk.png" \
-     --window-size=860,538 "http://127.0.0.1:8899/beyond-small-talk/_shot.html"
-   ```
-
-   Pinning the box is necessary because the browser window won't give a viewport taller
-   than 667. Do it this way rather than via devtools screenshots - those produced a frame
-   with the top bar duplicated and the footer missing, then hung outright.
-
-   Shoot at 860x538, NOT at 1280x800. The page is mostly deliberate empty space, so a
-   wide shot shrinks to an empty rectangle in a 320px card. The narrower frame keeps the
-   16:10 ratio while making the type fill it. Use a question that wraps to three lines
-   for the same reason - a one-liner leaves a hole where `.qwrap` reserves its height.
+   Two framing rules the script encodes, worth keeping if it is ever rewritten. **Shoot at
+   860x538, not 1280x800.** Same 16:10 ratio, but the page is mostly deliberate empty
+   space, so a wide shot shrinks to an empty rectangle in a 320px card. And **pin a
+   question that wraps to three lines** - a one-liner leaves a visible hole where
+   `.qwrap` reserves its fixed height.
 
 ## Notes and roadmap
 
