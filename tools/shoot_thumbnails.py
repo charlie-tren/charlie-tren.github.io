@@ -45,7 +45,7 @@ SITES = {
     "one-story": "https://one-story.charlietrenorden.com/",
     "the-aftertimes": "https://aftertimes.charlietrenorden.com/",
     "consensus-drift": "https://charlietrenorden.com/consensus-drift/",
-    "lindy-curve": "https://charlietrenorden.com/lindy-curve/",
+    "lindy-effect": "https://charlietrenorden.com/lindy-effect/",
     "crowdwise": "https://crowdwise.charlietrenorden.com/",
     "dcf-studio": "https://dcf.charlietrenorden.com/GOOGL",
     # a country page, not the picker - the landing page is three pills and a
