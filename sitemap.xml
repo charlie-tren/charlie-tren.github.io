@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Only genuinely-hosted, indexable pages belong here.
+  DELIBERATELY EXCLUDED, do not "helpfully" add them back:
+    - the redirect stubs (/chronoscape/, /crowdwise/, /dcf-studio/, /one-story/,
+      /the-aftertimes/, /thinkerings/, /lindy-curve/) - they carry noindex and bounce,
+      so listing them just earns "Page with redirect" warnings in Search Console
+    - /stats/ - private and key-gated, must never be submitted for indexing
+    - the project subdomains (crowdwise., dcf., one-story., aftertimes.) - a sitemap
+      may only list URLs inside its own property, which is https://charlietrenorden.com/
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://charlietrenorden.com/</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://charlietrenorden.com/beyond-small-talk/</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://charlietrenorden.com/split-the-room/</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://charlietrenorden.com/lexicon/</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://charlietrenorden.com/consensus-drift/</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://charlietrenorden.com/lindy-effect/</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+</urlset>
