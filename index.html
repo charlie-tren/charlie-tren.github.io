@@ -327,10 +327,8 @@
 
   <p class="foot">Sydney, Australia
     <!-- Hidden unless this browser has been opted in with #stats-on. The flag only
-         controls whether the LINK is shown; the page itself is gated server-side, so
-         a reader who forges the flag still gets a 404.
-         Points at stats.charlietrenorden.com - a real host, not a redirect, so the
-         address bar stays on the domain. /stats/ still works as a short URL. -->
+         controls whether the LINK is shown; the page itself is behind Cloudflare
+         Access, so forging the flag just gets you a login prompt you cannot pass. -->
     <span id="statsLink" hidden><span class="sep">&middot;</span><a class="quiet" href="https://stats.charlietrenorden.com/">Stats</a></span>
   </p>
 </div>
@@ -339,28 +337,19 @@
   /* Show the stats link only on a browser that has opted in: load the site once
      with #stats-on. This is presentation, not security - the dashboard is gated
      server-side and 404s for anyone without the key cookie. */
-  /* Opt in with #stats-on=<key>. The key is kept in localStorage, never in this
-     file, and the link carries it - so the dashboard opens first click on any device
-     opted in, without re-pasting the key. Cookies are per-HOST, which is the trap:
-     access granted on one hostname does not carry to another, so a host change used
-     to mean a manual re-visit. #stats-on with no key still just reveals the link. */
+  /* The dashboard is behind Cloudflare Access, so the LINK is all that hides -
+     not the data. #stats-on shows it on this browser, #stats-off hides it again.
+     No key here any more: Access asks for an email PIN at the edge. */
   function syncStatsLink() {
     try {
-      var m = location.hash.match(/^#stats-on(?:=(.+))?$/);
-      if (m) {
-        localStorage.setItem("stats", m[1] ? decodeURIComponent(m[1]) : "1");
+      if (location.hash === "#stats-on") {
+        localStorage.setItem("stats", "1");
         history.replaceState(null, "", location.pathname);
       } else if (location.hash === "#stats-off") {
         localStorage.removeItem("stats");
         history.replaceState(null, "", location.pathname);
       }
-      var v = localStorage.getItem("stats");
-      var el = document.getElementById("statsLink");
-      el.hidden = !v;
-      if (v && v !== "1") {
-        el.querySelector("a").href =
-          "https://stats.charlietrenorden.com/?k=" + encodeURIComponent(v);
-      }
+      document.getElementById("statsLink").hidden = localStorage.getItem("stats") !== "1";
     } catch (e) { /* private mode: leave it hidden */ }
   }
   /* also on hashchange: adding the hash to a page already open is a same-document
