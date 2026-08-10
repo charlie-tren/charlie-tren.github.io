@@ -1,0 +1,9 @@
+# charlietrenorden.com
+# Everything here is meant to be crawlable. The only thing worth keeping out is the
+# private stats dashboard, which is key-gated anyway - this is belt and braces, and a
+# reminder that a robots rule is NOT a security control.
+User-agent: *
+Allow: /
+Disallow: /stats/
+
+Sitemap: https://charlietrenorden.com/sitemap.xml
