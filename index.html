@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Charlie Trenorden</title>
-<meta name="description" content="Charlie Trenorden - Sydney, financial markets. A few small web tools I've built on the side.">
+<meta name="description" content="Small web projects from Sydney: a transparent DCF, prediction-market odds, sell-side estimate revisions, a daily single-story news site, and a few word games.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Charlie Trenorden">
 <meta property="og:description" content="A few small web tools I've built on the side, from Sydney: prediction-market macro odds, a transparent DCF, a daily single-story news site, and some quieter experiments.">
@@ -14,8 +14,14 @@
 <meta property="og:image:height" content="1260">
 <meta property="og:image:alt" content="Charlie Trenorden - Sydney, financial markets.">
 <meta name="twitter:card" content="summary_large_image">
-<!-- favicon: "aperture" mark - dark tile, slate broken ring + centre dot -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%231a212b'/><path d='M72.5 37 A26 26 0 1 0 72.5 63' fill='none' stroke='%2382a8ca' stroke-width='13' stroke-linecap='round'/><circle cx='50' cy='50' r='6.5' fill='%2382a8ca'/></svg>">
+<!-- favicon: "aperture" mark - dark tile, slate broken ring + centre dot.
+     These MUST be real files, not the data: URI this used to be. Browsers render
+     a data URI fine, which is why the tab always looked right, but Google does not
+     support them and fell back to a generic globe in search results. /favicon.ico
+     at the root is Google's fallback and covers the redirect stubs too. -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/favicon-192.png">
 <script>
   /* set theme before paint to avoid a flash */
   (function () {
