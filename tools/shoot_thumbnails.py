@@ -56,7 +56,6 @@ SITES = {
     "thinkerings": "https://thinkerings.substack.com/archive",
     "lexicon": "https://charlietrenorden.com/lexicon/",
     "beyond-small-talk": "https://charlietrenorden.com/beyond-small-talk/",
-    "split-the-room": "https://charlietrenorden.com/split-the-room/",
 }
 
 # One Story and The Aftertimes republish every day, so their thumbnails are
@@ -94,14 +93,6 @@ PREPARE = {
         q.textContent = 'What are you pretending not to know?';
         q.className = 'q len-s';
     }""",
-    # Same engine, same contract. Pinned rather than left to chance for the same
-    # reason, and picked at a length that wraps to three lines - a one-liner leaves
-    # a visible hole where .qwrap reserves its fixed height.
-    "split-the-room": """() => {
-        const q = document.getElementById('q');
-        q.textContent = 'Ambition is a personality flaw.';
-        q.className = 'q len-s';
-    }""",
 }
 
 # Sites that look better - or are designed - dark. Playwright emulates light by
@@ -109,7 +100,6 @@ PREPARE = {
 # unless told otherwise.
 SCHEME = {
     "beyond-small-talk": "dark",
-    "split-the-room": "dark",
 }
 
 # Pages whose top is a masthead rather than the product: frame on an element
