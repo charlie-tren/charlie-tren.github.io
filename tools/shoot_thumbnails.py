@@ -57,6 +57,7 @@ SITES = {
     "thinkerings": "https://thinkerings.substack.com/archive",
     "lexicon": "https://charlietrenorden.com/lexicon/",
     "beyond-small-talk": "https://charlietrenorden.com/beyond-small-talk/",
+    "furthest": "https://charlietrenorden.com/furthest/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -102,6 +103,7 @@ PREPARE = {
 # unless told otherwise.
 SCHEME = {
     "beyond-small-talk": "dark",
+    "furthest": "dark",
 }
 
 # Pages whose top is a masthead rather than the product: frame on an element
