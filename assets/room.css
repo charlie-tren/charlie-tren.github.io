@@ -56,9 +56,10 @@ a { color: inherit; }
 .stage { flex: 1; display: flex; flex-direction: column; justify-content: center;
          align-items: flex-start; gap: 2rem; cursor: pointer; padding: 2.5rem 0;
          border: none; background: none; text-align: left; width: 100%;
-         font: inherit; color: inherit; -webkit-appearance: none; appearance: none; }
+         font: inherit; color: inherit; -webkit-appearance: none; appearance: none;
+         touch-action: pan-y; }
 
-/* fixed box: the hint must not shift when the line length changes */
+/* fixed box: the arrows must not shift when the line length changes */
 .qwrap { width: 100%; min-height: 225px; display: flex; align-items: flex-start; }
 
 .q { font-weight: 400; line-height: 1.2; letter-spacing: -.015em; margin: 0;
@@ -71,11 +72,24 @@ a { color: inherit; }
 .q.len-l  { font-size: clamp(1.5rem, 3.9vw, 2.1rem); max-width: 26ch; }
 .q.len-xl { font-size: clamp(1.3rem, 3.3vw, 1.8rem); max-width: 30ch; }
 
-.hint { font: 500 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--faint);
-        display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; }
-.hint .arw { color: var(--accent); transition: transform .25s; display: inline-block; }
-.stage:hover .hint { color: var(--soft); }
-.stage:hover .hint .arw { transform: translateX(4px); }
+/* Arrow controls. Outside .stage for the same reason the tabs are - .stage is a
+   <button> and cannot contain one. The stage itself still advances on tap, so these
+   are the visible label for a target that was already there. */
+.nav { display: flex; align-items: center; gap: 2.2rem; margin: 0 0 2rem; }
+/* padding, then a matching negative margin: the hit area reaches a thumb-sized
+   target without the label moving off the baseline the old hint text sat on */
+.navbtn { appearance: none; -webkit-appearance: none; background: none; border: none;
+          padding: .95rem .4rem; margin: -.95rem -.4rem; cursor: pointer; color: var(--faint);
+          font: 500 14px/1 ui-sans-serif, system-ui, sans-serif;
+          display: inline-flex; align-items: center; gap: .5rem;
+          transition: color .2s, opacity .2s; }
+.navbtn:hover:not(:disabled) { color: var(--soft); }
+.navbtn .arw { color: var(--accent); transition: transform .25s; display: inline-block; }
+.navbtn:hover:not(:disabled) .arw { transform: translateX(4px); }
+.navbtn.back:hover:not(:disabled) .arw { transform: translateX(-4px); }
+/* the first question has nowhere to go back to - dimmed rather than removed, so the
+   row does not change width the moment a second question appears */
+.navbtn:disabled { cursor: default; opacity: .3; }
 
 /* Present on BOTH pages even though only one carries a credit - an absent footer
    would change the stage height and make the content jump when switching tabs. */
@@ -89,10 +103,11 @@ a { color: inherit; }
   .page { padding-top: 1.6rem; }
   .tabs { margin-top: 2rem; gap: 1.3rem; }
   .stage { padding: 2rem 0; gap: 1.6rem; }
+  .nav { gap: 1.9rem; margin-bottom: 1.6rem; }
   .qwrap { min-height: 175px; }
   .q.len-s, .q.len-m, .q.len-l, .q.len-xl { max-width: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .q { transition: none; }
+  .q, .navbtn .arw { transition: none; }
   .q.out { opacity: 1; }
 }
