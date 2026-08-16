@@ -5,6 +5,8 @@
 
   var qEl = document.getElementById("q");
   var stage = document.getElementById("stage");
+  var prevBtn = document.getElementById("prevBtn");
+  var nextBtn = document.getElementById("nextBtn");
   var bag = [], last = null;
 
   /* shuffle bag: every item shows once before any repeats */
@@ -26,6 +28,12 @@
     return last;
   }
 
+  /* What has been shown, oldest first, so the arrows can walk back through it.
+     Going back does NOT re-draw - it replays this list, so the sequence you saw is
+     the sequence you get returning. Capped because it is a session trail, not a log;
+     when it trims from the front, pos moves with it. */
+  var seen = [], pos = -1, CAP = 200;
+
   /* shorter lines get bigger type; the box height stays fixed either way */
   function bucket(t) {
     var n = t.length;
@@ -35,28 +43,73 @@
   function paint(text) {
     qEl.textContent = text;
     qEl.className = "q " + bucket(text);   /* also clears .out, fading it back in */
+    prevBtn.disabled = pos <= 0;
   }
 
   var busy = false;
-  function next(animate) {
-    if (busy) return;
-    if (!animate) { paint(draw()); return; }
+  function show(animate) {
+    if (!animate) { paint(seen[pos]); return; }
     busy = true;
     qEl.classList.add("out");
     setTimeout(function () {
-      paint(draw());
+      paint(seen[pos]);
       busy = false;
     }, 200);
   }
 
+  function next(animate) {
+    if (busy) return;
+    if (pos < seen.length - 1) {
+      pos++;                               /* replaying forward through history */
+    } else {
+      seen.push(draw());
+      if (seen.length > CAP) seen.shift();
+      pos = seen.length - 1;
+    }
+    show(animate);
+  }
+
+  function prev() {
+    if (busy || pos <= 0) return;
+    pos--;
+    show(true);
+  }
+
   if (ITEMS.length) {
-    stage.addEventListener("click", function () { next(true); });
+    /* A swipe on a <button> also fires a click on touch devices, so a swipe sets a
+       flag that the click handler consumes - otherwise every swipe advances twice. */
+    var swiped = false, tx = 0, ty = 0;
+
+    stage.addEventListener("touchstart", function (e) {
+      var t = e.changedTouches[0];
+      tx = t.clientX; ty = t.clientY; swiped = false;
+    }, { passive: true });
+
+    stage.addEventListener("touchend", function (e) {
+      var t = e.changedTouches[0];
+      var dx = t.clientX - tx, dy = t.clientY - ty;
+      /* must be horizontal AND decisive, or it was a tap or a scroll */
+      if (Math.abs(dx) < 45 || Math.abs(dx) <= Math.abs(dy)) return;
+      swiped = true;
+      if (dx < 0) next(true); else prev();
+    }, { passive: true });
+
+    stage.addEventListener("click", function () {
+      if (swiped) { swiped = false; return; }
+      next(true);
+    });
+
+    nextBtn.addEventListener("click", function () { next(true); });
+    prevBtn.addEventListener("click", prev);
+
     document.addEventListener("keydown", function (e) {
       if (e.key === " " || e.key === "ArrowRight" || e.key === "ArrowDown") {
-        e.preventDefault();
-        next(true);
+        e.preventDefault(); next(true);
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault(); prev();
       }
     });
+
     next(false);
   }
 

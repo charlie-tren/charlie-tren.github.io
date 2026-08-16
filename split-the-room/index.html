@@ -43,8 +43,14 @@
 
   <button class="stage" id="stage" type="button" aria-label="Show another statement">
     <div class="qwrap"><p class="q len-s" id="q" aria-live="polite">&nbsp;</p></div>
-    <span class="hint">Another statement <span class="arw">&rarr;</span></span>
   </button>
+
+  <!-- The arrows sit OUTSIDE .stage for the same reason the tabs do: .stage is a
+       <button>, and a button inside a button is invalid and would fire both. -->
+  <div class="nav">
+    <button class="navbtn back" id="prevBtn" type="button" aria-label="Previous statement" disabled><span class="arw">&larr;</span>Back</button>
+    <button class="navbtn" id="nextBtn" type="button" aria-label="Next statement">Another statement <span class="arw">&rarr;</span></button>
+  </div>
 
   <p class="foot">Find one you think will split the room 50/50.</p>
 </div>
@@ -89,7 +95,11 @@ window.ROOM = { items: [
   "Most of your decisions are made before you are aware of them.",
   "Immortality would destroy meaning.",
   "Some truths should not be discovered.",
-  "It would be better if humanity had never existed."
+  "It would be better if humanity had never existed.",
+  "Anonymity online does more harm than good.",
+  "One instance of cheating is not worth ending a relationship over.",
+  "People should be allowed to sell their organs.",
+  "All recreational drugs should be legal."
 ] };
 </script>
 <script src="/assets/room.js"></script>

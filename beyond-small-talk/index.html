@@ -43,8 +43,14 @@
 
   <button class="stage" id="stage" type="button" aria-label="Show another question">
     <div class="qwrap"><p class="q len-s" id="q" aria-live="polite">&nbsp;</p></div>
-    <span class="hint">Another question <span class="arw">&rarr;</span></span>
   </button>
+
+  <!-- The arrows sit OUTSIDE .stage for the same reason the tabs do: .stage is a
+       <button>, and a button inside a button is invalid and would fire both. -->
+  <div class="nav">
+    <button class="navbtn back" id="prevBtn" type="button" aria-label="Previous question" disabled><span class="arw">&larr;</span>Back</button>
+    <button class="navbtn" id="nextBtn" type="button" aria-label="Next question">Another question <span class="arw">&rarr;</span></button>
+  </div>
 
   <p class="foot">A few of these come from <a href="https://doi.org/10.1177/0146167297234003" target="_blank" rel="noopener">Aron's 36 Questions</a>.</p>
 </div>
@@ -80,6 +86,9 @@ window.ROOM = { items: [
   "What did your childhood teach you that you've had to unlearn?",
   "Who do you miss but wouldn't contact?",
   "When have you been genuinely afraid?",
+  "How much money would make you stop working?",
+  "What job would you do if every job paid the same?",
+  /* everything below is Aron's 36 Questions, credited in the footer */
   "Given the choice of anyone in the world, whom would you want as a dinner guest?",
   "Would you like to be famous? In what way?",
   "Before making a telephone call, do you ever rehearse what you are going to say? Why?",
