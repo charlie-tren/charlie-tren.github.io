@@ -29,6 +29,9 @@ so a local shot of an UNCHANGED page reads as a ~27-point difference against a
 CI-shot one and vice versa - alternating between the two would commit a new
 thumbnail every run. Use `gh workflow run "Refresh card thumbnails"` for a manual
 refresh; keep local runs for developing this script.
+
+The exception is Thinkerings, which Substack will not serve to a datacentre IP -
+see READY below. That one card is shot from a laptop on purpose.
 """
 
 import subprocess
@@ -81,6 +84,19 @@ READY = {
     "thinkerings": "a[href*='/p/']",     # post links in the archive list
 }
 READY_TIMEOUT = 30000
+
+# THINKERINGS IS EXPECTED TO SKIP IN ACTIONS. A real user agent was not enough -
+# the challenge is keyed on the datacentre IP, and a CI run still sat on it for the
+# full 30s on 17/08/2026. The same run from a laptop loads the archive first time.
+# So this is the one card that has to be re-shot locally:
+#
+#     python tools/shoot_thumbnails.py thinkerings   # then commit assets/thinkerings.webp
+#
+# The usual objection to a local shot - Linux and Windows hinting alternating on
+# every run - does not apply while CI cannot shoot it at all: CI skips, so nothing
+# overwrites it. If Substack ever stops challenging, expect one churn commit as it
+# flips back to a CI-hinted shot, and then quiet again.
+# The attempt is left in rather than hard-skipped in CI so that can happen by itself.
 
 # Nothing here should ever appear on one of these sites, so a page containing one is
 # a challenge, an error or an outage - not a thumbnail. Checked for every site: the
