@@ -284,11 +284,19 @@ def main():
             page.emulate_media(color_scheme=SCHEME.get(slug, "light"))
             try:
                 page.goto(SITES[slug], wait_until="networkidle", timeout=60000)
-            except Exception as exc:                # noqa: BLE001
-                # One unreachable site must not cost the whole run. A stale
-                # thumbnail is better than a half-updated set.
-                print(f"{slug:<18} SKIPPED - {type(exc).__name__}: {exc}"[:140])
-                continue
+            except Exception:                       # noqa: BLE001
+                # networkidle never settles on a page that keeps chattering.
+                # Substack's archive did exactly this on 17/08/2026 and skipped
+                # for ten days, so its card went stale silently. Fall back to
+                # "DOM is up" and let the fixed wait below cover the rendering.
+                try:
+                    page.goto(SITES[slug], wait_until="domcontentloaded", timeout=45000)
+                    page.wait_for_timeout(3500)
+                except Exception as exc:            # noqa: BLE001
+                    # One unreachable site must not cost the whole run. A stale
+                    # thumbnail is better than a half-updated set.
+                    print(f"{slug:<18} SKIPPED - {type(exc).__name__}: {exc}"[:140])
+                    continue
             page.wait_for_timeout(2500)             # client-drawn charts
 
             if slug in DISMISS:
