@@ -6,4 +6,8 @@ User-agent: *
 Allow: /
 Disallow: /stats/
 
+# Projects served at a path under this domain ship their OWN sitemap, and a
+# robots.txt is only honoured at the domain ROOT - so /chronoscape/robots.txt is
+# ignored by crawlers and its sitemap would never be found. List it here instead.
 Sitemap: https://charlietrenorden.com/sitemap.xml
+Sitemap: https://charlietrenorden.com/chronoscape/sitemap.xml
