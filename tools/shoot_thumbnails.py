@@ -71,6 +71,39 @@ DISMISS = {
     "thinkerings": "text=No thanks",     # Substack's subscribe interstitial
 }
 
+# "The real page has arrived" - waited for before the shot, and a skip if it never
+# comes. Substack serves Actions' datacentre IP a Cloudflare bot check that a
+# residential run never sees, and the fixed waits below expired while the challenge
+# was still spinning: the card committed on 17/08/2026 was a screenshot of
+# "Performing security verification". A managed challenge clears itself in a few
+# seconds, so waiting on real content rides it out instead of racing it.
+READY = {
+    "thinkerings": "a[href*='/p/']",     # post links in the archive list
+}
+READY_TIMEOUT = 30000
+
+# Nothing here should ever appear on one of these sites, so a page containing one is
+# a challenge, an error or an outage - not a thumbnail. Checked for every site: the
+# Substack card went stale silently for ten days because a bad shot still overwrote
+# a good file, and only an eyeball caught it. Keeping the old image is always better.
+JUNK = [
+    "performing security verification",
+    "checking your browser",
+    "verify you are human",
+    "enable javascript and cookies",
+    "attention required",
+    "502 bad gateway",
+    "503 service temporarily unavailable",
+    "504 gateway time-out",
+    "site can't be reached",
+]
+
+# Playwright's default UA advertises HeadlessChrome, which is a large part of why a
+# datacentre IP gets challenged at all. Cheaper than fighting the challenge after it
+# has already been served.
+UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36")
+
 # Some pages put more above the fold than fits a 16:10 frame at the width of
 # their content column, so the crop lopped the bottom off. Zooming the page out
 # fits more in without widening the frame back into the dead margin.
@@ -115,7 +148,13 @@ ANCHOR = {
     "consensus-drift": {"selector": "svg", "context_above": 0.30},
     # The top of the page is the hero and a scatter that is currently just a sorted
     # curve. The cards, with real company names and per-flag scores, are the product.
-    "shortfall": {"selector": "#cards", "context_above": 0.35},
+    #
+    # 0.245 is measured, not taste: it puts the frame's top edge a few pixels above
+    # #pagerTop, so the shot opens on the "1-20 of 656" pager and the test header and
+    # then runs into whole cards. 0.35 started inside #filterPanel and sliced its
+    # dropdowns in half; including that panel whole would cost 48% of the frame and
+    # leave room for two cards.
+    "shortfall": {"selector": "#cards", "context_above": 0.245},
 }
 
 VIEW = {"width": 1280, "height": 800}
@@ -193,20 +232,31 @@ def framed(page, slug, raw, scale=SCALE):
     if slug in ANCHOR:
         cfg = ANCHOR[slug]
         # Playwright's own `clip` cannot reach below the fold - a tall element
-        # came back silently truncated - so scroll it into view, shoot the
-        # viewport, and crop with PIL.
+        # came back silently truncated - so scroll, shoot the viewport, and crop
+        # with PIL.
         el = page.locator(cfg["selector"]).first
-        el.scroll_into_view_if_needed()
-        page.wait_for_timeout(600)
-        box = el.bounding_box()                  # viewport-relative
-        page.screenshot(path=str(raw))
-        im = Image.open(raw).convert("RGB")
+        box = el.bounding_box()                  # viewport-relative, pre-scroll
 
+        # Frame geometry first, because where to scroll depends on the frame height.
         pad = box["width"] * MARGIN_FRAC
         x0 = max(0, box["x"] - pad)
         x1 = min(VIEW["width"], box["x"] + box["width"] + pad)
         w = x1 - x0
         h = min(w * 10 / 16, VIEW["height"])
+
+        # Put the element's TOP `context_above` of the way down the frame.
+        # `scroll_into_view_if_needed` cannot do this for an element TALLER than the
+        # viewport - it stops as soon as the element merely overlaps, which for
+        # Shortfall's 3998px card list scrolled 1600px PAST the top of the list. The
+        # frame then started mid-row with no page chrome in it at all, so the card
+        # read as a bare table rather than a website.
+        top = box["y"] + page.evaluate("() => scrollY")
+        page.evaluate("y => scrollTo(0, y)",
+                      max(0, top - h * cfg.get("context_above", 0)))
+        page.wait_for_timeout(600)
+        box = el.bounding_box()                  # re-measure after the scroll
+        page.screenshot(path=str(raw))
+        im = Image.open(raw).convert("RGB")
         # Start the frame above the element so the card keeps some page chrome.
         y0 = max(0, min(box["y"] - h * cfg.get("context_above", 0),
                         VIEW["height"] - h))
@@ -279,7 +329,8 @@ def main():
         for slug in slugs:
             scale = SCALE
             ctx = browser.new_context(viewport=VIEW_FIT if slug in FIT else VIEW,
-                                      device_scale_factor=scale)
+                                      device_scale_factor=scale,
+                                      user_agent=UA)
             page = ctx.new_page()
             page.emulate_media(color_scheme=SCHEME.get(slug, "light"))
             try:
@@ -298,6 +349,21 @@ def main():
                     print(f"{slug:<18} SKIPPED - {type(exc).__name__}: {exc}"[:140])
                     continue
             page.wait_for_timeout(2500)             # client-drawn charts
+
+            if slug in READY:
+                try:
+                    page.wait_for_selector(READY[slug], timeout=READY_TIMEOUT)
+                except Exception:                   # noqa: BLE001
+                    print(f"{slug:<18} SKIPPED - {READY[slug]!r} never appeared "
+                          f"in {READY_TIMEOUT // 1000}s; keeping the old thumbnail")
+                    continue
+
+            body = (page.inner_text("body")[:4000] or "").lower()
+            hit = next((j for j in JUNK if j in body), None)
+            if hit:
+                print(f"{slug:<18} SKIPPED - page reads as a challenge or error "
+                      f"({hit!r}); keeping the old thumbnail")
+                continue
 
             if slug in DISMISS:
                 try:
