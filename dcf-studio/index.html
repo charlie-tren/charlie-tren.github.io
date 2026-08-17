@@ -20,6 +20,14 @@
 </head>
 <body>
   <p>Taking you to DCF Studio - <a href="https://dcf.charlietrenorden.com/">continue</a> if nothing happens.</p>
-  <script>location.replace("https://dcf.charlietrenorden.com/");</script>
+  <script>
+    // Carry the query string across. A shared DCF Studio link holds the whole
+    // model in its query - scenario, horizon, every driver override - so
+    // redirecting to the bare homepage silently discards the model someone was
+    // sent. The path cannot be recovered here (GitHub Pages 404s before this
+    // page runs), so /dcf-studio/BHP.AX is still a dead link; deep links should
+    // use dcf.charlietrenorden.com directly.
+    location.replace("https://dcf.charlietrenorden.com/" + location.search);
+  </script>
 </body>
 </html>
