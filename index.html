@@ -277,7 +277,11 @@
     </div>
   </a>
 
-  <a class="proj" href="https://chronoscape.charlietrenorden.com/">
+  <!-- /chronoscape/ not the subdomain: the subdomain is a Cloudflare direct-upload
+       project that only updates when someone pushes it by hand, and it spent a week
+       serving a stale build. This path is the charlie-tren/chronoscape repo served
+       under this domain by GitHub Pages, which redeploys on every push. -->
+  <a class="proj" href="/chronoscape/">
     <div class="thumb"><img src="assets/chronoscape.webp" alt="Screenshot of the Chronoscape interactive timeline" loading="lazy" width="1400" height="875"></div>
     <div class="meta">
       <div class="head"><span class="name">Chronoscape</span><span class="status s-wip">In progress</span></div>
