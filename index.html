@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Charlie Trenorden</title>
-<meta name="description" content="A collection of small web projects, mostly financial: a transparent DCF, live macro odds, analyst estimate revisions, a one-story-a-day news site, and word games.">
+<meta name="description" content="Small web tools built to answer questions I could not just look up - a DCF that shows every assumption, live prediction-market odds, and a news machine that files one story a day.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Charlie Trenorden">
-<meta property="og:description" content="A few small web tools I've built on the side, from Sydney: prediction-market macro odds, a transparent DCF, a daily single-story news site, and some quieter experiments.">
+<meta property="og:description" content="Small things I built, from Sydney, to answer questions I could not just look up - what a company is worth with every assumption on show, what the crowd thinks happens next, what people still read a century on.">
 <meta property="og:url" content="https://charlietrenorden.com/">
 <meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
 <meta property="og:image:width" content="2400">
@@ -55,7 +55,7 @@
   .wrap { max-width: 860px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 4.5rem; }
-  .wordmark { font: 600 18px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
+  .wordmark { font: 600 20px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
   .toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem; font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
   .toggle:hover { color: var(--ink); border-color: var(--accent); }
   .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
@@ -71,7 +71,7 @@
   .links a:hover span { color: var(--accent); }
   .links svg { width: 16px; height: 16px; color: var(--accent); }
 
-  .section-label { font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 4rem 0 1.8rem; }
+  .section-label { font: 600 13.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 4rem 0 1.8rem; }
 
   .proj { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: center; text-decoration: none; color: inherit; padding: 1.8rem 0; border-top: 1px solid var(--rule); }
   .proj:last-of-type { border-bottom: 1px solid var(--rule); }
@@ -84,8 +84,19 @@
 
   .meta .head { display: flex; align-items: baseline; gap: .9rem; margin-bottom: .5rem; flex-wrap: wrap; }
   .meta .name { font-size: 1.7rem; letter-spacing: -.01em; }
+  /* Woop Woop's mark is an Australian green distance sign - the card wears it too, so the
+     name reads the same here as on the site. Rendered in CSS rather than as the site's
+     logo.svg: that file is outlined Overpass at a fixed 358x74, which does not resize to a
+     card heading cleanly. Two inset shadows make the white keyline: the green ring sits on
+     top of the white one and clips it to a stroke. */
+  .meta .signmark { background: #0b6b3a; color: #fff; border-radius: 10px; padding: .3rem .75rem .34rem;
+    font: 700 1.32rem/1.3 Overpass, ui-sans-serif, system-ui, sans-serif; letter-spacing: .005em;
+    box-shadow: inset 0 0 0 4px #0b6b3a, inset 0 0 0 5.5px #fff; }
   .meta .desc { color: var(--soft); font-size: 1.04rem; max-width: 46ch; margin: 0 0 .8rem; }
   .meta .go { font: 500 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--accent); display: inline-flex; align-items: center; gap: .4rem; }
+  .meta .go .arw { transition: transform .2s ease; }
+  .proj:hover .go .arw { transform: translateX(3px); }
+  @media (prefers-reduced-motion: reduce) { .meta .go .arw { transition: none; } }
 
   .status { font: 600 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; padding: .35rem .6rem; border-radius: 4px; white-space: nowrap; }
   .s-live { background: var(--accent); color: var(--on-accent); }
@@ -110,7 +121,10 @@
   .also-lead { color: var(--ink); font-size: 1rem; margin: 0 0 .7rem; max-width: 64ch; }
   .also-points { list-style: none; margin: 0 0 .75rem; padding: 0; display: grid; gap: .42rem; max-width: 64ch; }
   .also-points li { color: var(--soft); font-size: .93rem; line-height: 1.45; padding-left: 1.15rem; position: relative; }
-  .also-points li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 1.5px; background: var(--accent); }
+  /* A small open ring rather than a dash - it echoes the aperture favicon, so the one
+     repeated shape on the page belongs to the site. */
+  .also-points li::before { content: ""; position: absolute; left: 0; top: .5em; width: 7px; height: 7px;
+    border: 1.5px solid var(--accent); border-radius: 50%; }
   .also-tech { color: var(--faint); font: 500 11.5px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: .01em; margin: 0; }
 
   @media (max-width: 680px) {
@@ -142,7 +156,7 @@
 
   <p class="eyebrow">Sydney · Financial markets</p>
   <h1>A few things I've built.</h1>
-  <p class="lede">A collection of small web projects, mostly financial: a transparent DCF, live macro odds, analyst estimate revisions, a one-story-a-day news site, and word games.</p>
+  <p class="lede">Small things I built to answer questions I could not just look up. What a company is worth when every assumption is on show, what the crowd thinks happens next, and what people still read a century on.</p>
 
   <nav class="links" aria-label="Elsewhere">
     <a href="https://www.linkedin.com/in/charlietrenorden/"><svg viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"/></svg><span>LinkedIn</span></a>
@@ -164,7 +178,7 @@
     <div class="meta">
       <div class="head"><span class="name">Crowdwise</span><span class="status s-live">Live</span></div>
       <p class="desc">Live odds on macro events - Fed decisions, inflation, recession - from real-money prediction markets like Kalshi and Polymarket.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -173,7 +187,7 @@
     <div class="meta">
       <div class="head"><span class="name">DCF Studio</span><span class="status s-live">Live</span></div>
       <p class="desc">Type a company, get a discounted-cashflow valuation - with every assumption, driver and step of the workings on show rather than a single black-box number.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -182,7 +196,7 @@
     <div class="meta">
       <div class="head"><span class="name">Consensus Drift</span><span class="status s-live">Live</span></div>
       <p class="desc">Analyst earnings estimates plotted against what the share price actually did, across five equity markets.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -194,7 +208,7 @@
     <div class="meta">
       <div class="head"><span class="name">Beyond Small Talk</span><span class="status s-live">Live</span></div>
       <p class="desc">Questions for getting to know someone properly, and statements that split a room down the middle. One at a time, drawn at random.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -203,7 +217,7 @@
     <div class="meta">
       <div class="head"><span class="name">One Story</span><span class="status s-live">Live</span></div>
       <p class="desc">One story a day, chosen by a transparent scoring model. No feed, no attention-chasing, no LLM in the loop.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -212,7 +226,7 @@
     <div class="meta">
       <div class="head"><span class="name">Photocopy</span><span class="status s-live">Live</span></div>
       <p class="desc">Every picture is drawn from a description of the last one. No lens, no memory, no idea what it is looking at. One chain, never reset.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -221,7 +235,7 @@
     <div class="meta">
       <div class="head"><span class="name">Thinkerings</span><span class="status s-live">Live</span></div>
       <p class="desc">My Substack - essays on travel, tech, and whatever tangent I'm on.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -230,7 +244,7 @@
     <div class="meta">
       <div class="head"><span class="name">Lexicon</span><span class="status s-live">Live</span></div>
       <p class="desc">A quiet place for words - a spaced-repetition vocabulary tool. Add a word, review what's due, and learn each one both ways: meaning and spelling.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -238,8 +252,8 @@
     <div class="thumb"><img src="assets/the-aftertimes.webp" alt="Screenshot of The Aftertimes homepage" loading="lazy" width="1400" height="874"></div>
     <div class="meta">
       <div class="head"><span class="name">The Aftertimes</span><span class="status s-live">Live</span></div>
-      <p class="desc">Tomorrow's headlines, a little early - one machine-written news dispatch a day, datelined from a random point in the future.</p>
-      <span class="go">Visit site</span>
+      <p class="desc">Tomorrow's news, filed early - one machine-written report a day, sent back from a random date in the future.</p>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -248,7 +262,7 @@
     <div class="meta">
       <div class="head"><span class="name">The Lindy Effect</span><span class="status s-live">Live</span></div>
       <p class="desc">Every book on Project Gutenberg by age against how many people are reading it this month. Move one threshold and the answer changes sign.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -258,8 +272,8 @@
     <div class="thumb"><img src="assets/shortfall.webp" alt="Screenshot of Shortfall, showing company cards with per-flag scores" loading="lazy" width="1400" height="875"></div>
     <div class="meta">
       <div class="head"><span class="name">Shortfall</span><span class="status s-wip">In progress</span></div>
-      <p class="desc">Six tests of accounting quality across the S&amp;P 500 and ASX 200, with the innocent explanation printed beside every flag.</p>
-      <span class="go">Visit site</span>
+      <p class="desc">Six ways the numbers can flatter a company, run across the S&amp;P 500 and ASX 200 - every flag printed next to the innocent explanation for it.</p>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
@@ -268,16 +282,16 @@
     <div class="meta">
       <div class="head"><span class="name">Chronoscape</span><span class="status s-wip">In progress</span></div>
       <p class="desc">Pick a country, get its history as a timeline you can walk through on a map.</p>
-      <span class="go">Visit site</span>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
   <a class="proj" href="https://charlietrenorden.com/woop-woop/">
     <div class="thumb"><img src="assets/woop-woop.webp" alt="Screenshot of Woop Woop, a map showing the emptiest reachable point near Brisbane" loading="lazy" width="1400" height="875"></div>
     <div class="meta">
-      <div class="head"><span class="name">Woop Woop</span><span class="status s-wip">In progress</span></div>
-      <p class="desc">The middle of nowhere, precisely located: the spot in range that is furthest from every road and building, and how to walk in to it.</p>
-      <span class="go">Visit site</span>
+      <div class="head"><span class="name signmark">Woop Woop</span><span class="status s-wip">In progress</span></div>
+      <p class="desc">How far from everything can you get before dinner? Give it a start, a way of travelling and a time budget, and it finds the emptiest spot in reach - then tells you how to walk the last bit.</p>
+      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
 
