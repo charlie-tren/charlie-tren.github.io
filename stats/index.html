@@ -26,6 +26,12 @@
        The destination is gated, so this being public gives nothing away: anyone without
        the key lands on a 404. -->
   <p>Taking you to the stats - <a href="https://stats.charlietrenorden.com/">continue</a> if nothing happens.</p>
-  <script>location.replace("https://stats.charlietrenorden.com/");</script>
+  <script>
+    // Carry the query string across: stats is gated on a key passed as a query
+    // param, so dropping it sends the recipient to a locked page. The PATH
+    // cannot be recovered here - GitHub Pages 404s a deep link before this page
+    // runs - so deep links should use the target domain directly.
+    location.replace("https://stats.charlietrenorden.com/" + location.search);
+  </script>
 </body>
 </html>
