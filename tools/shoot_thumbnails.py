@@ -57,6 +57,7 @@ SITES = {
     "lexicon": "https://charlietrenorden.com/lexicon/",
     "beyond-small-talk": "https://charlietrenorden.com/beyond-small-talk/",
     "woop-woop": "https://charlietrenorden.com/woop-woop/",
+    "shortfall": "https://charlietrenorden.com/shortfall/",
 }
 
 # One Story and The Aftertimes republish every day, so their thumbnails are
@@ -110,6 +111,9 @@ SCHEME = {
 # chart on its own.
 ANCHOR = {
     "consensus-drift": {"selector": "svg", "context_above": 0.30},
+    # The top of the page is the hero and a scatter that is currently just a sorted
+    # curve. The cards, with real company names and per-flag scores, are the product.
+    "shortfall": {"selector": "#cards", "context_above": 0.35},
 }
 
 VIEW = {"width": 1280, "height": 800}
