@@ -44,7 +44,6 @@ OUT = ROOT / "assets"
 SITES = {
     "one-story": "https://one-story.charlietrenorden.com/",
     "the-aftertimes": "https://aftertimes.charlietrenorden.com/",
-    "photocopy": "https://charlietrenorden.com/photocopy/",
     "consensus-drift": "https://charlietrenorden.com/consensus-drift/",
     "lindy-effect": "https://charlietrenorden.com/lindy-effect/",
     "crowdwise": "https://crowdwise.charlietrenorden.com/",
@@ -60,10 +59,9 @@ SITES = {
     "woop-woop": "https://charlietrenorden.com/woop-woop/",
 }
 
-# One Story, The Aftertimes and Photocopy republish every day, so their
-# thumbnails are stale within 24 hours. Everything else only moves when its
-# code does.
-DAILY = ["one-story", "the-aftertimes", "photocopy"]
+# One Story and The Aftertimes republish every day, so their thumbnails are
+# stale within 24 hours. Everything else only moves when its code does.
+DAILY = ["one-story", "the-aftertimes"]
 
 # A modal or interstitial in the way. Clicked, then given a moment to clear.
 DISMISS = {
