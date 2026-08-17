@@ -99,6 +99,23 @@ a { color: inherit; }
           transition: color .2s, border-color .2s; }
 .foot a:hover { color: var(--accent); border-color: var(--accent); }
 
+/* Desktop only. The page is a full-height flex column with .stage flexed to fill,
+   which is right on a laptop but pours every spare pixel of a tall window into the
+   space around one sentence - at 900px tall the statement floated with ~250px of
+   nothing above and below it. Capping the column height (rather than the stage)
+   keeps the footer at the bottom of the block and just shortens the block. */
+@media (min-width: 681px) {
+  .page { min-height: min(100dvh, 620px); padding-bottom: 1.6rem; }
+  .stage { padding: 1.2rem 0; gap: 1.4rem; }
+  /* 210px is the MEASURED tallest item across both pools at desktop widths (Beyond
+     Small Talk's longest question renders 207px) - the box has to clear that or the
+     arrows move, which is the whole reason it is fixed. Centred rather than top-
+     aligned so a short line splits the leftover space instead of dumping all of it
+     into one gap above the arrows. */
+  .qwrap { min-height: 210px; align-items: center; }
+  .nav { margin-bottom: 1.5rem; }
+}
+
 @media (max-width: 680px) {
   .page { padding-top: 1.6rem; }
   .tabs { margin-top: 2rem; gap: 1.3rem; }
