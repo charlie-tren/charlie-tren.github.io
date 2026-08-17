@@ -57,4 +57,16 @@ jobs:
             exit 0
           fi
           git commit -m "Refresh card thumbnails (${{ steps.target.outputs.value }})"
-          git push
+          # This repo takes pushes from several places, so something landing on
+          # main between the checkout and here is routine rather than a conflict
+          # worth failing on - it cost a Shortfall re-shoot on 17/08. Assets are
+          # the only thing this job touches, so a rebase is always trivial.
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push; then
+              exit 0
+            fi
+            echo "push attempt $attempt lost a race - retrying"
+            sleep 5
+          done
+          echo "::error::could not push the thumbnails after 3 attempts"
+          exit 1
