@@ -20,6 +20,11 @@
 </head>
 <body>
   <p>Taking you to One Story - <a href="https://one-story.charlietrenorden.com/">continue</a> if nothing happens.</p>
-  <script>location.replace("https://one-story.charlietrenorden.com/");</script>
+  <script>
+    // Carry the query string across so a shared link survives the redirect.
+    // The PATH cannot be recovered here - GitHub Pages 404s a deep link before
+    // this page ever runs - so deep links should use the target domain directly.
+    location.replace("https://one-story.charlietrenorden.com/" + location.search);
+  </script>
 </body>
 </html>
