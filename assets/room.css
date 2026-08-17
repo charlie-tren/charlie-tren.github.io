@@ -29,8 +29,12 @@ a { color: inherit; }
 /* navigation, not a title - kept lighter than the tabs */
 .home { font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
         text-transform: uppercase; color: var(--soft); text-decoration: none;
-        display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; }
+        display: inline-flex; align-items: center; gap: 0; transition: color .2s; }
 .home:hover { color: var(--accent); }
+/* House standard: the back-link sits top RIGHT on every property. These pages have no
+   wordmark in the bar, so the theme toggle takes the left slot. Ordered in CSS rather than
+   in the markup so the link stays first in the DOM, where a keyboard lands on it early. */
+.home { order: 2; }
 .home .back { color: var(--accent); font-size: 14px; }
 .toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
           border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem;
