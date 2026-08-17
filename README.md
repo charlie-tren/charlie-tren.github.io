@@ -15,6 +15,7 @@ Personal hub - a single landing page linking to my projects, built to attach to 
 | DCF Studio | Live | https://dcf.charlietrenorden.com/ |
 | One Story | Live | https://one-story.charlietrenorden.com/ |
 | The Aftertimes | Live | https://aftertimes.charlietrenorden.com/ |
+| Photocopy | Live | https://charlietrenorden.com/photocopy/ (project Pages under this account, genuinely served at this path - do NOT add a `/photocopy` redirect folder here or it collides) |
 | Thinkerings | Live | https://thinkerings.substack.com/ |
 | Lexicon | Live | https://charlietrenorden.com/lexicon/ (self-hosted in this repo, `/lexicon`) |
 | Chronoscape | In progress | https://chronoscape.charlietrenorden.com/ |
@@ -87,7 +88,7 @@ GitHub Pages can only host one repo, so a real subpath isn't possible for the ot
 | `/dcf-studio` | https://dcf.charlietrenorden.com/ |
 | `/one-story` | https://one-story.charlietrenorden.com/ |
 | `/the-aftertimes` | https://aftertimes.charlietrenorden.com/ |
-| `/photocopy` | REMOVED from the site 17/08/2026 - Pages disabled on `charlie-tren/photocopy`. The repo is untouched; re-enabling Pages on its `main` branch puts it back at this path |
+| `/photocopy` | not a redirect - GitHub serves the `charlie-tren/photocopy` repo at this path |
 | `/thinkerings` | https://thinkerings.substack.com/ |
 | `/chronoscape` | https://chronoscape.charlietrenorden.com/ |
 | `/lexicon` | served here for real, not a redirect |
