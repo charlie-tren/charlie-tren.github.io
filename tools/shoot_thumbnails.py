@@ -62,6 +62,7 @@ SITES = {
     "beyond-small-talk": "https://charlietrenorden.com/beyond-small-talk/",
     "woop-woop": "https://charlietrenorden.com/woop-woop/",
     "shortfall": "https://charlietrenorden.com/shortfall/",
+    "pendulum": "https://charlietrenorden.com/pendulum/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -82,6 +83,9 @@ DISMISS = {
 # seconds, so waiting on real content rides it out instead of racing it.
 READY = {
     "thinkerings": "a[href*='/p/']",     # post links in the archive list
+    # Pendulum draws its charts from a megabyte of JSON after load. Without this
+    # the shot lands on the loading state, which is a card showing nothing.
+    "pendulum": "#area polygon",
 }
 READY_TIMEOUT = 30000
 
