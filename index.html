@@ -92,6 +92,27 @@
      so it follows the theme; the bobs are the site's own left-centre-right palette. */
   .meta .name.cradlemark { display: inline-flex; align-items: center; gap: .5rem; }
   .meta .name.cradlemark svg { height: .78em; width: auto; flex: none; opacity: .75; }
+  /* Hovering the card releases the cradle: the held ball falls, strikes, and the
+     right one carries the swing on. Each group pivots about its own point on the bar. */
+  .cradlemark .bob-l, .cradlemark .bob-r { transform-box: view-box; }
+  .cradlemark .bob-l { transform-origin: 20px 12px; transform: rotate(-26deg); }
+  .cradlemark .bob-r { transform-origin: 44px 12px; }
+  .proj:hover .cradlemark .bob-l, .proj:focus-visible .cradlemark .bob-l {
+    animation: cradle-left 1.5s ease-in-out infinite; }
+  .proj:hover .cradlemark .bob-r, .proj:focus-visible .cradlemark .bob-r {
+    animation: cradle-right 1.5s ease-in-out infinite; }
+  @keyframes cradle-left {
+    0%, 100% { transform: rotate(-26deg); }
+    32%, 62% { transform: rotate(0deg); }
+  }
+  @keyframes cradle-right {
+    0%, 32%   { transform: rotate(0deg); }
+    60%       { transform: rotate(26deg); }
+    88%, 100% { transform: rotate(0deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .proj:hover .cradlemark .bob-l, .proj:hover .cradlemark .bob-r { animation: none; }
+  }
   /* Woop Woop's mark is an Australian green distance sign - the card wears it too, so the
      name reads the same here as on the site. Rendered in CSS rather than as the site's
      logo.svg: that file is outlined Overpass at a fixed 358x74, which does not resize to a
@@ -261,7 +282,7 @@
   <a class="proj" href="/pendulum/">
     <div class="thumb"><img src="assets/pendulum.webp" alt="Screenshot of Pendulum showing the share of world population by government orientation" loading="lazy" width="1400" height="875"></div>
     <div class="meta">
-      <div class="head"><span class="name cradlemark"><svg viewBox="0 8 58 48" aria-hidden="true" focusable="false"><line x1="9" y1="12" x2="55" y2="12" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><line x1="20" y1="12" x2="9" y2="35" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="8" cy="40" r="6.8" fill="#2f6fb2"/><line x1="32" y1="12" x2="32" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="32" cy="47" r="6.8" fill="#9042d4"/><line x1="44" y1="12" x2="45" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="45" cy="47" r="6.8" fill="#c33c3c"/></svg>Pendulum</span><span class="status s-live">Live</span></div>
+      <div class="head"><span class="name cradlemark"><svg viewBox="0 8 58 48" aria-hidden="true" focusable="false"><line x1="9" y1="12" x2="55" y2="12" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><g class="bob-l"><line x1="20" y1="12" x2="20" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="20" cy="47" r="6" fill="#2f6fb2"/></g><g class="bob-m"><line x1="32" y1="12" x2="32" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="32" cy="47" r="6" fill="#9042d4"/></g><g class="bob-r"><line x1="44" y1="12" x2="44" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="44" cy="47" r="6" fill="#c33c3c"/></g></svg>Pendulum</span><span class="status s-live">Live</span></div>
       <p class="desc">How the world has swung left and right since 1975, counted by people rather than countries.</p>
       <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
