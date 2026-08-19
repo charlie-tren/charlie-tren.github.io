@@ -158,6 +158,7 @@ PREPARE = {
 SCHEME = {
     "beyond-small-talk": "dark",
     "woop-woop": "dark",
+    "pendulum": "dark",
 }
 
 # Pages whose top is a masthead rather than the product: frame on an element
