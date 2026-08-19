@@ -1,5 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Aperture mark, sized to FILL the tile. Google crops the favicon to a circle in
+       search results, so the glyph runs to an outer radius of 45 (ring 36 + half the
+       18 stroke), just inside the 50 that crop leaves. The previous version stopped at
+       32.5 and read as a small mark floating in a dark disc. Proportions of the original
+       are preserved exactly: stroke = R/2, centre dot = R/4, 60 degree gap on the right. -->
   <rect width="100" height="100" rx="24" fill="#1a212b"/>
-  <path d="M72.5 37 A26 26 0 1 0 72.5 63" fill="none" stroke="#82a8ca" stroke-width="13" stroke-linecap="round"/>
-  <circle cx="50" cy="50" r="6.5" fill="#82a8ca"/>
+  <path d="M81.18 32 A36 36 0 1 0 81.18 68" fill="none" stroke="#82a8ca" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="50" cy="50" r="9" fill="#82a8ca"/>
 </svg>
