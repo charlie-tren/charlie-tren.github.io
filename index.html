@@ -62,7 +62,7 @@
   .wrap { max-width: 860px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 4.5rem; }
-  .wordmark { font: 600 20px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
+  .wordmark { font: 600 23px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
   .toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem; font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
   .toggle:hover { color: var(--ink); border-color: var(--accent); }
   .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
@@ -178,6 +178,13 @@
   @media (max-width: 680px) {
     .wrap { padding-top: 1.6rem; }
     .bar { margin-bottom: 3rem; }
+    /* CHARLIE TRENORDEN wraps to two lines on a phone at the desktop size. It did so
+       at the old 20px too, so this is a pre-existing break rather than one the bump
+       introduced, but a name split across two lines is not the look.
+       Measured, not guessed - the largest that stays on ONE line at .06em tracking is
+       20px at 375, 19px at 360 and 16px at 320. A clamp at 5vw sits under all three
+       (16.0 / 18.0 / 18.8) and scales smoothly instead of stacking breakpoints. */
+    .wordmark { font-size: clamp(15px, 5vw, 20px); letter-spacing: .06em; }
     .proj, .proj:nth-child(even of .proj) { grid-template-columns: 1fr; gap: 1.1rem; }
     .proj:nth-child(even of .proj) .thumb { order: 0; }
   }
