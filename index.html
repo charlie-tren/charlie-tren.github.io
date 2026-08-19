@@ -122,7 +122,14 @@
   .also-head { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; margin: 0 0 .4rem; }
   .also-name { font-size: 1.28rem; letter-spacing: -.01em; }
   .also-desc { color: var(--soft); font-size: .99rem; max-width: 62ch; margin: 0; }
-  .tag { font: 600 10.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; padding: .3rem .5rem; border-radius: 4px; white-space: nowrap; color: var(--faint); border: 1px solid var(--rule); }
+  /* "Personal project" is a CATEGORY, not a stage, so it must not look like a status
+     pill. It was previously faint text in a thin border - visually the same object as
+     .s-wip "In progress" - which read as though these were simply unfinished.
+     Three distinct treatments now: .s-live is filled, .s-wip is outlined, .tag is a
+     flat wash with no border and no uppercase, so it reads as a descriptor. */
+  .tag { font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .02em;
+         padding: .32rem .55rem; border-radius: 3px; white-space: nowrap;
+         color: var(--soft); background: var(--motif-bg); border: none; }
 
 
   /* also-built: scannable lead + bullet list */
