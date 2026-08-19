@@ -90,30 +90,38 @@
   /* Pendulum's mark is a Newton's cradle, left blue, centre purple, right red. The card
      wears it so the name reads the same here as on the site. The rods take currentColor
      so it follows the theme; the bobs are the site's own left-centre-right palette. */
-  .meta .name.cradlemark { display: inline-flex; align-items: center; gap: .5rem; }
+  .meta .name.cradlemark { display: inline-flex; align-items: center; gap: .95rem; }
   .meta .name.cradlemark svg { height: .78em; width: auto; flex: none; opacity: .75; }
-  /* Hovering the card releases the cradle: the held ball falls, strikes, and the
-     right one carries the swing on. Each group pivots about its own point on the bar. */
+  /* Hovering the card releases the cradle: the held ball falls, stops dead on impact,
+     and the far ball leaves at that speed. Each phase has its own easing, since one
+     curve across the cycle does not move like a pendulum.
+     Two traps here: transform-box: view-box measures the origin from the viewBox's own
+     top-left, which is y=8, so the pivot is 4 not 12; and a positive SVG rotation is
+     clockwise, so a hanging ball swings LEFT on a positive angle. */
+  .cradlemark svg { overflow: visible; }
   .cradlemark .bob-l, .cradlemark .bob-r { transform-box: view-box; }
-  .cradlemark .bob-l { transform-origin: 20px 12px; transform: rotate(-26deg); }
-  .cradlemark .bob-r { transform-origin: 44px 12px; }
+  .cradlemark .bob-l { transform-origin: 20px 4px; transform: rotate(32deg); }
+  .cradlemark .bob-r { transform-origin: 44px 4px; }
   .proj:hover .cradlemark .bob-l, .proj:focus-visible .cradlemark .bob-l {
-    animation: cradle-left 1.5s ease-in-out infinite; }
+    animation: cradle-left 1.6s infinite; }
   .proj:hover .cradlemark .bob-r, .proj:focus-visible .cradlemark .bob-r {
-    animation: cradle-right 1.5s ease-in-out infinite; }
+    animation: cradle-right 1.6s infinite; }
   @keyframes cradle-left {
-    0%, 100% { transform: rotate(-26deg); }
-    32%, 62% { transform: rotate(0deg); }
+    0%   { transform: rotate(32deg); animation-timing-function: cubic-bezier(.45,0,.75,.3); }
+    25%  { transform: rotate(0deg); animation-timing-function: linear; }
+    75%  { transform: rotate(0deg); animation-timing-function: cubic-bezier(.25,.7,.55,1); }
+    100% { transform: rotate(32deg); }
   }
   @keyframes cradle-right {
-    0%, 32%   { transform: rotate(0deg); }
-    60%       { transform: rotate(26deg); }
-    88%, 100% { transform: rotate(0deg); }
+    0%   { transform: rotate(0deg); animation-timing-function: linear; }
+    25%  { transform: rotate(0deg); animation-timing-function: cubic-bezier(.25,.7,.55,1); }
+    50%  { transform: rotate(-32deg); animation-timing-function: cubic-bezier(.45,0,.75,.3); }
+    75%  { transform: rotate(0deg); animation-timing-function: linear; }
+    100% { transform: rotate(0deg); }
   }
   @media (prefers-reduced-motion: reduce) {
     .proj:hover .cradlemark .bob-l, .proj:hover .cradlemark .bob-r { animation: none; }
-  }
-  /* Woop Woop's mark is an Australian green distance sign - the card wears it too, so the
+  }  /* Woop Woop's mark is an Australian green distance sign - the card wears it too, so the
      name reads the same here as on the site. Rendered in CSS rather than as the site's
      logo.svg: that file is outlined Overpass at a fixed 358x74, which does not resize to a
      card heading cleanly. Two inset shadows make the white keyline: the green ring sits on
