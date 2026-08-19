@@ -6,6 +6,58 @@ User-agent: *
 Allow: /
 Disallow: /stats/
 
+# ---------------------------------------------------------------------------
+# AI crawlers, split deliberately (added 18/08/2026).
+#
+# TRAINING crawlers are blocked below: they take the work into a model and give
+# nothing back. SEARCH and RETRIEVAL crawlers are allowed in the group after that -
+# they fetch a page to answer someone's question and cite the source, which is free
+# promotion and the opposite of the problem.
+#
+# This does NOT affect Google or Bing rankings. Those use Googlebot and Bingbot,
+# which are separate crawlers and are untouched here. Google-Extended governs Gemini
+# TRAINING only; blocking it does not remove the site from Google Search.
+#
+# Note facebookexternalhit is deliberately NOT blocked - it renders link previews
+# when someone shares a page, which is not training.
+#
+# robots.txt is VOLUNTARY. OpenAI, Anthropic, Google and Perplexity all state they
+# honour it; nothing enforces it. Re-read this each quarter - these user agents get
+# renamed and new ones appear.
+
+# Training
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Claude-Web
+User-agent: Google-Extended
+User-agent: Google-CloudVertexBot
+User-agent: Applebot-Extended
+User-agent: Meta-ExternalAgent
+User-agent: FacebookBot
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: cohere-ai
+User-agent: Amazonbot
+User-agent: YouBot
+User-agent: Diffbot
+User-agent: Omgilibot
+User-agent: Timpibot
+Disallow: /
+
+# Search and retrieval - left open on purpose, and named explicitly rather than left
+# to the wildcard so a later edit cannot sweep them into the block above by accident.
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: DuckAssistBot
+Allow: /
+Disallow: /stats/
+# ---------------------------------------------------------------------------
+
 # Projects served at a path under this domain ship their OWN sitemap, and a
 # robots.txt is only honoured at the domain ROOT - so /chronoscape/robots.txt is
 # ignored by crawlers and its sitemap would never be found. List it here instead.
