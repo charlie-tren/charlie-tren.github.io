@@ -159,6 +159,12 @@ SCHEME = {
     "beyond-small-talk": "dark",
     "woop-woop": "dark",
     "pendulum": "dark",
+    # Both verified 19/08/2026 to key off prefers-color-scheme with no stored choice:
+    # photocopy body goes rgb(250,249,247) -> rgb(19,18,17), shortfall also flips its
+    # data-theme attribute light -> dark. So emulation alone is enough; neither needs
+    # a PREPARE step to set a localStorage key.
+    "photocopy": "dark",
+    "shortfall": "dark",
 }
 
 # Pages whose top is a masthead rather than the product: frame on an element
