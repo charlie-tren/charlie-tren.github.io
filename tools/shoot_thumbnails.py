@@ -175,12 +175,6 @@ ANCHOR = {
     # dropdowns in half; including that panel whole would cost 48% of the frame and
     # leave room for two cards.
     "shortfall": {"selector": "#cards", "context_above": 0.245},
-    # Without an anchor the frame starts at the masthead and the lead chart is
-    # sliced in half, so the card showed a heading and the top third of a graph.
-    # 0.42 is measured: the chart is 364px tall, so the frame is 364/0.58 = 628
-    # and the 264px above it takes in the chart title, the legend and the
-    # controls row, which is what makes it read as a site rather than a graph.
-    "pendulum": {"selector": "#area", "context_above": 0.42},
 }
 
 VIEW = {"width": 1280, "height": 800}
