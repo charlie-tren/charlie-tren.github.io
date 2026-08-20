@@ -178,7 +178,10 @@ a { color: inherit; }
 /* An overlay sitting exactly on the slider, so every dot - yours included, since
    yours IS the slider thumb - sits on one line. pointer-events off or the dots
    would swallow the drag aimed at the slider underneath. */
-.axis { position: relative; }
+/* A fixed height with the slider centred in it: "top: 50%" for the dots is then
+   exactly the thumb's centre line. Left to the input's own intrinsic height the
+   two were 4px apart, which is enough to see once you know. */
+.axis { position: relative; height: 22px; display: flex; align-items: center; }
 .dots { position: absolute; inset: 0; pointer-events: none; }
 .dot-m { position: absolute; top: 50%; transform: translate(-50%, -50%);
   transition: left .18s ease; text-align: center; }
