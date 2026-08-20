@@ -103,34 +103,54 @@
       if (saved) el("name").value = saved;
     } catch (x) {}
 
-    var joining = new URLSearchParams(location.search).get("room");
-    if (joining) {
-      el("joincode").value = joining.toUpperCase();
-      el("lobbyTitle").textContent = "Join room " + joining.toUpperCase();
+    /* An invite link should offer ONE action. Showing "Create a room" as the
+       primary button on a page titled "Join room V8FT" is the clunky bit. */
+    var joining = (new URLSearchParams(location.search).get("room") || "").toUpperCase();
+    if (/^[A-Z2-9]{4}$/.test(joining)) {
+      el("joincode").value = joining;
+      el("lobbyTitle").textContent = "Join room " + joining;
+      el("lobbyLede").textContent = "Put your name in and you are in the room.";
+      el("createBlock").hidden = true;
+      el("joinBlock").hidden = false;
     }
 
-    el("startBtn").addEventListener("click", function () {
+    function join() {
+      var name = el("name").value.trim();
+      var c = (el("joincode").value.trim() || joining).toUpperCase();
+      if (!name) return fail("Put your name in first.");
+      if (!/^[A-Z2-9]{4}$/.test(c)) return fail("A room code is four letters or digits.");
+      fail("");
+      connect(c, name);
+    }
+
+    function create() {
       var name = el("name").value.trim();
       if (!name) return fail("Put your name in first.");
       fail("");
       el("startBtn").disabled = true;
+      if (el("startBtn2")) el("startBtn2").disabled = true;
       fetch(API + "/api/room", { method: "POST" })
         .then(function (r) { return r.json(); })
         .then(function (d) {
           if (!d.code) throw new Error("no code");
           connect(d.code, name);
         })
-        .catch(function () { fail("Could not start a room. Try again."); el("startBtn").disabled = false; });
-    });
+        .catch(function () {
+          fail("Could not create a room. Try again.");
+          el("startBtn").disabled = false;
+          if (el("startBtn2")) el("startBtn2").disabled = false;
+        });
+    }
 
-    el("joinBtn").addEventListener("click", function () {
-      var name = el("name").value.trim();
-      var code = el("joincode").value.trim().toUpperCase();
-      if (!name) return fail("Put your name in first.");
-      if (!/^[A-Z2-9]{4}$/.test(code)) return fail("A room code is four letters or digits.");
-      fail("");
-      connect(code, name);
+    el("startBtn").addEventListener("click", create);
+    el("startBtn2").addEventListener("click", create);
+    el("joinBtn").addEventListener("click", join);
+    el("joinBtn2").addEventListener("click", join);
+    /* Enter should do the obvious thing from either field. */
+    el("name").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") (joining ? join : create)();
     });
+    el("joincode").addEventListener("keydown", function (e) { if (e.key === "Enter") join(); });
 
     el("slider").addEventListener("input", function (e) {
       myX = Number(e.target.value) / 1000;
