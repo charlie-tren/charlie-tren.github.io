@@ -1,0 +1,29 @@
+name: Statements agree
+
+# The statement list exists twice on purpose - once in split-the-room/index.html so
+# the solo page needs no backend, once in the Spectrum worker so every player in a
+# room gets the same statement in the same order. This proves they still match.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "split-the-room/index.html"
+      - "tools/test_statements.mjs"
+      - ".github/workflows/statements.yml"
+  # Also on a schedule, because the worker can change WITHOUT this repo changing -
+  # a push-only check would never see drift introduced from the other side.
+  # Odd minute: GitHub drops on-the-hour scheduled runs under load.
+  schedule:
+    - cron: "23 20 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node tools/test_statements.mjs
