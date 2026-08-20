@@ -11,7 +11,7 @@
   var WS = API.replace(/^http/, "ws");
 
   var el = function (id) { return document.getElementById(id); };
-  var ws = null, me = null, myX = 0.5, sendTimer = null;
+  var ws = null, me = null, myX = 0.5, sendTimer = null, pending = false;
 
   function show(view) {
     el("lobby").hidden = view !== "lobby";
@@ -22,7 +22,10 @@
 
   function connect(code, name) {
     ws = new WebSocket(WS + "/api/ws?code=" + encodeURIComponent(code));
-    ws.onopen = function () { ws.send(JSON.stringify({ t: "join", name: name })); };
+    ws.onopen = function () {
+      ws.send(JSON.stringify({ t: "join", name: name }));
+      if (pending) pushMove();
+    };
     ws.onmessage = function (e) { render(JSON.parse(e.data)); };
     ws.onclose = function () {
       if (!el("room").hidden) el("tally").textContent = "Disconnected - reload to rejoin.";
@@ -43,10 +46,23 @@
 
     /* Other players sit above the track; your own position is the slider itself,
        so it is never drawn twice. */
-    var others = s.players.filter(function (p) { return p.id !== me.id; });
-    el("dots").innerHTML = others.map(function (p) {
+    /* Everyone agreeing is the interesting case, and it is also the one that
+       draws four dots and four names on top of each other. Anything within
+       CLUSTER of the dot to its left goes up a row instead. */
+    var CLUSTER = 0.075;
+    var others = s.players
+      .filter(function (p) { return p.id !== me.id; })
+      .sort(function (a, b) { return a.x - b.x; });
+    var rows = [], lastInRow = [];
+    others.forEach(function (p, i) {
+      var row = 0;
+      while (lastInRow[row] !== undefined && p.x - lastInRow[row] < CLUSTER) row++;
+      lastInRow[row] = p.x;
+      rows[i] = row;
+    });
+    el("dots").innerHTML = others.map(function (p, i) {
       return '<span class="dot-m' + (p.placed ? "" : " unplaced") + (s.revealed ? " revealed" : "") +
-        '" style="left:' + (p.x * 100).toFixed(2) + '%">' +
+        '" style="left:' + (p.x * 100).toFixed(2) + '%;--row:' + rows[i] + '">' +
         '<b>' + (s.revealed && p.name ? esc(p.name) : "&nbsp;") + "</b>" +
         '<i style="background:' + p.colour + '"></i></span>';
     }).join("");
@@ -68,11 +84,15 @@
   }
 
   /* Throttled: a drag fires input events every few milliseconds and every one
-     would be a round trip to the room and a broadcast to everybody in it. */
+     would be a round trip to the room and a broadcast to everybody in it.
+     A move made before the socket opens is REMEMBERED, not dropped - dragging
+     during connect used to leave you showing as unplaced for the whole round. */
   function pushMove() {
-    if (sendTimer || !ws || ws.readyState !== 1) return;
+    if (!ws || ws.readyState !== 1) { pending = true; return; }
+    if (sendTimer) return;
     sendTimer = setTimeout(function () {
       sendTimer = null;
+      pending = false;
       ws.send(JSON.stringify({ t: "move", x: myX }));
     }, 70);
   }

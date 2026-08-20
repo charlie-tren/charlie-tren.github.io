@@ -173,10 +173,12 @@ a { color: inherit; }
 .statement { font-size: clamp(1.5rem, 3.4vw, 2.15rem); line-height: 1.25; text-wrap: balance;
   margin: 0 0 2.6rem; min-height: 4.2em; display: flex; align-items: center; }
 
-.track { position: relative; padding: 3.4rem 0 0; }
-.dots { position: absolute; inset: 0 0 auto; height: 3.4rem; }
-.dot-m { position: absolute; bottom: .35rem; transform: translateX(-50%);
-  transition: left .18s ease; text-align: center; }
+.track { position: relative; padding: 6.4rem 0 0; }
+.dots { position: absolute; inset: 0 0 auto; height: 6.4rem; }
+/* --row lifts a dot clear of the one beside it when several land together. */
+.dot-m { position: absolute; bottom: calc(.35rem + var(--row, 0) * 1.55rem);
+  transform: translateX(-50%); transition: left .18s ease, bottom .18s ease;
+  text-align: center; }
 .dot-m i { display: block; width: 15px; height: 15px; border-radius: 50%; margin: 0 auto;
   border: 2px solid var(--bg); box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
 .dot-m b { display: block; font: 500 11.5px/1.4 ui-sans-serif, system-ui, sans-serif;
