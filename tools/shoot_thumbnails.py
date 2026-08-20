@@ -54,7 +54,7 @@ SITES = {
     "dcf-studio": "https://dcf.charlietrenorden.com/GOOGL",
     # a country page, not the picker - the landing page is three pills and a
     # half-empty card, which made for a thumbnail showing none of the product
-    "chronoscape": "https://chronoscape.charlietrenorden.com/iceland/",
+    "chronoscape": "https://charlietrenorden.com/chronoscape/iceland/",
     # /archive rather than the root: Substack puts a subscribe interstitial over
     # the home page, and DISMISS only clears it once the post list is what loads
     "thinkerings": "https://thinkerings.substack.com/archive",
