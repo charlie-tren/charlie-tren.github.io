@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spectrum</title>
+<meta name="description" content="Everyone in the room places themselves on the same statement at once, then the host reveals who was where.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Spectrum">
+<meta property="og:description" content="Everyone in the room places themselves on the same statement at once, then the host reveals who was where.">
+<meta property="og:url" content="https://charlietrenorden.com/spectrum/">
+<meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192">
+<script>
+  /* set theme before paint to avoid a flash - same key as the hub */
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      var dark = saved ? saved === "dark"
+        : !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<link rel="stylesheet" href="/assets/room.css">
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "32b821209b5441a08df42ccf61c9e6c2"}'></script>
+</head>
+<body>
+<div class="page">
+  <div class="bar">
+    <a class="home" href="/"><span class="back">&larr;</span>&nbsp;Other projects</a>
+    <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
+  </div>
+
+  <nav class="tabs" aria-label="Modes">
+    <a class="tab" href="/beyond-small-talk/">Beyond small talk</a>
+    <a class="tab" href="/split-the-room/">Split the room</a>
+    <a class="tab" href="/spectrum/" aria-current="page">Spectrum</a>
+  </nav>
+
+  <section class="lobby" id="lobby">
+    <h2 id="lobbyTitle">Start a room</h2>
+    <label class="field"><span>Your name</span>
+      <input id="name" type="text" maxlength="24" autocomplete="given-name" placeholder="Charlie"></label>
+    <div class="btnrow"><button class="btn" id="startBtn" type="button">Start a room</button></div>
+    <p class="or">Or join one someone else started.</p>
+    <label class="field"><span>Room code</span>
+      <input id="joincode" type="text" maxlength="4" autocapitalize="characters" spellcheck="false" placeholder="KTPQ"></label>
+    <div class="btnrow"><button class="btn ghost" id="joinBtn" type="button">Join room</button></div>
+    <p class="err" id="err"></p>
+  </section>
+
+  <section id="room" hidden>
+    <div class="roomtop">
+      <span class="roomcode" id="code">----</span>
+      <button class="btn ghost" id="copyBtn" type="button">Copy invite link</button>
+      <span id="progress"></span>
+    </div>
+
+    <p class="statement" id="statement">Waiting for the room&hellip;</p>
+
+    <div class="track">
+      <div class="dots" id="dots"></div>
+      <input class="slider" id="slider" type="range" min="0" max="1000" value="500"
+             aria-label="How much you agree, from strongly disagree to strongly agree">
+      <div class="ends"><span>Strongly disagree</span><span>Strongly agree</span></div>
+    </div>
+
+    <div class="hostrow" id="hostrow" hidden>
+      <button class="btn" id="revealBtn" type="button">Show everyone</button>
+      <button class="btn ghost" id="nextBtn" type="button">Next statement</button>
+    </div>
+    <p class="tally" id="tally"></p>
+  </section>
+</div>
+
+<script src="/assets/room.js"></script>
+<script src="/assets/spectrum.js"></script>
+</body>
+</html>
