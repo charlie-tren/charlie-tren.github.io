@@ -18,7 +18,7 @@ Personal hub - a single landing page linking to my projects, built to attach to 
 | Photocopy | Live | https://charlietrenorden.com/photocopy/ (project Pages under this account, genuinely served at this path - do NOT add a `/photocopy` redirect folder here or it collides) |
 | Thinkerings | Live | https://thinkerings.substack.com/ |
 | Lexicon | Live | https://charlietrenorden.com/lexicon/ (self-hosted in this repo, `/lexicon`) |
-| Chronoscape | In progress | https://chronoscape.charlietrenorden.com/ |
+| Chronoscape | In progress | https://charlietrenorden.com/chronoscape/ (project Pages under this account, genuinely served at this path - the `chronoscape/` folder in this repo is a stale stub and is NOT what serves it) |
 | Beyond Small Talk | Live | https://charlietrenorden.com/beyond-small-talk/ (self-hosted in this repo, `/beyond-small-talk`) |
 
 | Split the Room | Live | https://charlietrenorden.com/split-the-room/ (self-hosted in this repo, `/split-the-room`) |
@@ -90,7 +90,7 @@ GitHub Pages can only host one repo, so a real subpath isn't possible for the ot
 | `/the-aftertimes` | https://aftertimes.charlietrenorden.com/ |
 | `/photocopy` | not a redirect - GitHub serves the `charlie-tren/photocopy` repo at this path |
 | `/thinkerings` | https://thinkerings.substack.com/ |
-| `/chronoscape` | https://chronoscape.charlietrenorden.com/ |
+| `/chronoscape` | not a redirect - GitHub serves the `charlie-tren/chronoscape` repo at this path. The `chronoscape/` stub here points at a subdomain that 301s back to this path, so it would loop if it were ever served |
 | `/lexicon` | served here for real, not a redirect |
 
 If a target's URL changes, edit the slug's `index.html` - the URL appears three times
