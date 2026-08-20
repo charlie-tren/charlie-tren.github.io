@@ -42,7 +42,7 @@
 
   <section class="lobby" id="lobby">
     <h2 id="lobbyTitle">Create a room</h2>
-    <p class="lede-s" id="lobbyLede">Everyone answers the same statement at once, then you reveal who was where.</p>
+    <p class="lede-s" id="lobbyLede">Everyone answers the same statement at once. You reveal who was where.</p>
 
     <label class="field"><span>Your name</span>
       <input id="name" type="text" maxlength="24" autocomplete="given-name" placeholder="Charlie"></label>
@@ -50,20 +50,19 @@
     <!-- Arriving from an invite link, only one of these two makes sense, so the
          other is hidden rather than offered and ignored. -->
     <div id="createBlock">
-      <div class="btnrow"><button class="btn" id="startBtn" type="button">Create a room</button></div>
+      <div class="btnrow"><button class="btn block" id="startBtn" type="button">Create a room</button></div>
       <p class="or">Joining one someone else made?</p>
       <div class="joinrow">
         <input id="joincode" type="text" maxlength="4" autocapitalize="characters" spellcheck="false"
-               placeholder="Code" aria-label="Room code">
+               placeholder="Room code" aria-label="Room code">
         <button class="btn ghost" id="joinBtn" type="button">Join</button>
       </div>
     </div>
 
     <div id="joinBlock" hidden>
-      <div class="btnrow">
-        <button class="btn" id="joinBtn2" type="button">Join room</button>
-        <button class="btn ghost" id="startBtn2" type="button">Create my own instead</button>
-      </div>
+      <div class="btnrow"><button class="btn block" id="joinBtn2" type="button">Join room</button></div>
+      <p class="or">Not the room you wanted?</p>
+      <div class="btnrow"><button class="btn ghost" id="startBtn2" type="button">Create my own</button></div>
     </div>
 
     <p class="err" id="err"></p>
