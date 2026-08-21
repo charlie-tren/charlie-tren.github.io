@@ -1,0 +1,27 @@
+name: Estate heads
+
+# Checks the things that are invisible until someone looks at a browser tab, on
+# every property at once: a title following the house convention, a real meta
+# description, icons of the project's OWN rather than the hub's, and the right
+# alpha for each icon target. On 20/08/2026 four properties had a favicon
+# flattened onto white, five had an apple-touch icon iOS would paint black
+# corners on, one used its wide wordmark as a favicon, and four had no
+# description at all - none of it caught by anything.
+on:
+  # Weekly, not on push: it reads the LIVE sites, and most of them are deployed
+  # from other repos, so a push here says nothing about when they change.
+  # Odd minute - GitHub drops on-the-hour scheduled runs under load.
+  schedule:
+    - cron: "31 20 * * 2"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node tools/test_estate_head.mjs
