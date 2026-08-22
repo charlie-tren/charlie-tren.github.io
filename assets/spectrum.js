@@ -173,12 +173,35 @@
   function paintLine(s, others) {
     el("statement").textContent = s.statement;
     others.sort(function (a, b) { return a.x - b.x; });
-    el("dots").innerHTML = others.map(function (p) {
+    var marks = others.map(function (p) {
       return '<span class="dot-m' + (p.placed ? "" : " unplaced") + (s.revealed ? " revealed" : "") +
         '" data-x="' + p.x.toFixed(4) + '" style="--x:' + p.x.toFixed(4) + '">' +
         "<b>" + (s.revealed && p.name ? esc(p.name) : "&nbsp;") + "</b>" +
         '<i style="background:' + p.colour + '"></i></span>';
-    }).join("");
+    });
+    marks.push(meLabel(s, "dot-m"));
+    el("dots").innerHTML = marks.join("");
+  }
+
+  /* Your own position is the slider thumb, or the pin on the square, so it is
+     never drawn as a dot. At the reveal it still needs something over it, or
+     yours is the one marker on screen that nobody can put a name to. The dot
+     inside is present but invisible: it holds the same box as everybody else's,
+     so the label sits on the same line and joins the same collision pass. */
+  function meLabel(s, cls) {
+    if (!s.revealed) return "";
+    var mine = null;
+    for (var i = 0; i < s.players.length; i++) {
+      if (s.players[i].id === me.id) mine = s.players[i];
+    }
+    if (!mine) return "";
+    var y = mine.y === undefined ? 0.5 : mine.y;
+    var pos = cls === "pad-m"
+      ? ' data-x="' + mine.x.toFixed(4) + '" data-y="' + y.toFixed(4) +
+        '" style="left:' + (mine.x * 100).toFixed(2) + "%;top:" + (y * 100).toFixed(2) + '%"'
+      : ' data-x="' + mine.x.toFixed(4) + '" style="--x:' + mine.x.toFixed(4) + '"';
+    return '<span class="' + cls + ' me revealed"' + pos +
+      '><b>You</b><i style="visibility:hidden"></i></span>';
   }
 
   /* y runs 0 at the top, which is why axes[1][0] labels the top edge. */
@@ -198,7 +221,7 @@
         ' style="left:' + (p.x * 100).toFixed(2) + "%;top:" + (y * 100).toFixed(2) + '%">' +
         "<b>" + (s.revealed && p.name ? esc(p.name) : "&nbsp;") + "</b>" +
         '<i style="background:' + p.colour + '"></i></span>';
-    }).join("");
+    }).concat(meLabel(s, "pad-m")).join("");
     el("mepin").style.left = (myX * 100).toFixed(2) + "%";
     el("mepin").style.top = (myY * 100).toFixed(2) + "%";
   }
@@ -324,8 +347,8 @@
     }).join("");
 
     var stats = "";
-    if (r.divided) stats += statBlock("Split the room", r.divided.label);
-    if (r.united && r.rounds > 1) stats += statBlock("Nobody argued", r.united.label);
+    if (r.divided) stats += statBlock("Most divided", r.divided.label);
+    if (r.united && r.rounds > 1) stats += statBlock("Most agreed", r.united.label);
     el("roomstats").innerHTML = stats;
   }
 
