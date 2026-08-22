@@ -358,3 +358,7 @@ input[type=range].slider::-moz-range-thumb { width: 18px; height: 18px; border-r
   .pad-m.revealed b { display: block; }
 }
 @media (prefers-reduced-motion: reduce) { .pad-m { transition: none; } }
+
+/* "You", over your own marker at the reveal. Slightly brighter than the other
+   names because it is the one you are looking for. */
+.dot-m.me b, .pad-m.me b { color: var(--ink); }
