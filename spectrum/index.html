@@ -73,11 +73,17 @@
       <span class="roomcode" id="code">----</span>
       <button class="btn ghost" id="copyBtn" type="button">Copy invite link</button>
       <span id="progress"></span>
+      <!-- A room setting, not a round action, which is why it sits up here with the
+           code rather than in the host row with reveal and advance. -->
+      <span class="modeswitch" id="modeSwitch" hidden role="group" aria-label="How many axes">
+        <button type="button" data-mode="line">One axis</button>
+        <button type="button" data-mode="plane">Two axes</button>
+      </span>
     </div>
 
     <p class="statement" id="statement">Waiting for the room&hellip;</p>
 
-    <div class="track">
+    <div class="track" id="track">
       <div class="axis">
         <div class="dots" id="dots"></div>
         <input class="slider" id="slider" type="range" min="0" max="1000" value="500"
@@ -87,6 +93,23 @@
         <span>Strongly disagree</span><span>Disagree</span><span>Neutral</span>
         <span>Agree</span><span>Strongly agree</span>
       </div>
+    </div>
+
+    <!-- Two axes. There is no statement here: the prompt IS the pair of labels
+         around the square, so the corners need no explaining. -->
+    <div class="padwrap" id="padwrap" hidden>
+      <p class="padaxis top" id="axTop"></p>
+      <div class="padrow">
+        <p class="padaxis left" id="axLeft"></p>
+        <div class="pad" id="pad" tabindex="0" role="application" aria-label="Place yourself in the square">
+          <span class="padrule v" aria-hidden="true"></span>
+          <span class="padrule h" aria-hidden="true"></span>
+          <div class="paddots" id="paddots"></div>
+          <span class="mepin" id="mepin" aria-hidden="true"></span>
+        </div>
+        <p class="padaxis right" id="axRight"></p>
+      </div>
+      <p class="padaxis bottom" id="axBottom"></p>
     </div>
 
     <div class="hostrow" id="hostrow" hidden>
@@ -107,7 +130,8 @@
     <p class="lede-s" id="resLede"></p>
     <ol class="simlist" id="simlist"></ol>
     <p class="resnote" id="resnote">The percentage is how close the two of you placed yourselves,
-      averaged over the statements you both answered.</p>
+      averaged over the rounds you both answered. A round on the square counts the
+      same as a round on the line: opposite corners is as far apart as opposite ends.</p>
     <div class="roomstats" id="roomstats"></div>
     <div class="hostrow" id="resHost" hidden>
       <button class="btn" id="resumeBtn" type="button">Back to the room</button>

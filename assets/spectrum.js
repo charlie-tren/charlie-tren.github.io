@@ -11,7 +11,8 @@
   var WS = API.replace(/^http/, "ws");
 
   var el = function (id) { return document.getElementById(id); };
-  var ws = null, me = null, myX = 0.5, sendTimer = null, pending = false;
+  var ws = null, me = null, myX = 0.5, myY = 0.5, sendTimer = null, pending = false;
+  var mode = "line";
   var room = null, myName = null, token = null;
   var beat = null, retry = null, tries = 0, quit = false;
 
@@ -113,22 +114,27 @@
 
   function render(s) {
     me = s.you;
+    mode = s.mode === "plane" ? "plane" : "line";
     document.documentElement.style.setProperty("--me", me.colour);
-    el("statement").textContent = s.statement;
     el("progress").textContent = s.index + " of " + s.total;
 
-    /* Other players sit above the track; your own position is the slider itself,
-       so it is never drawn twice. */
-    var others = s.players
-      .filter(function (p) { return p.id !== me.id; })
-      .sort(function (a, b) { return a.x - b.x; });
+    /* One axis or two is a room setting, so only the host sees the switch, and
+       everyone's view follows whatever the room says it is. */
+    el("modeSwitch").hidden = !me.admin;
+    Array.prototype.forEach.call(el("modeSwitch").children, function (b) {
+      b.setAttribute("aria-pressed", b.dataset.mode === mode ? "true" : "false");
+    });
+    el("statement").hidden = mode !== "line";
+    el("track").hidden = mode !== "line";
+    el("padwrap").hidden = mode !== "plane";
+    el("nextBtn").textContent = mode === "plane" ? "Next pair" : "Next statement";
 
-    el("dots").innerHTML = others.map(function (p) {
-      return '<span class="dot-m' + (p.placed ? "" : " unplaced") + (s.revealed ? " revealed" : "") +
-        '" data-x="' + p.x.toFixed(4) + '" style="--x:' + p.x.toFixed(4) + '">' +
-        "<b>" + (s.revealed && p.name ? esc(p.name) : "&nbsp;") + "</b>" +
-        '<i style="background:' + p.colour + '"></i></span>';
-    }).join("");
+    /* Other players are drawn separately from you; your own position is the
+       slider thumb or the pin, so it is never drawn twice. */
+    var others = s.players.filter(function (p) { return p.id !== me.id; });
+
+    if (mode === "plane") paintPlane(s, others);
+    else paintLine(s, others);
 
     var placed = s.players.filter(function (p) { return p.placed; }).length;
     note(s.revealed
@@ -144,7 +150,40 @@
     else show("room");
     /* After show(), never before: a hidden section measures zero, so laying the
        names out first put every one of them in row 0 on top of each other. */
-    layoutLabels();
+    if (mode === "plane") layoutPadLabels(); else layoutLabels();
+  }
+
+  function paintLine(s, others) {
+    el("statement").textContent = s.statement;
+    others.sort(function (a, b) { return a.x - b.x; });
+    el("dots").innerHTML = others.map(function (p) {
+      return '<span class="dot-m' + (p.placed ? "" : " unplaced") + (s.revealed ? " revealed" : "") +
+        '" data-x="' + p.x.toFixed(4) + '" style="--x:' + p.x.toFixed(4) + '">' +
+        "<b>" + (s.revealed && p.name ? esc(p.name) : "&nbsp;") + "</b>" +
+        '<i style="background:' + p.colour + '"></i></span>';
+    }).join("");
+  }
+
+  /* y runs 0 at the top, which is why axes[1][0] labels the top edge. */
+  function paintPlane(s, others) {
+    var ax = s.axes || [["", ""], ["", ""]];
+    el("axLeft").textContent = ax[0][0];
+    el("axRight").textContent = ax[0][1];
+    el("axTop").textContent = ax[1][0];
+    el("axBottom").textContent = ax[1][1];
+    el("pad").setAttribute("aria-label",
+      ax[0][0] + " to " + ax[0][1] + " across, " + ax[1][0] + " to " + ax[1][1] + " up and down");
+
+    el("paddots").innerHTML = others.map(function (p) {
+      var y = p.y === undefined ? 0.5 : p.y;
+      return '<span class="pad-m' + (p.placed ? "" : " unplaced") + (s.revealed ? " revealed" : "") +
+        '" data-x="' + p.x.toFixed(4) + '" data-y="' + y.toFixed(4) + '"' +
+        ' style="left:' + (p.x * 100).toFixed(2) + "%;top:" + (y * 100).toFixed(2) + '%">' +
+        "<b>" + (s.revealed && p.name ? esc(p.name) : "&nbsp;") + "</b>" +
+        '<i style="background:' + p.colour + '"></i></span>';
+    }).join("");
+    el("mepin").style.left = (myX * 100).toFixed(2) + "%";
+    el("mepin").style.top = (myY * 100).toFixed(2) + "%";
   }
 
   /* Names are laid out by MEASUREMENT, not by a fixed gap in track units. A name
@@ -185,15 +224,66 @@
        full room of long names cannot print itself over the statement. */
     wrap.closest(".track").style.setProperty("--rows", Math.max(1, lastRight.length));
   }
-  window.addEventListener("resize", layoutLabels);
+  window.addEventListener("resize", function () {
+    if (mode === "plane") layoutPadLabels(); else layoutLabels();
+  });
+
+  /* Same measured approach as the line, in two directions. A name sits under its
+     own dot, is nudged sideways so it cannot leave the square, and is dropped
+     line by line until it clears every name already placed. Sorted top-down so
+     the one that moves is always the lower of an overlapping pair. */
+  function layoutPadLabels() {
+    var pad = el("pad");
+    var W = pad.clientWidth, H = pad.clientHeight;
+    if (!W || !H) return;
+    var placed = [];
+    Array.prototype.slice.call(el("paddots").children)
+      .map(function (m) {
+        m.style.setProperty("--nudge", "0px");
+        m.style.setProperty("--drop", "0px");
+        return { m: m, x: Number(m.dataset.x) * W, y: Number(m.dataset.y) * H };
+      })
+      .sort(function (a, b) { return a.y - b.y; })
+      .forEach(function (it) {
+        var b = it.m.querySelector("b");
+        var w = b.offsetWidth, h = b.offsetHeight;
+        if (!w) return;                  /* hidden - mobile, before the reveal */
+
+        /* Sideways first, so a name near an edge cannot leave the square. */
+        var shift = 0;
+        if (it.x - w / 2 < 0) shift = w / 2 - it.x;
+        else if (it.x + w / 2 > W) shift = W - (it.x + w / 2);
+        var left = it.x - w / 2 + shift, right = left + w;
+
+        /* Then a side, BEFORE resolving overlaps rather than after. Flipping a
+           label above the dot as a last resort once it had already been placed
+           dropped it straight onto a neighbour, which is exactly what the
+           overlap loop was there to prevent. */
+        var below = it.y + 11 + h <= H;
+        var step = (h + 2) * (below ? 1 : -1);
+        var top = below ? it.y + 11 : it.y - 11 - h;
+        for (var guard = 0; guard < 14; guard++) {
+          var clear = placed.every(function (q) {
+            return left >= q.right + 4 || right <= q.left - 4 ||
+                   top >= q.bottom + 2 || top + h <= q.top - 2;
+          });
+          if (clear) break;
+          top += step;
+        }
+
+        it.m.style.setProperty("--nudge", shift.toFixed(1) + "px");
+        it.m.style.setProperty("--drop", (top - (it.y + 11)).toFixed(1) + "px");
+        placed.push({ left: left, right: right, top: top, bottom: top + h });
+      });
+  }
 
   function paintResults(r) {
     el("resHost").hidden = !me.admin;
     var rows = r.you || [];
-    el("resCount").textContent = r.rounds === 1 ? "1 statement" : r.rounds + " statements";
+    el("resCount").textContent = plural(r.rounds, "round");
 
     if (!rows.length) {
-      el("resLede").textContent = "Nobody else answered the same statements as you yet.";
+      el("resLede").textContent = "Nobody else has answered the same rounds as you yet.";
       el("simlist").innerHTML = "";
       el("resnote").hidden = true;
       el("roomstats").innerHTML = "";
@@ -202,7 +292,7 @@
     el("resnote").hidden = false;
     var top = rows[0], bottom = rows[rows.length - 1];
     el("resLede").textContent = rows.length === 1
-      ? "You and " + top.name + ", across " + plural(top.n, "statement") + "."
+      ? "You and " + top.name + ", across " + plural(top.n, "round") + "."
       : "Closest to you: " + top.name + ". Furthest: " + bottom.name + ".";
 
     el("simlist").innerHTML = rows.map(function (p) {
@@ -212,19 +302,27 @@
         '<span class="simname">' + esc(p.name || "Someone") + "</span>" +
         '<span class="simbar"><span style="width:' + pct + "%;background:" + p.colour + '"></span></span>' +
         '<span class="simpct">' + pct + "%</span>" +
-        (p.n < r.rounds ? '<span class="simn">' + plural(p.n, "statement") + "</span>" : "") +
+        (p.n < r.rounds ? '<span class="simn">' + plural(p.n, "round") + "</span>" : "") +
         "</li>";
     }).join("");
 
     var stats = "";
-    if (r.divided) stats += statBlock("Split the room", r.divided.statement);
-    if (r.united && r.rounds > 1) stats += statBlock("Nobody argued", r.united.statement);
+    if (r.divided) stats += statBlock("Split the room", r.divided.label);
+    if (r.united && r.rounds > 1) stats += statBlock("Nobody argued", r.united.label);
     el("roomstats").innerHTML = stats;
   }
 
   function statBlock(label, statement) {
     return '<div class="stat"><span class="statlbl">' + label + "</span>" +
       '<p class="statq">' + esc(statement) + "</p></div>";
+  }
+
+  function resetMe() {
+    el("slider").value = 500;
+    myX = 0.5;
+    myY = 0.5;
+    el("mepin").style.left = "50%";
+    el("mepin").style.top = "50%";
   }
 
   function plural(n, word) { return n + " " + word + (n === 1 ? "" : "s"); }
@@ -245,7 +343,7 @@
     sendTimer = setTimeout(function () {
       sendTimer = null;
       pending = false;
-      send({ t: "move", x: myX });
+      send({ t: "move", x: myX, y: myY });
     }, 70);
   }
 
@@ -312,11 +410,58 @@
       pushMove();
     });
 
+    /* A drag anywhere in the square, not a handle to find first - the pin follows
+       the finger. touch-action:none on .pad stops the page scrolling under it. */
+    var pad = el("pad");
+    function placeFrom(e) {
+      var r = pad.getBoundingClientRect();
+      myX = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      myY = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      el("mepin").style.left = (myX * 100).toFixed(2) + "%";
+      el("mepin").style.top = (myY * 100).toFixed(2) + "%";
+      pushMove();
+    }
+    /* The drag is tracked with our own flag rather than by asking the element
+       whether it still holds the pointer: setPointerCapture is allowed to fail,
+       and when it does the finger goes down, the dot jumps once, and the rest of
+       the drag is silently ignored. */
+    var dragging = false;
+    pad.addEventListener("pointerdown", function (e) {
+      dragging = true;
+      try { pad.setPointerCapture(e.pointerId); } catch (x) {}
+      e.preventDefault();
+      placeFrom(e);
+    });
+    pad.addEventListener("pointermove", function (e) { if (dragging) placeFrom(e); });
+    ["pointerup", "pointercancel"].forEach(function (t) {
+      pad.addEventListener(t, function () { dragging = false; });
+      window.addEventListener(t, function () { dragging = false; });
+    });
+    /* Arrows, so the square is reachable without a pointer. The slider got this
+       free by being a real range input; this has to ask. */
+    pad.addEventListener("keydown", function (e) {
+      var step = e.shiftKey ? 0.1 : 0.02, dx = 0, dy = 0;
+      if (e.key === "ArrowLeft") dx = -step;
+      else if (e.key === "ArrowRight") dx = step;
+      else if (e.key === "ArrowUp") dy = -step;
+      else if (e.key === "ArrowDown") dy = step;
+      else return;
+      e.preventDefault();
+      myX = Math.min(1, Math.max(0, myX + dx));
+      myY = Math.min(1, Math.max(0, myY + dy));
+      el("mepin").style.left = (myX * 100).toFixed(2) + "%";
+      el("mepin").style.top = (myY * 100).toFixed(2) + "%";
+      pushMove();
+    });
+
+    Array.prototype.forEach.call(el("modeSwitch").children, function (b) {
+      b.addEventListener("click", function () { send({ t: "mode", mode: b.dataset.mode }); });
+    });
+
     el("revealBtn").addEventListener("click", function () { send({ t: "reveal" }); });
     el("nextBtn").addEventListener("click", function () {
       send({ t: "next" });
-      el("slider").value = 500;
-      myX = 0.5;
+      resetMe();
     });
     el("compareBtn").addEventListener("click", function () { send({ t: "results" }); });
     el("resumeBtn").addEventListener("click", function () { send({ t: "resume" }); });
