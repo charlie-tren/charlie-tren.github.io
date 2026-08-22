@@ -129,9 +129,11 @@
     <h2 class="reshead">Who you agreed with</h2>
     <p class="lede-s" id="resLede"></p>
     <ol class="simlist" id="simlist"></ol>
-    <p class="resnote" id="resnote">The percentage is how close the two of you placed yourselves,
-      averaged over every round you both answered, with opposite corners of the square
-      counting as far apart as opposite ends of the line.</p>
+    <!-- Defining the top of the scale is the whole job here. The earlier version
+         also explained that a plane round is scaled to weigh the same as a line
+         round, which is a decision about the maths rather than something a reader
+         needs; it lives in the Worker's comments and the README instead. -->
+    <p class="resnote" id="resnote">100% means you put yourselves in the same spot every round.</p>
     <div class="roomstats" id="roomstats"></div>
     <div class="hostrow" id="resHost" hidden>
       <button class="btn" id="resumeBtn" type="button">Back to the room</button>
