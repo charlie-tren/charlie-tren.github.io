@@ -176,7 +176,10 @@ a { color: inherit; }
 .statement { font-size: clamp(1.5rem, 3.4vw, 2.15rem); line-height: 1.25; text-wrap: balance;
   margin: 0 0 2.6rem; min-height: 4.2em; display: flex; align-items: center; }
 
-.track { position: relative; padding: 4.2rem 0 0; }
+/* The headroom grows with the number of stacked name rows, which JS counts once
+   it has measured them. Fixed padding was fine for three names and let the fourth
+   row of a full room print itself over the statement. */
+.track { position: relative; padding: calc(2.9rem + var(--rows, 1) * 1.25rem) 0 0; }
 /* An overlay sitting exactly on the slider, so every dot - yours included, since
    yours IS the slider thumb - sits on one line. pointer-events off or the dots
    would swallow the drag aimed at the slider underneath. */
@@ -185,14 +188,23 @@ a { color: inherit; }
    two were 4px apart, which is enough to see once you know. */
 .axis { position: relative; height: 22px; display: flex; align-items: center; }
 .dots { position: absolute; inset: 0; pointer-events: none; }
-.dot-m { position: absolute; top: 50%; transform: translate(-50%, -50%);
-  transition: left .18s ease; text-align: center; }
+/* A range thumb is 18px wide, so its centre travels from 9px to 9px-from-the-right,
+   never to the very edge. The markers have to use the same travel or a dot sits
+   beside the thumb that put it there - visibly so at both ends. */
+.dot-m { position: absolute; top: 50%; left: calc(9px + var(--x, .5) * (100% - 18px));
+  transform: translate(-50%, -50%); transition: left .18s ease; text-align: center; }
 .dot-m i { display: block; width: 18px; height: 18px; border-radius: 50%; margin: 0 auto;
   border: 2px solid var(--bg); box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
-.dot-m b { position: absolute; left: 50%; transform: translateX(-50%);
+/* --nudge is measured in JS: a name centred on a dot at either end of the axis
+   runs off the side of the screen, and how far off depends on the name and the
+   viewport, so it cannot be a constant here. --row stacks names that would
+   otherwise overlap, and is measured for the same reason. */
+.dot-m b { position: absolute; left: 50%;
+  transform: translateX(calc(-50% + var(--nudge, 0px)));
   bottom: calc(100% + 5px + var(--row, 0) * 1.25rem);
   font: 500 12px/1.3 ui-sans-serif, system-ui, sans-serif;
-  color: var(--soft); white-space: nowrap; }
+  color: var(--soft); white-space: nowrap;
+  max-width: min(11rem, 44vw); overflow: hidden; text-overflow: ellipsis; }
 .dot-m.unplaced { opacity: .3; }
 input[type=range].slider { -webkit-appearance: none; appearance: none; width: 100%;
   background: transparent; margin: 0; }
@@ -226,6 +238,37 @@ input[type=range].slider::-moz-range-thumb { width: 18px; height: 18px; border-r
   .dot-m.revealed b { display: block; }
 }
 @media (prefers-reduced-motion: reduce) { .dot-m { transition: none; } }
+
+/* The comparison screen. Shown when the host calls it, and replaces the axis
+   rather than sitting under it - the axis is about the statement on screen and
+   this is about the whole sitting. */
+.reshead { font-weight: 400; font-size: clamp(1.6rem, 3.4vw, 2.15rem); margin: 0 0 .6rem;
+  letter-spacing: -.015em; }
+.simlist { list-style: none; margin: 0; padding: 0; }
+.simrow { display: grid; grid-template-columns: 10px minmax(0, 8rem) 1fr auto;
+  align-items: center; gap: .75rem; padding: .62rem 0; border-bottom: 1px solid var(--rule); }
+.simrow .swatch { width: 10px; height: 10px; border-radius: 50%; display: block; }
+.simname { font: 500 15px/1.2 ui-sans-serif, system-ui, sans-serif;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.simbar { height: 6px; border-radius: 3px; background: var(--rule); overflow: hidden; }
+.simbar span { display: block; height: 100%; border-radius: 3px; }
+.simpct { font: 600 14px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink);
+  font-variant-numeric: tabular-nums; }
+/* Only printed when someone answered fewer statements than the room did, so the
+   number above it is not read as comparable with the rest. */
+.simn { grid-column: 2 / -1; font: 400 11.5px/1 ui-sans-serif, system-ui, sans-serif;
+  color: var(--faint); margin-top: -.3rem; }
+.resnote { color: var(--faint); font: 400 12.5px/1.55 ui-sans-serif, system-ui, sans-serif;
+  margin: 1rem 0 0; max-width: 44ch; }
+.roomstats { display: flex; gap: 2.2rem; flex-wrap: wrap; margin-top: 2.4rem; }
+.stat { flex: 1 1 15rem; min-width: 0; }
+.statlbl { display: block; font: 600 11px/1 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--soft); margin-bottom: .55rem; }
+.statq { margin: 0; font-size: 1.05rem; line-height: 1.4; text-wrap: balance; }
+@media (max-width: 560px) {
+  .simrow { grid-template-columns: 10px minmax(0, 6rem) 1fr auto; gap: .6rem; }
+  .roomstats { gap: 1.6rem; margin-top: 2rem; }
+}
 
 .lede-s { color: var(--soft); font-size: .99rem; line-height: 1.5; margin: 0 0 1.9rem; }
 /* Code and Join on one row: a full-width field above its own button read as a
