@@ -285,3 +285,59 @@ input[type=range].slider::-moz-range-thumb { width: 18px; height: 18px; border-r
 .joinrow input::placeholder { font: 400 14px/1.2 ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0; text-transform: none; color: var(--faint); }
 .field input::placeholder { color: var(--faint); }
+
+/* ------------------------------------------------------------------ Plane ---
+   The two-axis mode. Same room, same players, same reveal - the host switches
+   between one axis and two from the top bar, and everyone's view follows.
+   There is no statement in this mode: the prompt is the four labels around the
+   square, which is why the corners need no separate explaining. */
+.modeswitch { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; overflow: hidden; }
+.modeswitch button { appearance: none; cursor: pointer; background: transparent; border: none;
+  color: var(--faint); padding: .4rem .7rem;
+  font: 600 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .06em; }
+.modeswitch button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.modeswitch button:not([aria-pressed="true"]):hover { color: var(--ink); }
+
+.padwrap { margin: .4rem 0 0; }
+.padrow { display: flex; align-items: center; gap: .7rem; }
+/* The square never gets wider than it is tall, so a laptop does not stretch it
+   into a rectangle where "the middle" stops meaning the middle. */
+.pad { position: relative; flex: 0 1 min(100%, 26rem); aspect-ratio: 1; margin: 0 auto;
+  border: 1px solid var(--rule); border-radius: 10px; touch-action: none; cursor: crosshair; }
+.pad:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.padrule { position: absolute; background: var(--rule); }
+.padrule.v { left: 50%; top: 6%; bottom: 6%; width: 1px; }
+.padrule.h { top: 50%; left: 6%; right: 6%; height: 1px; }
+.paddots { position: absolute; inset: 0; pointer-events: none; }
+
+.padaxis { margin: 0; color: var(--faint); text-align: center;
+  font: 600 11.5px/1.3 ui-sans-serif, system-ui, sans-serif; letter-spacing: .09em;
+  text-transform: uppercase; }
+.padaxis.top { margin-bottom: .55rem; }
+.padaxis.bottom { margin-top: .55rem; }
+/* Sideways, so a long word on the left does not steal width from the square. */
+.padaxis.left, .padaxis.right { writing-mode: vertical-rl; flex: 0 0 auto; }
+.padaxis.left { transform: rotate(180deg); }
+
+.pad-m { position: absolute; transform: translate(-50%, -50%); text-align: center;
+  transition: left .18s ease, top .18s ease; }
+.pad-m i { display: block; width: 16px; height: 16px; border-radius: 50%; margin: 0 auto;
+  border: 2px solid var(--bg); box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
+/* Below the dot rather than above it: on the square there is as often something
+   above a dot as beside it, and a name under the dot reads as belonging to it. */
+.pad-m b { position: absolute; left: 50%; top: calc(100% + 3px);
+  transform: translate(calc(-50% + var(--nudge, 0px)), var(--drop, 0px));
+  font: 500 11.5px/1.25 ui-sans-serif, system-ui, sans-serif; color: var(--soft);
+  white-space: nowrap; max-width: 8rem; overflow: hidden; text-overflow: ellipsis; }
+.pad-m.unplaced { opacity: .3; }
+/* Your own dot, which on the line is the slider thumb itself. */
+.mepin { position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  transform: translate(-50%, -50%); background: var(--me, var(--accent));
+  border: 2px solid var(--bg); box-shadow: 0 0 0 1px rgba(0,0,0,.25); pointer-events: none; }
+@media (max-width: 560px) {
+  .padrow { gap: .45rem; }
+  .padaxis { font-size: 10px; letter-spacing: .04em; }
+  .pad-m b { display: none; }
+  .pad-m.revealed b { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { .pad-m { transition: none; } }
