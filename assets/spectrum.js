@@ -14,19 +14,28 @@
   var ws = null, me = null, myX = 0.5, myY = 0.5, sendTimer = null, pending = false;
   var mode = "line";
   var room = null, myName = null, token = null;
-  var beat = null, retry = null, tries = 0, quit = false;
+  var beat = null, retry = null, tries = 0, paused = false;
 
   /* Identity that survives the socket. A phone that locks its screen, a tab left
      in the background, a train going into a tunnel - all of them kill the
      websocket, and without this you came back as a second dot in a new colour
-     while your old one sat on the axis forever. */
+     while your old one sat on the axis forever.
+
+     sessionStorage, NOT localStorage: the room treats a second join on the same
+     token as the same person coming back and closes the older socket, so two
+     tabs of this page in one browser shared one seat - and because each of them
+     reconnects when its socket closes, they took turns kicking each other off
+     forever. Measured at eleven sockets in four seconds between two tabs, with
+     one of them always showing whatever it had been told before it was last
+     kicked. Per-tab storage still survives a reload, which is the case the token
+     exists for. */
   function myToken() {
     var t = null;
-    try { t = localStorage.getItem("spectrum-token"); } catch (x) {}
+    try { t = sessionStorage.getItem("spectrum-token"); } catch (x) {}
     if (!/^[A-Za-z0-9-]{8,64}$/.test(t || "")) {
       t = (crypto.randomUUID ? crypto.randomUUID()
         : "t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
-      try { localStorage.setItem("spectrum-token", t); } catch (x) {}
+      try { sessionStorage.setItem("spectrum-token", t); } catch (x) {}
     }
     return t;
   }
@@ -57,7 +66,7 @@
   }
 
   function open() {
-    if (quit) return;
+    paused = false;
     clearTimeout(retry);
     if (ws) { try { ws.onclose = null; ws.close(); } catch (x) {} }
     ws = new WebSocket(WS + "/api/ws?code=" + encodeURIComponent(room));
@@ -83,7 +92,7 @@
 
     ws.onclose = function () {
       clearInterval(beat);
-      if (quit) return;
+      if (paused) return;
       /* Reconnecting is the whole point of the token, so a dropped socket is a
          pause rather than the end of the game. */
       tries += 1;
@@ -97,20 +106,26 @@
 
   /* A backgrounded tab has its timers throttled, so the heartbeat stops and the
      socket usually dies while nobody is looking. Coming back to the tab, or back
-     onto a network, is the moment to check rather than wait out the backoff. */
+     onto a network, is the moment to check rather than wait out the backoff.
+
+     Every route back in clears `paused` itself rather than checking it. A phone
+     that fires pagehide when you switch apps and then never fires pageshow used
+     to be stuck: coming back to the tab called wake(), wake() saw the flag still
+     set and returned, and the page sat there showing a dead socket's last state
+     with everyone frozen wherever they were when it died. */
   function wake() {
-    if (quit || !room) return;
+    if (!room) return;
+    paused = false;
     if (!ws || ws.readyState > 1) { tries = 0; open(); }
   }
   document.addEventListener("visibilitychange", function () { if (!document.hidden) wake(); });
   window.addEventListener("online", wake);
-  /* pagehide can mean "closed" or "parked in the back/forward cache". Stop
-     reconnecting either way, and start again if the page comes back - leaving
-     `quit` set through a bfcache restore would silently end the game. */
+  window.addEventListener("pageshow", wake);
+  /* pagehide means "closed" or "parked in the back/forward cache". Stop
+     reconnecting for now; anything that brings the page back starts it again. */
   window.addEventListener("pagehide", function () {
-    quit = true; clearInterval(beat); clearTimeout(retry);
+    paused = true; clearInterval(beat); clearTimeout(retry);
   });
-  window.addEventListener("pageshow", function () { quit = false; wake(); });
 
   function render(s) {
     me = s.you;
@@ -144,7 +159,9 @@
     el("hostrow").hidden = !me.admin;
     el("revealBtn").disabled = s.revealed;
     el("revealBtn").textContent = s.revealed ? "Shown" : "Show everyone";
-    el("compareBtn").disabled = !s.rounds;
+    /* Live as soon as two people have placed, not only once the host has
+       advanced - a room that has answered one statement can compare it. */
+    el("compareBtn").disabled = !(s.rounds || placed >= 2);
 
     if (s.results) { paintResults(s.results); show("results"); }
     else show("room");
@@ -385,7 +402,7 @@
           if (!d.code) throw new Error("no code");
           /* A new room is a new game, so it must not inherit the seat and colour
              held by the token from the last one. */
-          try { localStorage.removeItem("spectrum-token"); } catch (x) {}
+          try { sessionStorage.removeItem("spectrum-token"); } catch (x) {}
           connect(d.code, name);
         })
         .catch(function () {
