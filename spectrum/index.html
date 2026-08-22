@@ -92,8 +92,26 @@
     <div class="hostrow" id="hostrow" hidden>
       <button class="btn" id="revealBtn" type="button">Show everyone</button>
       <button class="btn ghost" id="nextBtn" type="button">Next statement</button>
+      <button class="btn ghost" id="compareBtn" type="button" disabled>Compare answers</button>
     </div>
     <p class="tally" id="tally"></p>
+  </section>
+
+  <!-- The comparison. Every finished round is kept by the room, so this is the
+       whole sitting rather than the statement on screen. Each player is sent only
+       their own row of it, for the same reason names are held back until the
+       reveal: the rest is not theirs to read. -->
+  <section id="results" hidden>
+    <div class="roomtop"><span id="resCount"></span></div>
+    <h2 class="reshead">Who you agreed with</h2>
+    <p class="lede-s" id="resLede"></p>
+    <ol class="simlist" id="simlist"></ol>
+    <p class="resnote" id="resnote">The percentage is how close the two of you placed yourselves,
+      averaged over the statements you both answered.</p>
+    <div class="roomstats" id="roomstats"></div>
+    <div class="hostrow" id="resHost" hidden>
+      <button class="btn" id="resumeBtn" type="button">Back to the room</button>
+    </div>
   </section>
 </div>
 
