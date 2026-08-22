@@ -13,7 +13,7 @@
   var el = function (id) { return document.getElementById(id); };
   var ws = null, me = null, myX = 0.5, sendTimer = null, pending = false;
   var room = null, myName = null, token = null;
-  var beat = null, retry = null, tries = 0, quit = false;
+  var beat = null, retry = null, tries = 0, quit = false, oldRoom = false;
 
   /* Identity that survives the socket. A phone that locks its screen, a tab left
      in the background, a train going into a tunnel - all of them kill the
@@ -83,6 +83,10 @@
     ws.onclose = function () {
       clearInterval(beat);
       if (quit) return;
+      /* A room that does not honour the token would hand a reconnecting player a
+         NEW seat and colour, so retrying against one turns a dropped socket into
+         a pile of duplicate dots. Better to say so and let them reload. */
+      if (oldRoom) { note("Disconnected - reload to rejoin."); return; }
       /* Reconnecting is the whole point of the token, so a dropped socket is a
          pause rather than the end of the game. */
       tries += 1;
@@ -98,7 +102,7 @@
      socket usually dies while nobody is looking. Coming back to the tab, or back
      onto a network, is the moment to check rather than wait out the backoff. */
   function wake() {
-    if (quit || !room) return;
+    if (quit || oldRoom || !room) return;
     if (!ws || ws.readyState > 1) { tries = 0; open(); }
   }
   document.addEventListener("visibilitychange", function () { if (!document.hidden) wake(); });
@@ -112,6 +116,11 @@
   window.addEventListener("pageshow", function () { quit = false; wake(); });
 
   function render(s) {
+    /* The page and the room deploy separately, so the page has to cope with a
+       room that predates it. "rounds" is the marker: a room that keeps history
+       is a room that honours reconnect tokens and can be compared at the end.
+       Delete this once the deployed room is current. */
+    oldRoom = !("rounds" in s);
     me = s.you;
     document.documentElement.style.setProperty("--me", me.colour);
     el("statement").textContent = s.statement;
@@ -138,6 +147,7 @@
     el("hostrow").hidden = !me.admin;
     el("revealBtn").disabled = s.revealed;
     el("revealBtn").textContent = s.revealed ? "Shown" : "Show everyone";
+    el("compareBtn").hidden = oldRoom;
     el("compareBtn").disabled = !s.rounds;
 
     if (s.results) { paintResults(s.results); show("results"); }
