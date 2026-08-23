@@ -44,7 +44,9 @@
   .wrap { max-width: 860px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 4rem; }
-  .home { font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
+  /* order:2 puts the back-link top RIGHT, which is where it sits on all seven other
+     project pages. This page had it left; checked all eight rather than assuming. */
+  .home { order: 2; font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
           text-transform: uppercase; color: var(--soft); text-decoration: none;
           display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; }
   .home:hover { color: var(--accent); }
