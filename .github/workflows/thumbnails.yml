@@ -1,11 +1,19 @@
 name: Refresh card thumbnails
 
-# One Story and The Aftertimes both republish at 20:00 UTC, so the daily shot
-# waits an hour and a bit for their crons to land and Pages to rebuild. Odd
-# minutes on purpose: GitHub's scheduler runs late and drops on-the-hour jobs.
+# Timed off the last ten publishes of each daily site, in UTC, not off their crons -
+# the scheduler runs late and the crons lie:
+#   One Story      19:26 - 19:51
+#   The Aftertimes 20:36 - 20:45
+#   Photocopy      20:57 - 21:03, BUT three of ten landed at 22:54
+# So the 21:37 run catches One Story and The Aftertimes every day and Photocopy most
+# days, and a second run at 23:23 picks up Photocopy's late tail. Without it that card
+# sat a day stale roughly a third of the time. The catch-up is nearly free: the shooter
+# leaves visually-identical shots alone, so on a normal night it commits nothing.
+# Odd minutes on purpose: GitHub's scheduler drops on-the-hour jobs.
 on:
   schedule:
-    - cron: "37 21 * * *"      # daily - the two sites that change every day
+    - cron: "37 21 * * *"      # daily - the three sites that change every day
+    - cron: "23 23 * * *"      # catch-up, for a late Photocopy frame
     - cron: "43 21 * * 1"      # Mondays - all nine, in case a site was redesigned
   workflow_dispatch:
     inputs:
