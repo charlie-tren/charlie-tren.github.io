@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Front-loads the distinguishing word: a tab shows about 20 characters. -->
+<title>Equity Research - Charlie Trenorden</title>
+<meta name="description" content="Company research and thesis reviews on listed equities, written by Charlie Trenorden.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Equity Research">
+<meta property="og:description" content="Company research and thesis reviews on listed equities. Full workings, not a summary.">
+<meta property="og:url" content="https://charlietrenorden.com/research/">
+<meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script>
+  /* set theme before paint to avoid a flash - same key as the hub */
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      var dark = saved ? saved === "dark"
+        : !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  /* Tokens copied from the hub rather than imported: this page is one file and a
+     shared stylesheet would be a second request for forty lines of CSS. */
+  :root { --bg:#0f1319; --raised:#171c24; --ink:#e6e9ee; --soft:#8a94a3;
+          --faint:#5d6675; --rule:#262d38; --motif-bg:#141a22; --accent:#82a8ca; }
+  :root[data-theme="dark"]  { --bg:#0f1319; --raised:#171c24; --ink:#e6e9ee; --soft:#8a94a3; --faint:#5d6675; --rule:#262d38; --motif-bg:#141a22; --accent:#82a8ca; }
+  :root[data-theme="light"] { --bg:#eef0f3; --raised:#fbfcfd; --ink:#14171c; --soft:#565d68; --faint:#868d99; --rule:#d7dbe2; --motif-bg:#e7eaef; --accent:#3a5f80; }
+
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 400 18px/1.65 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+         -webkit-font-smoothing: antialiased; transition: background .3s, color .3s; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
+
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 4rem; }
+  .home { font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
+          text-transform: uppercase; color: var(--soft); text-decoration: none;
+          display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; }
+  .home:hover { color: var(--accent); }
+  .home .back { color: var(--accent); font-size: 14px; }
+  .toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
+            border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem;
+            font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em;
+            display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
+  .toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+  h1 { font-weight: 400; font-size: clamp(2.3rem, 6vw, 3.4rem); line-height: 1.05;
+       letter-spacing: -.015em; margin: 0 0 1.1rem; }
+  .lede { font-size: 1.15rem; color: var(--soft); max-width: 48ch; margin: 0 0 3rem; }
+
+  .list { border-top: 1px solid var(--rule); }
+  .item { display: grid; grid-template-columns: 1fr auto auto; align-items: baseline;
+          gap: 1.2rem; padding: 1.15rem .2rem; border-bottom: 1px solid var(--rule);
+          text-decoration: none; color: inherit; transition: background .2s; }
+  .item:hover { background: var(--motif-bg); }
+  .main { display: inline-flex; align-items: baseline; gap: .6rem; min-width: 0; }
+  .name { font-size: 1.1rem; }
+  .item:hover .name { color: var(--accent); }
+  .tick { font: 500 11.5px/1 ui-monospace, Consolas, monospace; letter-spacing: .08em; color: var(--faint); }
+  .kind { font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
+  .date { font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; color: var(--faint); white-space: nowrap; }
+  .note { font: 400 13px/1.6 ui-sans-serif, system-ui, sans-serif; color: var(--faint); margin: 2.2rem 0 0; }
+
+  @media (max-width: 680px) {
+    .wrap { padding-top: 1.6rem; }
+    .bar { margin-bottom: 2.6rem; }
+    /* Three columns do not fit a phone: the longest name wraps and that row grows
+       taller than the others. Name and date keep the top line, kind drops under. */
+    .item { grid-template-columns: 1fr auto; row-gap: .3rem; column-gap: 1rem; }
+    .main { grid-column: 1; grid-row: 1; }
+    .date { grid-column: 2; grid-row: 1; }
+    .kind { grid-column: 1 / -1; grid-row: 2; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <a class="home" href="https://charlietrenorden.com/"><span class="back">&larr;</span>Other projects</a>
+    <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
+  </div>
+
+  <h1>Equity research</h1>
+  <p class="lede">Company research and thesis reviews on listed equities. Each one carries the full workings rather than a conclusion.</p>
+
+  <!-- New tab on every report: these are PDFs, and a PDF that replaces the page
+       strands the reader with only the back button to get home. -->
+  <div class="list">
+    <a class="item" href="/assets/research/stride-lrn-2026-08.pdf" target="_blank" rel="noopener">
+      <span class="main"><span class="name">Stride</span><span class="tick">LRN</span></span>
+      <span class="kind">Company research</span>
+      <span class="date">Aug 2026</span>
+    </a>
+    <a class="item" href="/assets/research/uber-thesis-review-2026-08.pdf" target="_blank" rel="noopener">
+      <span class="main"><span class="name">Uber</span><span class="tick">UBER</span></span>
+      <span class="kind">Thesis review</span>
+      <span class="date">Aug 2026</span>
+    </a>
+    <a class="item" href="/assets/research/baby-bunting-bbn-2025-03.pdf" target="_blank" rel="noopener">
+      <span class="main"><span class="name">Baby Bunting</span><span class="tick">BBN</span></span>
+      <span class="kind">Company research</span>
+      <span class="date">Mar 2025</span>
+    </a>
+  </div>
+
+  <p class="note">Not investment advice.</p>
+</div>
+
+<script>
+  var root = document.documentElement;
+  var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
+  function sync() { lbl.textContent = root.getAttribute("data-theme") === "dark" ? "Dark" : "Light"; }
+  sync();
+  btn.addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") !== "dark";
+    root.setAttribute("data-theme", dark ? "dark" : "light");
+    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
+    sync();
+  });
+</script>
+</body>
+</html>

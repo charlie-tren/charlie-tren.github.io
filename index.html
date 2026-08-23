@@ -79,22 +79,6 @@
   .links svg { width: 16px; height: 16px; color: var(--accent); }
 
   .section-label { font: 600 13.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 4rem 0 1.8rem; }
-  /* Three rows, not cards: a report is a document, and giving each one a thumbnail
-     would make three PDFs compete with twelve projects for the same attention. */
-  .research { border-top: 1px solid var(--rule); }
-  .rsrch { display: grid; grid-template-columns: 1fr auto auto; align-items: baseline; gap: 1.2rem;
-           padding: 1.05rem .2rem; border-bottom: 1px solid var(--rule); text-decoration: none;
-           color: inherit; transition: background .2s; }
-  .rsrch:hover { background: var(--motif-bg); }
-  .rsrch-main { display: inline-flex; align-items: baseline; gap: .6rem; min-width: 0; }
-  .rsrch-name { font-size: 1.05rem; }
-  .rsrch:hover .rsrch-name { color: var(--accent); }
-  .rsrch-tick { font: 500 11.5px/1 ui-monospace, Consolas, monospace; letter-spacing: .08em;
-                color: var(--faint); }
-  .rsrch-kind { font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
-  .rsrch-date { font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; color: var(--faint);
-                white-space: nowrap; }
-  .research-note { font: 400 12.5px/1.5 ui-sans-serif, system-ui, sans-serif; color: var(--faint); margin: 1rem 0 0; }
 
   .proj { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: center; text-decoration: none; color: inherit; padding: 1.8rem 0; border-top: 1px solid var(--rule); }
   .proj:last-of-type { border-bottom: 1px solid var(--rule); }
@@ -194,13 +178,6 @@
   @media (max-width: 680px) {
     .wrap { padding-top: 1.6rem; }
     .bar { margin-bottom: 3rem; }
-    /* Three columns do not fit a phone: "Baby Bunting" wrapped and the row grew to
-       two lines of name against one of everything else. Name and date keep the top
-       row, the kind drops underneath. */
-    .rsrch { grid-template-columns: 1fr auto; row-gap: .3rem; column-gap: 1rem; }
-    .rsrch-main { grid-column: 1; grid-row: 1; }
-    .rsrch-date { grid-column: 2; grid-row: 1; }
-    .rsrch-kind { grid-column: 1 / -1; grid-row: 2; }
     /* CHARLIE TRENORDEN wraps to two lines on a phone at the desktop size. It did so
        at the old 20px too, so this is a pre-existing break rather than one the bump
        introduced, but a name split across two lines is not the look.
@@ -242,6 +219,7 @@
   <p class="lede">A collection of small web projects, mostly about markets, history and language.</p>
 
   <nav class="links" aria-label="Elsewhere">
+    <a href="/research/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg><span>Equity Research</span></a>
     <a href="https://www.linkedin.com/in/charlietrenorden/"><svg viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"/></svg><span>LinkedIn</span></a>
     <a href="https://github.com/charlie-tren"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg><span>GitHub</span></a>
     <!-- links a single public playlist, not a profile. The ?si= share token is a
@@ -250,9 +228,6 @@
     <!-- The published CV is built by build_cv.py --web, which is the same document
          as the one sent to people minus the mobile number: this page is public and
          a phone number on it is a number for scrapers. -->
-    <!-- In-page anchor rather than an outbound link: the reports live in a section
-         further down, because there are three of them and the row holds one link each. -->
-    <a href="#research"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg><span>Equity Research</span></a>
     <a href="assets/charlie-trenorden-cv.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h4"/></svg><span>CV</span></a>
     <a href="mailto:charlie.tren@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Email</span></a>
   </nav>
@@ -396,27 +371,6 @@
       <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
-
-  <p class="section-label" id="research">Equity research</p>
-
-  <div class="research">
-    <a class="rsrch" href="assets/research/stride-lrn-2026-08.pdf">
-      <span class="rsrch-main"><span class="rsrch-name">Stride</span><span class="rsrch-tick">LRN</span></span>
-      <span class="rsrch-kind">Company research</span>
-      <span class="rsrch-date">Aug 2026</span>
-    </a>
-    <a class="rsrch" href="assets/research/uber-thesis-review-2026-08.pdf">
-      <span class="rsrch-main"><span class="rsrch-name">Uber</span><span class="rsrch-tick">UBER</span></span>
-      <span class="rsrch-kind">Thesis review</span>
-      <span class="rsrch-date">Aug 2026</span>
-    </a>
-    <a class="rsrch" href="assets/research/baby-bunting-bbn-2025-03.pdf">
-      <span class="rsrch-main"><span class="rsrch-name">Baby Bunting</span><span class="rsrch-tick">BBN</span></span>
-      <span class="rsrch-kind">Company research</span>
-      <span class="rsrch-date">Mar 2025</span>
-    </a>
-  </div>
-  <p class="research-note">Written for myself. Not investment advice.</p>
 
   <div class="also-item">
     <div class="also-head"><span class="also-name">Lighthouse</span><span class="tag">Personal project</span></div>
