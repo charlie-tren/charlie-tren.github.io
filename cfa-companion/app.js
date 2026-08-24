@@ -82,14 +82,18 @@
     document.body.classList.add("failed");
     el.loaderr.hidden = false;
     el.loaderr.textContent = "";
-    if (window.location.protocol === "file:") {
+    var proto = window.location.protocol;
+    if (proto !== "http:" && proto !== "https:") {
       el.loaderr.appendChild(para(null,
-        "This page reads its questions with fetch, which browsers block for a file "
-        + "opened straight from disk. Open it at charlietrenorden.com/cfa-companion "
-        + "instead, or serve this folder over http."));
+        "This page was opened over " + proto + ", and browsers only allow it to read "
+        + "its questions over http or https. Open it at "
+        + "charlietrenorden.com/cfa-companion instead, or serve this folder."));
       return;
     }
     el.loaderr.appendChild(para(null, "The question bank did not load: " + String(err)));
+    el.loaderr.appendChild(para("where",
+      "Tried " + new URL("data/index.json", window.location.href).href
+      + (navigator.onLine === false ? ". The browser reports no connection." : "")));
     var again = document.createElement("button");
     again.type = "button";
     again.className = "primary";
