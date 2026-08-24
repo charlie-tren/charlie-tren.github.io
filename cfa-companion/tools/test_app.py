@@ -49,6 +49,24 @@ def main() -> int:
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
 
+        # --- a transient failure must heal itself ------------------------------
+        # A load caught mid-deploy fails for a second or two. One silent retry
+        # turns that into a non-event, so the reader never sees a panel.
+        first = {"n": 0}
+
+        def once(route):
+            first["n"] += 1
+            route.abort() if first["n"] == 1 else route.continue_()
+
+        page.route("**/data/*.json", once)
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#banksize:not(:empty)", timeout=15000)
+        check("a transient load failure heals itself", page.locator("#modes").is_visible())
+        check("a transient failure shows the reader nothing",
+              page.locator("#loaderr").is_hidden())
+        page.unroute("**/data/*.json")
+        errors.clear()
+
         # --- what happens when the bank cannot be read -------------------------
         # A blocked fetch must say so and offer a way back, not leave a dead page.
         blocked = {"on": True}
