@@ -1,13 +1,17 @@
 """Render the question screen in several type pairings and shoot a contact sheet.
 
-    python tools/font_options.py
+    python tools/font_options.py            the current round
+    python tools/font_options.py --set 1    the first round, for comparison
 
 Writes tools/shots/font-options.png. Each panel shows the roles that actually
 matter: the section heading, the stem, the three choices, and the small caps
-label above a worked solution.
+label above a worked solution. The Google Fonts request is derived from the
+stacks below, so adding an option cannot forget to load its family.
 """
 
 import pathlib
+import re
+import sys
 
 from playwright.sync_api import sync_playwright
 
@@ -18,29 +22,48 @@ SYSTEM_SERIF = ('"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, '
 SYSTEM_SANS = ('-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, '
                '"Helvetica Neue", Arial, sans-serif')
 
-# (label, heading face, body face)
-OPTIONS = [
-    ("1  Now: system serif and system sans", SYSTEM_SERIF, SYSTEM_SANS),
-    ("2  Spectral and Hanken Grotesk, both already on the site",
-     "'Spectral', serif", "'Hanken Grotesk', sans-serif"),
-    ("3  Spectral throughout", "'Spectral', serif", "'Spectral', serif"),
-    ("4  Source Serif 4 and IBM Plex Sans",
-     "'Source Serif 4', serif", "'IBM Plex Sans', sans-serif"),
-    ("5  Newsreader and Inter", "'Newsreader', serif", "'Inter', sans-serif"),
-    ("6  Literata and Public Sans", "'Literata', serif", "'Public Sans', sans-serif"),
-    ("7  IBM Plex Serif throughout", "'IBM Plex Serif', serif", "'IBM Plex Serif', serif"),
-    ("8  EB Garamond and Hanken Grotesk",
-     "'EB Garamond', serif", "'Hanken Grotesk', sans-serif"),
-    ("9  System serif and Hanken Grotesk", SYSTEM_SERIF, "'Hanken Grotesk', sans-serif"),
-    ("10  Fraunces and Inter", "'Fraunces', serif", "'Inter', sans-serif"),
-]
-
-FONTS = ("family=Spectral:wght@400;600&family=Hanken+Grotesk:wght@400;600"
-         "&family=Source+Serif+4:wght@400;600&family=IBM+Plex+Sans:wght@400;600"
-         "&family=Newsreader:wght@400;600&family=Inter:wght@400;600"
-         "&family=Literata:wght@400;600&family=Public+Sans:wght@400;600"
-         "&family=IBM+Plex+Serif:wght@400;600&family=EB+Garamond:wght@400;600"
-         "&family=Fraunces:wght@400;600")
+# (label, heading stack, body stack). Numbering runs continuously across rounds so
+# Charlie can reply with a number and mean one thing.
+SETS = {
+    1: [
+        ("1  System serif and system sans", SYSTEM_SERIF, SYSTEM_SANS),
+        ("2  Spectral and Hanken Grotesk", "'Spectral', serif", "'Hanken Grotesk', sans-serif"),
+        ("3  Spectral throughout", "'Spectral', serif", "'Spectral', serif"),
+        ("4  Source Serif 4 and IBM Plex Sans",
+         "'Source Serif 4', serif", "'IBM Plex Sans', sans-serif"),
+        ("5  Newsreader and Inter", "'Newsreader', serif", "'Inter', sans-serif"),
+        ("6  Literata and Public Sans", "'Literata', serif", "'Public Sans', sans-serif"),
+        ("7  IBM Plex Serif throughout", "'IBM Plex Serif', serif", "'IBM Plex Serif', serif"),
+        ("8  EB Garamond and Hanken Grotesk",
+         "'EB Garamond', serif", "'Hanken Grotesk', sans-serif"),
+        ("9  System serif and Hanken Grotesk", SYSTEM_SERIF, "'Hanken Grotesk', sans-serif"),
+        ("10  Fraunces and Inter", "'Fraunces', serif", "'Inter', sans-serif"),
+    ],
+    2: [
+        ("11  Fraunces and Inter, which is live now",
+         "'Fraunces', serif", "'Inter', sans-serif"),
+        ("12  Libre Franklin throughout",
+         "'Libre Franklin', sans-serif", "'Libre Franklin', sans-serif"),
+        ("13  Source Sans 3 throughout",
+         "'Source Sans 3', sans-serif", "'Source Sans 3', sans-serif"),
+        ("14  Atkinson Hyperlegible throughout, designed for legibility",
+         "'Atkinson Hyperlegible', sans-serif", "'Atkinson Hyperlegible', sans-serif"),
+        ("15  Lora and Karla", "'Lora', serif", "'Karla', sans-serif"),
+        ("16  Crimson Pro throughout", "'Crimson Pro', serif", "'Crimson Pro', serif"),
+        ("17  DM Serif Display and DM Sans",
+         "'DM Serif Display', serif", "'DM Sans', sans-serif"),
+        ("18  Playfair Display and Source Sans 3",
+         "'Playfair Display', serif", "'Source Sans 3', sans-serif"),
+        ("19  Space Grotesk and IBM Plex Sans",
+         "'Space Grotesk', sans-serif", "'IBM Plex Sans', sans-serif"),
+        ("20  Bitter throughout", "'Bitter', serif", "'Bitter', serif"),
+        ("21  Instrument Serif and Instrument Sans",
+         "'Instrument Serif', serif", "'Instrument Sans', sans-serif"),
+        ("22  Merriweather and Mulish", "'Merriweather', serif", "'Mulish', sans-serif"),
+        ("23  Manrope throughout", "'Manrope', sans-serif", "'Manrope', sans-serif"),
+        ("24  Petrona and Public Sans", "'Petrona', serif", "'Public Sans', sans-serif"),
+    ],
+}
 
 STEM = ("A company incurs an expenditure that it may either capitalise or expense as "
         "incurred. Compared with expensing it, capitalising the expenditure will most "
@@ -52,7 +75,16 @@ CHOICES = [
 ]
 
 
-def panel(i, label, heading, body):
+def families(options):
+    names = set()
+    for _, heading, body in options:
+        for stack in (heading, body):
+            names.update(re.findall(r"'([^']+)'", stack))
+    return "&".join(f"family={n.replace(' ', '+')}:ital,wght@0,400;0,600;1,400"
+                    for n in sorted(names))
+
+
+def panel(label, heading, body):
     letters = "ABC"
     choices = "".join(
         f'<div class="choice{" picked" if n == 1 else ""}">'
@@ -72,8 +104,9 @@ def panel(i, label, heading, body):
     </section>"""
 
 
-HTML = f"""<!doctype html><meta charset="utf-8">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?{FONTS}&display=swap">
+def page(options):
+    return f"""<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?{families(options)}&display=swap">
 <style>
   body {{ margin: 0; background: #efece5; padding: 26px;
           display: grid; grid-template-columns: repeat(2, 700px); gap: 26px; }}
@@ -93,21 +126,24 @@ HTML = f"""<!doctype html><meta charset="utf-8">
           text-transform: uppercase; color: #8a8579; }}
   .sol {{ margin: 0; font: 400 15.7px/1.55 var(--fb); }}
 </style>
-{"".join(panel(i, *o) for i, o in enumerate(OPTIONS))}
+{"".join(panel(*o) for o in options)}
 """
 
 
 def main():
+    which = 2
+    if "--set" in sys.argv:
+        which = int(sys.argv[sys.argv.index("--set") + 1])
+    options = SETS[which]
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
         b = p.chromium.launch()
-        pg = b.new_page(viewport={"width": 1478, "height": 1000},
-                        device_scale_factor=2)
-        pg.set_content(HTML)
-        pg.wait_for_timeout(2500)          # let the webfonts arrive
+        pg = b.new_page(viewport={"width": 1478, "height": 1000}, device_scale_factor=2)
+        pg.set_content(page(options))
+        pg.wait_for_timeout(3500)          # let the webfonts arrive
         pg.screenshot(path=str(OUT), full_page=True)
         b.close()
-    print(f"wrote {OUT}")
+    print(f"wrote {OUT} for set {which}, {len(options)} options")
 
 
 if __name__ == "__main__":

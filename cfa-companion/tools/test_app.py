@@ -75,9 +75,17 @@ def main() -> int:
               page.inner_text("#pl-need"))
         check("today is shown separately", page.inner_text("#pl-today") == "1h 30m",
               page.inner_text("#pl-today"))
+        # The controls live behind Settings now, so the figures on home have to be
+        # read there and the inputs driven here.
+        page.click("#to-settings")
+        page.wait_for_selector("#settings:not([hidden])")
+        check("settings holds the controls", page.locator("#pl-exam").is_visible())
+        check("home is put away while settings is open", page.locator("#home").is_hidden())
         page.fill("#pl-extra", "10")
         page.click("#pl-addbtn")
         page.wait_for_timeout(200)
+        page.click("#from-settings")
+        page.wait_for_selector("#home:not([hidden])")
         check("off-site hours count toward the total",
               page.inner_text("#pl-done") == "50h 0m", page.inner_text("#pl-done"))
         check("off-site hours reduce the daily requirement",
