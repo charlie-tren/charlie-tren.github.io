@@ -1,4 +1,4 @@
-/* Distractor: CFA Level I practice questions.
+/* CFA Companion: Level I practice questions.
    No build step. Bank in data/, progress in localStorage.
    Everything is built with DOM nodes and textContent, so question text is never
    parsed as markup. */
@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  var STORE = "distractor.v1";
+  var STORE = "cfa-companion.v1";
   var LETTERS = ["A", "B", "C"];
   var SR_DAYS = [1, 3, 7, 21, 60];
   var DAY = 86400000;
@@ -25,7 +25,7 @@
    "modenote", "t-pos", "t-clock", "t-flag", "t-hl", "t-overview", "t-end", "t-stem",
    "t-choices", "t-feedback", "t-prev", "t-next", "t-ovpanel", "ov-grid", "ov-close",
    "b-topics", "b-count", "b-timed", "b-strict", "b-cancel", "f-topics", "f-start",
-   "f-cancel", "banksize", "br-count", "br-go", "r-what", "r-pct", "r-count", "r-verdict", "r-topic",
+   "f-cancel", "banksize", "loaderr", "br-count", "br-go", "r-what", "r-pct", "r-count", "r-verdict", "r-topic",
    "r-pace", "r-review", "r-done", "h-topic", "h-pace", "p-answered", "p-acc",
    "p-pace", "p-weak", "wipe"].forEach(function (id) { el[id] = document.getElementById(id); });
 
@@ -72,11 +72,34 @@
         }));
       })
       .then(ready)
-      .catch(function (err) {
-        el.home.textContent = "";
-        el.home.appendChild(para("empty",
-          "The question bank did not load, which is a fault on the site: " + String(err)));
-      });
+      .catch(failed);
+  }
+
+  /* Two very different failures reach the same catch, and blaming the site for
+     both sent the reader to the wrong place. A page opened straight off disk cannot
+     fetch at all, which is a browser rule rather than a fault. */
+  function failed(err) {
+    document.body.classList.add("failed");
+    el.loaderr.hidden = false;
+    el.loaderr.textContent = "";
+    if (window.location.protocol === "file:") {
+      el.loaderr.appendChild(para(null,
+        "This page reads its questions with fetch, which browsers block for a file "
+        + "opened straight from disk. Open it at charlietrenorden.com/cfa-companion "
+        + "instead, or serve this folder over http."));
+      return;
+    }
+    el.loaderr.appendChild(para(null, "The question bank did not load: " + String(err)));
+    var again = document.createElement("button");
+    again.type = "button";
+    again.className = "primary";
+    again.textContent = "Try again";
+    again.addEventListener("click", function () {
+      document.body.classList.remove("failed");
+      el.loaderr.hidden = true;
+      boot();
+    });
+    el.loaderr.appendChild(again);
   }
 
   function topicMeta(key) {
@@ -765,6 +788,7 @@
   }
 
   function buildTopicPickers() {
+    if (el["b-topics"].querySelector(".grid")) return;   // a retry must not double them
     var grid = document.createElement("div");
     grid.className = "grid";
     index.topics.forEach(function (t) {
@@ -1010,7 +1034,7 @@
     render();
   }
 
-  window.DISTRACTOR = {                     // handles for the test harness
+  window.CFA_COMPANION = {                     // handles for the test harness
     peek: function () {
       return {
         mode: run && run.mode,

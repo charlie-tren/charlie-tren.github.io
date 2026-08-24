@@ -63,7 +63,7 @@ SITES = {
     "woop-woop": "https://charlietrenorden.com/woop-woop/",
     "shortfall": "https://charlietrenorden.com/shortfall/",
     "pendulum": "https://charlietrenorden.com/pendulum/",
-    "distractor": "https://charlietrenorden.com/distractor/",
+    "cfa-companion": "https://charlietrenorden.com/cfa-companion/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -90,7 +90,7 @@ READY = {
     # The mode list is static markup, and the topic pickers live inside panels
     # that start hidden, so waiting on those waits forever. The bank count is the
     # first VISIBLE thing that only exists after the questions have loaded.
-    "distractor": "#banksize",
+    "cfa-companion": "#banksize",
 }
 READY_TIMEOUT = 30000
 
@@ -159,7 +159,7 @@ PREPARE = {
     # product. Drive it into a question with its worked solution showing, which is
     # the thing worth advertising. The click handlers are synchronous, so this runs
     # in one pass.
-    "distractor": """() => {
+    "cfa-companion": """() => {
         document.querySelector("[data-mode='free']").click();
         document.getElementById('f-start').click();
         document.querySelector('#t-choices .choice').click();

@@ -49,6 +49,29 @@ def main() -> int:
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
 
+        # --- what happens when the bank cannot be read -------------------------
+        # A blocked fetch must say so and offer a way back, not leave a dead page.
+        blocked = {"on": True}
+        page.route("**/data/*.json",
+                   lambda route: route.abort() if blocked["on"] else route.continue_())
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#loaderr:not([hidden])")
+        msg = page.inner_text("#loaderr")
+        check("a failed load explains itself", "did not load" in msg, msg[:60])
+        check("a failed load offers a retry",
+              page.locator("#loaderr button").is_visible())
+        check("a failed load hides the modes it cannot run",
+              page.locator("#modes").is_hidden())
+        blocked["on"] = False
+        page.click("#loaderr button")
+        page.wait_for_selector("#banksize:not(:empty)")
+        check("the retry recovers", page.locator("#modes").is_visible())
+        check("the retry does not duplicate the topic pickers",
+              page.evaluate("() => document.querySelectorAll('#b-topics .grid').length") == 1,
+              str(page.evaluate("() => document.querySelectorAll('#b-topics .grid').length")))
+        page.unroute("**/data/*.json")
+        errors.clear()      # the aborted requests above were deliberate
+
         page.goto(url, wait_until="networkidle")
 
         # --- the bank loads and the home screen sets itself up ------------------
@@ -95,7 +118,7 @@ def main() -> int:
         disabled = page.evaluate("() => document.querySelectorAll('.choice[disabled]').length")
         check("choices lock after answering", disabled == 3, f"{disabled} locked")
 
-        after_one = page.evaluate("() => window.DISTRACTOR.peek().attempts")
+        after_one = page.evaluate("() => window.CFA_COMPANION.peek().attempts")
         check("the attempt was recorded", after_one == 1, f"{after_one} attempts")
 
         page.click("#t-next")
@@ -152,7 +175,7 @@ def main() -> int:
         # --- mistakes and review modes gate on having something to show ---------
         mistakes_enabled = page.evaluate("() => !document.querySelector(\"[data-mode='mistakes']\").disabled")
         wrong_stored = page.evaluate(
-            "() => { const s = JSON.parse(localStorage.getItem('distractor.v1'));"
+            "() => { const s = JSON.parse(localStorage.getItem('cfa-companion.v1'));"
             " const last = {}; s.attempts.forEach(a => last[a.q] = a.ok);"
             " return Object.values(last).filter(v => v === false).length; }"
         )
@@ -184,7 +207,7 @@ def main() -> int:
         check("strict shows the pick",
               page.evaluate("() => document.querySelectorAll('.choice.picked').length") == 1)
         check("strict records nothing yet",
-              page.evaluate("() => window.DISTRACTOR.peek().attempts") == 3)
+              page.evaluate("() => window.CFA_COMPANION.peek().attempts") == 3)
 
         # An answer can be changed under exam conditions.
         page.click("#t-choices .choice >> nth=2")
@@ -230,13 +253,13 @@ def main() -> int:
               page.evaluate("() => document.querySelectorAll('#t-stem mark').length") == 1)
 
         # Fill the rest wrongly and check the section commits all at once.
-        page.evaluate("() => window.DISTRACTOR.fill(false)")
+        page.evaluate("() => window.CFA_COMPANION.fill(false)")
         page.wait_for_selector("#report:not([hidden])")
         pct = page.inner_text("#r-pct")
         check("a wholly wrong section scores 0%", pct == "0%", pct)
         check("the section commits every answer at the end",
-              page.evaluate("() => window.DISTRACTOR.peek().attempts") == 9,
-              str(page.evaluate("() => window.DISTRACTOR.peek().attempts")))
+              page.evaluate("() => window.CFA_COMPANION.peek().attempts") == 9,
+              str(page.evaluate("() => window.CFA_COMPANION.peek().attempts")))
         band = page.evaluate("() => document.querySelector('#r-topic .fill').className")
         check("a zero score is banded red", "b-bad" in band, band)
 
@@ -254,7 +277,7 @@ def main() -> int:
         page.uncheck("#b-timed")
         page.click("#builder button[type=submit]")
         page.wait_for_selector("#t-choices .choice")
-        topics = page.evaluate("() => window.DISTRACTOR.peek().topics")
+        topics = page.evaluate("() => window.CFA_COMPANION.peek().topics")
         counts = {t: topics.count(t) for t in set(topics)}
         check("a weighted set spans topics", len(counts) >= 5, str(counts))
         check("ethics is the most represented topic",
@@ -264,11 +287,11 @@ def main() -> int:
         page.click("#r-done")
 
         # --- the full mock, which only exists once the bank reaches 180 ---------
-        page.evaluate("() => localStorage.removeItem('distractor.v1')")
+        page.evaluate("() => localStorage.removeItem('cfa-companion.v1')")
         page.reload(wait_until="networkidle")
         page.click("[data-mode='mock']")
         page.wait_for_selector("#t-choices .choice")
-        peek = page.evaluate("() => window.DISTRACTOR.peek()")
+        peek = page.evaluate("() => window.CFA_COMPANION.peek()")
         check("the mock draws 180 questions", peek["length"] == 180, str(peek["length"]))
         check("the mock opens in session 1", peek["session"] == 0)
         check("the mock is strict", peek["strict"] is True)
@@ -280,7 +303,7 @@ def main() -> int:
 
         # A weighted 180 must reproduce the exam's own split exactly, since the
         # bank was authored to those targets.
-        topics = page.evaluate("() => window.DISTRACTOR.peek().topics")
+        topics = page.evaluate("() => window.CFA_COMPANION.peek().topics")
         counts = {t: topics.count(t) for t in set(topics)}
         targets = page.evaluate(
             "() => fetch('data/index.json').then(r => r.json())"
@@ -289,21 +312,21 @@ def main() -> int:
         check("the mock matches the exam topic weights exactly", counts == targets,
               f"got {counts}")
 
-        page.evaluate("() => window.DISTRACTOR.fill(true)")
+        page.evaluate("() => window.CFA_COMPANION.fill(true)")
         page.wait_for_selector("#break:not([hidden])")
         check("session 1 ends at the break screen", page.locator("#break").is_visible())
         check("the break reports the session count",
               page.inner_text("#br-count") == "90 of 90", page.inner_text("#br-count"))
         check("session 1 is recorded at the break",
-              page.evaluate("() => window.DISTRACTOR.peek().attempts") == 90,
-              str(page.evaluate("() => window.DISTRACTOR.peek().attempts")))
+              page.evaluate("() => window.CFA_COMPANION.peek().attempts") == 90,
+              str(page.evaluate("() => window.CFA_COMPANION.peek().attempts")))
 
         page.click("#br-go")
         page.wait_for_selector("#t-choices .choice")
-        peek = page.evaluate("() => window.DISTRACTOR.peek()")
+        peek = page.evaluate("() => window.CFA_COMPANION.peek()")
         check("session 2 starts at question 91", peek["idx"] == 90, str(peek["idx"]))
         check("session 2 is flagged as the second session", peek["session"] == 1)
-        page.evaluate("() => window.DISTRACTOR.fill(true)")
+        page.evaluate("() => window.CFA_COMPANION.fill(true)")
         page.wait_for_selector("#report:not([hidden])")
         check("an all-correct mock scores 100%", page.inner_text("#r-pct") == "100%",
               page.inner_text("#r-pct"))
@@ -314,8 +337,8 @@ def main() -> int:
               page.evaluate("() => document.querySelectorAll('#r-topic .bar').length") == 10,
               str(page.evaluate("() => document.querySelectorAll('#r-topic .bar').length")))
         check("both sessions are recorded",
-              page.evaluate("() => window.DISTRACTOR.peek().attempts") == 180,
-              str(page.evaluate("() => window.DISTRACTOR.peek().attempts")))
+              page.evaluate("() => window.CFA_COMPANION.peek().attempts") == 180,
+              str(page.evaluate("() => window.CFA_COMPANION.peek().attempts")))
         page.click("#r-done")
         page.wait_for_selector("#home:not([hidden])")
         # A perfect mock leaves every topic at 100%, so naming one of them the

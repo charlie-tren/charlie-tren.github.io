@@ -21,6 +21,7 @@ const SITES = {
   "Consensus Drift":   "https://charlietrenorden.com/consensus-drift/",
   "The Lindy Effect":  "https://charlietrenorden.com/lindy-effect/",
   "Pendulum":          "https://charlietrenorden.com/pendulum/",
+  "CFA Companion":     "https://charlietrenorden.com/cfa-companion/",
   "Crowdwise":         "https://crowdwise.charlietrenorden.com/",
   "DCF Studio":        "https://dcf.charlietrenorden.com/GOOGL",
   "One Story":         "https://one-story.charlietrenorden.com/",

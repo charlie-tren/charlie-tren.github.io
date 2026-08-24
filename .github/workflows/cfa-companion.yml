@@ -1,11 +1,11 @@
-name: Validate the Distractor question bank
+name: Validate the CFA Companion question bank
 
 on:
   push:
     paths:
-      - "distractor/data/**"
-      - "distractor/tools/validate.py"
-      - ".github/workflows/distractor.yml"
+      - "cfa-companion/data/**"
+      - "cfa-companion/tools/validate.py"
+      - ".github/workflows/cfa-companion.yml"
   workflow_dispatch:
 
 jobs:
@@ -18,5 +18,5 @@ jobs:
         with:
           python-version: "3.12"
       - name: Check the bank against the schema and the exam's stem conventions
-        working-directory: distractor
+        working-directory: cfa-companion
         run: python tools/validate.py
