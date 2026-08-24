@@ -94,6 +94,14 @@ READY = {
 }
 READY_TIMEOUT = 30000
 
+# Sites that are ALLOWED to skip without failing the run. Thinkerings is the only
+# one: Substack serves Actions' datacentre IP a bot challenge that a laptop never
+# sees, so CI cannot shoot it at all and its card is refreshed by hand. Everything
+# NOT listed here is expected to shoot, and a skip is a failure - see the exit at
+# the end of main(). That distinction is the point: printing a skip and exiting 0
+# is how Thinkerings itself served a ten-day-old thumbnail with nobody noticing.
+MAY_SKIP = ["thinkerings"]
+
 # THINKERINGS IS EXPECTED TO SKIP IN ACTIONS. A real user agent was not enough -
 # the challenge is keyed on the datacentre IP, and a CI run still sat on it for the
 # full 30s on 17/08/2026. The same run from a laptop loads the archive first time.
@@ -348,6 +356,7 @@ def changed_enough(new, dest):
 
 
 def main():
+    skipped = []
     arg = (sys.argv[1] if len(sys.argv) > 1 else "weekly").lower()
     if arg == "daily":
         slugs = DAILY
@@ -388,7 +397,7 @@ def main():
                 except Exception as exc:            # noqa: BLE001
                     # One unreachable site must not cost the whole run. A stale
                     # thumbnail is better than a half-updated set.
-                    print(f"{slug:<18} SKIPPED - {type(exc).__name__}: {exc}"[:140])
+                    skipped.append(slug) or print(f"{slug:<18} SKIPPED - {type(exc).__name__}: {exc}"[:140])
                     continue
             page.wait_for_timeout(2500)             # client-drawn charts
 
@@ -396,14 +405,14 @@ def main():
                 try:
                     page.wait_for_selector(READY[slug], timeout=READY_TIMEOUT)
                 except Exception:                   # noqa: BLE001
-                    print(f"{slug:<18} SKIPPED - {READY[slug]!r} never appeared "
+                    skipped.append(slug) or print(f"{slug:<18} SKIPPED - {READY[slug]!r} never appeared "
                           f"in {READY_TIMEOUT // 1000}s; keeping the old thumbnail")
                     continue
 
             body = (page.inner_text("body")[:4000] or "").lower()
             hit = next((j for j in JUNK if j in body), None)
             if hit:
-                print(f"{slug:<18} SKIPPED - page reads as a challenge or error "
+                skipped.append(slug) or print(f"{slug:<18} SKIPPED - page reads as a challenge or error "
                       f"({hit!r}); keeping the old thumbnail")
                 continue
 
@@ -443,9 +452,19 @@ def main():
           + (f": {', '.join(wrote)}" if wrote else " - nothing to commit"))
     # The workflow keys its commit step off this, so an unchanged run is a no-op
     # rather than a commit of identical-looking bytes.
-    if not wrote:
-        return
-    subprocess.run(["git", "diff", "--stat", "--", "assets"], cwd=ROOT, check=False)
+    if wrote:
+        subprocess.run(["git", "diff", "--stat", "--", "assets"], cwd=ROOT, check=False)
+
+    # Anything written above is kept and still committed - a partial refresh beats
+    # none - but an unexpected skip turns the run red so it is actually seen.
+    # Deliberately NOT triggered by "unchanged": an unchanged page legitimately
+    # writes nothing, which is why file age alone can never be the signal.
+    unexpected = [x for x in skipped if x not in MAY_SKIP]
+    if unexpected:
+        sys.exit("FAILED: could not shoot " + ", ".join(unexpected)
+                 + ". Anything else above was written and is safe to commit.")
+    if skipped:
+        print("skipped as expected: " + ", ".join(skipped))
 
 
 if __name__ == "__main__":
