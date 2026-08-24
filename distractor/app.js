@@ -134,6 +134,20 @@
     return ranked.length ? ranked[0].key : null;
   }
 
+  /* There is only a weakest topic if the topics differ. With everything at the
+     same accuracy the sort still returns something, and naming it would invent a
+     weakness the answers do not show. The drill still needs a topic to pick, so
+     that path keeps using weakestTopic() regardless. */
+  function weakestTopicForDisplay() {
+    var acc = statsByTopic();
+    var rates = index.topics
+      .filter(function (t) { return acc[t.key].n >= 5; })
+      .map(function (t) { return acc[t.key].ok / acc[t.key].n; });
+    if (rates.length < 2) return null;
+    if (Math.max.apply(null, rates) === Math.min.apply(null, rates)) return null;
+    return weakestTopic();
+  }
+
   function lastVerdict() {
     var last = {};
     store.attempts.forEach(function (a) { last[a.q] = a.ok; });
@@ -695,8 +709,8 @@
       el["p-answered"].textContent = String(n);
       el["p-acc"].textContent = Math.round(100 * ok / n) + "%";
       el["p-pace"].textContent = med ? Math.round(med / 1000) + "s" : "not timed";
-      var w = weakestTopic();
-      el["p-weak"].textContent = w ? topicMeta(w).short : "none yet";
+      var w = weakestTopicForDisplay();
+      el["p-weak"].textContent = w ? topicMeta(w).short : "all level";
       var acc = statsByTopic();
       drawTopicChart(el["h-topic"], acc);
       drawPaceChart(el["h-pace"], acc);
