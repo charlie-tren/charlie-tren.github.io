@@ -78,16 +78,30 @@ jobs:
             exit 0
           fi
           git commit -m "Refresh card thumbnails (${{ steps.target.outputs.value }})"
-          # This repo takes pushes from several places, so something landing on
-          # main between the checkout and here is routine rather than a conflict
-          # worth failing on - it cost a Shortfall re-shoot on 17/08. Assets are
-          # the only thing this job touches, so a rebase is always trivial.
+          # This repo takes pushes from several places, so something landing on main
+          # between the checkout and here is routine. It is NOT trivially rebasable
+          # though, which the previous version assumed: two sessions shooting the
+          # same card change the same binary on both sides, git stops on the
+          # conflict, and every retry then tried to pull with unmerged files and
+          # could never succeed. Seen on 20/08/2026.
+          #
+          # Thumbnails are GENERATED, so a conflict has a right answer: the shot
+          # this run just took. reset --soft keeps our files and replays them as
+          # one commit on top of whatever landed, with no merge to resolve.
           for attempt in 1 2 3; do
-            if git pull --rebase origin main && git push; then
+            if git push; then
               exit 0
             fi
-            echo "push attempt $attempt lost a race - retrying"
-            sleep 5
+            echo "push attempt $attempt lost a race - replaying onto main"
+            git fetch origin main || true
+            git reset --soft origin/main
+            git add assets
+            if git diff --cached --quiet; then
+              echo "someone else shot the same thing - nothing left to push."
+              exit 0
+            fi
+            git commit -m "Refresh card thumbnails (${{ steps.target.outputs.value }})"
+            sleep 3
           done
           echo "::error::could not push the thumbnails after 3 attempts"
           exit 1
