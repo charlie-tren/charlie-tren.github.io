@@ -1,0 +1,48 @@
+[
+  {
+    "id": "dv-001",
+    "ref": "Put call parity",
+    "calc": true,
+    "stem": "A European call on a non-dividend-paying share with a strike of USD100 and one year to expiry trades at USD8.00. The share trades at USD100 and the one-year risk-free rate is 4.0%. The price of the European put with the same strike and expiry is closest to:",
+    "choices": ["4.15", "8.00", "11.85"],
+    "answer": 0,
+    "solution": "Put call parity states that the call less the put equals the share price less the present value of the strike. So the put equals 8.00 - 100.00 + 100.00 / 1.04 = 8.00 - 100.00 + 96.15 = USD4.15. The put is cheaper than the call because the strike is discounted.",
+    "distractors": [
+      "",
+      "This assumes the put and call must be equal at the money. They are equal only when the strike carries no time value of money, that is at a zero interest rate.",
+      "This adds the present value discount rather than subtracting it, 8.00 + 100.00 - 96.15."
+    ]
+  },
+  {
+    "id": "dv-002",
+    "ref": "Forward price with no carry",
+    "calc": true,
+    "stem": "An asset with no storage cost, no convenience yield and no cash flows trades at USD1,500. The one-year risk-free rate is 5.0%. The no-arbitrage one-year forward price is closest to:",
+    "choices": ["1,425", "1,500", "1,575"],
+    "answer": 2,
+    "solution": "With no carry, the forward price is the spot compounded at the risk-free rate: 1,500 x 1.05 = USD1,575. Any other price allows a riskless profit by borrowing, buying the asset and selling the forward.",
+    "distractors": [
+      "This discounts the spot rather than compounding it, which is the relationship between a forward price and its present value, not the forward price itself.",
+      "The forward equals the spot only at a zero interest rate, or where a convenience yield exactly offsets the financing cost.",
+      ""
+    ]
+  },
+  {
+    "id": "dv-003",
+    "ref": "Futures against forwards",
+    "calc": false,
+    "stem": "Compared with an otherwise equivalent forward contract, an exchange-traded futures contract is most likely to feature:",
+    "choices": [
+      "greater counterparty credit exposure.",
+      "daily settlement of gains and losses.",
+      "terms customised to the two counterparties."
+    ],
+    "answer": 1,
+    "solution": "Futures are marked to market daily through a clearing house, with variation margin passing between accounts each day. That daily settlement, together with the clearing house standing between the parties, is what reduces credit exposure relative to a forward.",
+    "distractors": [
+      "The opposite holds. Central clearing and daily margining make credit exposure smaller, not greater.",
+      "",
+      "Customisation is the advantage of a forward. Futures are standardised as to size, quality and delivery date so they can trade on an exchange."
+    ]
+  }
+]

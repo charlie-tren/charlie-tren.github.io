@@ -1,0 +1,20 @@
+{
+  "level": "I",
+  "curriculum_year": 2026,
+  "mock_size": 180,
+  "session_size": 90,
+  "session_minutes": 135,
+  "seconds_per_question": 90,
+  "topics": [
+    { "key": "ethics",    "name": "Ethical and Professional Standards", "short": "Ethics",     "weight_low": 15, "weight_high": 20, "target": 30 },
+    { "key": "fsa",       "name": "Financial Statement Analysis",       "short": "FSA",        "weight_low": 11, "weight_high": 14, "target": 22 },
+    { "key": "equity",    "name": "Equity Investments",                 "short": "Equity",     "weight_low": 11, "weight_high": 14, "target": 22 },
+    { "key": "fi",        "name": "Fixed Income",                       "short": "Fixed income","weight_low": 11, "weight_high": 14, "target": 22 },
+    { "key": "pm",        "name": "Portfolio Management",               "short": "Portfolio",  "weight_low": 8,  "weight_high": 12, "target": 18 },
+    { "key": "alts",      "name": "Alternative Investments",            "short": "Alternatives","weight_low": 7, "weight_high": 10, "target": 15 },
+    { "key": "quant",     "name": "Quantitative Methods",               "short": "Quant",      "weight_low": 6,  "weight_high": 9,  "target": 14 },
+    { "key": "econ",      "name": "Economics",                          "short": "Economics",  "weight_low": 6,  "weight_high": 9,  "target": 13 },
+    { "key": "corporate", "name": "Corporate Issuers",                  "short": "Corporate",  "weight_low": 6,  "weight_high": 9,  "target": 12 },
+    { "key": "deriv",     "name": "Derivatives",                        "short": "Derivatives","weight_low": 5,  "weight_high": 8,  "target": 12 }
+  ]
+}

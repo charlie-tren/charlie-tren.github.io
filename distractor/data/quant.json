@@ -1,0 +1,48 @@
+[
+  {
+    "id": "qm-001",
+    "ref": "Time-weighted and money-weighted return",
+    "calc": false,
+    "stem": "A manager runs a pooled fund into which investors contribute and from which they redeem at their own discretion. For the purpose of comparing this manager's performance against a peer group, the most appropriate return measure is the:",
+    "choices": [
+      "money-weighted rate of return, because it reflects the actual growth of invested capital.",
+      "time-weighted rate of return, because it is not distorted by the size and timing of external cash flows.",
+      "internal rate of return, because it solves for the single rate that equates inflows and outflows."
+    ],
+    "answer": 1,
+    "solution": "A time-weighted return chains sub-period returns, so it measures the return on a unit of currency left in the fund throughout. That is the right basis for comparing managers who do not control when investors contribute or redeem. A money-weighted return answers a different question: what the investor actually earned given their own timing.",
+    "distractors": [
+      "This measures the investor's experience, which is the right question for a client report and the wrong one for ranking a manager who did not choose the cash flow dates.",
+      "",
+      "The internal rate of return is the money-weighted return under another name, so it carries the same timing distortion."
+    ]
+  },
+  {
+    "id": "qm-002",
+    "ref": "Continuously compounded return",
+    "calc": true,
+    "stem": "An investor buys a share for USD50.00, receives a dividend of USD2.00 at the end of the year, and sells the share for USD54.00. The continuously compounded annual return is closest to:",
+    "choices": ["11.33%", "12.00%", "12.75%"],
+    "answer": 0,
+    "solution": "The holding period return is (54.00 - 50.00 + 2.00) / 50.00 = 12.00%. The continuously compounded return is the natural log of one plus that figure: ln(1.12) = 11.33%. For a positive return the continuously compounded figure is always the smaller of the two.",
+    "distractors": [
+      "",
+      "This is the holding period return itself, before converting to a continuously compounded basis.",
+      "This is exp(0.12) - 1, which converts in the wrong direction."
+    ]
+  },
+  {
+    "id": "qm-003",
+    "ref": "Test statistic for a mean",
+    "calc": true,
+    "stem": "A sample of 100 monthly observations has a mean of 6.5% and a standard deviation of 2.0%. An analyst tests the hypothesis that the population mean equals 6.0%. The value of the test statistic is closest to:",
+    "choices": ["0.25", "2.50", "25.00"],
+    "answer": 1,
+    "solution": "The test statistic is the difference between the sample mean and the hypothesised mean divided by the standard error. The standard error is 2.0% / sqrt(100) = 0.2%, so the statistic is (6.5 - 6.0) / 0.2 = 2.50. Against a two-tailed critical value of about 1.98 at the 5% level, the null would be rejected.",
+    "distractors": [
+      "This divides by the sample standard deviation rather than the standard error, omitting the square root of the sample size.",
+      "",
+      "This divides by a standard error expressed in the wrong units, inflating the statistic tenfold."
+    ]
+  }
+]

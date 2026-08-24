@@ -1,0 +1,48 @@
+[
+  {
+    "id": "ci-001",
+    "ref": "Weighted average cost of capital",
+    "calc": true,
+    "stem": "A company funds itself with 40% debt and 60% equity at market values. Its before-tax cost of debt is 6.5%, its cost of equity is 11.0%, and its marginal tax rate is 30%. Its weighted average cost of capital is closest to:",
+    "choices": ["8.42%", "8.90%", "9.20%"],
+    "answer": 0,
+    "solution": "Only the debt cost is tax adjusted: 6.5% x (1 - 0.30) = 4.55%. Then 0.40 x 4.55% + 0.60 x 11.0% = 1.82% + 6.60% = 8.42%.",
+    "distractors": [
+      "",
+      "This tax adjusts both components, applying (1 - t) to the cost of equity as well. Dividends are not deductible, so only debt earns the shield.",
+      "This omits the tax shield entirely: 0.40 x 6.5% + 0.60 x 11.0% = 9.20%."
+    ]
+  },
+  {
+    "id": "ci-002",
+    "ref": "NPV against IRR",
+    "calc": false,
+    "stem": "Two mutually exclusive projects of very different scale rank differently under net present value and internal rate of return. For a company whose objective is to maximise shareholder wealth, the most appropriate decision rule is to:",
+    "choices": [
+      "choose the project with the higher internal rate of return, because it earns more per unit of capital.",
+      "choose the project with the higher net present value, because it adds more value in currency terms.",
+      "reject both, because a conflict indicates the cash flow estimates are unreliable."
+    ],
+    "answer": 1,
+    "solution": "Net present value measures the currency amount of value added, which is what shareholder wealth is denominated in. IRR is a rate and is blind to scale, so a small project with a high rate can beat a large project that creates far more value. Where the two conflict, NPV governs.",
+    "distractors": [
+      "A high rate on a small base can add less value than a lower rate on a large base. IRR also implicitly assumes reinvestment at the IRR itself.",
+      "",
+      "A ranking conflict between the two methods is an ordinary consequence of differing scale or timing, not evidence that the forecasts are wrong."
+    ]
+  },
+  {
+    "id": "ci-003",
+    "ref": "Degree of operating leverage",
+    "calc": true,
+    "stem": "A manufacturer sells 100,000 units at USD25.00 each. Variable cost is USD15.00 per unit and fixed operating cost is USD600,000. Its degree of operating leverage at this level of output is closest to:",
+    "choices": ["0.40", "1.50", "2.50"],
+    "answer": 2,
+    "solution": "Contribution margin is (25.00 - 15.00) x 100,000 = USD1,000,000. Operating income is 1,000,000 - 600,000 = USD400,000. Degree of operating leverage is contribution divided by operating income: 1,000,000 / 400,000 = 2.50. A 1% change in units moves operating income by about 2.5%.",
+    "distractors": [
+      "This is the reciprocal, operating income over contribution.",
+      "This is fixed cost divided by operating income, 600,000 / 400,000. Leverage compares contribution with operating income, not fixed cost with it.",
+      ""
+    ]
+  }
+]

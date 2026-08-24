@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Distractor</title>
+<meta name="description" content="Practice questions for the CFA Level I exam. Timed 180-question mocks and single sessions, custom sets by topic, drills on your weakest area, and a score report broken down by topic and by pace.">
+<link rel="canonical" href="https://charlietrenorden.com/distractor/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Charlie Trenorden">
+<meta property="og:title" content="Distractor: CFA Level I practice questions">
+<meta property="og:description" content="Timed mocks, custom sets by topic, and a score report that shows where you are losing marks and where you are losing time.">
+<meta property="og:url" content="https://charlietrenorden.com/distractor/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+<body>
+<header class="wrap">
+  <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
+  <h1>
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <rect x="4" y="7" width="16" height="3.2" rx="1.6" class="m-off"/>
+      <rect x="4" y="14.4" width="24" height="3.2" rx="1.6" class="m-on"/>
+      <rect x="4" y="21.8" width="16" height="3.2" rx="1.6" class="m-off"/>
+    </svg>Distractor</h1>
+  <p class="standfirst">Practice questions for the CFA<sup>&reg;</sup> Level I exam.</p>
+</header>
+
+<main class="wrap">
+
+  <!-- Home -->
+  <section id="home" class="screen">
+    <div id="progress" class="progress" hidden>
+      <div class="stat"><span class="figure" id="p-answered">0</span><span class="cap">answered</span></div>
+      <div class="stat"><span class="figure" id="p-acc">0%</span><span class="cap">correct</span></div>
+      <div class="stat"><span class="figure" id="p-pace">0s</span><span class="cap">median pace</span></div>
+      <div class="stat"><span class="figure" id="p-weak">none yet</span><span class="cap">weakest topic</span></div>
+    </div>
+
+    <h2>Practice</h2>
+    <ul class="modes" id="modes">
+      <li><button type="button" data-mode="free">Free run<span>Keep answering. All topics or one.</span></button></li>
+      <li><button type="button" data-mode="drill">Weak-topic drill<span>Ten questions where you score lowest.</span></button></li>
+      <li><button type="button" data-mode="mistakes">My mistakes<span>Only questions you last got wrong.</span></button></li>
+      <li><button type="button" data-mode="review">Due for review<span>Spaced repetition on what you have seen.</span></button></li>
+      <li><button type="button" data-mode="custom">Custom set<span>Choose topics, length and timing.</span></button></li>
+    </ul>
+
+    <h2>Under exam conditions</h2>
+    <ul class="modes" id="strictmodes">
+      <li><button type="button" data-mode="session">Single session<span>90 questions, 2h15, no feedback until the end.</span></button></li>
+      <li><button type="button" data-mode="mock">Full mock<span>180 questions in two timed sessions, weighted like the exam.</span></button></li>
+    </ul>
+
+    <form id="builder" class="builder" hidden>
+      <h3>Custom set</h3>
+      <fieldset class="topics" id="b-topics"><legend>Topics</legend></fieldset>
+      <div class="brow">
+        <label for="b-count">Questions</label>
+        <input type="number" id="b-count" min="1" max="180" value="20" inputmode="numeric">
+      </div>
+      <div class="brow">
+        <label class="check"><input type="checkbox" id="b-timed"> Timed at 90 seconds a question</label>
+      </div>
+      <div class="brow">
+        <label class="check"><input type="checkbox" id="b-strict"> Exam conditions, no feedback until the end</label>
+      </div>
+      <div class="brow bactions">
+        <button type="submit" class="primary">Start</button>
+        <button type="button" class="ghost" id="b-cancel">Cancel</button>
+      </div>
+    </form>
+
+    <div id="topicpick" class="builder" hidden>
+      <h3>Free run</h3>
+      <fieldset class="topics one" id="f-topics"><legend>Topic</legend></fieldset>
+      <div class="brow bactions">
+        <button type="button" class="primary" id="f-start">Start</button>
+        <button type="button" class="ghost" id="f-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <p class="empty" id="modenote" hidden></p>
+
+    <section id="history" class="history" hidden>
+      <h2>Where you stand</h2>
+      <figure class="chart"><figcaption>Accuracy by topic, all attempts</figcaption><div id="h-topic"></div></figure>
+      <figure class="chart"><figcaption>Median seconds a question, against the 90 second budget</figcaption><div id="h-pace"></div></figure>
+      <p class="reset"><button type="button" id="wipe" class="ghost small">Clear my history</button></p>
+    </section>
+  </section>
+
+  <!-- Test -->
+  <section id="test" class="screen" hidden>
+    <div class="testbar">
+      <span class="pos" id="t-pos"></span>
+      <span class="clock" id="t-clock" hidden></span>
+      <span class="tbtns">
+        <button type="button" id="t-flag" class="chip" hidden>Flag</button>
+        <button type="button" id="t-hl" class="chip" hidden>Highlight</button>
+        <button type="button" id="t-overview" class="chip" hidden>Overview</button>
+        <button type="button" id="t-end" class="chip">End</button>
+      </span>
+    </div>
+
+    <article class="q">
+      <div class="stem" id="t-stem"></div>
+      <ol class="choices" id="t-choices"></ol>
+    </article>
+
+    <div class="feedback" id="t-feedback" hidden></div>
+
+    <nav class="qnav">
+      <button type="button" id="t-prev" class="ghost">Previous</button>
+      <button type="button" id="t-next" class="primary">Next</button>
+    </nav>
+
+    <aside class="overview" id="t-ovpanel" hidden>
+      <div class="ovhead">
+        <strong>Section overview</strong>
+        <button type="button" class="chip" id="ov-close">Close</button>
+      </div>
+      <div class="ovfilters" role="group" aria-label="Filter questions">
+        <button type="button" class="chip on" data-filter="all">All</button>
+        <button type="button" class="chip" data-filter="unattempted">Unattempted</button>
+        <button type="button" class="chip" data-filter="attempted">Attempted</button>
+        <button type="button" class="chip" data-filter="flagged">Flagged</button>
+      </div>
+      <div class="ovgrid" id="ov-grid"></div>
+    </aside>
+  </section>
+
+  <!-- Break between mock sessions -->
+  <section id="break" class="screen" hidden>
+    <h2>End of the first session</h2>
+    <p>You answered <strong id="br-count"></strong>. On the day there is an optional break here, and once the second session starts the first cannot be revisited.</p>
+    <p><button type="button" class="primary" id="br-go">Start the second session</button></p>
+  </section>
+
+  <!-- Report -->
+  <section id="report" class="screen" hidden>
+    <h2 id="r-what" class="what"></h2>
+    <div class="headline">
+      <div class="score"><span id="r-pct"></span><span class="cap" id="r-count"></span></div>
+      <div class="verdict" id="r-verdict"></div>
+    </div>
+    <figure class="chart">
+      <figcaption>By topic, against the 70% reference line</figcaption>
+      <div id="r-topic"></div>
+    </figure>
+    <figure class="chart">
+      <figcaption>Median seconds a question, against the 90 second budget</figcaption>
+      <div id="r-pace"></div>
+    </figure>
+    <h2>Every question</h2>
+    <div class="rfilters" role="group" aria-label="Filter the review">
+      <button type="button" class="chip on" data-rfilter="all">All</button>
+      <button type="button" class="chip" data-rfilter="wrong">Wrong</button>
+      <button type="button" class="chip" data-rfilter="slow">Over 90 seconds</button>
+    </div>
+    <div class="review" id="r-review"></div>
+    <p><button type="button" class="primary" id="r-done">Back to the start</button></p>
+  </section>
+
+</main>
+
+<footer class="wrap site">
+  <p>Every question here is written from scratch. Nothing is reproduced from the curriculum or from any prep provider.</p>
+  <p class="tm">CFA<sup>&reg;</sup> and Chartered Financial Analyst<sup>&reg;</sup> are registered trademarks owned by CFA Institute. This site is not affiliated with CFA Institute, and CFA Institute does not endorse, promote or warrant the accuracy or quality of anything on it.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

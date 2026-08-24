@@ -1,0 +1,44 @@
+[
+  {
+    "id": "al-001",
+    "ref": "Hedge fund fee structure",
+    "calc": true,
+    "stem": "A fund begins the year with USD100 million and earns a 20% gross return. It charges a 2% management fee on beginning-of-period assets and a 20% incentive fee calculated on the return net of the management fee. There is no hurdle rate. The investor's net return for the year is closest to:",
+    "choices": ["14.0%", "14.4%", "16.0%"],
+    "answer": 1,
+    "solution": "The management fee is 2% of 100, or USD2.0 million. The gross gain is USD20.0 million, so the gain net of the management fee is USD18.0 million and the incentive fee is 20% of that, USD3.6 million. Total fees are USD5.6 million, leaving USD114.4 million and a net return of 14.4%.",
+    "distractors": [
+      "This charges the incentive fee on the gross gain, 20% of 20.0 = 4.0, giving total fees of 6.0. The question specifies the fee is net of the management fee.",
+      "",
+      "This deducts the incentive fee only and forgets the management fee."
+    ]
+  },
+  {
+    "id": "al-002",
+    "ref": "Direct capitalisation",
+    "calc": true,
+    "stem": "An office building generates net operating income of USD1.80 million a year. Comparable transactions imply a capitalisation rate of 6.5%. Using direct capitalisation, the value of the building is closest to:",
+    "choices": ["USD11.7 million", "USD27.7 million", "USD117 million"],
+    "answer": 1,
+    "solution": "Direct capitalisation divides net operating income by the capitalisation rate: 1.80 / 0.065 = USD27.7 million. The capitalisation rate behaves like the inverse of a multiple, so a lower rate implies a higher value.",
+    "distractors": [
+      "This multiplies rather than divides, 1.80 x 6.5.",
+      "",
+      "This divides by 0.0065 rather than 0.065, a decimal place error of one order of magnitude."
+    ]
+  },
+  {
+    "id": "al-003",
+    "ref": "The J-curve",
+    "calc": false,
+    "stem": "A private equity fund reports negative returns in its first few years before turning positive as investments are realised. This pattern is best described as:",
+    "choices": ["the J-curve effect.", "carried interest.", "a clawback provision."],
+    "answer": 0,
+    "solution": "Fees and expenses are charged from the outset while portfolio companies are still held at or near cost, so early reported returns are negative. Returns turn positive as value is created and exits occur, tracing a J shape through the fund's life.",
+    "distractors": [
+      "",
+      "Carried interest is the general partner's share of profits, typically 20%. It contributes to the early drag but is not the name of the pattern.",
+      "A clawback obliges the general partner to return incentive fees already taken where later losses mean it was overpaid across the fund's life."
+    ]
+  }
+]
