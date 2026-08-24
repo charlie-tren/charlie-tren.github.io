@@ -408,9 +408,29 @@
       var name = el("name").value.trim();
       var c = (el("joincode").value.trim() || joining).toUpperCase();
       if (!name) return fail("Put your name in first.");
-      if (!/^[A-Z2-9]{4}$/.test(c)) return fail("A room code is four letters or digits.");
+      if (!/^[A-Z2-9]{4}$/.test(c)) return fail("A room code is four letters.");
       fail("");
-      connect(c, name);
+      /* Every four-letter code addresses a valid room object, so a mistyped one
+         used to drop you into a real but empty room - alone, as its host, with
+         nothing to distinguish that from being the first to arrive. */
+      setJoining(true);
+      fetch(API + "/api/room?code=" + encodeURIComponent(c))
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          setJoining(false);
+          if (!d.exists) return fail("No room with that code. Check it, or create your own.");
+          connect(c, name);
+        })
+        .catch(function () {
+          setJoining(false);
+          fail("Could not reach the room. Try again.");
+        });
+    }
+
+    function setJoining(on) {
+      [el("joinBtn"), el("joinBtn2")].forEach(function (b) {
+        if (b) { b.disabled = on; b.textContent = on ? "Checking…" : (b.id === "joinBtn" ? "Join" : "Join room"); }
+      });
     }
 
     function create() {
