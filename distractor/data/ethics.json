@@ -1,0 +1,56 @@
+[
+  {
+    "id": "eth-001",
+    "ref": "Standard III(B) Fair Dealing",
+    "calc": false,
+    "stem": "An analyst finalises a downgrade of a widely held stock from buy to hold. Before the note is released through her firm's normal distribution channels, she telephones the three largest institutional clients of the firm to alert them to the change, reasoning that they hold the biggest positions and will suffer most from a delay. Her conduct is best described as:",
+    "choices": [
+      "acceptable, because the largest holders have the greatest economic interest in the change.",
+      "a violation of the Standard on fair dealing.",
+      "a violation of the Standard on preservation of confidentiality."
+    ],
+    "answer": 1,
+    "solution": "Fair dealing requires that a change in recommendation be communicated to all clients for whom it is suitable at substantially the same time. The size of a holding is not a permitted basis for giving some clients a head start. The correct approach is to distribute the change simultaneously and only then take orders.",
+    "distractors": [
+      "Fair dealing does not permit differential treatment by economic interest. It permits different levels of service that clients knowingly pay for, which is not the same thing.",
+      "",
+      "Confidentiality concerns information about clients, not the timing of the firm's own research distribution."
+    ]
+  },
+  {
+    "id": "eth-002",
+    "ref": "Standard II(A) Material Nonpublic Information",
+    "calc": false,
+    "stem": "An analyst builds an earnings estimate for a retailer by combining published industry footfall data, publicly filed accounts, her own store visits, and a conversation with a supplier who described its own shipment volumes without referring to the retailer. She reaches a conclusion materially different from consensus and publishes it. Her conduct is most likely:",
+    "choices": [
+      "permissible, because the conclusion was assembled from public and non-material information.",
+      "a violation, because the supplier conversation was nonpublic.",
+      "a violation, because the conclusion itself is material and nonpublic until published."
+    ],
+    "answer": 0,
+    "solution": "Assembling public information with pieces of nonpublic information that are individually non-material is the mosaic theory, and it is expressly permitted. The analyst's own conclusion is her work product; the value of original research is precisely that the market does not yet hold it.",
+    "distractors": [
+      "",
+      "Nonpublic alone is not the test. Information must be both material and nonpublic before the prohibition bites, and a supplier's own volumes that do not identify the retailer are not material to the retailer.",
+      "An analyst's own conclusion is not inside information. If it were, no original research could ever be acted on."
+    ]
+  },
+  {
+    "id": "eth-003",
+    "ref": "Standard I(B) Independence and Objectivity",
+    "calc": false,
+    "stem": "A member covering a mining company is invited to tour a remote mine site. The company offers to fly him there on its corporate aircraft and accommodate him at the camp, as no commercial service reaches the site. To comply with the Standard on independence and objectivity, the member should most appropriately:",
+    "choices": [
+      "decline the visit, because accepting any travel from a covered company compromises independence.",
+      "accept the flight and accommodation, and disclose the arrangement to his employer and clients.",
+      "accept the flight and accommodation only if he first obtains written permission from the company."
+    ],
+    "answer": 1,
+    "solution": "Members should use commercial transport at their own expense where it is available. Where it genuinely is not, accepting the issuer's transport and modest on-site accommodation is acceptable, provided the arrangement is disclosed so that readers can judge for themselves whether independence was affected.",
+    "distractors": [
+      "A blanket refusal is stricter than the Standard requires and would prevent legitimate site work. The obligation is to prefer arm's length arrangements where they exist, and to disclose where they do not.",
+      "",
+      "Permission from the company being analysed is irrelevant. Disclosure runs to the member's employer and to clients, not to the subject of the research."
+    ]
+  }
+]

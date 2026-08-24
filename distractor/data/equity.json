@@ -1,0 +1,44 @@
+[
+  {
+    "id": "eq-001",
+    "ref": "Gordon growth model",
+    "calc": true,
+    "stem": "A share is expected to pay a dividend of USD2.10 one year from today. The required return on equity is 9.0% and dividends are expected to grow indefinitely at 4.0%. The intrinsic value of the share is closest to:",
+    "choices": ["42.00", "43.68", "52.50"],
+    "answer": 0,
+    "solution": "The constant growth model divides the next dividend by the required return less the growth rate: 2.10 / (0.09 - 0.04) = 2.10 / 0.05 = USD42.00. The dividend given is already the year-one figure, so it needs no further growing.",
+    "distractors": [
+      "",
+      "This grows the dividend a second time, 2.10 x 1.04 / 0.05, treating the stated figure as the dividend just paid rather than the one expected next year.",
+      "This divides by the growth rate alone, 2.10 / 0.04, omitting the required return."
+    ]
+  },
+  {
+    "id": "eq-002",
+    "ref": "Index weighting methods",
+    "calc": false,
+    "stem": "An index constituent undertakes a two-for-one stock split. The index construction method that requires the index divisor to be adjusted as a direct result is most likely:",
+    "choices": ["price weighted.", "market capitalisation weighted.", "equal weighted."],
+    "answer": 0,
+    "solution": "A price weighted index sums constituent prices and divides by a divisor, so halving a price would cut the index level even though no value has been created or destroyed. The divisor is adjusted to keep the index continuous. A capitalisation weighted index is unaffected, because the share count doubles as the price halves.",
+    "distractors": [
+      "",
+      "Market capitalisation is unchanged by a split, so no adjustment is needed.",
+      "An equal weighted index assigns weights independently of price, so a split does not disturb it either. Equal weighting requires frequent rebalancing for a different reason, namely price drift."
+    ]
+  },
+  {
+    "id": "eq-003",
+    "ref": "Justified trailing price to earnings",
+    "calc": true,
+    "stem": "A company retains 60% of its earnings, has a required return on equity of 10.0%, and is expected to grow at 5.0% indefinitely. Its justified trailing price to earnings ratio is closest to:",
+    "choices": ["8.00", "8.40", "10.50"],
+    "answer": 1,
+    "solution": "The payout ratio is 1 - 0.60 = 0.40. The justified trailing multiple is payout multiplied by one plus the growth rate, divided by the required return less growth: 0.40 x 1.05 / (0.10 - 0.05) = 0.42 / 0.05 = 8.40.",
+    "distractors": [
+      "This is the justified leading multiple, 0.40 / 0.05, which applies to next year's earnings rather than the trailing figure.",
+      "",
+      "This uses the retention ratio of 0.60 in place of the payout ratio, less the growth adjustment."
+    ]
+  }
+]

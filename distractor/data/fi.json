@@ -1,0 +1,44 @@
+[
+  {
+    "id": "fi-001",
+    "ref": "Modified duration and price change",
+    "calc": true,
+    "stem": "A bond has a modified duration of 7.20. Its yield to maturity rises by 25 basis points. Ignoring convexity, the percentage change in the bond's price is closest to:",
+    "choices": ["-1.80%", "-0.29%", "+1.80%"],
+    "answer": 0,
+    "solution": "The first order approximation is minus modified duration multiplied by the change in yield: -7.20 x 0.0025 = -0.0180, a fall of 1.80%. Ignoring convexity slightly overstates the loss, because the price yield curve is convex.",
+    "distractors": [
+      "",
+      "This divides rather than multiplies, 0.0025 / 7.20 x 100.",
+      "This has the sign the wrong way round. A rise in yield lowers price."
+    ]
+  },
+  {
+    "id": "fi-002",
+    "ref": "Macaulay and modified duration",
+    "calc": true,
+    "stem": "An annual-pay bond has a Macaulay duration of 6.50 years and a yield to maturity of 4.0%. Its modified duration is closest to:",
+    "choices": ["6.25", "6.50", "6.76"],
+    "answer": 0,
+    "solution": "Modified duration is Macaulay duration divided by one plus the yield per period: 6.50 / 1.04 = 6.25. Modified duration is always the smaller of the two for a positive yield.",
+    "distractors": [
+      "",
+      "This is the Macaulay duration itself, undiscounted.",
+      "This multiplies by 1.04 instead of dividing, which moves in the wrong direction."
+    ]
+  },
+  {
+    "id": "fi-003",
+    "ref": "Implied forward rate",
+    "calc": true,
+    "stem": "The one-year spot rate is 3.00% and the two-year spot rate is 4.00%, both annually compounded. The one-year rate implied one year forward is closest to:",
+    "choices": ["3.99%", "4.51%", "5.01%"],
+    "answer": 2,
+    "solution": "No arbitrage requires that investing for two years at the two-year spot equals investing for one year and rolling at the forward rate. So (1.04)^2 / 1.03 - 1 = 1.0816 / 1.03 - 1 = 5.01%. The forward rate sits above the two-year spot because the spot curve is upward sloping.",
+    "distractors": [
+      "This is roughly the average of the two spot rates and reflects no compounding relationship.",
+      "This interpolates between the spot rates rather than solving the no arbitrage condition. The forward must exceed the longer spot on an upward sloping curve.",
+      ""
+    ]
+  }
+]

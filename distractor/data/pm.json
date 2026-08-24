@@ -1,0 +1,44 @@
+[
+  {
+    "id": "pm-001",
+    "ref": "Capital asset pricing model",
+    "calc": true,
+    "stem": "The risk-free rate is 3.5%, the equity risk premium is 5.0% and a share has a beta of 1.20. The required return on the share under the capital asset pricing model is closest to:",
+    "choices": ["8.50%", "9.50%", "10.40%"],
+    "answer": 1,
+    "solution": "Required return is the risk-free rate plus beta multiplied by the equity risk premium: 3.5% + 1.20 x 5.0% = 3.5% + 6.0% = 9.50%.",
+    "distractors": [
+      "This omits the beta adjustment, simply adding the premium to the risk-free rate.",
+      "",
+      "This applies beta to the sum of the risk-free rate and the premium, 1.20 x 8.5%, rather than to the premium alone."
+    ]
+  },
+  {
+    "id": "pm-002",
+    "ref": "Two asset portfolio standard deviation",
+    "calc": true,
+    "stem": "A portfolio holds 60% in an asset with a standard deviation of 20% and 40% in an asset with a standard deviation of 10%. The correlation between them is 0.30. The portfolio standard deviation is closest to:",
+    "choices": ["12.65%", "13.74%", "16.00%"],
+    "answer": 1,
+    "solution": "Variance is (0.6^2 x 400) + (0.4^2 x 100) + (2 x 0.6 x 0.4 x 0.30 x 20 x 10) = 144 + 16 + 28.8 = 188.8. The square root is 13.74%. It sits below the weighted average because correlation is less than one.",
+    "distractors": [
+      "This assumes zero correlation, dropping the covariance term: the square root of 160.",
+      "",
+      "This is the weighted average of the two standard deviations, which holds only at a correlation of exactly one."
+    ]
+  },
+  {
+    "id": "pm-003",
+    "ref": "Investment policy statement",
+    "calc": false,
+    "stem": "In an investment policy statement, a client's liquidity requirement and time horizon are most appropriately classified as:",
+    "choices": ["objectives.", "constraints.", "measures of risk tolerance."],
+    "answer": 1,
+    "solution": "An investment policy statement separates objectives, which are return and risk, from constraints, which are liquidity, time horizon, tax, legal and regulatory factors, and any unique circumstances. Liquidity and time horizon belong to the second group.",
+    "distractors": [
+      "Objectives cover only risk and return. Liquidity and horizon shape what the portfolio may do, rather than what it aims to achieve.",
+      "",
+      "Time horizon and liquidity influence how much risk a client can bear, but they are recorded as constraints. Risk tolerance is captured within the risk objective."
+    ]
+  }
+]

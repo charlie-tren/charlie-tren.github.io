@@ -1,0 +1,56 @@
+[
+  {
+    "id": "fs-001",
+    "ref": "LIFO and FIFO in rising prices",
+    "calc": false,
+    "stem": "Two otherwise identical companies hold the same physical inventory. Prices of that inventory have risen steadily through the year, and quantities have been stable. Compared with the company using FIFO, the company using LIFO will most likely report:",
+    "choices": [
+      "higher net income and higher ending inventory.",
+      "lower net income and lower ending inventory.",
+      "lower net income and higher ending inventory."
+    ],
+    "answer": 1,
+    "solution": "LIFO charges the most recently purchased, and therefore most expensive, units to cost of goods sold. Higher cost of goods sold means lower gross profit and lower net income, and what remains on the balance sheet is the older, cheaper layers, so ending inventory is lower.",
+    "distractors": [
+      "This is the FIFO outcome in a rising-price environment, not the LIFO one.",
+      "",
+      "Net income and inventory move in the same direction here, because the same cost either sits in cost of goods sold or stays on the balance sheet. They cannot both be affected favourably."
+    ]
+  },
+  {
+    "id": "fs-002",
+    "ref": "Capitalising against expensing",
+    "calc": false,
+    "stem": "A company incurs an expenditure that it may either capitalise or expense as incurred. Compared with expensing it, capitalising the expenditure will most likely result in:",
+    "choices": [
+      "lower cash flow from operations in the year of the expenditure.",
+      "higher cash flow from operations in the year of the expenditure.",
+      "higher total cash flow in the year of the expenditure."
+    ],
+    "answer": 1,
+    "solution": "The cash paid is the same either way, but classification differs. Capitalising records the payment as an investing outflow, so operating cash flow is higher. Expensing records it within operating activities, so operating cash flow is lower. Total cash flow is identical under both treatments.",
+    "distractors": [
+      "This is the effect of expensing, which keeps the outflow inside operating activities.",
+      "",
+      "Total cash flow does not change. Only the section of the cash flow statement the outflow appears in changes."
+    ]
+  },
+  {
+    "id": "fs-003",
+    "ref": "Accrual accounting and unearned revenue",
+    "calc": false,
+    "stem": "In December a company receives cash from a customer for a service it will deliver the following March. Under accrual accounting, the December receipt is most appropriately recorded as:",
+    "choices": [
+      "revenue in December, because the cash has been received.",
+      "unearned revenue, a liability, until the service is delivered.",
+      "a prepaid expense, an asset, until the service is delivered."
+    ],
+    "answer": 1,
+    "solution": "Revenue is recognised when the performance obligation is satisfied, not when cash arrives. Cash received in advance creates an obligation to deliver, so it is recorded as a liability and released to revenue in March as the service is performed.",
+    "distractors": [
+      "This is cash basis accounting. Under accrual accounting the receipt of cash is neither necessary nor sufficient for revenue recognition.",
+      "",
+      "A prepaid expense arises when the company itself pays in advance for something it will receive. Here the company is the one that owes performance."
+    ]
+  }
+]

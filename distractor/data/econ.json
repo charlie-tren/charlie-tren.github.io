@@ -1,0 +1,48 @@
+[
+  {
+    "id": "ec-001",
+    "ref": "Cross rates",
+    "calc": true,
+    "stem": "A dealer quotes USD/AUD 0.6450 and JPY/USD 148.20, where each quote states the price currency first. The JPY/AUD cross rate is closest to:",
+    "choices": ["95.59", "229.77", "0.0044"],
+    "answer": 0,
+    "solution": "The USD cancels when the quotes are multiplied in the right order: JPY/AUD = JPY/USD multiplied by USD/AUD = 148.20 x 0.6450 = 95.59. One Australian dollar buys about 96 yen.",
+    "distractors": [
+      "",
+      "This divides rather than multiplies, 148.20 / 0.6450, which is the AUD/JPY relationship inverted and gives an implausible number of yen per Australian dollar.",
+      "This is the reciprocal, AUD per yen, which is the quote the question did not ask for."
+    ]
+  },
+  {
+    "id": "ec-002",
+    "ref": "Price elasticity and total revenue",
+    "calc": false,
+    "stem": "The own-price elasticity of demand for a product is estimated at -0.6. If the producer raises the price by 10%, total revenue will most likely:",
+    "choices": ["increase.", "decrease.", "remain unchanged."],
+    "answer": 0,
+    "solution": "An elasticity between zero and -1 means demand is inelastic: quantity falls proportionally less than the price rises, here about 6% against 10%. The price effect dominates the volume effect, so total revenue increases.",
+    "distractors": [
+      "",
+      "Revenue falls on a price rise only where demand is elastic, that is where the elasticity is more negative than -1.",
+      "Revenue is unchanged on a price rise only at unit elasticity, an elasticity of exactly -1."
+    ]
+  },
+  {
+    "id": "ec-003",
+    "ref": "Relative purchasing power parity",
+    "calc": false,
+    "stem": "Over the long run and holding other influences constant, the currency of a country whose inflation rate is persistently higher than its trading partner's will most likely:",
+    "choices": [
+      "appreciate, because higher prices attract capital seeking higher nominal returns.",
+      "depreciate, by approximately the inflation differential.",
+      "remain stable, because relative prices adjust rather than the exchange rate."
+    ],
+    "answer": 1,
+    "solution": "Relative purchasing power parity holds that the change in a spot exchange rate approximates the difference in inflation rates. The higher-inflation currency loses purchasing power at home and so must fall against the lower-inflation currency to keep tradeable goods prices aligned.",
+    "distractors": [
+      "This confuses nominal with real returns. Higher inflation does not deliver a higher real return, and the Fisher relation predicts the nominal interest premium is offset by depreciation.",
+      "",
+      "Under purchasing power parity it is the nominal exchange rate that adjusts. A stable rate would leave the real exchange rate drifting indefinitely."
+    ]
+  }
+]
