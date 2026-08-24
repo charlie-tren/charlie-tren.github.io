@@ -87,9 +87,10 @@ READY = {
     # Pendulum draws its charts from a megabyte of JSON after load. Without this
     # the shot lands on the loading state, which is a card showing nothing.
     "pendulum": "#area polygon",
-    # The mode list is static markup; the topic counts only appear once the
-    # question bank has been fetched, so they are what proves the page is ready.
-    "distractor": "#f-topics label",
+    # The mode list is static markup, and the topic pickers live inside panels
+    # that start hidden, so waiting on those waits forever. The bank count is the
+    # first VISIBLE thing that only exists after the questions have loaded.
+    "distractor": "#banksize",
 }
 READY_TIMEOUT = 30000
 
