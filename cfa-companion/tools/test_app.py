@@ -49,6 +49,64 @@ def main() -> int:
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
 
+        # --- the study plan ----------------------------------------------------
+        # Seed a known state and check the arithmetic, rather than trusting it.
+        import datetime
+        exam = (datetime.date.today() + datetime.timedelta(days=60)).isoformat()
+        stamp = datetime.date.today().isoformat()
+        page.goto(url, wait_until="networkidle")
+        page.evaluate("""(a) => {
+            const s = JSON.parse(localStorage.getItem('cfa-companion.v1') || '{}');
+            s.attempts = s.attempts || []; s.sr = s.sr || {};
+            s.time = { sec: 40*3600, days: { [a.stamp]: 1.5*3600 } };
+            s.plan = { exam: a.exam, target: 300, extraMin: 0 };
+            localStorage.setItem('cfa-companion.v1', JSON.stringify(s));
+        }""", {"exam": exam, "stamp": stamp})
+        page.reload(wait_until="networkidle")
+        page.wait_for_timeout(400)
+        check("days to go counts correctly", page.inner_text("#pl-days") == "60",
+              page.inner_text("#pl-days"))
+        check("hours logged read back", page.inner_text("#pl-done") == "40h 0m",
+              page.inner_text("#pl-done"))
+        # 300 - 40 = 260 over 60 days.
+        check("hours a day needed is right", page.inner_text("#pl-need") == "4.3",
+              page.inner_text("#pl-need"))
+        check("today is shown separately", page.inner_text("#pl-today") == "1h 30m",
+              page.inner_text("#pl-today"))
+        page.fill("#pl-extra", "10")
+        page.click("#pl-addbtn")
+        page.wait_for_timeout(200)
+        check("off-site hours count toward the total",
+              page.inner_text("#pl-done") == "50h 0m", page.inner_text("#pl-done"))
+        check("off-site hours reduce the daily requirement",
+              page.inner_text("#pl-need") == "4.2", page.inner_text("#pl-need"))
+        check("the bar tracks the target",
+              page.evaluate("() => document.getElementById('pl-bar').style.width")
+              .startswith("16.6"),
+              page.evaluate("() => document.getElementById('pl-bar').style.width"))
+
+        # The clock must actually advance, and must stop when left untouched.
+        before = page.evaluate("() => window.CFA_COMPANION.clock()")
+        page.wait_for_timeout(11000)
+        after = page.evaluate("() => window.CFA_COMPANION.clock()")
+        check("the clock advances while the page is in use",
+              after["sec"] >= before["sec"] + 5,
+              f"{before['sec']} then {after['sec']}")
+        page.evaluate("() => window.CFA_COMPANION.goIdle()")
+        page.wait_for_timeout(500)
+        check("the clock reports itself paused when untouched",
+              page.evaluate("() => window.CFA_COMPANION.clock().counting") is False)
+        idle_a = page.evaluate("() => window.CFA_COMPANION.clock().sec")
+        page.wait_for_timeout(11000)
+        idle_b = page.evaluate("() => window.CFA_COMPANION.clock().sec")
+        check("an untouched page logs no time", idle_b == idle_a,
+              f"{idle_a} then {idle_b}")
+        check("the paused state is visible to the reader",
+              "paused" in (page.get_attribute("#pl-today", "class") or ""),
+              page.get_attribute("#pl-today", "class"))
+
+        page.evaluate("() => localStorage.removeItem('cfa-companion.v1')")
+
         # --- a transient failure must heal itself ------------------------------
         # A load caught mid-deploy fails for a second or two. One silent retry
         # turns that into a non-event, so the reader never sees a panel.
@@ -58,6 +116,9 @@ def main() -> int:
             first["n"] += 1
             route.abort() if first["n"] == 1 else route.continue_()
 
+        # bank.js has to be blocked too, or there is nothing to fail: with it
+        # present the page makes no requests at all. This exercises the fallback.
+        page.route("**/bank.js", lambda r: r.abort())
         page.route("**/data/*.json", once)
         page.goto(url, wait_until="load")
         page.wait_for_selector("#banksize:not(:empty)", timeout=15000)
@@ -72,6 +133,7 @@ def main() -> int:
         blocked = {"on": True}
         page.route("**/data/*.json",
                    lambda route: route.abort() if blocked["on"] else route.continue_())
+        # bank.js stays blocked throughout this block, so the fetch path is used.
         page.goto(url, wait_until="load")
         page.wait_for_selector("#loaderr:not([hidden])")
         msg = page.inner_text("#loaderr")
@@ -82,12 +144,13 @@ def main() -> int:
               page.locator("#modes").is_hidden())
         blocked["on"] = False
         page.click("#loaderr button")
-        page.wait_for_selector("#banksize:not(:empty)")
+        page.wait_for_selector("#banksize:not(:empty)", timeout=15000)
         check("the retry recovers", page.locator("#modes").is_visible())
         check("the retry does not duplicate the topic pickers",
               page.evaluate("() => document.querySelectorAll('#b-topics .grid').length") == 1,
               str(page.evaluate("() => document.querySelectorAll('#b-topics .grid').length")))
         page.unroute("**/data/*.json")
+        page.unroute("**/bank.js")
         errors.clear()      # the aborted requests above were deliberate
 
         page.goto(url, wait_until="networkidle")

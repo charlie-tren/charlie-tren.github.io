@@ -27,7 +27,9 @@
    "b-topics", "b-count", "b-timed", "b-strict", "b-cancel", "f-topics", "f-start",
    "f-cancel", "banksize", "loaderr", "br-count", "br-go", "r-what", "r-pct", "r-count", "r-verdict", "r-topic",
    "r-pace", "r-review", "r-done", "h-topic", "h-pace", "p-answered", "p-acc",
-   "p-pace", "p-weak", "wipe"].forEach(function (id) { el[id] = document.getElementById(id); });
+   "p-pace", "p-weak", "wipe", "plan", "pl-days", "pl-done", "pl-donecap",
+   "pl-need", "pl-today", "pl-bar", "pl-exam", "pl-target", "pl-extra",
+   "pl-addbtn", "pl-resetbtn"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   /* ---------------------------------------------------------------- storage */
 
@@ -38,10 +40,12 @@
         var s = JSON.parse(raw);
         s.attempts = s.attempts || [];
         s.sr = s.sr || {};
+        s.plan = s.plan || {};
+        s.time = s.time || { sec: 0, days: {} };
         return s;
       }
     } catch (e) { /* private mode, or corrupt: start clean */ }
-    return { attempts: [], sr: {} };
+    return { attempts: [], sr: {}, plan: {}, time: { sec: 0, days: {} } };
   }
 
   function save() {
@@ -57,10 +61,21 @@
 
   /* ------------------------------------------------------------------- data */
 
-  /* A load during a deploy can fail for a second or two while the old and new
-     copies are swapped, which is a transient worth riding out rather than
-     reporting. One silent retry, then the panel. */
+  /* bank.js carries the whole bank in a script tag, so the normal path makes no
+     requests and cannot fail part way. The fetch path is kept as a fallback for a
+     copy served without it, with one silent retry to ride out a load caught
+     mid-deploy. */
   function boot() {
+    if (window.BANK) {
+      index = window.BANK.index;
+      Object.keys(window.BANK.topics).forEach(function (k) {
+        var qs = window.BANK.topics[k];
+        qs.forEach(function (q) { q.topic = k; byId[q.id] = q; });
+        bank[k] = qs;
+      });
+      ready();
+      return;
+    }
     load_bank().catch(function () {
       return new Promise(function (r) { setTimeout(r, 1400); }).then(load_bank);
     }).catch(failed);
@@ -127,6 +142,131 @@
       (bank[k] || []).forEach(function (q) { out.push(q); });
     });
     return out;
+  }
+
+  /* ------------------------------------------------------- the study plan */
+
+  var TICK = 5;                  // seconds counted per tick
+  var IDLE = 300000;             // stop counting after five minutes untouched
+  var lastTouch = Date.now();
+  var unsaved = 0;
+
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-"
+      + String(d.getDate()).padStart(2, "0");
+  }
+
+  function counting() {
+    return document.visibilityState === "visible" && (Date.now() - lastTouch) < IDLE;
+  }
+
+  /* Time on the site is the honest measure of hours put in, so it is counted
+     rather than asked for. It pauses when the tab is hidden or untouched, or an
+     evening with the page left open would log eight hours nobody studied. */
+  function startTimer() {
+    ["pointerdown", "keydown", "wheel", "touchstart"].forEach(function (e) {
+      document.addEventListener(e, function () { lastTouch = Date.now(); }, { passive: true });
+    });
+    document.addEventListener("visibilitychange", function () {
+      lastTouch = Date.now();
+      flushTime();
+    });
+    window.addEventListener("pagehide", flushTime);
+    setInterval(function () {
+      if (!counting()) { paintToday(); return; }
+      store.time.sec += TICK;
+      store.time.days[today()] = (store.time.days[today()] || 0) + TICK;
+      unsaved += TICK;
+      if (unsaved >= 30) flushTime();
+      paintToday();
+    }, TICK * 1000);
+  }
+
+  function flushTime() {
+    if (unsaved > 0) { unsaved = 0; save(); }
+  }
+
+  function hoursDone() {
+    return store.time.sec / 3600 + (store.plan.extraMin || 0) / 60;
+  }
+
+  function daysToGo() {
+    if (!store.plan.exam) return null;
+    var exam = new Date(store.plan.exam + "T00:00:00");
+    var now = new Date();
+    now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((exam - now) / DAY);
+  }
+
+  function hm(hours) {
+    var mins = Math.round(hours * 60);
+    var h = Math.floor(mins / 60);
+    return h > 0 ? h + "h " + (mins % 60) + "m" : (mins % 60) + "m";
+  }
+
+  function paintToday() {
+    var secs = store.time.days[today()] || 0;
+    el["pl-today"].textContent = hm(secs / 3600);
+    el["pl-today"].classList.toggle("paused", !counting());
+  }
+
+  function paintPlan() {
+    var target = store.plan.target || 300;
+    var done = hoursDone();
+    var left = daysToGo();
+
+    el["pl-done"].textContent = hm(done);
+    el["pl-donecap"].textContent = "of " + target + " hours";
+    el["pl-bar"].style.width = Math.min(100, 100 * done / target) + "%";
+
+    if (left === null) {
+      el["pl-days"].textContent = "set a date";
+      el["pl-need"].textContent = "set a date";
+    } else if (left < 0) {
+      el["pl-days"].textContent = "passed";
+      el["pl-need"].textContent = "done";
+    } else {
+      el["pl-days"].textContent = String(left);
+      var remaining = Math.max(0, target - done);
+      el["pl-need"].textContent = left === 0
+        ? hm(remaining)
+        : (remaining / left).toFixed(1);
+    }
+    paintToday();
+  }
+
+  function wirePlan() {
+    el["pl-exam"].value = store.plan.exam || "";
+    el["pl-target"].value = store.plan.target || 300;
+
+    el["pl-exam"].addEventListener("change", function () {
+      store.plan.exam = el["pl-exam"].value || null;
+      save();
+      paintPlan();
+    });
+    el["pl-target"].addEventListener("change", function () {
+      var v = parseInt(el["pl-target"].value, 10);
+      store.plan.target = v > 0 ? v : 300;
+      el["pl-target"].value = store.plan.target;
+      save();
+      paintPlan();
+    });
+    el["pl-addbtn"].addEventListener("click", function () {
+      var v = parseFloat(el["pl-extra"].value);
+      if (!(v > 0)) return;
+      store.plan.extraMin = (store.plan.extraMin || 0) + Math.round(v * 60);
+      el["pl-extra"].value = "";
+      save();
+      paintPlan();
+    });
+    el["pl-resetbtn"].addEventListener("click", function () {
+      if (!window.confirm("Set the hours logged back to zero? The exam date stays.")) return;
+      store.time = { sec: 0, days: {} };
+      store.plan.extraMin = 0;
+      save();
+      paintPlan();
+    });
   }
 
   /* --------------------------------------------------------------- history */
@@ -730,6 +870,8 @@
   function ready() {
     buildTopicPickers();
     wire();
+    wirePlan();
+    startTimer();
     show("home");
   }
 
@@ -822,7 +964,7 @@
   function show(name) {
     ["home", "test", "break", "report"].forEach(function (s) { el[s].hidden = s !== name; });
     el["t-ovpanel"].hidden = true;
-    if (name === "home") refreshHome();
+    if (name === "home") { refreshHome(); paintPlan(); }
   }
 
   /* ------------------------------------------------------------------- wire */
@@ -906,7 +1048,8 @@
 
     el.wipe.addEventListener("click", function () {
       if (!window.confirm("Delete every answer and timing stored in this browser?")) return;
-      store = { attempts: [], sr: {} };
+      store.attempts = [];
+      store.sr = {};
       save();
       refreshHome();
     });
@@ -1047,6 +1190,11 @@
   }
 
   window.CFA_COMPANION = {                     // handles for the test harness
+    clock: function () {
+      return { counting: counting(), sec: store.time.sec,
+               today: store.time.days[today()] || 0 };
+    },
+    goIdle: function () { lastTouch = 0; },
     peek: function () {
       return {
         mode: run && run.mode,

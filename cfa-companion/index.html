@@ -41,6 +41,29 @@
   <section id="home" class="screen">
     <div id="loaderr" class="loaderr" hidden></div>
 
+    <section id="plan" class="plan">
+      <div class="planstats">
+        <div class="stat"><span class="figure" id="pl-days">set a date</span><span class="cap">days to go</span></div>
+        <div class="stat"><span class="figure" id="pl-done">0h</span><span class="cap" id="pl-donecap">of 300 hours</span></div>
+        <div class="stat"><span class="figure" id="pl-need">set a date</span><span class="cap">hours a day needed</span></div>
+        <div class="stat"><span class="figure" id="pl-today">0m</span><span class="cap">today</span></div>
+      </div>
+      <div class="pbar"><span id="pl-bar"></span></div>
+      <div class="planrow">
+        <label for="pl-exam">Exam date</label>
+        <input type="date" id="pl-exam">
+        <label for="pl-target">Target</label>
+        <input type="number" id="pl-target" min="1" max="2000" step="10" value="300">
+        <span class="unit">hours</span>
+      </div>
+      <div class="planrow">
+        <label for="pl-extra">Hours studied off the site</label>
+        <input type="number" id="pl-extra" min="0" max="24" step="0.25" placeholder="1.5">
+        <button type="button" class="ghost small" id="pl-addbtn">Add</button>
+        <button type="button" class="ghost small" id="pl-resetbtn">Reset the clock</button>
+      </div>
+    </section>
+
     <div id="progress" class="progress" hidden>
       <div class="stat"><span class="figure" id="p-answered">0</span><span class="cap">answered</span></div>
       <div class="stat"><span class="figure" id="p-acc">0%</span><span class="cap">correct</span></div>
@@ -182,6 +205,7 @@
   <p class="tm">CFA<sup>&reg;</sup> and Chartered Financial Analyst<sup>&reg;</sup> are registered trademarks owned by CFA Institute. This site is not affiliated with CFA Institute, and CFA Institute does not endorse, promote or warrant the accuracy or quality of anything on it.</p>
 </footer>
 
+<script src="bank.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

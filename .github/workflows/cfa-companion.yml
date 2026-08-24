@@ -5,6 +5,7 @@ on:
     paths:
       - "cfa-companion/data/**"
       - "cfa-companion/tools/validate.py"
+      - "cfa-companion/bank.js"
       - ".github/workflows/cfa-companion.yml"
   workflow_dispatch:
 
@@ -20,3 +21,6 @@ jobs:
       - name: Check the bank against the schema and the exam's stem conventions
         working-directory: cfa-companion
         run: python tools/validate.py
+      - name: Check bank.js was rebuilt from the JSON it was generated from
+        working-directory: cfa-companion
+        run: python tools/build_bank.py --check
