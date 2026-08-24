@@ -155,6 +155,15 @@ PREPARE = {
         q.textContent = 'What are you pretending not to know?';
         q.className = 'q len-s';
     }""",
+    # The landing screen is a menu, which tells a viewer nothing about the
+    # product. Drive it into a question with its worked solution showing, which is
+    # the thing worth advertising. The click handlers are synchronous, so this runs
+    # in one pass.
+    "distractor": """() => {
+        document.querySelector("[data-mode='free']").click();
+        document.getElementById('f-start').click();
+        document.querySelector('#t-choices .choice').click();
+    }""",
 }
 
 # Sites that look better - or are designed - dark. Playwright emulates light by
