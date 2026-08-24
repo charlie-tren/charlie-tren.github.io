@@ -10,6 +10,9 @@
     : "https://spectrum.charlietrenorden.com";
   var WS = API.replace(/^http/, "ws");
 
+  /* Codes are four digits now. The pattern stays wider than that on purpose:
+     rooms created when they were letters are still live and still joinable. */
+  var CODE_RE = /^[A-Z0-9]{4}$/;
   var el = function (id) { return document.getElementById(id); };
   var ws = null, me = null, myX = 0.5, myY = 0.5, sendTimer = null, pending = false;
   var mode = "line";
@@ -396,7 +399,7 @@
     /* An invite link should offer ONE action. Showing "Create a room" as the
        primary button on a page titled "Join room V8FT" is the clunky bit. */
     var joining = (new URLSearchParams(location.search).get("room") || "").toUpperCase();
-    if (/^[A-Z2-9]{4}$/.test(joining)) {
+    if (CODE_RE.test(joining)) {
       el("joincode").value = joining;
       el("lobbyTitle").textContent = "Join room " + joining;
       el("lobbyLede").textContent = "Put your name in and you are in the room.";
@@ -408,7 +411,7 @@
       var name = el("name").value.trim();
       var c = (el("joincode").value.trim() || joining).toUpperCase();
       if (!name) return fail("Put your name in first.");
-      if (!/^[A-Z2-9]{4}$/.test(c)) return fail("A room code is four letters.");
+      if (!CODE_RE.test(c)) return fail("A room code is four digits.");
       fail("");
       /* Every four-letter code addresses a valid room object, so a mistyped one
          used to drop you into a real but empty room - alone, as its host, with
