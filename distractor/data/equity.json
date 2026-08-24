@@ -40,5 +40,327 @@
       "",
       "This uses the retention ratio of 0.60 in place of the payout ratio, less the growth adjustment."
     ]
+  },
+  {
+    "id": "eq-004",
+    "ref": "Sustainable growth rate",
+    "calc": true,
+    "stem": "A company earns a return on equity of 15.0% and retains 60% of its earnings. Assuming no change in leverage or margins, its sustainable growth rate is closest to:",
+    "choices": ["6.0%", "9.0%", "25.0%"],
+    "answer": 1,
+    "solution": "The sustainable growth rate is the retention ratio multiplied by return on equity: 0.60 x 15.0% = 9.0%. It is the rate at which equity, and therefore earnings, can compound without raising new capital or changing leverage.",
+    "distractors": [
+      "This uses the payout ratio of 40% rather than the retention ratio. Growth comes from the earnings kept, not the earnings paid out.",
+      "",
+      "This divides return on equity by the retention ratio rather than multiplying."
+    ]
+  },
+  {
+    "id": "eq-005",
+    "ref": "Justified price to book",
+    "calc": true,
+    "stem": "A bank is expected to earn a sustainable return on equity of 14.0%, grow at 5.0% indefinitely, and its investors require 10.0%. Its justified price to book ratio is closest to:",
+    "choices": ["1.4", "1.8", "2.8"],
+    "answer": 1,
+    "solution": "The justified price to book ratio is (return on equity less growth) divided by (required return less growth): (0.14 - 0.05) / (0.10 - 0.05) = 0.09 / 0.05 = 1.8. A company earning above its cost of equity is worth more than its book value.",
+    "distractors": [
+      "This is return on equity divided by the required return, which ignores growth on both sides.",
+      "",
+      "This divides return on equity by the spread between the required return and growth, mixing the two formulations."
+    ]
+  },
+  {
+    "id": "eq-006",
+    "ref": "Margin call price",
+    "calc": true,
+    "stem": "An investor buys 1,000 shares at USD50 using an initial margin requirement of 50%. The maintenance margin requirement is 25%. A margin call will be triggered at a share price closest to:",
+    "choices": ["USD25.00", "USD33.33", "USD37.50"],
+    "answer": 1,
+    "solution": "The investor puts up USD25,000 and borrows USD25,000. A call comes when equity falls to 25% of the position value: (1,000P - 25,000) / 1,000P = 0.25, so 750P = 25,000 and P = USD33.33.",
+    "distractors": [
+      "This is the loan amount per share, which is the price at which equity reaches zero rather than 25%.",
+      "",
+      "This is a 25% fall from the purchase price, which confuses the size of the price decline with the maintenance margin percentage."
+    ]
+  },
+  {
+    "id": "eq-007",
+    "ref": "Order types",
+    "calc": false,
+    "stem": "An investor wants to buy a thinly traded share but is unwilling to pay more than USD20.00. The most appropriate instruction is a:",
+    "choices": [
+      "market order, which guarantees execution at the best available price.",
+      "buy limit order at USD20.00.",
+      "buy stop order at USD20.00."
+    ],
+    "answer": 1,
+    "solution": "A limit order caps the price paid, at the cost of no guarantee of execution. That is exactly the trade-off the investor has chosen: price certainty over execution certainty, which matters most in a thin market where a market order could fill well away from the last price.",
+    "distractors": [
+      "A market order guarantees execution, not price, which is the opposite of what the investor wants.",
+      "",
+      "A buy stop becomes active only once the price rises to the trigger, so it is used to buy into strength rather than to cap a purchase price."
+    ]
+  },
+  {
+    "id": "eq-008",
+    "ref": "Forms of market efficiency",
+    "calc": false,
+    "stem": "If a market is weak-form efficient, the analytical approach least likely to generate abnormal returns is:",
+    "choices": [
+      "technical analysis based on past prices and volumes.",
+      "fundamental analysis of public financial statements.",
+      "trading on information not yet released to the public."
+    ],
+    "answer": 0,
+    "solution": "Weak-form efficiency means past prices and volumes are already reflected in the current price, so studying them cannot produce abnormal returns. Fundamental analysis may still work unless the market is semi-strong efficient, and private information may still work unless it is strong-form efficient.",
+    "distractors": [
+      "",
+      "Fundamental analysis is defeated by semi-strong efficiency, which is a stronger condition than the one given.",
+      "Trading on private information is defeated only by strong-form efficiency, the strongest condition of the three."
+    ]
+  },
+  {
+    "id": "eq-009",
+    "ref": "Free float adjustment",
+    "calc": false,
+    "stem": "Most widely used equity indices weight constituents by float-adjusted market capitalisation rather than total market capitalisation. The reason is most likely that float adjustment:",
+    "choices": [
+      "reduces the index's concentration in the largest companies.",
+      "reflects the shares actually available for investors to buy.",
+      "removes the need to rebalance the index."
+    ],
+    "answer": 1,
+    "solution": "Weighting by shares available to the market means index weights are achievable in practice. Counting closely held or government stakes would set weights that tracking funds cannot buy, producing a benchmark nobody can replicate.",
+    "distractors": [
+      "Float adjustment often does reduce some weights, but that is a side effect rather than the purpose, and a large company with a full float keeps its weight.",
+      "",
+      "Rebalancing is still needed as prices move and as share counts and float change."
+    ]
+  },
+  {
+    "id": "eq-010",
+    "ref": "Preference shares",
+    "calc": false,
+    "stem": "Compared with ordinary shares of the same issuer, cumulative preference shares are most likely to offer:",
+    "choices": [
+      "a claim on dividends that accrues if unpaid, and no vote in most circumstances.",
+      "a claim ranking behind ordinary shares in liquidation, with voting rights attached.",
+      "a fixed maturity date on which the issuer must repay the par amount."
+    ],
+    "answer": 0,
+    "solution": "A cumulative preference share carries a dividend entitlement that accumulates when skipped and must be cleared before ordinary dividends resume. In exchange the holder normally gives up voting rights, and ranks ahead of ordinary shareholders but behind creditors in liquidation.",
+    "distractors": [
+      "",
+      "Preference shares rank ahead of ordinary shares, not behind, and typically carry no vote.",
+      "Preference shares are usually perpetual. A fixed redemption date is the mark of a debt instrument, though some issues are redeemable."
+    ]
+  },
+  {
+    "id": "eq-011",
+    "ref": "Barriers to entry",
+    "calc": false,
+    "stem": "An industry has high fixed costs, an entrenched distribution network and a regulatory licensing regime. All else equal, incumbents in this industry are most likely to sustain:",
+    "choices": [
+      "higher returns on capital, because entry is difficult.",
+      "lower returns on capital, because fixed costs depress margins.",
+      "returns equal to their cost of capital, because competition eventually erodes any advantage."
+    ],
+    "answer": 0,
+    "solution": "Barriers to entry protect incumbent economics by keeping new capacity out, so excess returns persist for longer than in a contestable industry. Fixed costs cut both ways, but combined with licensing they are a barrier rather than a burden.",
+    "distractors": [
+      "",
+      "High fixed costs raise operating leverage, which magnifies both good and bad outcomes rather than reducing returns on average.",
+      "Competition drives returns to the cost of capital where entry is easy. Barriers are what interrupt that process."
+    ]
+  },
+  {
+    "id": "eq-012",
+    "ref": "Cyclical and defensive industries",
+    "calc": false,
+    "stem": "An analyst compares a household staples producer with a construction equipment maker. Relative to the equipment maker, the staples producer's earnings are most likely to show:",
+    "choices": [
+      "greater sensitivity to the business cycle and a higher beta.",
+      "less sensitivity to the business cycle and a lower beta.",
+      "similar sensitivity, since both sell physical goods."
+    ],
+    "answer": 1,
+    "solution": "Demand for staples holds up through a downturn because the purchases are non-discretionary, while capital equipment orders are postponed. Lower earnings cyclicality generally shows up as a lower beta.",
+    "distractors": [
+      "This has the two the wrong way round. Capital goods are the cyclical end of the market.",
+      "",
+      "Selling physical goods says nothing about whether the purchase can be deferred, which is what drives cyclicality."
+    ]
+  },
+  {
+    "id": "eq-013",
+    "ref": "Enterprise value multiples",
+    "calc": false,
+    "stem": "An analyst compares two companies with very different levels of debt. Compared with the price to earnings ratio, an enterprise value to EBITDA multiple is most likely preferable because it:",
+    "choices": [
+      "is unaffected by differences in capital structure.",
+      "reflects the cost of the debt each company carries.",
+      "adjusts for differences in depreciation policy between the two."
+    ],
+    "answer": 0,
+    "solution": "Enterprise value covers both debt and equity claims and EBITDA is struck before interest, so the multiple compares the whole business against the earnings available to all funders. A price to earnings ratio mixes an equity-only numerator with an after-interest denominator, which makes leveraged and unleveraged companies hard to compare.",
+    "distractors": [
+      "",
+      "It does the opposite: it deliberately looks past the cost of debt so that the comparison is not distorted by it.",
+      "EBITDA excludes depreciation altogether rather than adjusting for differing policies, which is a related but separate advantage over earnings-based multiples."
+    ]
+  },
+  {
+    "id": "eq-014",
+    "ref": "Asset-based valuation",
+    "calc": false,
+    "stem": "Asset-based valuation is most appropriate for a company that:",
+    "choices": [
+      "generates most of its value from a skilled workforce and brand.",
+      "holds mainly liquid, separately marketable assets and is expected to be wound up.",
+      "is growing rapidly and reinvesting all of its cash flow."
+    ],
+    "answer": 1,
+    "solution": "Adding up the market value of assets less liabilities makes sense where the assets can be valued individually and the going-concern premium is small or absent, such as a holding company being liquidated. It undervalues businesses whose worth lies in intangibles.",
+    "distractors": [
+      "Intangibles like a workforce and brand rarely appear at anything like their economic value on the balance sheet, so this is the worst case for an asset-based approach.",
+      "",
+      "A growth company's value lies in future cash flows rather than its current asset base."
+    ]
+  },
+  {
+    "id": "eq-015",
+    "ref": "The ex-dividend date",
+    "calc": false,
+    "stem": "All else equal, on the ex-dividend date the price of a share is most likely to:",
+    "choices": [
+      "rise by approximately the amount of the dividend.",
+      "fall by approximately the amount of the dividend.",
+      "be unchanged, because the dividend was announced earlier."
+    ],
+    "answer": 1,
+    "solution": "A buyer on or after the ex-dividend date does not receive the declared dividend, so the share is worth less by roughly that amount. The cash is leaving the company, so the drop reflects value transferred to shareholders rather than value destroyed.",
+    "distractors": [
+      "The holder loses entitlement to the payment, so the price falls rather than rises.",
+      "",
+      "The announcement is when the market learns of the dividend. The ex-date is when entitlement changes hands, and that is a separate price event."
+    ]
+  },
+  {
+    "id": "eq-016",
+    "ref": "Share repurchases and earnings per share",
+    "calc": false,
+    "stem": "A company funds a share repurchase entirely from cash currently earning 2.0% after tax. Its earnings yield is 6.0%. The repurchase will most likely:",
+    "choices": [
+      "increase earnings per share.",
+      "decrease earnings per share.",
+      "leave earnings per share unchanged."
+    ],
+    "answer": 0,
+    "solution": "Earnings per share rises where the after-tax return given up on the funds used is below the earnings yield of the shares bought. Here the company forgoes 2.0% to retire shares yielding 6.0%, so the reduction in the share count outweighs the lost interest income.",
+    "distractors": [
+      "",
+      "This is the outcome where the funding cost exceeds the earnings yield, which is the reverse of the figures given.",
+      "Earnings per share is unchanged only where the after-tax funding cost exactly equals the earnings yield."
+    ]
+  },
+  {
+    "id": "eq-017",
+    "ref": "Depositary receipts",
+    "calc": false,
+    "stem": "A US investor buys a sponsored American depositary receipt over the shares of a Japanese company. The investor's exposure is most accurately described as:",
+    "choices": [
+      "the underlying shares, with no currency exposure because the receipt trades in US dollars.",
+      "the underlying shares, including exposure to the yen against the US dollar.",
+      "a US dollar bond issued by the depositary bank."
+    ],
+    "answer": 1,
+    "solution": "A depositary receipt is a claim on the underlying foreign shares held by a depositary bank. The trading currency changes the settlement convenience, not the economics: the receipt's value still moves with both the share price in yen and the yen against the dollar.",
+    "distractors": [
+      "Quoting in dollars does not remove currency risk. The underlying asset is still priced in yen.",
+      "",
+      "The depositary holds the shares on the investor's behalf. It is not issuing debt."
+    ]
+  },
+  {
+    "id": "eq-018",
+    "ref": "Trailing and forward multiples",
+    "calc": false,
+    "stem": "A company's earnings are expected to grow strongly over the coming year. Compared with its trailing price to earnings ratio, its forward price to earnings ratio calculated at the same share price will most likely be:",
+    "choices": ["higher.", "lower.", "the same."],
+    "answer": 1,
+    "solution": "The forward multiple divides the same price by a larger expected earnings figure, so it is lower. This is why comparing one company on a trailing basis with another on a forward basis is misleading.",
+    "distractors": [
+      "A larger denominator produces a smaller ratio, not a larger one.",
+      "",
+      "The two are equal only where earnings are expected to be flat."
+    ]
+  },
+  {
+    "id": "eq-019",
+    "ref": "Price return and total return indices",
+    "calc": true,
+    "stem": "An index rises from 4,000 to 4,240 over a year, and constituents paid dividends equal to 2.5% of the opening index level. The total return on the index is closest to:",
+    "choices": ["6.0%", "8.5%", "9.0%"],
+    "answer": 1,
+    "solution": "The price return is (4,240 - 4,000) / 4,000 = 6.0%. Adding the dividend yield of 2.5% gives a total return of 8.5%. A price return index understates what an investor earned by exactly the income it ignores.",
+    "distractors": [
+      "This is the price return alone, which omits the dividends.",
+      "",
+      "This compounds the two components rather than adding them, which overstates the total at these magnitudes."
+    ]
+  },
+  {
+    "id": "eq-020",
+    "ref": "Free cash flow to equity",
+    "calc": false,
+    "stem": "An analyst values a company that pays no dividend and is unlikely to start soon. The most appropriate of the following approaches is a:",
+    "choices": [
+      "dividend discount model using an assumed future payout.",
+      "free cash flow to equity model.",
+      "justified trailing price to earnings multiple."
+    ],
+    "answer": 1,
+    "solution": "Free cash flow to equity measures the cash that could be paid out whether or not it is, so it works where there is no dividend history to project. A dividend discount model applied to an assumed payout rests the whole valuation on an assumption the company has never validated.",
+    "distractors": [
+      "Assuming a payout the company has never made makes the model's central input pure guesswork.",
+      "",
+      "The justified trailing multiple is itself derived from the dividend discount model, so it inherits the same problem."
+    ]
+  },
+  {
+    "id": "eq-021",
+    "ref": "Short selling",
+    "calc": false,
+    "stem": "An investor sells a share short. The feature that most accurately distinguishes this position from a long position is that:",
+    "choices": [
+      "the maximum loss is unlimited, because there is no ceiling on the share price.",
+      "the maximum loss equals the proceeds of the sale.",
+      "dividends paid on the borrowed share accrue to the short seller."
+    ],
+    "answer": 0,
+    "solution": "A long position can lose no more than the amount invested, because the price stops at zero. A short position loses as the price rises, and there is no upper bound on how far it can rise, which is why short positions demand active risk control.",
+    "distractors": [
+      "",
+      "This describes the maximum gain on a short, which occurs if the share goes to zero.",
+      "The short seller owes the dividend to the lender of the share rather than receiving it."
+    ]
+  },
+  {
+    "id": "eq-022",
+    "ref": "Equal weighting and rebalancing",
+    "calc": false,
+    "stem": "Compared with a market capitalisation weighted index of the same constituents, an equal weighted index will most likely require:",
+    "choices": [
+      "more frequent rebalancing, and give greater weight to smaller companies.",
+      "less frequent rebalancing, and give greater weight to smaller companies.",
+      "more frequent rebalancing, and give greater weight to larger companies."
+    ],
+    "answer": 0,
+    "solution": "Equal weights drift apart as prices move, so the index has to be reset periodically, whereas capitalisation weights self-adjust. Giving every constituent the same weight necessarily shifts weight away from the largest companies toward the smallest.",
+    "distractors": [
+      "",
+      "Capitalisation weighting is the one that needs little rebalancing, because a rising price automatically raises the weight.",
+      "Equal weighting reduces the influence of the largest companies rather than increasing it."
+    ]
   }
 ]

@@ -1,0 +1,22 @@
+name: Validate the Distractor question bank
+
+on:
+  push:
+    paths:
+      - "distractor/data/**"
+      - "distractor/tools/validate.py"
+      - ".github/workflows/distractor.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check the bank against the schema and the exam's stem conventions
+        working-directory: distractor
+        run: python tools/validate.py

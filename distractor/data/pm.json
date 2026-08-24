@@ -40,5 +40,255 @@
       "",
       "Time horizon and liquidity influence how much risk a client can bear, but they are recorded as constraints. Risk tolerance is captured within the risk objective."
     ]
+  },
+  {
+    "id": "pm-004",
+    "ref": "Sharpe ratio",
+    "calc": true,
+    "stem": "A portfolio returns 12.0% with a standard deviation of 15.0%. The risk-free rate is 3.0%. Its Sharpe ratio is closest to:",
+    "choices": ["0.20", "0.60", "0.80"],
+    "answer": 1,
+    "solution": "The Sharpe ratio is excess return over total risk: (12.0 - 3.0) / 15.0 = 0.60. Using total risk rather than beta is what makes it the right measure for a portfolio that is not fully diversified.",
+    "distractors": [
+      "This divides the risk-free rate by the standard deviation, or otherwise omits the portfolio return.",
+      "",
+      "This divides the total return rather than the excess return by standard deviation, 12.0 / 15.0."
+    ]
+  },
+  {
+    "id": "pm-005",
+    "ref": "Portfolio beta",
+    "calc": true,
+    "stem": "A portfolio holds 40% in a fund with a beta of 1.40 and 60% in a fund with a beta of 0.80. The portfolio beta is closest to:",
+    "choices": ["1.04", "1.10", "2.20"],
+    "answer": 0,
+    "solution": "Beta is additive in weights: 0.40 x 1.40 + 0.60 x 0.80 = 0.56 + 0.48 = 1.04. Unlike standard deviation, no correlation term is needed, because beta already measures only the systematic component.",
+    "distractors": [
+      "",
+      "This is the simple average of the two betas, which would apply only at equal weights.",
+      "This sums the two betas without weighting them."
+    ]
+  },
+  {
+    "id": "pm-006",
+    "ref": "Treynor ratio",
+    "calc": true,
+    "stem": "A portfolio returns 12.0% and has a beta of 1.20. The risk-free rate is 3.0%. Its Treynor ratio is closest to:",
+    "choices": ["0.075", "0.100", "0.108"],
+    "answer": 0,
+    "solution": "The Treynor ratio divides excess return by beta: (0.12 - 0.03) / 1.20 = 0.075. It is the appropriate measure where the portfolio is one component of a larger diversified holding, since only systematic risk then matters.",
+    "distractors": [
+      "",
+      "This divides the excess return by 0.9, or otherwise misapplies the beta.",
+      "This divides the total return by beta rather than the excess return, 0.12 / 1.20 = 0.10, or multiplies instead of dividing."
+    ]
+  },
+  {
+    "id": "pm-007",
+    "ref": "Systematic and unsystematic risk",
+    "calc": false,
+    "stem": "According to the capital asset pricing model, an investor holding a well-diversified portfolio is most likely compensated for:",
+    "choices": [
+      "total risk, as measured by the standard deviation of returns.",
+      "systematic risk only, as measured by beta.",
+      "unsystematic risk only, since systematic risk cannot be avoided."
+    ],
+    "answer": 1,
+    "solution": "Unsystematic risk can be diversified away at no cost, so the market does not pay for bearing it. What remains after diversification is exposure to the market itself, and beta measures that.",
+    "distractors": [
+      "Total risk includes the diversifiable part, which earns no premium.",
+      "",
+      "This has it backwards. Systematic risk is the part that cannot be diversified away, which is precisely why it is priced."
+    ]
+  },
+  {
+    "id": "pm-008",
+    "ref": "The security market line",
+    "calc": false,
+    "stem": "A share's expected return plots above the security market line. Assuming the model holds, the share is most likely:",
+    "choices": [
+      "undervalued, because it offers more return than its beta requires.",
+      "overvalued, because it carries more risk than the market will reward.",
+      "fairly valued, since the security market line describes an average rather than a boundary."
+    ],
+    "answer": 0,
+    "solution": "The security market line gives the return required for a given beta. A share expected to return more than that is cheap: buying pressure would lift its price and pull the expected return back down to the line.",
+    "distractors": [
+      "",
+      "Plotting above the line means better reward for the same beta, which is the definition of attractive rather than overvalued.",
+      "The line is the equilibrium relationship under the model, so a point off it is a mispricing rather than ordinary dispersion."
+    ]
+  },
+  {
+    "id": "pm-009",
+    "ref": "Correlation and diversification",
+    "calc": false,
+    "stem": "Two assets have equal standard deviations and are combined in equal weights. The combination that produces the greatest reduction in portfolio standard deviation is most likely a correlation of:",
+    "choices": ["+1.0", "0.0", "-1.0"],
+    "answer": 2,
+    "solution": "The covariance term in portfolio variance falls as correlation falls, so the lower the correlation the greater the diversification benefit. At a correlation of negative one with equal standard deviations and equal weights, the two offset exactly and portfolio risk goes to zero.",
+    "distractors": [
+      "At a correlation of one there is no diversification benefit at all: portfolio standard deviation is the weighted average.",
+      "Zero correlation reduces risk substantially but not as far as negative correlation does.",
+      ""
+    ]
+  },
+  {
+    "id": "pm-010",
+    "ref": "The capital allocation line",
+    "calc": true,
+    "stem": "An investor puts 70% of her money in a risky portfolio with an expected return of 11.0% and a standard deviation of 18.0%, and 30% in the risk-free asset at 3.0%. The standard deviation of the combined holding is closest to:",
+    "choices": ["12.6%", "15.0%", "18.0%"],
+    "answer": 0,
+    "solution": "The risk-free asset has no volatility and no covariance with anything, so portfolio standard deviation is simply the risky weight times the risky standard deviation: 0.70 x 18.0% = 12.6%. That linearity is what makes the capital allocation line a straight line.",
+    "distractors": [
+      "",
+      "This averages the two standard deviations in some fashion, but the risk-free asset contributes no risk at all.",
+      "This is the standard deviation of the risky portfolio alone, ignoring the 30% held risk free."
+    ]
+  },
+  {
+    "id": "pm-011",
+    "ref": "Absolute and relative risk objectives",
+    "calc": false,
+    "stem": "A client states that the portfolio must not fall in value by more than 8% in any twelve-month period. This is best described as:",
+    "choices": [
+      "a relative risk objective.",
+      "an absolute risk objective.",
+      "a liquidity constraint."
+    ],
+    "answer": 1,
+    "solution": "An absolute risk objective is expressed in terms of the portfolio's own value, without reference to a benchmark. A relative objective would be framed as tracking error or as underperformance against an index.",
+    "distractors": [
+      "A relative objective is stated against a benchmark, such as a limit on tracking error.",
+      "",
+      "A liquidity constraint concerns the need to withdraw cash at particular times, which is a different requirement."
+    ]
+  },
+  {
+    "id": "pm-012",
+    "ref": "Institutional investor characteristics",
+    "calc": false,
+    "stem": "Compared with a defined benefit pension scheme whose membership is largely retired, a large university endowment is most likely to have:",
+    "choices": [
+      "a longer time horizon and a greater tolerance for illiquidity.",
+      "a shorter time horizon and a lower tolerance for illiquidity.",
+      "a similar horizon, since both exist to fund payments indefinitely."
+    ],
+    "answer": 0,
+    "solution": "An endowment is typically managed in perpetuity with a modest annual spending requirement, so it can accept illiquid holdings. A scheme paying pensions to a mostly retired membership faces heavy near-term outflows and a shortening horizon.",
+    "distractors": [
+      "",
+      "This describes the mature pension scheme rather than the endowment.",
+      "Both fund ongoing payments, but a closed or mature scheme has a defined and shortening liability profile while an endowment does not."
+    ]
+  },
+  {
+    "id": "pm-013",
+    "ref": "Strategic asset allocation and rebalancing",
+    "calc": false,
+    "stem": "Equity markets rise sharply and a portfolio's equity weight drifts above its strategic target. Rebalancing back to target will most likely:",
+    "choices": [
+      "reduce expected return, since the best performing asset is being trimmed.",
+      "restore the risk profile the client agreed to.",
+      "be avoidable, because the drift reflects a genuine improvement in equity prospects."
+    ],
+    "answer": 1,
+    "solution": "The strategic allocation encodes the risk the client agreed to bear. Drift changes that risk without anyone deciding to change it, so rebalancing is a risk control rather than a market call.",
+    "distractors": [
+      "Trimming a winner may or may not cost return. The purpose of rebalancing is not to forecast, so this frames the decision as something it is not.",
+      "",
+      "Rising prices are not by themselves evidence of improved prospects. Treating drift as a view means the allocation is being changed by default rather than by decision."
+    ]
+  },
+  {
+    "id": "pm-014",
+    "ref": "Behavioural biases",
+    "calc": false,
+    "stem": "An investor holds a losing position well past the point at which the original thesis has broken, saying that he will sell once it returns to his purchase price. This behaviour is best described as:",
+    "choices": [
+      "loss aversion, reinforced by anchoring on the purchase price.",
+      "overconfidence in his ability to forecast.",
+      "a rational tax-management decision."
+    ],
+    "answer": 0,
+    "solution": "Unwillingness to realise a loss, combined with treating the entry price as the reference point that determines when to act, is loss aversion working with anchoring. The purchase price is information about the past, not about the investment's prospects.",
+    "distractors": [
+      "",
+      "Overconfidence shows up as excessive trading and unduly narrow forecast ranges, rather than as refusing to close a loser.",
+      "Realising a loss usually creates a tax benefit, so tax management would argue for selling rather than holding."
+    ]
+  },
+  {
+    "id": "pm-015",
+    "ref": "Exchange traded funds",
+    "calc": false,
+    "stem": "Compared with an open-ended mutual fund tracking the same index, an exchange traded fund most likely offers:",
+    "choices": [
+      "intraday dealing at prices set in the market.",
+      "dealing at the net asset value struck at the end of each day.",
+      "a guarantee that the market price equals net asset value."
+    ],
+    "answer": 0,
+    "solution": "An exchange traded fund trades on an exchange throughout the day at whatever price buyers and sellers agree, which may sit slightly away from net asset value. A mutual fund deals only at the daily valuation point.",
+    "distractors": [
+      "",
+      "This is the mutual fund mechanism, and it is precisely what an exchange traded fund does not do.",
+      "No guarantee exists. Creation and redemption by authorised participants keeps the price close to net asset value, but premiums and discounts do occur."
+    ]
+  },
+  {
+    "id": "pm-016",
+    "ref": "Risk governance",
+    "calc": false,
+    "stem": "Within a risk management framework, deciding the level of risk the organisation is willing to accept in pursuit of its objectives is most appropriately the responsibility of:",
+    "choices": [
+      "the risk management function, which measures and monitors exposures.",
+      "senior governance, because it is a decision about objectives rather than measurement.",
+      "the portfolio managers, who are closest to the positions."
+    ],
+    "answer": 1,
+    "solution": "Setting risk tolerance is a governance decision, because it trades off the chance of shortfall against the objectives the organisation exists to meet. The risk function then measures and reports against that tolerance, and managers operate inside it.",
+    "distractors": [
+      "Measuring and monitoring is the risk function's role. Choosing how much risk to accept is not.",
+      "",
+      "Managers work within the tolerance. Letting each set their own would leave the organisation with no aggregate limit."
+    ]
+  },
+  {
+    "id": "pm-017",
+    "ref": "Value at risk",
+    "calc": false,
+    "stem": "A portfolio has a one-day 95% value at risk of USD2m. The most accurate interpretation is that:",
+    "choices": [
+      "the maximum the portfolio can lose in a day is USD2m.",
+      "on 5% of days the loss is expected to exceed USD2m.",
+      "the portfolio is expected to lose USD2m on 5% of days."
+    ],
+    "answer": 1,
+    "solution": "Value at risk is a threshold, not a worst case. A one-day 95% figure of USD2m says that on about one day in twenty the loss should be larger than that, and it is silent about how much larger.",
+    "distractors": [
+      "Value at risk says nothing about the size of losses beyond the threshold, which is its best known weakness.",
+      "",
+      "The figure is a floor for the worst 5% of days, not the expected loss on those days. That expected figure is conditional value at risk."
+    ]
+  },
+  {
+    "id": "pm-018",
+    "ref": "The efficient frontier",
+    "calc": false,
+    "stem": "A portfolio lies below the efficient frontier. This is most accurately described as meaning that:",
+    "choices": [
+      "another portfolio offers a higher expected return at the same level of risk.",
+      "the portfolio is riskier than any portfolio on the frontier.",
+      "the portfolio holds too few assets to be measured against the frontier."
+    ],
+    "answer": 0,
+    "solution": "The frontier is the set of portfolios with the highest expected return for each level of risk. Sitting below it means the same risk is being taken for less return, or equivalently the same return is being earned for more risk.",
+    "distractors": [
+      "",
+      "A portfolio below the frontier may have low risk. Its failing is the return it earns for that risk, not the risk level itself.",
+      "The number of holdings is not what defines the comparison. Any portfolio can be plotted in risk and return space."
+    ]
   }
 ]

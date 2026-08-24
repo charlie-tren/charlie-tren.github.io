@@ -40,5 +40,311 @@
       "This interpolates between the spot rates rather than solving the no arbitrage condition. The forward must exceed the longer spot on an upward sloping curve.",
       ""
     ]
+  },
+  {
+    "id": "fi-004",
+    "ref": "Pricing a bond off its yield",
+    "calc": true,
+    "stem": "A bond with three years to maturity pays an annual coupon of 5.0% on a face value of 100 and is priced to yield 6.0%. Its price is closest to:",
+    "choices": ["97.33", "100.00", "102.75"],
+    "answer": 0,
+    "solution": "Discount each cash flow at 6.0%: 5 / 1.06 + 5 / 1.06^2 + 105 / 1.06^3 = 4.717 + 4.450 + 88.160 = 97.33. The bond trades at a discount because the coupon is below the required yield.",
+    "distractors": [
+      "",
+      "A bond prices at par only when its coupon equals its yield.",
+      "This is the premium the bond would trade at if the yield were below the coupon, which is the wrong direction."
+    ]
+  },
+  {
+    "id": "fi-005",
+    "ref": "Coupon, yield and price",
+    "calc": false,
+    "stem": "A bond is quoted at a price below its par value. The relationship between its coupon rate and its yield to maturity is most accurately described as:",
+    "choices": [
+      "the coupon rate is below the yield to maturity.",
+      "the coupon rate is above the yield to maturity.",
+      "the coupon rate equals the yield to maturity."
+    ],
+    "answer": 0,
+    "solution": "A bond trades at a discount when the coupon it pays is less than the return the market demands, so the price falls until the total return to maturity, coupon plus the pull to par, matches the yield.",
+    "distractors": [
+      "",
+      "A coupon above the required yield produces a premium price, not a discount.",
+      "Equality produces a par price."
+    ]
+  },
+  {
+    "id": "fi-006",
+    "ref": "Semiannual bond basis",
+    "calc": true,
+    "stem": "A bond's yield to maturity is quoted as 6.00% on an annual-pay basis. Stated on a semiannual bond basis, the yield is closest to:",
+    "choices": ["5.91%", "6.00%", "6.09%"],
+    "answer": 0,
+    "solution": "Convert by finding the semiannual rate that compounds to the annual figure and doubling it: 2 x [(1.06)^0.5 - 1] = 2 x 0.02956 = 5.91%. A more frequent compounding convention needs a lower stated rate to reach the same effective return.",
+    "distractors": [
+      "",
+      "This treats the two conventions as interchangeable, which they are not.",
+      "This compounds in the wrong direction, treating 6% as the semiannual bond basis figure and converting it to an annual effective rate."
+    ]
+  },
+  {
+    "id": "fi-007",
+    "ref": "Convexity adjustment",
+    "calc": true,
+    "stem": "A bond has a modified duration of 7.0 and an annual convexity of 60. If its yield rises by 100 basis points, the estimated percentage change in price, including the convexity adjustment, is closest to:",
+    "choices": ["-7.30%", "-7.00%", "-6.70%"],
+    "answer": 2,
+    "solution": "The duration term is -7.0 x 0.01 = -7.00%. The convexity term is 0.5 x 60 x (0.01)^2 = +0.30%. Together the estimate is -6.70%. Convexity always works in the holder's favour for a bond without embedded options, cushioning losses and amplifying gains.",
+    "distractors": [
+      "This subtracts the convexity adjustment. For a positively convex bond the adjustment is added whichever way yields move.",
+      "This is the duration-only estimate, before any convexity adjustment.",
+      ""
+    ]
+  },
+  {
+    "id": "fi-008",
+    "ref": "Price value of a basis point",
+    "calc": true,
+    "stem": "A portfolio holds a bond position with a full market value of USD9,800,000 and a modified duration of 6.0. The price value of a basis point for the position is closest to:",
+    "choices": ["USD588", "USD5,880", "USD58,800"],
+    "answer": 1,
+    "solution": "Money duration is modified duration multiplied by the full price: 6.0 x 9,800,000 = USD58.8m. The price value of a basis point is that figure times 0.0001, so USD5,880 per basis point.",
+    "distractors": [
+      "This is the effect of a tenth of a basis point, or the money duration scaled by 0.00001.",
+      "",
+      "This is the money duration times 0.001, which is the effect of ten basis points rather than one."
+    ]
+  },
+  {
+    "id": "fi-009",
+    "ref": "Bootstrapping a spot rate",
+    "calc": true,
+    "stem": "The one-year spot rate is 3.00%. A two-year bond paying an annual coupon of 4.00% trades at par. The two-year spot rate is closest to:",
+    "choices": ["3.50%", "4.00%", "4.02%"],
+    "answer": 2,
+    "solution": "Price the par bond off spot rates: 100 = 4 / 1.03 + 104 / (1 + z2)^2. The first term is 3.883, so 104 / (1 + z2)^2 = 96.117, giving (1 + z2)^2 = 1.0820 and z2 = 4.02%. The two-year spot sits slightly above the par rate because the first coupon is discounted at the lower one-year rate.",
+    "distractors": [
+      "This interpolates between the one-year spot and the par rate rather than solving for the spot.",
+      "This is the par rate, which equals the spot rate only for a single-cash-flow instrument.",
+      ""
+    ]
+  },
+  {
+    "id": "fi-010",
+    "ref": "Callable bonds and negative convexity",
+    "calc": false,
+    "stem": "As market yields fall well below the coupon on a callable bond, the price behaviour of the bond compared with an otherwise identical non-callable bond is best described as:",
+    "choices": [
+      "rising more, because the embedded option gains value for the holder.",
+      "rising less, because the call caps the price the holder can realise.",
+      "identical, because the call is exercisable only at the issuer's discretion."
+    ],
+    "answer": 1,
+    "solution": "The call belongs to the issuer, so as yields fall the likelihood of redemption rises and the price flattens toward the call price. That flattening is negative convexity: the bond gains less on a rally than it loses on a selloff.",
+    "distractors": [
+      "The option is the issuer's, not the holder's, so the holder is short it and is compensated with a higher yield.",
+      "",
+      "Issuer discretion is exactly why the holder is disadvantaged. The issuer calls when it suits the issuer."
+    ]
+  },
+  {
+    "id": "fi-011",
+    "ref": "Putable bonds",
+    "calc": false,
+    "stem": "The value of a putable bond, relative to an otherwise identical bond without the put, is most accurately described as the value of the straight bond:",
+    "choices": [
+      "plus the value of the put option.",
+      "minus the value of the put option.",
+      "unchanged, because the put affects yield rather than price."
+    ],
+    "answer": 0,
+    "solution": "A put lets the holder sell the bond back to the issuer, usually at par, which is valuable when yields rise. The holder owns that option, so the putable bond is worth more than the straight bond and carries a lower yield.",
+    "distractors": [
+      "",
+      "Subtracting the option value is the callable case, where the issuer owns the option.",
+      "Price and yield are two ways of saying the same thing. An option that benefits the holder shows up in both."
+    ]
+  },
+  {
+    "id": "fi-012",
+    "ref": "Effective duration",
+    "calc": false,
+    "stem": "For a bond with an embedded call option, the most appropriate measure of interest rate sensitivity is:",
+    "choices": [
+      "modified duration, calculated from the bond's yield to maturity.",
+      "Macaulay duration, weighted by the timing of the promised cash flows.",
+      "effective duration, estimated by repricing the bond under shifted benchmark curves."
+    ],
+    "answer": 2,
+    "solution": "Where cash flows themselves change with the level of rates, a measure built on promised cash flows misstates the risk. Effective duration reprices the bond under a small parallel shift in the benchmark curve, so it captures the option's response.",
+    "distractors": [
+      "Modified duration assumes the cash flows are fixed, which is precisely what a call breaks.",
+      "Macaulay duration has the same problem, and it is a weighted average time rather than a sensitivity measure.",
+      ""
+    ]
+  },
+  {
+    "id": "fi-013",
+    "ref": "Expected loss",
+    "calc": true,
+    "stem": "An analyst estimates a 2.0% probability of default over the next year on a USD10m exposure, with an expected loss given default of 40%. The expected credit loss for the year is closest to:",
+    "choices": ["USD80,000", "USD200,000", "USD400,000"],
+    "answer": 0,
+    "solution": "Expected loss is the probability of default multiplied by loss given default multiplied by the exposure: 0.02 x 0.40 x 10,000,000 = USD80,000. Recovery of 60% is what separates expected loss from the full exposure at risk.",
+    "distractors": [
+      "",
+      "This applies the probability of default to the full exposure and ignores recovery.",
+      "This applies loss given default to the exposure without weighting by the probability of default."
+    ]
+  },
+  {
+    "id": "fi-014",
+    "ref": "Seniority and recovery",
+    "calc": false,
+    "stem": "Ranking the following claims on the same issuer from highest to lowest expected recovery in a default, the correct order is most likely:",
+    "choices": [
+      "senior secured, senior unsecured, subordinated.",
+      "senior unsecured, senior secured, subordinated.",
+      "subordinated, senior secured, senior unsecured."
+    ],
+    "answer": 0,
+    "solution": "Secured claims rank first because they have recourse to specific collateral, then senior unsecured, then subordinated debt, which is paid only once the more senior classes are satisfied. Recovery rates in practice follow that order.",
+    "distractors": [
+      "",
+      "Collateral is what puts secured above unsecured, so this reverses the top two.",
+      "Subordinated debt ranks last, not first. Its higher yield is compensation for exactly that."
+    ]
+  },
+  {
+    "id": "fi-015",
+    "ref": "Investment grade boundary",
+    "calc": false,
+    "stem": "The lowest rating that is still considered investment grade is most likely:",
+    "choices": ["BB+ or Ba1.", "BBB- or Baa3.", "A- or A3."],
+    "answer": 1,
+    "solution": "BBB- from Standard and Poor's and Baa3 from Moody's are the lowest investment grade ratings. One notch below, at BB+ or Ba1, the issuer is high yield, and that boundary matters because many mandates prohibit holdings below it.",
+    "distractors": [
+      "This is the highest high yield rating, one notch below the boundary.",
+      "",
+      "This sits comfortably inside investment grade, several notches above the boundary."
+    ]
+  },
+  {
+    "id": "fi-016",
+    "ref": "Floating rate notes",
+    "calc": false,
+    "stem": "A floating rate note pays a quarterly coupon of three-month reference rate plus a fixed spread. Compared with a fixed-coupon bond of the same maturity, its price sensitivity to a parallel shift in the reference rate curve is most likely:",
+    "choices": [
+      "much lower, because the coupon resets to the prevailing rate.",
+      "about the same, because both instruments have the same maturity.",
+      "higher, because the coupon is uncertain."
+    ],
+    "answer": 0,
+    "solution": "Because the coupon resets each quarter, the note's price stays near par and its interest rate duration is roughly the time to the next reset rather than the time to maturity. What remains sensitive is the credit spread, since that is fixed for the life of the note.",
+    "distractors": [
+      "",
+      "Maturity drives duration only where the cash flows are fixed. A reset breaks that link.",
+      "Uncertainty in the coupon is what reduces price sensitivity here, because the coupon moves with the market instead of the price."
+    ]
+  },
+  {
+    "id": "fi-017",
+    "ref": "Amortising and bullet structures",
+    "calc": false,
+    "stem": "Two bonds have the same final maturity, coupon and yield, but one repays principal in equal instalments over its life and the other repays it all at maturity. Compared with the bullet, the amortising bond will most likely have:",
+    "choices": [
+      "a longer Macaulay duration, because principal is returned throughout.",
+      "a shorter Macaulay duration, because principal is returned throughout.",
+      "the same Macaulay duration, because the final maturity is identical."
+    ],
+    "answer": 1,
+    "solution": "Macaulay duration is the weighted average time to receipt of cash flows. Returning principal along the way pulls that average forward, so the amortising bond is less exposed to a change in yields even though it matures on the same day.",
+    "distractors": [
+      "Returning cash earlier shortens the weighted average time, not lengthens it.",
+      "",
+      "Final maturity is only one input. The timing of every cash flow matters, which is the point of a duration measure."
+    ]
+  },
+  {
+    "id": "fi-018",
+    "ref": "Inflation-linked bonds",
+    "calc": true,
+    "stem": "An inflation-linked bond has a par value of 1,000, indexed to a price index, and pays a real coupon of 1.5% a year. Over the first year the index rises 3.0%. The coupon paid at the end of that year is closest to:",
+    "choices": ["15.00", "15.45", "45.00"],
+    "answer": 1,
+    "solution": "The principal is indexed first, to 1,000 x 1.03 = 1,030, and the real coupon rate is applied to the indexed principal: 1,030 x 1.5% = 15.45. Indexing the principal is what preserves the real value of both the coupon and the redemption.",
+    "distractors": [
+      "This applies the coupon to the unindexed par value, which is what a conventional bond would pay.",
+      "",
+      "This applies the inflation rate as though it were the coupon rate."
+    ]
+  },
+  {
+    "id": "fi-019",
+    "ref": "Repurchase agreements",
+    "calc": false,
+    "stem": "A dealer finances a bond position through a repurchase agreement. The repo rate charged will most likely be lower where:",
+    "choices": [
+      "the collateral is of high credit quality and in demand.",
+      "the term of the agreement is longer.",
+      "the borrower has a weaker credit rating than the lender."
+    ],
+    "answer": 0,
+    "solution": "Repo is secured borrowing, so the rate reflects the quality and demand for the collateral as much as the borrower's own standing. High quality collateral that lenders want tightens the rate, and specific securities in short supply can trade at very low rates.",
+    "distractors": [
+      "",
+      "A longer term generally raises the rate, since the lender is committed for longer.",
+      "A weaker borrower pays more, not less. Repo does reduce the lender's reliance on the borrower's standing, which is why the collateral is what drives the rate."
+    ]
+  },
+  {
+    "id": "fi-020",
+    "ref": "Yield curve shape and forward rates",
+    "calc": false,
+    "stem": "The spot curve is upward sloping at every maturity. The relationship between implied forward rates and spot rates of the same starting date is most accurately described as forward rates being:",
+    "choices": [
+      "above the corresponding spot rates.",
+      "below the corresponding spot rates.",
+      "equal to the corresponding spot rates."
+    ],
+    "answer": 0,
+    "solution": "A spot rate is an average of the forward rates covering the same period. For that average to be rising with maturity, each successive forward must sit above it, in the same way that a rising average requires each new observation to exceed it.",
+    "distractors": [
+      "",
+      "This is the downward sloping case, where forwards sit below spots.",
+      "Equality holds only where the curve is flat."
+    ]
+  },
+  {
+    "id": "fi-021",
+    "ref": "Money market yield conventions",
+    "calc": true,
+    "stem": "A 90-day Treasury bill with a face value of 100 is quoted at a discount rate of 4.00% on a 360-day basis. Its purchase price is closest to:",
+    "choices": ["96.00", "99.00", "99.01"],
+    "answer": 1,
+    "solution": "On a bank discount basis the discount is taken from face value: 100 x 0.04 x 90/360 = 1.00, so the price is 99.00. The discount rate understates the true return, because the interest is earned on 99.00 rather than on the 100 the rate is applied to.",
+    "distractors": [
+      "This applies the 4.00% for a full year rather than for the 90 days the bill runs.",
+      "",
+      "This discounts the face value as though 4.00% were an add-on yield, 100 / (1 + 0.04 x 90/360)."
+    ]
+  },
+  {
+    "id": "fi-022",
+    "ref": "Sources of return on a bond",
+    "calc": false,
+    "stem": "An investor buys a coupon bond at a discount and holds it to maturity, reinvesting each coupon. The source of return that is not known with certainty at purchase is most likely:",
+    "choices": [
+      "the coupon payments themselves.",
+      "the redemption of par at maturity.",
+      "the income earned on reinvested coupons."
+    ],
+    "answer": 2,
+    "solution": "The coupons and the redemption amount are contractual, so absent default they are known. What is not known is the rate at which each coupon can be reinvested, and that reinvestment income is why a realised return can differ from the yield to maturity quoted at purchase.",
+    "distractors": [
+      "The coupon amounts are fixed by the terms of the bond.",
+      "Par at maturity is also contractual, and the pull to par from a discount price is arithmetic.",
+      ""
+    ]
   }
 ]

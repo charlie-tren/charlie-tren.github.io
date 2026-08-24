@@ -52,5 +52,311 @@
       "",
       "A prepaid expense arises when the company itself pays in advance for something it will receive. Here the company is the one that owes performance."
     ]
+  },
+  {
+    "id": "fs-004",
+    "ref": "Straight-line depreciation",
+    "calc": true,
+    "stem": "A company buys equipment for USD500,000, expects to use it for ten years, and estimates a residual value of USD50,000. Annual depreciation under the straight-line method is closest to:",
+    "choices": ["USD45,000", "USD50,000", "USD55,000"],
+    "answer": 0,
+    "solution": "Straight-line depreciation spreads cost less residual value over the useful life: (500,000 - 50,000) / 10 = USD45,000 a year.",
+    "distractors": [
+      "",
+      "This depreciates the full cost, ignoring the residual value that will not be consumed.",
+      "This adds the residual value to cost rather than deducting it."
+    ]
+  },
+  {
+    "id": "fs-005",
+    "ref": "Accelerated depreciation",
+    "calc": false,
+    "stem": "A company switches from straight-line to a double declining balance method for a newly acquired asset. Compared with straight line, in the first year of the asset's life it will most likely report:",
+    "choices": [
+      "higher net income and higher total assets.",
+      "lower net income and lower total assets.",
+      "lower net income and higher total assets."
+    ],
+    "answer": 1,
+    "solution": "An accelerated method charges more depreciation early, so the first year carries a larger expense and lower net income, and accumulated depreciation is larger so the carrying amount of the asset, and total assets, is lower. The pattern reverses in later years.",
+    "distractors": [
+      "This is the later-life effect of an accelerated method, once the larger early charges have been taken.",
+      "",
+      "The same depreciation charge cannot both reduce income and increase the asset's carrying amount. They move together."
+    ]
+  },
+  {
+    "id": "fs-006",
+    "ref": "Quick ratio",
+    "calc": true,
+    "stem": "A company reports cash of USD40m, receivables of USD60m, inventory of USD100m, prepaid expenses of USD10m and current liabilities of USD140m. Its quick ratio is closest to:",
+    "choices": ["0.71", "1.43", "1.50"],
+    "answer": 0,
+    "solution": "The quick ratio counts only the most liquid current assets, so cash and receivables but not inventory or prepayments: (40 + 60) / 140 = 0.71.",
+    "distractors": [
+      "",
+      "This includes inventory but not prepayments, which is neither the quick ratio nor the current ratio.",
+      "This is the current ratio, 210 / 140, which counts every current asset."
+    ]
+  },
+  {
+    "id": "fs-007",
+    "ref": "Days of inventory on hand",
+    "calc": true,
+    "stem": "A company reports revenue of USD1,200m, cost of goods sold of USD900m and average inventory of USD150m. Its days of inventory on hand is closest to:",
+    "choices": ["46 days", "61 days", "125 days"],
+    "answer": 1,
+    "solution": "Inventory turnover is cost of goods sold divided by average inventory: 900 / 150 = 6.0 times. Days of inventory on hand is 365 / 6.0 = 61 days.",
+    "distractors": [
+      "This uses revenue rather than cost of goods sold in the turnover, which overstates turnover because revenue carries a margin.",
+      "",
+      "This divides average inventory by cost of goods sold and multiplies by a year of 12 rather than 365, or otherwise mixes the units."
+    ]
+  },
+  {
+    "id": "fs-008",
+    "ref": "DuPont decomposition",
+    "calc": true,
+    "stem": "A company has a net profit margin of 8.0%, an asset turnover of 1.25 times and a financial leverage ratio of 2.0. Its return on equity is closest to:",
+    "choices": ["10.0%", "16.0%", "20.0%"],
+    "answer": 2,
+    "solution": "Return on equity is the product of the three: 8.0% x 1.25 x 2.0 = 20.0%. The first two multiply to return on assets of 10.0%, which leverage then doubles.",
+    "distractors": [
+      "This is return on assets, margin times turnover, before the leverage multiplier.",
+      "This multiplies the margin by leverage alone and omits asset turnover.",
+      ""
+    ]
+  },
+  {
+    "id": "fs-009",
+    "ref": "Cash flow from operations, indirect method",
+    "calc": true,
+    "stem": "A company reports net income of USD500m, depreciation of USD100m, an increase in receivables of USD80m and an increase in payables of USD30m. Using the indirect method, cash flow from operations is closest to:",
+    "choices": ["USD490m", "USD550m", "USD710m"],
+    "answer": 1,
+    "solution": "Add back the non-cash charge and adjust for working capital: 500 + 100 - 80 + 30 = USD550m. A rise in receivables consumes cash, and a rise in payables releases it.",
+    "distractors": [
+      "This has the working capital signs the wrong way round, subtracting the payables increase and adding the receivables increase.",
+      "",
+      "This adds both working capital movements rather than netting the cash consumed by receivables."
+    ]
+  },
+  {
+    "id": "fs-010",
+    "ref": "Classification of interest paid",
+    "calc": false,
+    "stem": "Under IFRS, interest paid on borrowings is most likely reported in the cash flow statement as:",
+    "choices": [
+      "an operating outflow only.",
+      "either an operating or a financing outflow.",
+      "a financing outflow only."
+    ],
+    "answer": 1,
+    "solution": "IFRS allows interest paid to sit in either operating or financing activities, provided the choice is applied consistently and disclosed. US GAAP requires it in operating activities, which is a common source of non-comparability between the two frameworks.",
+    "distractors": [
+      "This is the US GAAP treatment, not the IFRS one.",
+      "",
+      "Financing is one permitted IFRS choice, but not the only one."
+    ]
+  },
+  {
+    "id": "fs-011",
+    "ref": "Deferred tax liability",
+    "calc": false,
+    "stem": "A deferred tax liability most likely arises when:",
+    "choices": [
+      "accounting profit exceeds taxable income because depreciation is accelerated for tax purposes.",
+      "taxable income exceeds accounting profit because revenue is taxed before it is recognised.",
+      "the company carries forward unused tax losses to future periods."
+    ],
+    "answer": 0,
+    "solution": "Claiming faster depreciation for tax than for reporting defers tax into later periods, so tax paid now is lower than the accounting charge and the difference sits as a liability. The timing difference reverses as the asset ages.",
+    "distractors": [
+      "",
+      "Paying tax ahead of recognising the revenue produces a deferred tax asset, because tax relief has effectively been taken early.",
+      "Unused tax losses give rise to a deferred tax asset, subject to a judgement about whether future profits will absorb them."
+    ]
+  },
+  {
+    "id": "fs-012",
+    "ref": "Lessee accounting",
+    "calc": false,
+    "stem": "A company with no leases on its balance sheet signs a five-year lease for its head office. Under the IFRS lessee model, the effect at inception is most likely to:",
+    "choices": [
+      "leave total assets and total liabilities unchanged, with the rent recognised as incurred.",
+      "increase both total assets and total liabilities.",
+      "increase total liabilities and reduce equity by the present value of the payments."
+    ],
+    "answer": 1,
+    "solution": "The IFRS lessee model recognises a right-of-use asset and a corresponding lease liability for essentially all leases. Both sides of the balance sheet grow, so leverage ratios deteriorate even though nothing about the business has changed.",
+    "distractors": [
+      "Keeping leases off balance sheet and expensing the rent is the treatment IFRS 16 removed for lessees.",
+      "",
+      "Equity is unaffected at inception, because the asset recognised matches the liability."
+    ]
+  },
+  {
+    "id": "fs-013",
+    "ref": "Inventory measurement",
+    "calc": false,
+    "stem": "Under IFRS, inventory is measured at the lower of cost and net realisable value. Where a previous write-down is followed by a recovery in value, the treatment is most likely to:",
+    "choices": [
+      "prohibit any reversal, so the written-down amount becomes the new cost.",
+      "permit a reversal, limited to the amount of the original write-down.",
+      "permit a write-up to fair value, with any excess over cost recognised in equity."
+    ],
+    "answer": 1,
+    "solution": "IFRS permits a reversal of a previous inventory write-down where net realisable value recovers, capped at the original write-down so the carrying amount never exceeds cost. US GAAP prohibits reversal, which is a frequent difference between the two.",
+    "distractors": [
+      "This is the US GAAP position. Under IFRS the write-down is not permanent.",
+      "",
+      "Inventory is never carried above cost under either framework, and the reversal runs through profit or loss rather than equity."
+    ]
+  },
+  {
+    "id": "fs-014",
+    "ref": "Weighted average shares outstanding",
+    "calc": true,
+    "stem": "A company begins the year with 1,000,000 shares outstanding and issues a further 300,000 shares on 1 October. Its weighted average number of shares outstanding for the year is closest to:",
+    "choices": ["1,075,000", "1,225,000", "1,300,000"],
+    "answer": 0,
+    "solution": "The new shares were outstanding for three of the twelve months: 1,000,000 + 300,000 x 3/12 = 1,075,000. Weighting by time is what stops a late issue inflating the denominator for the whole year.",
+    "distractors": [
+      "",
+      "This weights the new shares by three quarters of the year rather than one quarter.",
+      "This is the closing share count, which ignores that the new shares were absent for nine months."
+    ]
+  },
+  {
+    "id": "fs-015",
+    "ref": "Diluted earnings per share",
+    "calc": true,
+    "stem": "A company reports net income of USD10.0m, pays preferred dividends of USD1.0m, and has 4,000,000 weighted average ordinary shares outstanding. Employee options in the money would add 200,000 shares. Diluted earnings per share is closest to:",
+    "choices": ["USD2.14", "USD2.25", "USD2.38"],
+    "answer": 0,
+    "solution": "Earnings available to ordinary shareholders is 10.0 - 1.0 = USD9.0m. Diluted earnings per share divides that by the enlarged share count: 9.0m / 4.2m = USD2.14.",
+    "distractors": [
+      "",
+      "This is basic earnings per share, 9.0m / 4.0m, before the options are counted.",
+      "This omits the preferred dividend, dividing 10.0m by 4.2m. Preferred dividends are not available to ordinary shareholders."
+    ]
+  },
+  {
+    "id": "fs-016",
+    "ref": "Common-size analysis",
+    "calc": false,
+    "stem": "An analyst builds a common-size income statement to compare two companies of very different size. Each line is most appropriately expressed as a percentage of:",
+    "choices": ["total assets.", "revenue.", "the prior year's figure for the same line."],
+    "answer": 1,
+    "solution": "A vertical common-size income statement states each line as a percentage of revenue, which strips out scale and makes margin structures directly comparable. Balance sheet items are commonly scaled by total assets instead.",
+    "distractors": [
+      "This is the convention for a common-size balance sheet rather than an income statement.",
+      "",
+      "This describes horizontal or trend analysis, which compares a company with its own past rather than with another company."
+    ]
+  },
+  {
+    "id": "fs-017",
+    "ref": "Quality of earnings",
+    "calc": false,
+    "stem": "Over three years a company reports steadily rising net income while cash flow from operations falls and receivables grow much faster than revenue. This combination is best described as:",
+    "choices": [
+      "a normal consequence of growth, since receivables rise with sales.",
+      "a warning sign, because earnings are increasingly supported by accruals rather than cash.",
+      "evidence of conservative accounting, because revenue is recognised before cash is collected."
+    ],
+    "answer": 1,
+    "solution": "A widening gap between accounting earnings and operating cash flow means a growing share of profit sits in accruals. Receivables outrunning revenue points to either weakening collection or revenue recognised on terms that may not convert, and both reduce the reliability of reported earnings.",
+    "distractors": [
+      "Receivables rising in line with revenue would be unremarkable. Rising much faster, while operating cash flow falls, is the opposite of unremarkable.",
+      "",
+      "Recognising revenue ahead of collection is aggressive rather than conservative, and it is what produces the accrual build in the first place."
+    ]
+  },
+  {
+    "id": "fs-018",
+    "ref": "Impairment reversal",
+    "calc": false,
+    "stem": "A company recognised an impairment loss on a manufacturing plant two years ago. Conditions have since improved and the recoverable amount now exceeds the carrying amount. Under IFRS the company is most likely required to:",
+    "choices": [
+      "leave the carrying amount unchanged, because impairments may not be reversed.",
+      "reverse the impairment, up to what the carrying amount would have been without it.",
+      "revalue the plant to its recoverable amount, recognising the gain in other comprehensive income."
+    ],
+    "answer": 1,
+    "solution": "IFRS requires an impairment on a long-lived asset other than goodwill to be reversed where the recoverable amount recovers, capped at the depreciated carrying amount that would have applied had no impairment been taken. US GAAP prohibits reversal.",
+    "distractors": [
+      "This is the US GAAP treatment, and it applies to goodwill under IFRS, but not to a plant.",
+      "",
+      "The reversal runs through profit or loss and is capped at the original carrying amount path, rather than being a revaluation to recoverable amount."
+    ]
+  },
+  {
+    "id": "fs-019",
+    "ref": "Measurement of financial assets",
+    "calc": false,
+    "stem": "A company holds a portfolio of listed equities that it intends to trade actively. Under IFRS these holdings are most appropriately measured at:",
+    "choices": [
+      "amortised cost, with interest recognised over the holding period.",
+      "fair value, with changes recognised in profit or loss.",
+      "the lower of cost and market value, with declines recognised in profit or loss."
+    ],
+    "answer": 1,
+    "solution": "Equities held for trading are measured at fair value with gains and losses running through profit or loss, so reported earnings move with the market. Amortised cost is reserved for debt instruments held to collect contractual cash flows.",
+    "distractors": [
+      "Amortised cost applies to debt held for its contractual cash flows, and equities have no such contractual stream.",
+      "",
+      "Lower of cost and market is an inventory convention, not a measurement basis for financial assets under IFRS."
+    ]
+  },
+  {
+    "id": "fs-020",
+    "ref": "Revenue recognition",
+    "calc": false,
+    "stem": "A contractor agrees to build a bridge over three years for a fixed price, and can reliably measure progress toward completion. Revenue is most appropriately recognised:",
+    "choices": [
+      "over time, as the performance obligation is satisfied.",
+      "at the point the bridge is handed over to the customer.",
+      "as cash instalments are received from the customer."
+    ],
+    "answer": 0,
+    "solution": "Where control transfers over time and progress can be measured reliably, revenue is recognised as the performance obligation is satisfied rather than waiting for completion. This matches revenue to the periods in which the work is done.",
+    "distractors": [
+      "",
+      "Recognising everything on handover would be right only where control passes at a single point in time.",
+      "The timing of cash receipts does not drive recognition under accrual accounting."
+    ]
+  },
+  {
+    "id": "fs-021",
+    "ref": "Retained earnings as the link between statements",
+    "calc": true,
+    "stem": "A company opens the year with retained earnings of USD420m, reports net income of USD85m and pays dividends of USD30m. Closing retained earnings is closest to:",
+    "choices": ["USD475m", "USD505m", "USD535m"],
+    "answer": 0,
+    "solution": "Closing retained earnings is opening retained earnings plus net income less dividends: 420 + 85 - 30 = USD475m. This is the line that ties the income statement to the balance sheet.",
+    "distractors": [
+      "",
+      "This omits the dividend, which is a distribution out of retained earnings.",
+      "This adds the dividend rather than deducting it."
+    ]
+  },
+  {
+    "id": "fs-022",
+    "ref": "Inventory cost flow and cash flow",
+    "calc": false,
+    "stem": "Ignoring any tax effect, a company's choice between LIFO and FIFO in a period of rising prices will most likely leave:",
+    "choices": [
+      "both reported net income and total cash flow unchanged.",
+      "reported net income different but total cash flow unchanged.",
+      "both reported net income and total cash flow different."
+    ],
+    "answer": 1,
+    "solution": "The cost flow assumption changes which costs are charged to the income statement, so reported profit differs. It does not change what was paid to suppliers, so cash flow is unaffected. In practice the choice can move cash indirectly, through the tax bill.",
+    "distractors": [
+      "Net income does differ, which is the whole reason the choice matters to reported results.",
+      "",
+      "Absent a tax effect, cash paid for inventory is the same under either assumption."
+    ]
   }
 ]

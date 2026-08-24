@@ -52,5 +52,487 @@
       "",
       "Permission from the company being analysed is irrelevant. Disclosure runs to the member's employer and to clients, not to the subject of the research."
     ]
+  },
+  {
+    "id": "eth-004",
+    "ref": "Standard I(A) Knowledge of the Law",
+    "calc": false,
+    "stem": "A member works in a country whose securities law permits trading on material nonpublic information. The Code and Standards prohibit it. The member's obligation is most accurately described as a duty to follow:",
+    "choices": [
+      "local law, because members must comply with the law of the jurisdiction in which they work.",
+      "the stricter of the two, so the prohibition in the Standards applies.",
+      "either, provided the choice is disclosed to clients."
+    ],
+    "answer": 1,
+    "solution": "Where applicable law and the Code and Standards differ, members must comply with the stricter. Less strict local law does not lower the obligation; a stricter local law does raise it.",
+    "distractors": [
+      "Complying with local law is necessary but not sufficient. Membership carries an obligation that local permissiveness cannot dilute.",
+      "",
+      "Disclosure does not create a licence. The stricter requirement applies whether or not anyone is told."
+    ]
+  },
+  {
+    "id": "eth-005",
+    "ref": "Standard I(A) Knowledge of the Law",
+    "calc": false,
+    "stem": "A member becomes aware that a colleague is engaged in ongoing conduct that breaches the Standards. Having raised it with compliance without result, the member's minimum obligation is most appropriately to:",
+    "choices": [
+      "report the colleague to the relevant regulator.",
+      "dissociate from the activity, which may mean removing his name from the work or resigning.",
+      "document his objection and continue, because responsibility now rests with compliance."
+    ],
+    "answer": 1,
+    "solution": "Members must not knowingly participate in a violation and must dissociate from it. Dissociation can mean refusing to sign off, asking to be removed from the assignment, or in the end leaving. Reporting to authorities is encouraged where the law requires it but is not itself the Standard's requirement.",
+    "distractors": [
+      "The Standards encourage this where local law demands it, but the requirement is dissociation. Making a regulatory report the test would misstate the obligation.",
+      "",
+      "Continuing to participate after raising the matter is still participation. Escalating internally does not discharge the duty on its own."
+    ]
+  },
+  {
+    "id": "eth-006",
+    "ref": "Standard I(B) Independence and Objectivity",
+    "calc": false,
+    "stem": "A portfolio manager's client offers her the use of a holiday villa for a fortnight if the portfolio beats its benchmark over the coming year. To comply with the Standards, the manager should most appropriately:",
+    "choices": [
+      "decline, because performance-linked benefits from clients are prohibited.",
+      "obtain written consent from all parties involved before accepting.",
+      "accept and record the arrangement in the client file."
+    ],
+    "answer": 1,
+    "solution": "An offer of additional compensation from a client that depends on future performance may create a conflict with the manager's duty to other clients. It is permitted only with written consent from all parties involved, which puts the employer and the affected clients on notice.",
+    "distractors": [
+      "There is no outright prohibition. The arrangement is permitted where it is consented to in writing by all parties.",
+      "",
+      "A note in the client file is not consent. The employer in particular must agree in writing."
+    ]
+  },
+  {
+    "id": "eth-007",
+    "ref": "Standard I(B) Independence and Objectivity",
+    "calc": false,
+    "stem": "A research firm is paid a flat fee by a small issuer to write and distribute coverage of it. The firm is not paid any bonus tied to the conclusion reached. To comply with the Standards, the report must most appropriately:",
+    "choices": [
+      "disclose that the issuer paid for the research and describe the nature of the payment.",
+      "omit any recommendation, because issuer-paid research cannot support one.",
+      "carry no disclosure, because the fee was not contingent on the conclusion."
+    ],
+    "answer": 0,
+    "solution": "Issuer-paid research is permitted, but the relationship is exactly the sort of conflict a reader needs to know about. The fee arrangement must be disclosed, including that it is flat rather than contingent, so the reader can weigh the independence of the conclusion.",
+    "distractors": [
+      "",
+      "A recommendation is permitted where there is a reasonable basis for it. The requirement is disclosure, not silence.",
+      "A flat fee removes the sharpest conflict, not the conflict. The commercial relationship still requires disclosure."
+    ]
+  },
+  {
+    "id": "eth-008",
+    "ref": "Standard I(C) Misrepresentation",
+    "calc": false,
+    "stem": "An analyst reproduces several paragraphs of another firm's published research in her own note, changing a few words, without naming the source. Her conduct is best described as:",
+    "choices": [
+      "acceptable, because published research is in the public domain.",
+      "plagiarism, and a violation of the Standard on misrepresentation.",
+      "acceptable if she has independently verified the analysis."
+    ],
+    "answer": 1,
+    "solution": "Using another party's work substantially as one's own, without attribution, is plagiarism and misrepresents the authorship of the analysis. Acknowledged excerpts with the source named are the remedy. Recognised statistical and economic series, and factual data from public bodies, may be used without attribution.",
+    "distractors": [
+      "Publication is not a waiver of authorship. The obligation is to attribute, not to avoid published sources.",
+      "",
+      "Verification does not cure the misattribution. It is a separate obligation to have a reasonable basis for the conclusion."
+    ]
+  },
+  {
+    "id": "eth-009",
+    "ref": "Standard I(C) Misrepresentation",
+    "calc": false,
+    "stem": "A marketing document for an equity fund states that the strategy has never had a losing year and that the manager expects to continue delivering positive returns every year. The statement about future returns is most likely:",
+    "choices": [
+      "acceptable, because it is described as an expectation rather than a promise.",
+      "a misrepresentation, because it implies a guarantee the manager cannot give.",
+      "acceptable if the past record is accurately stated."
+    ],
+    "answer": 1,
+    "solution": "Members must not make any statement that misrepresents what an investment can be expected to deliver. Presenting an inherently uncertain equity return as something that will recur every year implies assurance the manager has no ability to provide, however it is worded.",
+    "distractors": [
+      "Softening the verb does not change what a reader takes from it. The test is the impression created, not the grammar.",
+      "",
+      "An accurate history does not license a forward assurance. The two claims are judged separately."
+    ]
+  },
+  {
+    "id": "eth-010",
+    "ref": "Standard II(A) Material Nonpublic Information",
+    "calc": false,
+    "stem": "On a flight, a member overhears two executives of a listed company discussing an unannounced takeover of a rival. He has no relationship with either company. His most appropriate course of action is to:",
+    "choices": [
+      "trade, because he obtained the information passively and owes no duty to the company.",
+      "refrain from trading and from passing the information on.",
+      "trade only after publishing a note describing what he heard, so that the market is informed."
+    ],
+    "answer": 1,
+    "solution": "The prohibition attaches to the information, not to how it was acquired. Overheard information about an unannounced takeover is both material and nonpublic, so the member must neither act on it nor pass it on until the market has it.",
+    "distractors": [
+      "Passive receipt is not a defence. Nothing in the Standard turns on whether the member sought the information out.",
+      "",
+      "A member cannot make information public on the issuer's behalf. Publishing overheard confidential information would compound the problem rather than cure it."
+    ]
+  },
+  {
+    "id": "eth-011",
+    "ref": "Standard II(A) Material Nonpublic Information",
+    "calc": false,
+    "stem": "An investment bank's advisory team is working on an unannounced acquisition while its asset management arm continues to trade the target's shares. The control most directly aimed at this risk is best described as:",
+    "choices": [
+      "a firewall separating the two units, supported by a restricted list.",
+      "a requirement that all employees pre-clear personal trades.",
+      "a policy of disclosing the conflict in research notes on the target."
+    ],
+    "answer": 0,
+    "solution": "An information barrier between the unit holding the confidential information and the unit trading is the primary control, with a restricted or watch list operating alongside it to catch the affected securities. The point is to prevent the information reaching the traders at all.",
+    "distractors": [
+      "",
+      "Pre-clearance addresses employees' own accounts. It does nothing about the firm trading client money on the back of leaked deal information.",
+      "Disclosure cannot cure this. Confidential deal information must be contained, and a note that hinted at it would itself be a breach."
+    ]
+  },
+  {
+    "id": "eth-012",
+    "ref": "Standard II(B) Market Manipulation",
+    "calc": false,
+    "stem": "A trader arranges a series of matched buy and sell orders between two accounts he controls in a thinly traded stock, so that reported volume rises sharply and the stock screens as liquid to prospective buyers. His conduct is best described as:",
+    "choices": [
+      "permissible, because the trades were executed at market prices and no false statement was made.",
+      "information-based manipulation.",
+      "transaction-based manipulation, and a violation of the Standard on market manipulation."
+    ],
+    "answer": 2,
+    "solution": "Trades executed with the purpose of creating a misleading impression of activity are transaction-based manipulation. No misstatement is needed: the deception is carried by the volume figures the market sees.",
+    "distractors": [
+      "Executing at market prices does not help. The deception lies in manufacturing apparent liquidity that does not exist.",
+      "Information-based manipulation involves spreading false or misleading information. Here the misleading signal is created by the trades themselves.",
+      ""
+    ]
+  },
+  {
+    "id": "eth-013",
+    "ref": "Standard III(A) Loyalty, Prudence and Care",
+    "calc": false,
+    "stem": "A member manages the assets of a company pension scheme. The company's finance director asks her to shift the portfolio toward the shares of the company's own suppliers, to strengthen those commercial relationships. Her duty of loyalty in this situation runs most directly to:",
+    "choices": [
+      "the company, because it appointed her and pays the mandate.",
+      "the beneficiaries of the scheme.",
+      "the finance director, as the authorised representative of the client."
+    ],
+    "answer": 1,
+    "solution": "Where a member manages a pension or trust, the client is the beneficiaries rather than the entity that hired her. Their interests govern, so a request that serves the sponsor's commercial aims rather than the beneficiaries' must be declined.",
+    "distractors": [
+      "The sponsor signs the mandate but is not the client for the purpose of this duty. Confusing the two is the trap the Standard exists to prevent.",
+      "",
+      "An individual's authority to instruct does not transfer the duty. The beneficiaries' interests still come first."
+    ]
+  },
+  {
+    "id": "eth-014",
+    "ref": "Standard III(A) Loyalty, Prudence and Care",
+    "calc": false,
+    "stem": "A manager directs client trades to a broker that charges more than the cheapest available execution, in exchange for research the manager uses across all portfolios. This arrangement is most likely acceptable where:",
+    "choices": [
+      "the research benefits the clients whose brokerage paid for it.",
+      "the arrangement is approved in advance by the broker.",
+      "the additional cost is below a threshold set by the manager."
+    ],
+    "answer": 0,
+    "solution": "Client brokerage belongs to the client, so it may be used for research only where that research benefits the clients whose trades generated it, and best execution is still owed. Using client commissions to buy something the firm consumes for its own purposes is a breach.",
+    "distractors": [
+      "",
+      "The broker's approval is irrelevant. The question is whose money is being spent and who benefits.",
+      "A self-set threshold does not make the spending legitimate. The test is benefit to the client, not size."
+    ]
+  },
+  {
+    "id": "eth-015",
+    "ref": "Standard III(B) Fair Dealing",
+    "calc": false,
+    "stem": "A firm receives an allocation in an oversubscribed new issue that is smaller than the total indications of interest from suitable client accounts. The most appropriate way to allocate it is:",
+    "choices": [
+      "to the accounts that indicated interest first.",
+      "pro rata across all suitable accounts that indicated interest.",
+      "to the accounts paying the highest fees, disclosed in advance."
+    ],
+    "answer": 1,
+    "solution": "A pro rata allocation across suitable accounts on the basis of indicated interest treats clients fairly where supply is short. Allocating by order of arrival or by fee level advantages some clients on grounds unrelated to suitability.",
+    "distractors": [
+      "First come, first served rewards whoever happened to be contacted earliest, which usually reflects the firm's own calling order rather than anything about the client.",
+      "",
+      "Fee level is not a permitted basis for allocating a scarce security, and disclosing an unfair practice does not make it fair."
+    ]
+  },
+  {
+    "id": "eth-016",
+    "ref": "Standard III(C) Suitability",
+    "calc": false,
+    "stem": "A client with a conservative investment policy statement telephones his adviser and instructs him to buy a speculative single stock, acknowledging that it sits outside the agreed policy. The adviser's most appropriate response is to:",
+    "choices": [
+      "execute the trade, because an unsolicited instruction from the client overrides the policy statement.",
+      "refuse, because the trade is inconsistent with the investment policy statement.",
+      "discuss the conflict with the client and, if the trade proceeds, consider whether the policy statement needs updating."
+    ],
+    "answer": 2,
+    "solution": "An unsolicited trade outside the policy calls for a conversation about how it fits the client's objectives. Where the trade is small enough not to disturb the portfolio's overall suitability it may proceed; where it would, the policy statement itself has to be revisited in writing.",
+    "distractors": [
+      "Simply executing ignores the adviser's own suitability obligation, which does not disappear because the client asked.",
+      "A flat refusal is not required either. The Standard contemplates the client being informed and the documentation being brought into line.",
+      ""
+    ]
+  },
+  {
+    "id": "eth-017",
+    "ref": "Standard III(C) Suitability",
+    "calc": false,
+    "stem": "A manager runs a fund with a stated mandate to track a broad emerging market index. She becomes convinced that developed market equities offer better value and shifts a quarter of the fund into them. Her conduct is best described as:",
+    "choices": [
+      "acceptable, because she acted on a reasonable basis in what she judged to be investors' interests.",
+      "a violation, because a pooled fund must be managed to its stated mandate rather than to the manager's view.",
+      "acceptable, provided the change is disclosed in the next quarterly report."
+    ],
+    "answer": 1,
+    "solution": "Where a member manages a pooled vehicle to a stated strategy, suitability is judged against that mandate rather than against individual investors' circumstances. Investors bought the stated exposure, and departing from it deprives them of what they selected.",
+    "distractors": [
+      "A well-founded view does not authorise a departure from the mandate. Investors chose the strategy, not the manager's discretion over asset classes.",
+      "",
+      "Reporting a breach after the fact does not authorise it. The mandate had to change first."
+    ]
+  },
+  {
+    "id": "eth-018",
+    "ref": "Standard III(D) Performance Presentation",
+    "calc": false,
+    "stem": "A firm presents a composite record for its equity strategy that includes only accounts still open at the presentation date. Accounts closed after poor results were removed. The presentation is most likely:",
+    "choices": [
+      "acceptable, because closed accounts are no longer managed by the firm.",
+      "misleading, because excluding terminated accounts overstates the record.",
+      "acceptable if the number of excluded accounts is disclosed."
+    ],
+    "answer": 1,
+    "solution": "Removing terminated accounts introduces survivorship bias and flatters the record. A composite must include every account that ran the strategy over the period, including those since closed.",
+    "distractors": [
+      "Whether the firm still manages the money has no bearing on whether it managed it during the period being shown.",
+      "",
+      "Counting the omissions does not repair the figures. The excluded accounts belong in the return itself."
+    ]
+  },
+  {
+    "id": "eth-019",
+    "ref": "Standard III(D) Performance Presentation",
+    "calc": false,
+    "stem": "A member markets a new quantitative strategy using returns produced by applying the model to historical data, as no live track record yet exists. To comply with the Standards, the presentation must most appropriately:",
+    "choices": [
+      "state clearly that the results are simulated and not achieved with client money.",
+      "avoid all reference to the historical results.",
+      "present the results net of an estimated fee, which makes the basis clear."
+    ],
+    "answer": 0,
+    "solution": "Back-tested or model results may be shown, but the reader must be told plainly what they are. Presenting them in a way that could be read as an actual track record misrepresents performance.",
+    "distractors": [
+      "",
+      "There is no prohibition on showing model results. The requirement is that their nature is disclosed.",
+      "Deducting a fee does not tell the reader that no client money was at risk, which is the material point."
+    ]
+  },
+  {
+    "id": "eth-020",
+    "ref": "Standard III(E) Preservation of Confidentiality",
+    "calc": false,
+    "stem": "A former client's account was closed two years ago. A prospective client asks the member about the type of strategy that former client ran, naming him. The member's obligation of confidentiality is most accurately described as:",
+    "choices": [
+      "ended, because the client relationship has ended.",
+      "continuing, so the member should not discuss the former client's affairs.",
+      "continuing, unless the former client's information is already known in the market."
+    ],
+    "answer": 1,
+    "solution": "The duty of confidentiality survives the end of the relationship. Information about a former client's holdings and strategy stays confidential unless disclosure is required by law, concerns illegal activities, or the client permits it.",
+    "distractors": [
+      "Termination of the mandate does not release the member. Treating it as an expiry date is the common error.",
+      "",
+      "Market rumour does not discharge the duty, and a member confirming it would be the source of the disclosure."
+    ]
+  },
+  {
+    "id": "eth-021",
+    "ref": "Standard IV(A) Loyalty",
+    "calc": false,
+    "stem": "A member intends to resign and set up a competing firm. While still employed, and without his employer's knowledge, he copies the client contact list and begins soliciting those clients. His conduct is best described as:",
+    "choices": [
+      "acceptable, because preparations to compete may be made before resignation.",
+      "a violation, because he used his employer's property and solicited its clients while still employed.",
+      "acceptable, because clients are free to choose their own adviser."
+    ],
+    "answer": 1,
+    "solution": "A member may take steps to prepare to compete, such as registering a company or arranging premises, so long as those steps do not breach the duty of loyalty. Taking the employer's client records and soliciting its clients while still employed crosses that line, because both the list and the client relationships belong to the employer.",
+    "distractors": [
+      "Preparation is permitted; misappropriation and solicitation are not. The distinction is what the member takes and when he approaches clients.",
+      "",
+      "Clients are free to move, but that freedom does not entitle the member to use his employer's records or to canvass them on the employer's time."
+    ]
+  },
+  {
+    "id": "eth-022",
+    "ref": "Standard IV(B) Additional Compensation Arrangements",
+    "calc": false,
+    "stem": "A member is offered a seat on the board of a private company, with a fee payable to him personally, in return for advice that overlaps with his day job. Before accepting, he must most appropriately:",
+    "choices": [
+      "obtain written consent from all parties involved, including his employer.",
+      "disclose the arrangement to his clients only.",
+      "confirm that the fee is below his employer's materiality threshold."
+    ],
+    "answer": 0,
+    "solution": "An arrangement that may create a conflict with the employer's interests, or compete with it, requires written consent from all parties involved before it is accepted. Verbal notice or an informal mention does not meet the Standard.",
+    "distractors": [
+      "",
+      "Clients are not the only party with an interest. The employer's consent is the requirement here.",
+      "Size is not the test. Consent is required whether the fee is large or small."
+    ]
+  },
+  {
+    "id": "eth-023",
+    "ref": "Standard IV(C) Responsibilities of Supervisors",
+    "calc": false,
+    "stem": "A supervisor delegates monitoring of trade allocations to a competent junior colleague, who fails to detect a pattern of favourable allocation to one account. The supervisor's position is most accurately described as:",
+    "choices": [
+      "excused, because the task was delegated to a competent person.",
+      "still responsible, because delegation does not discharge supervisory responsibility.",
+      "excused, provided the delegation was documented in advance."
+    ],
+    "answer": 1,
+    "solution": "A supervisor may delegate tasks but remains responsible for ensuring that those to whom work is delegated have the necessary competence and that adequate procedures are in place and working. Delegation transfers the work, not the responsibility.",
+    "distractors": [
+      "Competence of the delegate is a requirement, not a defence. The supervisor still owes a duty to see the system functions.",
+      "",
+      "Documentation helps establish that a system exists. It does not remove the obligation to see that the system detects what it is meant to detect."
+    ]
+  },
+  {
+    "id": "eth-024",
+    "ref": "Standard V(A) Diligence and Reasonable Basis",
+    "calc": false,
+    "stem": "A member recommends a structured product to clients on the strength of a third-party model whose assumptions and inputs he has not examined. His conduct is best described as:",
+    "choices": [
+      "acceptable, because the model was supplied by a reputable provider.",
+      "a violation, because he has not established a reasonable and adequate basis for the recommendation.",
+      "acceptable if he discloses that the analysis came from a third party."
+    ],
+    "answer": 1,
+    "solution": "Relying on outside research is permitted, but the member must make reasonable enquiries into the soundness of what he relies on. Recommending a product on the basis of a model whose assumptions he has never looked at leaves him without a reasonable basis.",
+    "distractors": [
+      "A provider's reputation is a starting point for due diligence, not a substitute for it.",
+      "",
+      "Disclosure tells the reader where the analysis came from. It does not supply the diligence the member owed."
+    ]
+  },
+  {
+    "id": "eth-025",
+    "ref": "Standard V(B) Communication with Clients",
+    "calc": false,
+    "stem": "A note recommending a stock rests on the analyst's forecast that a contested regulatory approval will be granted. To comply with the Standard on communication with clients, the note should most appropriately:",
+    "choices": [
+      "present the approval as a fact, since the recommendation depends on it.",
+      "identify the approval as an assumption and describe the risk that it is refused.",
+      "omit the assumption, because forecasts are inherently uncertain."
+    ],
+    "answer": 1,
+    "solution": "Members must distinguish fact from opinion and identify the important factors and risks on which a recommendation rests. An assumption that carries the whole conclusion is exactly what the reader needs flagged as an assumption.",
+    "distractors": [
+      "Stating a contested forecast as a fact is the misrepresentation the Standard is aimed at.",
+      "",
+      "Uncertainty is a reason to disclose the assumption, not to hide it."
+    ]
+  },
+  {
+    "id": "eth-026",
+    "ref": "Standard V(C) Record Retention",
+    "calc": false,
+    "stem": "In the absence of any local regulatory requirement, the minimum period for which a member should retain the records supporting research and investment recommendations is most likely:",
+    "choices": ["three years.", "five years.", "seven years."],
+    "answer": 2,
+    "solution": "Where no regulator or firm policy imposes a longer period, CFA Institute recommends retaining supporting records for at least seven years. Records developed in the course of employment belong to the employer.",
+    "distractors": [
+      "Shorter than the recommendation, and shorter than most regulatory regimes require.",
+      "A common statutory period in some jurisdictions, but not the recommendation in the Standards.",
+      ""
+    ]
+  },
+  {
+    "id": "eth-027",
+    "ref": "Standard VI(A) Disclosure of Conflicts",
+    "calc": false,
+    "stem": "An analyst holds a substantial personal position in a company she is about to initiate coverage on with a buy recommendation. Her most appropriate course of action is to:",
+    "choices": [
+      "sell the position before publishing, because the conflict cannot otherwise be managed.",
+      "disclose the holding prominently in the report.",
+      "publish without disclosure, because the recommendation rests on the analysis rather than the holding."
+    ],
+    "answer": 1,
+    "solution": "Members must disclose all matters that could reasonably be expected to impair their objectivity, and a personal stake in a covered company is the clearest example. The disclosure must be prominent and in plain language, so a reader can weigh it.",
+    "distractors": [
+      "Divestment is not required by the Standard, and a firm may impose its own stricter policy. The obligation in the Standards is to disclose.",
+      "",
+      "Whether the analysis is sound is a separate question. The reader is entitled to know about the interest and judge for themselves."
+    ]
+  },
+  {
+    "id": "eth-028",
+    "ref": "Standard VI(B) Priority of Transactions",
+    "calc": false,
+    "stem": "A manager decides to build a position in a small company across several client portfolios over the coming week, and also wants the stock for his own account. To comply with the Standards he should most appropriately:",
+    "choices": [
+      "trade his own account alongside the clients, so that all participants receive the same average price.",
+      "complete the client orders before trading for his own account.",
+      "trade his own account first, provided the size is immaterial relative to the client orders."
+    ],
+    "answer": 1,
+    "solution": "Client transactions take precedence over transactions for the member's own benefit. In a small company where the buying itself moves the price, trading personally alongside or ahead of clients takes part of the opportunity the clients paid for.",
+    "distractors": [
+      "Sharing an average price still gives the personal account a share of a scarce opportunity that belonged to clients first.",
+      "",
+      "Immateriality to the manager is not the test. Priority runs to the client regardless of the personal order's size."
+    ]
+  },
+  {
+    "id": "eth-029",
+    "ref": "Standard VI(C) Referral Fees",
+    "calc": false,
+    "stem": "A member receives a fee from a tax adviser each time she introduces a client to him. To comply with the Standards she must most appropriately disclose the arrangement to:",
+    "choices": [
+      "her employer only.",
+      "the referred client only.",
+      "her employer and the client, before the client engages the tax adviser."
+    ],
+    "answer": 2,
+    "solution": "Consideration received for a referral must be disclosed to the employer and to the client or prospective client, and the disclosure must come before the engagement so the client can assess whether the recommendation was influenced by the payment.",
+    "distractors": [
+      "The employer needs to know, but so does the person whose choice of adviser is being steered.",
+      "The client needs to know, but the employer's interest in referral arrangements is also engaged.",
+      ""
+    ]
+  },
+  {
+    "id": "eth-030",
+    "ref": "Standard VII(B) Reference to the CFA Designation",
+    "calc": false,
+    "stem": "A candidate has passed the Level II exam and is enrolled for Level III. The most appropriate way for her to describe her status on a business card is:",
+    "choices": [
+      "CFA Level III candidate.",
+      "CFA Level II, having passed all exams to date.",
+      "Chartered Financial Analyst, Level III."
+    ],
+    "answer": 0,
+    "solution": "A candidate may state that she is a candidate for the level she is currently enrolled in, in a factual sentence or as a candidate designation. There is no partial designation, so the marks cannot be used to describe a level passed.",
+    "distractors": [
+      "",
+      "There is no such thing as CFA Level II as a credential. Using the marks to describe progress implies a designation that does not exist.",
+      "The designation belongs only to charterholders in good standing, and it is never qualified by a level."
+    ]
   }
 ]
