@@ -61,6 +61,10 @@ def main() -> int:
             ".slice(1).reduce((a, e) => a + Number(e.textContent), 0)"
         )
         check("bank counts render", bank_total > 0, f"{bank_total} questions")
+        # Also the thumbnail job's readiness signal, so it has to be VISIBLE.
+        size = page.inner_text("#banksize")
+        check("the bank size is stated and visible",
+              page.locator("#banksize").is_visible() and str(bank_total) in size, size)
 
         # A 30-question bank cannot supply a 180-question mock, and the button
         # must say so rather than starting a short one.

@@ -25,7 +25,7 @@
    "modenote", "t-pos", "t-clock", "t-flag", "t-hl", "t-overview", "t-end", "t-stem",
    "t-choices", "t-feedback", "t-prev", "t-next", "t-ovpanel", "ov-grid", "ov-close",
    "b-topics", "b-count", "b-timed", "b-strict", "b-cancel", "f-topics", "f-start",
-   "f-cancel", "br-count", "br-go", "r-what", "r-pct", "r-count", "r-verdict", "r-topic",
+   "f-cancel", "banksize", "br-count", "br-go", "r-what", "r-pct", "r-count", "r-verdict", "r-topic",
    "r-pace", "r-review", "r-done", "h-topic", "h-pace", "p-answered", "p-acc",
    "p-pace", "p-weak", "wipe"].forEach(function (id) { el[id] = document.getElementById(id); });
 
@@ -705,6 +705,9 @@
     var wrong = wrongIds().length;
     var due = dueIds().length;
     var total = allQuestions().length;
+
+    el.banksize.textContent = total + " questions in the bank, weighted to the "
+      + "exam's topic split.";
 
     setMode("mistakes", wrong > 0,
       wrong ? wrong + " to revisit." : "Only questions you last got wrong.");
