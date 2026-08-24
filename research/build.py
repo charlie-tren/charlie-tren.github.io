@@ -48,6 +48,23 @@ def fetch(symbols, cache):
     return fresh, kept
 
 
+def tone(call):
+    """Map a rating to a colour class. Direction, not decoration: green for a positive
+    call, grey for a neutral one, red for a negative one, and a softer treatment where
+    the wording hedges. Derived from the call TEXT so a new rating colours itself, with
+    an explicit "tone" in reports.json winning if one is set."""
+    if not call:
+        return "none"
+    c = call.lower()
+    if any(w in c for w in ("sell", "reduce", "avoid", "underweight")):
+        return "neg"
+    if any(w in c for w in ("modest", "weak", "small", "tentative")):
+        return "pos-soft"
+    if any(w in c for w in ("buy", "accumulate", "overweight", "add")):
+        return "pos"
+    return "neutral"
+
+
 def main():
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -66,6 +83,7 @@ def main():
     rows = []
     for r in reports:
         row = dict(r)
+        row["tone"] = r.get("tone") or tone(r.get("call"))
         q = cache.get(r["symbol"])
         if r.get("call_price") and q:
             row["price"] = q["price"]
