@@ -5,14 +5,21 @@ name: Refresh card thumbnails
 #   One Story      19:26 - 19:51
 #   The Aftertimes 20:36 - 20:45
 #   Photocopy      20:57 - 21:03, BUT three of ten landed at 22:54
-# So the 21:37 run catches One Story and The Aftertimes every day and Photocopy most
-# days, and a second run at 23:23 picks up Photocopy's late tail. Without it that card
-# sat a day stale roughly a third of the time. The catch-up is nearly free: the shooter
-# leaves visually-identical shots alone, so on a normal night it commits nothing.
+# GITHUB STARTS THESE LATE, EVERY TIME. Measured over nine scheduled runs, a job set for
+# 21:37 actually started between 21:53 and 21:59, so 16 to 22 minutes late, and once past
+# 21:57. That delay is the whole reason this moved: at 21:37 the cards only went live
+# around 21:55 to 22:01, which is 07:55 to 08:01 in Sydney, and Charlie checks at 07:50.
+# 21:05 plus the delay lands them about 07:25 to 07:35 Sydney time.
+#
+# 21:05 is close to the earliest that can work. Photocopy itself publishes at 20:57 to
+# 21:03, so shooting sooner would catch yesterday's frame - the floor is set by the site,
+# not by us. The second run at 23:23 still picks up Photocopy's 22:54 tail.
+# The catch-up is nearly free: the shooter leaves visually-identical shots alone, so on a
+# normal night it commits nothing.
 # Odd minutes on purpose: GitHub's scheduler drops on-the-hour jobs.
 on:
   schedule:
-    - cron: "37 21 * * *"      # daily - the three sites that change every day
+    - cron: "05 21 * * *"      # daily - the three sites that change every day
     - cron: "23 23 * * *"      # catch-up, for a late Photocopy frame
     - cron: "43 21 * * 1"      # Mondays - all nine, in case a site was redesigned
   workflow_dispatch:
