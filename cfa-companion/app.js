@@ -57,8 +57,17 @@
 
   /* ------------------------------------------------------------------- data */
 
+  /* A load during a deploy can fail for a second or two while the old and new
+     copies are swapped, which is a transient worth riding out rather than
+     reporting. One silent retry, then the panel. */
   function boot() {
-    fetch("data/index.json")
+    load_bank().catch(function () {
+      return new Promise(function (r) { setTimeout(r, 1400); }).then(load_bank);
+    }).catch(failed);
+  }
+
+  function load_bank() {
+    return fetch("data/index.json")
       .then(function (r) { return r.json(); })
       .then(function (ix) {
         index = ix;
@@ -71,8 +80,7 @@
             });
         }));
       })
-      .then(ready)
-      .catch(failed);
+      .then(ready);
   }
 
   /* Two very different failures reach the same catch, and blaming the site for
