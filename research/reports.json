@@ -1,0 +1,44 @@
+{
+  "_comment": "Source of truth for the research page. Hand-edited when a report lands; build.py adds the live price. call: the rating as printed in the PDF, or null for a piece with no explicit call, which renders as 'General research'. call_price: the price the report itself states, so the return is measured from what was actually written down.",
+  "reports": [
+    {
+      "name": "Stride",
+      "ticker": "LRN",
+      "symbol": "LRN",
+      "currency": "US$",
+      "kind": "Company research",
+      "date": "2026-08-23",
+      "date_label": "Aug 2026",
+      "call": "Buy",
+      "call_price": 79.09,
+      "call_price_note": "Share Price, page 1",
+      "pdf": "/assets/research/stride-lrn-2026-08.pdf"
+    },
+    {
+      "name": "Uber",
+      "ticker": "UBER",
+      "symbol": "UBER",
+      "currency": "US$",
+      "kind": "Thesis review",
+      "date": "2026-08-14",
+      "date_label": "Aug 2026",
+      "call": "Modest buy",
+      "call_price": 75.88,
+      "call_price_note": "close at 13/08/2026, stated on page 1",
+      "pdf": "/assets/research/uber-thesis-review-2026-08.pdf"
+    },
+    {
+      "name": "Baby Bunting",
+      "ticker": "BBN",
+      "symbol": "BBN.AX",
+      "currency": "A$",
+      "kind": "Company research",
+      "date": "2025-03-21",
+      "date_label": "Mar 2025",
+      "call": "Hold",
+      "call_price": 1.725,
+      "call_price_note": "the report prints no price, but its own two premiums (A$2.64 = +53%, A$2.07 = +20%) both imply A$1.725, which is exactly the ASX close on 21/03/2025",
+      "pdf": "/assets/research/baby-bunting-bbn-2025-03.pdf"
+    }
+  ]
+}
