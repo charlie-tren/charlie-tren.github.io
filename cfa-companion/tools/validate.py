@@ -1,6 +1,6 @@
 """Check the question bank against the schema and the exam's own stem conventions.
 
-Run from the distractor directory:  python tools/validate.py
+Run from the cfa-companion directory:  python tools/validate.py
 Exits 1 on any error. Warnings do not fail the build.
 """
 
