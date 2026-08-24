@@ -317,6 +317,11 @@ def main() -> int:
               page.evaluate("() => window.DISTRACTOR.peek().attempts") == 180,
               str(page.evaluate("() => window.DISTRACTOR.peek().attempts")))
         page.click("#r-done")
+        page.wait_for_selector("#home:not([hidden])")
+        # A perfect mock leaves every topic at 100%, so naming one of them the
+        # weakest would invent a weakness the answers do not show.
+        check("no weakest topic is named when every topic is level",
+              page.inner_text("#p-weak") == "all level", page.inner_text("#p-weak"))
 
         check("still no console errors", not errors, "; ".join(errors[:3]))
 
