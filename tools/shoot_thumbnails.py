@@ -170,6 +170,7 @@ PREPARE = {
 # default, so a site that keys off prefers-color-scheme renders in its light theme
 # unless told otherwise.
 SCHEME = {
+    "cfa-companion": "dark",
     "beyond-small-talk": "dark",
     "woop-woop": "dark",
     "pendulum": "dark",

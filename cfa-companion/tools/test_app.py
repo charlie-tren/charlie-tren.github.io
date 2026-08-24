@@ -58,7 +58,9 @@ def main() -> int:
         page.evaluate("""(a) => {
             const s = JSON.parse(localStorage.getItem('cfa-companion.v1') || '{}');
             s.attempts = s.attempts || []; s.sr = s.sr || {};
-            s.time = { sec: 40*3600, days: { [a.stamp]: 1.5*3600 } };
+            s.device = "seed";
+            s.time = { days: { "2026-01-01": { seed: 38.5*3600 },
+                               [a.stamp]: { seed: 1.5*3600 } } };
             s.plan = { exam: a.exam, target: 300, extraMin: 0 };
             localStorage.setItem('cfa-companion.v1', JSON.stringify(s));
         }""", {"exam": exam, "stamp": stamp})

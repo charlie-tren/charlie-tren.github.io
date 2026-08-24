@@ -22,14 +22,14 @@
 
   var el = {};
   ["home", "test", "break", "report", "progress", "history", "builder", "topicpick",
-   "modenote", "t-pos", "t-clock", "t-flag", "t-hl", "t-overview", "t-end", "t-stem",
+   "modenote", "t-pos", "t-topic", "t-clock", "t-flag", "t-hl", "t-overview", "t-end", "t-stem",
    "t-choices", "t-feedback", "t-prev", "t-next", "t-ovpanel", "ov-grid", "ov-close",
    "b-topics", "b-count", "b-timed", "b-strict", "b-cancel", "f-topics", "f-start",
    "f-cancel", "banksize", "loaderr", "br-count", "br-go", "r-what", "r-pct", "r-count", "r-verdict", "r-topic",
    "r-pace", "r-review", "r-done", "h-topic", "h-pace", "p-answered", "p-acc",
    "p-pace", "p-weak", "wipe", "plan", "pl-days", "pl-done", "pl-donecap",
    "pl-need", "pl-today", "pl-bar", "pl-exam", "pl-target", "pl-extra",
-   "pl-addbtn", "pl-resetbtn"].forEach(function (id) { el[id] = document.getElementById(id); });
+   "pl-addbtn", "pl-resetbtn", "pl-key", "pl-keysave", "pl-keynew", "pl-sync"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   /* ---------------------------------------------------------------- storage */
 
@@ -41,15 +41,43 @@
         s.attempts = s.attempts || [];
         s.sr = s.sr || {};
         s.plan = s.plan || {};
-        s.time = s.time || { sec: 0, days: {} };
-        return s;
+        s.time = s.time || { days: {} };
+        return migrate(s);
       }
     } catch (e) { /* private mode, or corrupt: start clean */ }
-    return { attempts: [], sr: {}, plan: {}, time: { sec: 0, days: {} } };
+    return migrate({ attempts: [], sr: {}, plan: {}, time: { days: {} } });
+  }
+
+  /* Time is kept per device per day. Summing devices is what makes a merge
+     idempotent: each device only ever raises its own counter, so taking the
+     larger of two copies can neither lose nor double-count. A single total
+     could not be merged at all. */
+  function migrate(s) {
+    s.device = s.device || rand(8);
+    s.time = s.time || { days: {} };
+    s.time.days = s.time.days || {};
+    Object.keys(s.time.days).forEach(function (d) {
+      if (typeof s.time.days[d] === "number") {
+        var was = s.time.days[d];
+        s.time.days[d] = {};
+        s.time.days[d][s.device] = was;
+      }
+    });
+    if (typeof s.time.sec === "number") delete s.time.sec;
+    return s;
+  }
+
+  function rand(n) {
+    var bytes = new Uint8Array(n);
+    (window.crypto || window.msCrypto).getRandomValues(bytes);
+    return Array.prototype.map.call(bytes, function (b) {
+      return b.toString(36).padStart(2, "0");
+    }).join("").slice(0, n * 2);
   }
 
   function save() {
     try { localStorage.setItem(STORE, JSON.stringify(store)); } catch (e) { /* full or blocked */ }
+    syncSoon();
   }
 
   function record(qid, topic, ok, ms, mode) {
@@ -144,6 +172,168 @@
     return out;
   }
 
+  /* ------------------------------------------------------------------- sync */
+
+  var SYNC = "https://cfa-sync.charlietrenorden.com/state";
+  var syncTimer = null;
+  var syncing = false;
+
+  /* The merge has to be safe to run twice, because two devices can both push.
+     Attempts are a union keyed by question and timestamp, time takes the larger
+     of each device's own counter, and the plan is whichever was edited last.
+     Spaced repetition is replayed from the merged attempts rather than merged,
+     since a box depends on the order answers arrived in. */
+  function mergeState(local, remote) {
+    if (!remote) return local;
+
+    var seen = {};
+    var attempts = [];
+    (local.attempts || []).concat(remote.attempts || []).forEach(function (a) {
+      var k = a.q + "@" + a.at;
+      if (!seen[k]) { seen[k] = true; attempts.push(a); }
+    });
+    attempts.sort(function (x, y) { return x.at - y.at; });
+
+    var days = {};
+    [(local.time || {}).days || {}, (remote.time || {}).days || {}].forEach(function (src) {
+      Object.keys(src).forEach(function (d) {
+        days[d] = days[d] || {};
+        var per = src[d] || {};
+        Object.keys(per).forEach(function (dev) {
+          days[d][dev] = Math.max(days[d][dev] || 0, per[dev]);
+        });
+      });
+    });
+
+    var lp = local.plan || {};
+    var rp = remote.plan || {};
+    var plan = (rp.at || 0) > (lp.at || 0) ? rp : lp;
+
+    return {
+      attempts: attempts,
+      sr: replaySR(attempts),
+      plan: plan,
+      time: { days: days },
+      device: local.device,
+      key: local.key,
+      syncedAt: local.syncedAt
+    };
+  }
+
+  function replaySR(attempts) {
+    var sr = {};
+    attempts.forEach(function (a) {
+      var box = a.ok ? Math.min(5, ((sr[a.q] || {}).box || 0) + 1) : 1;
+      sr[a.q] = { box: box, due: a.at + SR_DAYS[box - 1] * DAY };
+    });
+    return sr;
+  }
+
+  function shareable() {
+    return { attempts: store.attempts, plan: store.plan, time: store.time };
+  }
+
+  function paintSync(state, detail) {
+    var e = el["pl-sync"];
+    e.className = "syncstate" + (state === "bad" ? " bad" : state === "busy" ? " busy" : "");
+    if (!store.key) { e.textContent = "not syncing"; return; }
+    if (state === "busy") { e.textContent = "syncing"; return; }
+    if (state === "bad") { e.textContent = detail || "sync failed"; return; }
+    var ago = store.syncedAt ? Math.round((Date.now() - store.syncedAt) / 60000) : null;
+    e.textContent = ago === null ? "not synced yet"
+      : ago < 1 ? "synced just now" : "synced " + ago + "m ago";
+  }
+
+  function syncNow() {
+    if (!store.key || syncing) return Promise.resolve();
+    syncing = true;
+    lastSync = Date.now();
+    paintSync("busy");
+    return fetch(SYNC, { headers: { "X-Sync-Key": store.key } })
+      .then(function (r) {
+        if (!r.ok) throw new Error("read " + r.status);
+        return r.json();
+      })
+      .then(function (res) {
+        if (res.blob) {
+          store = mergeState(store, res.blob);
+          save();
+        }
+        return fetch(SYNC, {
+          method: "PUT",
+          headers: { "X-Sync-Key": store.key, "Content-Type": "application/json" },
+          body: JSON.stringify({ blob: shareable() })
+        });
+      })
+      .then(function (r) {
+        if (!r.ok) throw new Error("write " + r.status);
+        store.syncedAt = Date.now();
+        save();
+        syncing = false;
+        paintSync("ok");
+        if (!el.home.hidden) { refreshHome(); paintPlan(); }
+      })
+      .catch(function (err) {
+        syncing = false;
+        paintSync("bad", "sync failed, will retry");
+        if (window.console) window.console.warn("sync:", err.message);
+      });
+  }
+
+  /* Batched, because every answer writes to storage and none of them is urgent.
+     The syncing guard matters: syncNow saves, and save schedules a sync, so
+     without it the two would push each other round in a loop for ever. The floor
+     keeps an hour of steady practice to about sixty requests rather than a
+     thousand. */
+  var lastSync = 0;
+  var FLOOR = 60000;
+
+  function syncSoon() {
+    if (!store.key || syncing || syncTimer) return;
+    var wait = Math.max(8000, FLOOR - (Date.now() - lastSync));
+    syncTimer = setTimeout(function () {
+      syncTimer = null;
+      syncNow();
+    }, wait);
+  }
+
+  function wireSync() {
+    el["pl-key"].value = store.key || "";
+    paintSync("ok");
+
+    el["pl-keysave"].addEventListener("click", function () {
+      var v = el["pl-key"].value.trim();
+      if (v && (v.length < 16 || v.length > 128)) {
+        paintSync("bad", "a key needs 16 characters or more");
+        return;
+      }
+      store.key = v || null;
+      save();
+      paintSync("ok");
+      if (store.key) syncNow();
+    });
+
+    el["pl-keynew"].addEventListener("click", function () {
+      store.key = rand(12);
+      el["pl-key"].value = store.key;
+      save();
+      paintSync("ok");
+      syncNow();
+    });
+
+    window.addEventListener("pagehide", function () {
+      if (!store.key) return;
+      try {
+        fetch(SYNC, {
+          method: "PUT",
+          keepalive: true,
+          headers: { "X-Sync-Key": store.key, "Content-Type": "application/json" },
+          body: JSON.stringify({ blob: shareable() })
+        });
+      } catch (e) { /* the tab is going away regardless */ }
+    });
+  }
+
   /* ------------------------------------------------------- the study plan */
 
   var TICK = 5;                  // seconds counted per tick
@@ -175,8 +365,8 @@
     window.addEventListener("pagehide", flushTime);
     setInterval(function () {
       if (!counting()) { paintToday(); return; }
-      store.time.sec += TICK;
-      store.time.days[today()] = (store.time.days[today()] || 0) + TICK;
+      var day = store.time.days[today()] || (store.time.days[today()] = {});
+      day[store.device] = (day[store.device] || 0) + TICK;
       unsaved += TICK;
       if (unsaved >= 30) flushTime();
       paintToday();
@@ -187,8 +377,19 @@
     if (unsaved > 0) { unsaved = 0; save(); }
   }
 
+  function daySeconds(day) {
+    var per = store.time.days[day] || {};
+    return Object.keys(per).reduce(function (a, k) { return a + per[k]; }, 0);
+  }
+
+  function totalSeconds() {
+    return Object.keys(store.time.days).reduce(function (a, d) {
+      return a + daySeconds(d);
+    }, 0);
+  }
+
   function hoursDone() {
-    return store.time.sec / 3600 + (store.plan.extraMin || 0) / 60;
+    return totalSeconds() / 3600 + (store.plan.extraMin || 0) / 60;
   }
 
   function daysToGo() {
@@ -206,7 +407,7 @@
   }
 
   function paintToday() {
-    var secs = store.time.days[today()] || 0;
+    var secs = daySeconds(today());
     el["pl-today"].textContent = hm(secs / 3600);
     el["pl-today"].classList.toggle("paused", !counting());
   }
@@ -242,12 +443,14 @@
 
     el["pl-exam"].addEventListener("change", function () {
       store.plan.exam = el["pl-exam"].value || null;
+      store.plan.at = Date.now();
       save();
       paintPlan();
     });
     el["pl-target"].addEventListener("change", function () {
       var v = parseInt(el["pl-target"].value, 10);
       store.plan.target = v > 0 ? v : 300;
+      store.plan.at = Date.now();
       el["pl-target"].value = store.plan.target;
       save();
       paintPlan();
@@ -256,13 +459,14 @@
       var v = parseFloat(el["pl-extra"].value);
       if (!(v > 0)) return;
       store.plan.extraMin = (store.plan.extraMin || 0) + Math.round(v * 60);
+      store.plan.at = Date.now();
       el["pl-extra"].value = "";
       save();
       paintPlan();
     });
     el["pl-resetbtn"].addEventListener("click", function () {
       if (!window.confirm("Set the hours logged back to zero? The exam date stays.")) return;
-      store.time = { sec: 0, days: {} };
+      store.time = { days: {} };
       store.plan.extraMin = 0;
       save();
       paintPlan();
@@ -491,6 +695,8 @@
       ? "Question " + (run.idx + 1)
       : "Question " + (run.idx - r[0] + 1) + " of " + (r[1] - r[0] + 1) +
         (run.sessions ? "   session " + (run.session + 1) + " of 2" : "");
+
+    el["t-topic"].textContent = topicMeta(q.topic).short;
 
     renderStem(q);
 
@@ -871,8 +1077,10 @@
     buildTopicPickers();
     wire();
     wirePlan();
+    wireSync();
     startTimer();
     show("home");
+    if (store.key) syncNow();
   }
 
   function refreshHome() {
@@ -1191,10 +1399,13 @@
 
   window.CFA_COMPANION = {                     // handles for the test harness
     clock: function () {
-      return { counting: counting(), sec: store.time.sec,
-               today: store.time.days[today()] || 0 };
+      return { counting: counting(), sec: totalSeconds(), today: daySeconds(today()) };
     },
     goIdle: function () { lastTouch = 0; },
+    sync: function () { return syncNow(); },
+    setKey: function (k) { store.key = k; save(); },
+    dump: function () { return shareable(); },
+    merge: mergeState,
     peek: function () {
       return {
         mode: run && run.mode,
