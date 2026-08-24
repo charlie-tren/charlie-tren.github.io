@@ -44,5 +44,151 @@
       "This is fixed cost divided by operating income, 600,000 / 400,000. Leverage compares contribution with operating income, not fixed cost with it.",
       ""
     ]
+  },
+  {
+    "id": "ci-004",
+    "ref": "Net present value",
+    "calc": true,
+    "stem": "A project requires an outlay of USD1,000,000 today and is expected to generate USD400,000 at the end of each of the next three years. At a cost of capital of 8.0%, its net present value is closest to:",
+    "choices": ["negative USD31,000", "positive USD31,000", "positive USD200,000"],
+    "answer": 1,
+    "solution": "The three-year annuity factor at 8.0% is 2.5771, so the present value of the inflows is 400,000 x 2.5771 = USD1,030,800. Net of the outlay, the net present value is about positive USD31,000, so the project adds value.",
+    "distractors": [
+      "This has the sign the wrong way round. The discounted inflows exceed the outlay.",
+      "",
+      "This is the undiscounted sum of the cash flows less the outlay, 1,200,000 - 1,000,000, which ignores the time value of money."
+    ]
+  },
+  {
+    "id": "ci-005",
+    "ref": "The payback period",
+    "calc": false,
+    "stem": "The main shortcoming of the payback period as a capital budgeting criterion is most likely that it:",
+    "choices": [
+      "ignores the time value of money and all cash flows after the payback point.",
+      "cannot be calculated where cash flows are uneven.",
+      "always produces the same ranking as net present value."
+    ],
+    "answer": 0,
+    "solution": "Payback treats a currency unit received in year four as equal to one received today, and it stops counting once the outlay is recovered. A long-lived project with strong later cash flows can therefore be rejected in favour of a short-lived one.",
+    "distractors": [
+      "",
+      "Uneven cash flows are handled easily by accumulating them until the outlay is recovered.",
+      "The two criteria frequently disagree, which is the point of the criticism."
+    ]
+  },
+  {
+    "id": "ci-006",
+    "ref": "Cost of preferred equity",
+    "calc": true,
+    "stem": "A perpetual preferred share pays an annual dividend of USD5.00 and trades at USD62.50. The cost of this preferred equity is closest to:",
+    "choices": ["8.00%", "12.50%", "6.25%"],
+    "answer": 0,
+    "solution": "For a perpetual preferred share the cost is the dividend divided by the price: 5.00 / 62.50 = 8.00%. There is no growth term, because the dividend is fixed.",
+    "distractors": [
+      "",
+      "This divides the price by the dividend and misplaces the decimal, or otherwise inverts the ratio.",
+      "This divides the dividend by 80, or applies the dividend to a different price."
+    ]
+  },
+  {
+    "id": "ci-007",
+    "ref": "Cash conversion cycle",
+    "calc": true,
+    "stem": "A company reports days sales outstanding of 45, days of inventory on hand of 60 and days payables outstanding of 30. Its cash conversion cycle is closest to:",
+    "choices": ["75 days", "105 days", "135 days"],
+    "answer": 0,
+    "solution": "The cash conversion cycle is days of inventory plus days sales outstanding less days payables outstanding: 60 + 45 - 30 = 75 days. It measures how long cash is tied up between paying suppliers and collecting from customers.",
+    "distractors": [
+      "",
+      "This omits the payables benefit. Supplier credit shortens the cycle because the company holds the cash for longer.",
+      "This adds all three figures rather than deducting payables."
+    ]
+  },
+  {
+    "id": "ci-008",
+    "ref": "Capital structure without taxes",
+    "calc": false,
+    "stem": "Under the Modigliani and Miller propositions in a world with no taxes and no bankruptcy costs, an increase in a company's use of debt will most likely:",
+    "choices": [
+      "reduce the weighted average cost of capital, because debt is cheaper than equity.",
+      "leave the weighted average cost of capital unchanged, as the cost of equity rises to offset it.",
+      "increase the weighted average cost of capital, because financial risk rises."
+    ],
+    "answer": 1,
+    "solution": "Adding debt does put more weight on the cheaper source, but it also concentrates the business risk onto a smaller equity base, so the cost of equity rises by exactly enough to offset it. The overall cost of capital, and the value of the firm, are unchanged.",
+    "distractors": [
+      "This is the intuition the propositions were written to correct. It ignores what leverage does to the cost of equity.",
+      "",
+      "Financial risk does rise, but it is borne by equity holders and shows up in their required return rather than in the overall cost of capital."
+    ]
+  },
+  {
+    "id": "ci-009",
+    "ref": "Dividends and share repurchases",
+    "calc": false,
+    "stem": "A company with surplus cash chooses a share repurchase over a special dividend of the same amount. Compared with the dividend, the repurchase will most likely leave:",
+    "choices": [
+      "shareholders' total wealth unchanged, absent taxes and signalling effects.",
+      "shareholders better off, because the share price must rise.",
+      "shareholders worse off, because they receive no cash."
+    ],
+    "answer": 0,
+    "solution": "Both routes return the same cash. A dividend pays every holder directly, while a repurchase pays only the sellers and leaves the remaining holders with a larger share of a smaller company. Ignoring taxes and any signal, total wealth is the same either way.",
+    "distractors": [
+      "",
+      "Earnings per share may rise, but the company is also smaller by the cash spent. There is no free gain in the exchange.",
+      "Holders who want cash can sell into the buyback, so no one is deprived of liquidity."
+    ]
+  },
+  {
+    "id": "ci-010",
+    "ref": "Short-term funding sources",
+    "calc": false,
+    "stem": "A company with a strong investment grade rating needs to fund a seasonal working capital swing at the lowest cost. Its most appropriate source is most likely:",
+    "choices": [
+      "commercial paper issued into the money market.",
+      "a drawn bank term loan with a five-year maturity.",
+      "issuing new equity."
+    ],
+    "answer": 0,
+    "solution": "Commercial paper is short-dated unsecured funding available to highly rated issuers at rates close to the money market, which matches the tenor of a seasonal need. Rating matters because weaker issuers cannot access the market on attractive terms.",
+    "distractors": [
+      "",
+      "A five-year loan funds a few weeks of need for years, and carries a higher rate for the term the company does not require.",
+      "Equity is the most expensive form of funding, and issuing it to cover a seasonal swing is permanent capital for a temporary need."
+    ]
+  },
+  {
+    "id": "ci-011",
+    "ref": "Degree of total leverage",
+    "calc": true,
+    "stem": "A company has a degree of operating leverage of 2.50 and a degree of financial leverage of 1.60. A 5% increase in unit sales will most likely change net income by closest to:",
+    "choices": ["8.0%", "13.0%", "20.0%"],
+    "answer": 2,
+    "solution": "Total leverage is the product of the two: 2.50 x 1.60 = 4.00. A 5% rise in units therefore lifts net income by about 5% x 4.00 = 20%. Leverage multiplies in both directions, which is why the same structure is dangerous on the way down.",
+    "distractors": [
+      "This applies financial leverage alone, 5% x 1.60.",
+      "This adds the two leverage measures rather than multiplying them.",
+      ""
+    ]
+  },
+  {
+    "id": "ci-012",
+    "ref": "Corporate governance",
+    "calc": false,
+    "stem": "A board is composed almost entirely of executives, with the chief executive also serving as chair. The governance concern this most likely raises is that:",
+    "choices": [
+      "the board lacks the independence to challenge management on behalf of shareholders.",
+      "the board will lack the operational knowledge to make informed decisions.",
+      "executive remuneration will be set too low to retain talent."
+    ],
+    "answer": 0,
+    "solution": "The board's central function is to hold management to account. A board drawn from management, chaired by the chief executive, is being asked to supervise itself, which is why codes call for a majority of independent directors and separation of the chair and chief executive roles.",
+    "distractors": [
+      "",
+      "Operational knowledge is the one thing such a board would have in abundance. Independence is what it lacks.",
+      "The risk runs the other way: a board dominated by executives is more likely to approve generous pay."
+    ]
   }
 ]

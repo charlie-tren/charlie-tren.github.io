@@ -44,5 +44,159 @@
       "",
       "Customisation is the advantage of a forward. Futures are standardised as to size, quality and delivery date so they can trade on an exchange."
     ]
+  },
+  {
+    "id": "dv-004",
+    "ref": "Intrinsic value and time value",
+    "calc": true,
+    "stem": "A call option with a strike of USD50 trades at a premium of USD8.00 when the underlying share is at USD56. The time value of the option is closest to:",
+    "choices": ["USD2.00", "USD6.00", "USD8.00"],
+    "answer": 0,
+    "solution": "Intrinsic value is the payoff from immediate exercise, 56 - 50 = USD6.00. The premium is USD8.00, so the remaining USD2.00 is time value, which decays to zero at expiry.",
+    "distractors": [
+      "",
+      "This is the intrinsic value rather than the time value.",
+      "This is the whole premium, which would be time value only for an option with no intrinsic value."
+    ]
+  },
+  {
+    "id": "dv-005",
+    "ref": "Breakeven on a long put",
+    "calc": true,
+    "stem": "An investor buys a put with a strike of USD40 for a premium of USD3.00. Ignoring transaction costs, the share price at expiry at which the position breaks even is closest to:",
+    "choices": ["USD37.00", "USD40.00", "USD43.00"],
+    "answer": 0,
+    "solution": "The put pays 40 less the share price at expiry, and the investor paid 3.00 for it, so the position breaks even when the share is at 37.00. Below that the put is profitable, and the maximum loss is the premium.",
+    "distractors": [
+      "",
+      "At the strike the put expires worthless and the investor has lost the full premium.",
+      "This adds the premium to the strike, which is the breakeven on a long call rather than a long put."
+    ]
+  },
+  {
+    "id": "dv-006",
+    "ref": "Covered call",
+    "calc": false,
+    "stem": "An investor who owns a share writes a call on it with a strike above the current price. Compared with holding the share alone, the position most likely has:",
+    "choices": [
+      "a higher maximum gain and a lower maximum loss.",
+      "a capped maximum gain and a maximum loss reduced by the premium.",
+      "an unlimited maximum gain and an unchanged maximum loss."
+    ],
+    "answer": 1,
+    "solution": "Writing the call sells away the upside beyond the strike, so the gain is capped there plus the premium received. The premium also cushions a fall, so the maximum loss is the share price less the premium. It is a trade of upside for income.",
+    "distractors": [
+      "The maximum gain is lower, not higher, because the upside above the strike belongs to the option buyer.",
+      "",
+      "Selling the call removes the unlimited upside, which is the defining feature of the strategy."
+    ]
+  },
+  {
+    "id": "dv-007",
+    "ref": "Protective put",
+    "calc": false,
+    "stem": "An investor holding a share buys a put on it with a strike near the current price. The position is best described as economically equivalent to:",
+    "choices": [
+      "buying insurance on the holding, with the premium as the cost of cover.",
+      "selling the share and buying a call, which requires no premium.",
+      "a risk-free position, because the downside is eliminated."
+    ],
+    "answer": 0,
+    "solution": "The put sets a floor on the value of the holding, and the premium is what the floor costs. Like any insurance it reduces expected return by the premium in exchange for removing the tail.",
+    "distractors": [
+      "",
+      "Holding cash plus a call does replicate the payoff shape, but the call itself costs a premium, so it is not free.",
+      "The downside is floored at the strike, not eliminated, and the premium itself is at risk."
+    ]
+  },
+  {
+    "id": "dv-008",
+    "ref": "Interest rate swaps",
+    "calc": false,
+    "stem": "A borrower with floating rate debt enters a swap to pay fixed and receive floating on the same notional. If reference rates subsequently rise, the borrower's position will most likely show:",
+    "choices": [
+      "a gain on the swap, offsetting the higher cost of the underlying debt.",
+      "a loss on the swap, compounding the higher cost of the underlying debt.",
+      "no change, because a swap has zero value at inception."
+    ],
+    "answer": 0,
+    "solution": "Paying fixed and receiving floating gains value as rates rise, because the floating leg received is worth more against a fixed leg that does not move. That gain is the point of the hedge: it offsets the increased interest on the floating rate debt.",
+    "distractors": [
+      "",
+      "This describes a receive-fixed position, which is exposed to rising rates rather than protected from them.",
+      "Zero value applies at inception only. The swap acquires value as rates move away from the fixed rate struck."
+    ]
+  },
+  {
+    "id": "dv-009",
+    "ref": "Swap value at inception",
+    "calc": false,
+    "stem": "The fixed rate on a newly agreed interest rate swap is set so that the value of the contract at inception is most likely:",
+    "choices": [
+      "zero, because the present values of the two legs are equal.",
+      "positive to the fixed rate payer, who takes on more risk.",
+      "equal to the notional multiplied by the fixed rate."
+    ],
+    "answer": 0,
+    "solution": "The par swap rate is the fixed rate that makes the present value of the fixed leg equal to the present value of the expected floating leg, so neither side pays the other at the outset. Any departure from that rate is settled with an upfront payment.",
+    "distractors": [
+      "",
+      "Neither side has an advantage at inception, which is what setting the rate at par achieves.",
+      "The notional is never exchanged on an interest rate swap. It is a reference amount for calculating the payments."
+    ]
+  },
+  {
+    "id": "dv-010",
+    "ref": "Forwards against options",
+    "calc": false,
+    "stem": "The difference between buying a forward and buying a call option on the same underlying is most likely that the option buyer:",
+    "choices": [
+      "has the right but not the obligation to transact, and pays a premium for it.",
+      "has the obligation to transact, but at a better price.",
+      "faces greater downside, because options expire worthless."
+    ],
+    "answer": 0,
+    "solution": "A forward commits both parties, and costs nothing at inception. An option gives its buyer a choice, which is why it has to be paid for. The premium is the price of being able to walk away.",
+    "distractors": [
+      "",
+      "The obligation belongs to the forward. An option buyer is never compelled to exercise.",
+      "The option buyer's loss is limited to the premium, whereas the forward buyer's loss is unbounded as the price falls."
+    ]
+  },
+  {
+    "id": "dv-011",
+    "ref": "Credit default swaps",
+    "calc": false,
+    "stem": "An investor buys protection on a corporate issuer through a credit default swap. The position will most likely gain in value if:",
+    "choices": [
+      "the issuer's credit quality deteriorates and spreads widen.",
+      "the issuer's credit quality improves and spreads tighten.",
+      "risk-free interest rates rise while spreads are unchanged."
+    ],
+    "answer": 0,
+    "solution": "The protection buyer pays a periodic premium and receives a payout on a credit event, so the position behaves like a short position in the issuer's credit. Widening spreads mean the protection now costs more than the buyer is paying, which is a gain.",
+    "distractors": [
+      "",
+      "Tightening spreads make the protection worth less than the premium being paid, which is a loss to the buyer.",
+      "A credit default swap is designed to isolate credit risk from interest rate risk, so a move in risk-free rates alone has little effect."
+    ]
+  },
+  {
+    "id": "dv-012",
+    "ref": "Option value and volatility",
+    "calc": false,
+    "stem": "Holding everything else constant, an increase in the volatility of the underlying asset will most likely:",
+    "choices": [
+      "increase the value of a call and reduce the value of a put.",
+      "increase the value of both a call and a put.",
+      "reduce the value of both a call and a put."
+    ],
+    "answer": 1,
+    "solution": "An option holder gains from favourable moves and can walk away from unfavourable ones, so a wider distribution of outcomes is worth more whichever direction the option points. Volatility raises call and put values alike.",
+    "distractors": [
+      "This treats volatility as directional. It is not: the asymmetry of the payoff means dispersion helps both.",
+      "",
+      "Higher volatility never reduces option value, because the downside is already truncated at the premium paid."
+    ]
   }
 ]

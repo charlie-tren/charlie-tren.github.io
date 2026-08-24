@@ -44,5 +44,159 @@
       "",
       "This divides by a standard error expressed in the wrong units, inflating the statistic tenfold."
     ]
+  },
+  {
+    "id": "qm-004",
+    "ref": "Effective annual rate",
+    "calc": true,
+    "stem": "A loan carries a stated annual rate of 6.0% compounded quarterly. Its effective annual rate is closest to:",
+    "choices": ["6.00%", "6.14%", "6.18%"],
+    "answer": 1,
+    "solution": "The periodic rate is 6.0% / 4 = 1.5%, so the effective annual rate is (1.015)^4 - 1 = 6.14%. Compounding within the year lifts the effective rate above the stated rate.",
+    "distractors": [
+      "This is the stated rate, which ignores compounding within the year.",
+      "",
+      "This is the continuously compounded equivalent, exp(0.06) - 1, which is the limit as compounding frequency rises without bound rather than the quarterly figure."
+    ]
+  },
+  {
+    "id": "qm-005",
+    "ref": "Present value of an ordinary annuity",
+    "calc": true,
+    "stem": "An investment pays USD5,000 at the end of each year for ten years. At a discount rate of 6.0%, the present value of the payments is closest to:",
+    "choices": ["USD36,800", "USD39,008", "USD50,000"],
+    "answer": 0,
+    "solution": "The annuity factor is [1 - (1.06)^-10] / 0.06 = 7.3601, so the present value is 5,000 x 7.3601 = USD36,800. The payments arrive at each year end, which makes this an ordinary annuity.",
+    "distractors": [
+      "",
+      "This is the annuity due value, 36,800 x 1.06, which assumes the first payment arrives today rather than in a year.",
+      "This is the sum of the undiscounted payments."
+    ]
+  },
+  {
+    "id": "qm-006",
+    "ref": "Geometric and arithmetic mean return",
+    "calc": true,
+    "stem": "A portfolio returns positive 50% in one year and negative 50% in the next. The compound annual rate of return over the two years is closest to:",
+    "choices": ["negative 13.4%", "0.0%", "negative 25.0%"],
+    "answer": 0,
+    "solution": "Two currency units become 1.50 then 0.75, so the cumulative return is negative 25% over two years. The compound annual rate is the geometric mean: sqrt(1.50 x 0.50) - 1 = sqrt(0.75) - 1 = negative 13.4%. The arithmetic mean of 0% describes neither year's outcome nor the ending wealth.",
+    "distractors": [
+      "",
+      "This is the arithmetic mean of the two returns. It always exceeds the geometric mean where returns vary, and it does not tie back to ending wealth.",
+      "This is the cumulative two-year return rather than the annual rate."
+    ]
+  },
+  {
+    "id": "qm-007",
+    "ref": "Coefficient of variation",
+    "calc": true,
+    "stem": "A fund has an average annual return of 8.0% and a standard deviation of returns of 12.0%. Its coefficient of variation is closest to:",
+    "choices": ["0.67", "1.50", "4.00"],
+    "answer": 1,
+    "solution": "The coefficient of variation is the standard deviation divided by the mean: 12.0 / 8.0 = 1.50. It measures dispersion per unit of return, so a lower figure is preferred when comparing investments.",
+    "distractors": [
+      "This inverts the ratio, dividing the mean by the standard deviation, which is a return-per-unit-of-risk measure rather than the coefficient of variation.",
+      "",
+      "This subtracts rather than divides, or otherwise mixes the two figures. The measure is a simple ratio."
+    ]
+  },
+  {
+    "id": "qm-008",
+    "ref": "Confidence interval for a mean",
+    "calc": true,
+    "stem": "A sample of 64 observations has a mean return of 10.0% and a standard deviation of 4.0%. Using a critical value of 1.96, the 95% confidence interval for the population mean is closest to:",
+    "choices": ["9.02% to 10.98%", "9.50% to 10.50%", "2.16% to 17.84%"],
+    "answer": 0,
+    "solution": "The standard error is 4.0% / sqrt(64) = 0.5%. The interval is 10.0% plus or minus 1.96 x 0.5% = 0.98%, so 9.02% to 10.98%.",
+    "distractors": [
+      "",
+      "This uses one standard error either side rather than 1.96 of them, which gives roughly a 68% interval.",
+      "This uses the sample standard deviation in place of the standard error, so the interval describes the spread of individual observations rather than the precision of the mean."
+    ]
+  },
+  {
+    "id": "qm-009",
+    "ref": "Type I and Type II error",
+    "calc": false,
+    "stem": "A researcher fails to reject a null hypothesis that is in fact false. This outcome is best described as:",
+    "choices": ["a Type I error.", "a Type II error.", "the power of the test."],
+    "answer": 1,
+    "solution": "A Type II error is failing to reject a false null. A Type I error is the opposite: rejecting a null that is true, the probability of which is the chosen level of significance.",
+    "distractors": [
+      "This is rejecting a true null. Its probability is the significance level the researcher sets.",
+      "",
+      "Power is the probability of correctly rejecting a false null, so it is one minus the probability of a Type II error rather than the error itself."
+    ]
+  },
+  {
+    "id": "qm-010",
+    "ref": "Total probability",
+    "calc": true,
+    "stem": "An analyst assigns a 30% probability to a recession next year. She estimates the probability that a bond defaults at 20% if a recession occurs and 5% if it does not. The unconditional probability of default is closest to:",
+    "choices": ["9.5%", "12.5%", "25.0%"],
+    "answer": 0,
+    "solution": "Weight each conditional probability by the probability of the scenario: 0.30 x 0.20 + 0.70 x 0.05 = 0.060 + 0.035 = 0.095, or 9.5%.",
+    "distractors": [
+      "",
+      "This is the simple average of the two conditional probabilities, which ignores that the recession scenario carries only 30% weight.",
+      "This adds the two conditional probabilities. Probabilities of mutually exclusive scenarios are weighted, not summed."
+    ]
+  },
+  {
+    "id": "qm-011",
+    "ref": "Standard deviation of a discrete distribution",
+    "calc": true,
+    "stem": "A holding returns positive 20% with probability 0.25, positive 5% with probability 0.50, and negative 10% with probability 0.25. The standard deviation of the return is closest to:",
+    "choices": ["7.50%", "10.61%", "12.25%"],
+    "answer": 1,
+    "solution": "The expected return is 0.25(20) + 0.50(5) + 0.25(-10) = 5.0%. Deviations are 15, 0 and negative 15, so the variance is 0.25(225) + 0.50(0) + 0.25(225) = 112.5 and the standard deviation is sqrt(112.5) = 10.61%.",
+    "distractors": [
+      "This is the probability-weighted absolute deviation rather than the square root of the weighted squared deviations.",
+      "",
+      "This takes the range of outcomes rather than the dispersion around the mean."
+    ]
+  },
+  {
+    "id": "qm-012",
+    "ref": "Normal distribution probability",
+    "calc": true,
+    "stem": "Annual returns on a portfolio are approximately normally distributed with a mean of 8.0% and a standard deviation of 12.0%. The probability of a return below negative 4.0% in a given year is closest to:",
+    "choices": ["2.3%", "15.9%", "34.1%"],
+    "answer": 1,
+    "solution": "The z-score is (-4.0 - 8.0) / 12.0 = -1.00, so the question asks for the area more than one standard deviation below the mean. For a normal distribution that is about 15.9%.",
+    "distractors": [
+      "This is the area beyond two standard deviations, which would correspond to a return below negative 16%.",
+      "",
+      "This is the area between the mean and one standard deviation below it, not the tail beyond it."
+    ]
+  },
+  {
+    "id": "qm-013",
+    "ref": "Standard error and sample size",
+    "calc": false,
+    "stem": "An analyst increases her sample from 100 observations to 400, drawn from the same population. The standard error of the sample mean will most likely:",
+    "choices": ["halve.", "fall to one quarter of its former value.", "be unchanged, because the population standard deviation has not changed."],
+    "answer": 0,
+    "solution": "The standard error is the population standard deviation divided by the square root of the sample size. Quadrupling the sample doubles the square root, so the standard error halves. Precision improves with the square root of sample size, not in proportion to it.",
+    "distractors": [
+      "",
+      "This assumes the standard error falls in proportion to the sample size. It falls with the square root, which is why large gains in precision get expensive.",
+      "The population standard deviation is indeed unchanged, but the standard error also depends on sample size, and that is what moved."
+    ]
+  },
+  {
+    "id": "qm-014",
+    "ref": "Coefficient of determination",
+    "calc": true,
+    "stem": "A simple linear regression of a fund's returns on its benchmark's returns produces a coefficient of determination of 0.36 and a positive slope coefficient. The correlation between the two return series is closest to:",
+    "choices": ["0.13", "0.36", "0.60"],
+    "answer": 2,
+    "solution": "In a simple linear regression the coefficient of determination is the square of the correlation, so the correlation is sqrt(0.36) = 0.60. The positive slope settles the sign, since the square root alone leaves it ambiguous.",
+    "distractors": [
+      "This squares the coefficient of determination rather than taking its square root.",
+      "This reports the coefficient of determination itself, which is the share of variation explained rather than the correlation.",
+      ""
+    ]
   }
 ]

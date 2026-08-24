@@ -44,5 +44,173 @@
       "",
       "Under purchasing power parity it is the nominal exchange rate that adjusts. A stable rate would leave the real exchange rate drifting indefinitely."
     ]
+  },
+  {
+    "id": "ec-004",
+    "ref": "Covered interest rate parity",
+    "calc": true,
+    "stem": "The spot rate is USD0.6500 per AUD. One-year interest rates are 4.00% in Australian dollars and 1.50% in US dollars. The one-year forward rate consistent with covered interest rate parity is closest to:",
+    "choices": ["USD0.6344 per AUD", "USD0.6500 per AUD", "USD0.6659 per AUD"],
+    "answer": 0,
+    "solution": "The forward adjusts by the ratio of the two interest factors: 0.6500 x (1.015 / 1.04) = USD0.6344. The higher-yielding currency trades at a forward discount, which is exactly what removes the arbitrage from borrowing in the low-rate currency and lending in the high-rate one.",
+    "distractors": [
+      "",
+      "The forward equals the spot only where the two interest rates are equal.",
+      "This applies the ratio the wrong way up, 0.6500 x (1.04 / 1.015), which would have the high-yielding currency at a forward premium and leave a riskless profit on the table."
+    ]
+  },
+  {
+    "id": "ec-005",
+    "ref": "GDP by the expenditure approach",
+    "calc": true,
+    "stem": "An economy reports consumption of 620, gross investment of 190, government spending on goods and services of 250, exports of 180 and imports of 210. GDP by the expenditure approach is closest to:",
+    "choices": ["1,030", "1,060", "1,450"],
+    "answer": 0,
+    "solution": "GDP is consumption plus investment plus government spending plus net exports: 620 + 190 + 250 + (180 - 210) = 1,030. Imports are deducted because they were produced elsewhere.",
+    "distractors": [
+      "",
+      "This adds net exports with the sign reversed, treating the trade deficit as an addition.",
+      "This adds imports to the other components rather than subtracting them."
+    ]
+  },
+  {
+    "id": "ec-006",
+    "ref": "The GDP deflator",
+    "calc": true,
+    "stem": "Nominal GDP is 550 and real GDP measured in base-year prices is 500. The GDP deflator is closest to:",
+    "choices": ["90.9", "110.0", "150.0"],
+    "answer": 1,
+    "solution": "The deflator is nominal GDP divided by real GDP, times 100: 550 / 500 x 100 = 110.0. Prices have risen 10% since the base year.",
+    "distractors": [
+      "This inverts the ratio, dividing real by nominal.",
+      "",
+      "This treats the difference between the two figures as the index level."
+    ]
+  },
+  {
+    "id": "ec-007",
+    "ref": "Labour market measurement",
+    "calc": false,
+    "stem": "A worker has given up looking for a job after a long unsuccessful search but would take one if offered. In official statistics this person is most likely counted as:",
+    "choices": [
+      "unemployed, because they want to work.",
+      "outside the labour force, so the unemployment rate does not capture them.",
+      "underemployed, and included in the unemployment rate at a partial weight."
+    ],
+    "answer": 1,
+    "solution": "The unemployment rate counts only those actively seeking work. A discouraged worker who has stopped searching drops out of the labour force entirely, which is why the headline rate can fall for reasons that are not good news.",
+    "distractors": [
+      "Wanting work is not sufficient. Active search is the test.",
+      "",
+      "Underemployment describes people working fewer hours or below their skill level. It is measured separately and not as a fraction of the unemployment rate."
+    ]
+  },
+  {
+    "id": "ec-008",
+    "ref": "Bias in consumer price indices",
+    "calc": false,
+    "stem": "A consumer price index measured against a fixed basket of goods will most likely overstate inflation because consumers:",
+    "choices": [
+      "substitute toward goods whose prices have risen less.",
+      "buy more of every good as incomes rise.",
+      "delay purchases when prices rise."
+    ],
+    "answer": 0,
+    "solution": "A fixed basket assumes buying patterns do not change, but households shift away from what has become relatively expensive. Ignoring that substitution overstates the cost of maintaining a given standard of living.",
+    "distractors": [
+      "",
+      "Rising incomes change the level of spending rather than creating the substitution bias in the index.",
+      "Deferring purchases affects the timing of demand, not the measured price of the fixed basket."
+    ]
+  },
+  {
+    "id": "ec-009",
+    "ref": "Monetary policy transmission",
+    "calc": false,
+    "stem": "A central bank raises its policy rate to slow demand. The transmission channel that operates most directly on household spending is a rise in:",
+    "choices": [
+      "the exchange rate, which lowers the cost of imports.",
+      "borrowing costs on mortgages and consumer credit.",
+      "government bond issuance, which absorbs private savings."
+    ],
+    "answer": 1,
+    "solution": "Higher policy rates feed through to lending rates, which raises debt service and reduces the capacity and appetite to borrow. In heavily mortgaged economies this is the fastest and largest channel to household demand.",
+    "distractors": [
+      "A stronger currency does tighten conditions, but it works through traded goods prices and exporters rather than directly on household budgets.",
+      "",
+      "Bond issuance is a fiscal decision. It is not a monetary policy transmission channel."
+    ]
+  },
+  {
+    "id": "ec-010",
+    "ref": "Automatic stabilisers",
+    "calc": false,
+    "stem": "During a recession, government tax receipts fall and unemployment benefit payments rise without any new legislation. These effects are best described as:",
+    "choices": [
+      "discretionary fiscal stimulus.",
+      "automatic stabilisers.",
+      "monetary accommodation."
+    ],
+    "answer": 1,
+    "solution": "Automatic stabilisers are features of the existing tax and transfer system that cushion demand as the cycle turns, with no decision required. They act faster than discretionary measures precisely because nothing has to be legislated.",
+    "distractors": [
+      "Discretionary stimulus requires a deliberate new decision, which is what this scenario excludes.",
+      "",
+      "These are fiscal flows through the budget, not central bank actions."
+    ]
+  },
+  {
+    "id": "ec-011",
+    "ref": "Business cycle indicators",
+    "calc": false,
+    "stem": "An analyst observes that the ratio of inventories to sales has risen sharply across manufacturers. This is most consistent with an economy:",
+    "choices": [
+      "entering a downturn, as sales fall faster than production is cut.",
+      "entering an expansion, as firms build stock ahead of demand.",
+      "at trend, since the ratio is stable over the cycle."
+    ],
+    "answer": 0,
+    "solution": "A rising inventory to sales ratio usually reflects unsold output rather than deliberate stockbuilding, because production plans lag a fall in demand. Firms then cut output to clear stock, which deepens the downturn.",
+    "distractors": [
+      "",
+      "Deliberate stockbuilding does happen, but at a turning point the ratio rises because the denominator has fallen, which is the more common reading.",
+      "The ratio is distinctly cyclical, which is why it is watched."
+    ]
+  },
+  {
+    "id": "ec-012",
+    "ref": "Market structure",
+    "calc": false,
+    "stem": "A firm faces a horizontal demand curve at the prevailing market price and sells an identical product to many others. Its long-run economic profit is most likely:",
+    "choices": [
+      "positive, sustained by cost advantages.",
+      "zero, as entry drives price to the minimum of average total cost.",
+      "negative, because it has no pricing power."
+    ],
+    "answer": 1,
+    "solution": "A horizontal demand curve and an identical product describe perfect competition. Free entry means any economic profit attracts capacity until price equals minimum average total cost, leaving zero economic profit though the firm still earns its cost of capital.",
+    "distractors": [
+      "Sustained cost advantage would imply differentiation or a barrier, neither of which exists in this structure.",
+      "",
+      "Zero economic profit is not a loss. It means the firm earns exactly its opportunity cost of capital."
+    ]
+  },
+  {
+    "id": "ec-013",
+    "ref": "Comparative advantage",
+    "calc": false,
+    "stem": "Country A can produce both wheat and cloth using fewer resources than Country B. According to the theory of comparative advantage, mutually beneficial trade between them is most likely:",
+    "choices": [
+      "impossible, because Country A is more efficient at everything.",
+      "possible, provided their opportunity costs of the two goods differ.",
+      "possible only if Country B subsidises its producers."
+    ],
+    "answer": 1,
+    "solution": "Absolute advantage in both goods does not preclude gains from trade. What matters is the ratio at which each country gives up one good to produce the other, and where those opportunity costs differ both countries gain by specialising in the good they sacrifice least to make.",
+    "distractors": [
+      "This is the absolute advantage argument the theory of comparative advantage displaced.",
+      "",
+      "Subsidies distort the pattern of trade rather than creating the gains, which arise from differing opportunity costs."
+    ]
   }
 ]

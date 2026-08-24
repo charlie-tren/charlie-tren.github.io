@@ -40,5 +40,201 @@
       "Carried interest is the general partner's share of profits, typically 20%. It contributes to the early drag but is not the name of the pattern.",
       "A clawback obliges the general partner to return incentive fees already taken where later losses mean it was overpaid across the fund's life."
     ]
+  },
+  {
+    "id": "al-004",
+    "ref": "High water mark",
+    "calc": true,
+    "stem": "A fund charges a 20% incentive fee subject to a high water mark, and no management fee. Net asset value per unit falls from 100 to 80 in one year, then recovers to 105 the next. The incentive fee charged in the second year is closest to:",
+    "choices": ["1.00 per unit", "5.00 per unit", "0.00 per unit"],
+    "answer": 0,
+    "solution": "A high water mark means the fee applies only to gains above the previous peak of 100. The unit rose from 80 to 105, but only the 5 above the high water mark is fee-bearing: 20% of 5.00 = 1.00 per unit.",
+    "distractors": [
+      "",
+      "This charges 20% of the full 25 point recovery, which would have investors paying twice for the same ground.",
+      "There is a fee, because the unit finished above the previous peak. It would be nil had the recovery stopped at or below 100."
+    ]
+  },
+  {
+    "id": "al-005",
+    "ref": "Fund of funds fees",
+    "calc": false,
+    "stem": "An investor compares a single hedge fund charging 2 and 20 with a fund of hedge funds charging 1 and 10 on top of the same underlying managers. The main consequence of the fund of funds structure is most likely that:",
+    "choices": [
+      "fees are levied at two levels, so total costs are materially higher.",
+      "the incentive fee is lower, so total costs are materially lower.",
+      "costs are similar, because the outer layer replaces rather than adds to the inner fees."
+    ],
+    "answer": 0,
+    "solution": "The fund of funds fee sits on top of what the underlying managers charge, so the investor pays both layers. Diversification and manager selection are what the second layer buys, and they have to be worth the drag.",
+    "distractors": [
+      "",
+      "The outer incentive fee is lower in isolation, but it does not replace the underlying managers' fees.",
+      "The outer layer is additional, not substitutional. That is the defining feature of the structure."
+    ]
+  },
+  {
+    "id": "al-006",
+    "ref": "Lock-ups and redemption terms",
+    "calc": false,
+    "stem": "A hedge fund imposes a two-year lock-up and requires 90 days notice for redemptions thereafter. From the manager's perspective, the main purpose of these terms is most likely to:",
+    "choices": [
+      "allow illiquid positions to be held without being forced to sell into a redemption.",
+      "guarantee investors a minimum return over the lock-up period.",
+      "reduce the management fee by lowering administrative costs."
+    ],
+    "answer": 0,
+    "solution": "Redemption terms match the liquidity the fund offers to the liquidity of what it holds. Without them a strategy in less liquid instruments would face forced selling exactly when prices are worst, which harms the investors who stay as much as the manager.",
+    "distractors": [
+      "",
+      "Nothing about a lock-up guarantees a return. It restricts the investor's exit, which is the opposite of a protection.",
+      "Administrative savings are trivial next to the liquidity mismatch these terms exist to manage."
+    ]
+  },
+  {
+    "id": "al-007",
+    "ref": "Private equity strategies",
+    "calc": false,
+    "stem": "A fund acquires established, cash generative businesses using substantial debt, then improves operations before exiting. This strategy is best described as:",
+    "choices": ["venture capital.", "a leveraged buyout.", "a distressed debt strategy."],
+    "answer": 1,
+    "solution": "A leveraged buyout takes a mature business with predictable cash flows, which is what supports the borrowing, and seeks returns from debt paydown, operational improvement and exit multiple expansion.",
+    "distractors": [
+      "Venture capital funds early stage companies that have little or no cash flow and cannot support debt, and it accepts a high failure rate.",
+      "",
+      "A distressed strategy buys the obligations of companies already in difficulty, often to influence a restructuring rather than to run the business."
+    ]
+  },
+  {
+    "id": "al-008",
+    "ref": "Committed and drawn capital",
+    "calc": true,
+    "stem": "An investor commits USD20 million to a private equity fund. Three years in, the fund has called USD12 million and distributed USD5 million. The investor's remaining unfunded commitment is closest to:",
+    "choices": ["USD3 million", "USD8 million", "USD13 million"],
+    "answer": 1,
+    "solution": "The unfunded commitment is what has been promised but not yet called: 20 - 12 = USD8 million. Distributions received do not reduce the commitment, and the investor must keep the USD8 million available for future capital calls.",
+    "distractors": [
+      "This nets the distributions against the commitment, which confuses cash returned with capital still owed.",
+      "",
+      "This adds the distributions back to the unfunded amount."
+    ]
+  },
+  {
+    "id": "al-009",
+    "ref": "Net operating income",
+    "calc": true,
+    "stem": "A property generates gross rental income of USD3.0m, with vacancy losses of USD0.2m, operating expenses of USD0.9m, interest on the mortgage of USD0.6m and depreciation of USD0.4m. Net operating income is closest to:",
+    "choices": ["USD0.9m", "USD1.3m", "USD1.9m"],
+    "answer": 2,
+    "solution": "Net operating income is income after vacancy and operating expenses but before financing and depreciation: 3.0 - 0.2 - 0.9 = USD1.9m. Excluding interest is what makes the measure independent of how the property is funded.",
+    "distractors": [
+      "This deducts interest and depreciation as well, which is closer to a taxable income figure than to net operating income.",
+      "This deducts the interest but not depreciation.",
+      ""
+    ]
+  },
+  {
+    "id": "al-010",
+    "ref": "REITs and direct property",
+    "calc": false,
+    "stem": "Compared with owning commercial property directly, holding a listed real estate investment trust most likely offers:",
+    "choices": [
+      "greater liquidity, and a price that can diverge from the value of the underlying assets.",
+      "greater liquidity, and a price that tracks appraised asset value closely by construction.",
+      "less liquidity, but more precise exposure to a chosen property."
+    ],
+    "answer": 0,
+    "solution": "A listed trust trades daily, which is its main advantage over direct ownership, but the share price is set by the equity market and can sit at a substantial premium or discount to the appraised value of the portfolio.",
+    "distractors": [
+      "",
+      "Nothing forces the share price to appraised value. Persistent discounts are common.",
+      "A listed trust is more liquid, not less. Precise exposure to one building is an argument for direct ownership."
+    ]
+  },
+  {
+    "id": "al-011",
+    "ref": "Components of commodity futures return",
+    "calc": false,
+    "stem": "The total return on a fully collateralised long position in commodity futures is most accurately described as the sum of:",
+    "choices": [
+      "spot price return, roll return and collateral return.",
+      "spot price return and dividend income.",
+      "spot price return and the convenience yield."
+    ],
+    "answer": 0,
+    "solution": "A futures position earns the change in the price of the contract held, a roll return as each expiring contract is replaced by a later one, and interest on the collateral posted. Roll return is the component investors most often overlook.",
+    "distractors": [
+      "",
+      "Commodities pay no dividend, which is one reason the return decomposition differs from equities.",
+      "Convenience yield helps explain the shape of the futures curve rather than being a return the investor receives directly."
+    ]
+  },
+  {
+    "id": "al-012",
+    "ref": "Contango and roll return",
+    "calc": false,
+    "stem": "A commodity futures curve is in contango. For an investor holding a long position and rolling it forward each month, the roll return will most likely be:",
+    "choices": ["positive.", "negative.", "zero."],
+    "answer": 1,
+    "solution": "Contango means longer-dated contracts cost more than nearer ones, so each roll sells a cheaper expiring contract and buys a dearer one. That drag is a negative roll return, and over time it can overwhelm a flat spot price.",
+    "distractors": [
+      "A positive roll return comes from backwardation, where the curve slopes downward.",
+      "",
+      "The roll return is zero only where the curve is flat across the rolled maturities."
+    ]
+  },
+  {
+    "id": "al-013",
+    "ref": "Infrastructure investment",
+    "calc": false,
+    "stem": "Compared with a brownfield infrastructure investment, a greenfield project most likely carries:",
+    "choices": [
+      "higher construction and demand risk, with cash flows further in the future.",
+      "lower risk, because no operating history has to be improved on.",
+      "similar risk, since both are regulated assets."
+    ],
+    "answer": 0,
+    "solution": "Greenfield means building the asset, so the investor takes construction, cost overrun and untested demand risk before any revenue arrives. Brownfield assets already operate, with a revenue history to underwrite against.",
+    "distractors": [
+      "",
+      "Absence of an operating history is a source of uncertainty, not comfort.",
+      "Regulation shapes the return but does not equalise construction risk between a project that exists and one that does not."
+    ]
+  },
+  {
+    "id": "al-014",
+    "ref": "Appraisal-based valuation",
+    "calc": false,
+    "stem": "Returns for an unlisted property fund are calculated from periodic independent appraisals rather than transaction prices. Compared with a listed equivalent, the reported return series will most likely show:",
+    "choices": [
+      "higher measured volatility and higher correlation with equities.",
+      "lower measured volatility and lower correlation with equities.",
+      "similar volatility, since both reflect the same underlying assets."
+    ],
+    "answer": 1,
+    "solution": "Appraisals are infrequent and lag the market, which smooths the series and understates both volatility and correlation with traded assets. The diversification such a fund appears to offer is therefore partly a measurement artefact.",
+    "distractors": [
+      "The smoothing works the other way: it dampens the reported swings rather than amplifying them.",
+      "",
+      "The underlying assets may be similar, but how they are valued changes what the return series looks like, which is the point."
+    ]
+  },
+  {
+    "id": "al-015",
+    "ref": "Hedge fund index biases",
+    "calc": false,
+    "stem": "Reported returns on a hedge fund index built from voluntary manager submissions are most likely to be overstated because of:",
+    "choices": [
+      "survivorship and backfill bias.",
+      "the inclusion of management and incentive fees.",
+      "the use of monthly rather than daily pricing."
+    ],
+    "answer": 0,
+    "solution": "Managers who close after poor results drop out of the index, and those who join often bring a favourable history with them. Both effects push reported index returns above what an investor could have earned selecting managers in advance.",
+    "distractors": [
+      "",
+      "Fees reduce reported returns rather than overstating them.",
+      "Monthly pricing affects measured volatility and the timing of reported returns rather than biasing the level upward."
+    ]
   }
 ]

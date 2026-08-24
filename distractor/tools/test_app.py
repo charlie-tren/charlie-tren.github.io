@@ -259,6 +259,61 @@ def main() -> int:
         page.wait_for_selector("#report:not([hidden])")
         page.click("#r-done")
 
+        # --- the full mock, which only exists once the bank reaches 180 ---------
+        page.evaluate("() => localStorage.removeItem('distractor.v1')")
+        page.reload(wait_until="networkidle")
+        page.click("[data-mode='mock']")
+        page.wait_for_selector("#t-choices .choice")
+        peek = page.evaluate("() => window.DISTRACTOR.peek()")
+        check("the mock draws 180 questions", peek["length"] == 180, str(peek["length"]))
+        check("the mock opens in session 1", peek["session"] == 0)
+        check("the mock is strict", peek["strict"] is True)
+        pos = page.inner_text("#t-pos")
+        check("the mock counts within the session, not the whole paper",
+              "1 OF 90" in pos.upper() and "SESSION 1 OF 2" in pos.upper(), pos)
+        clock = page.inner_text("#t-clock")
+        check("the session clock starts at 2h15", clock.startswith("2:1"), clock)
+
+        # A weighted 180 must reproduce the exam's own split exactly, since the
+        # bank was authored to those targets.
+        topics = page.evaluate("() => window.DISTRACTOR.peek().topics")
+        counts = {t: topics.count(t) for t in set(topics)}
+        targets = page.evaluate(
+            "() => fetch('data/index.json').then(r => r.json())"
+            ".then(d => Object.fromEntries(d.topics.map(t => [t.key, t.target])))"
+        )
+        check("the mock matches the exam topic weights exactly", counts == targets,
+              f"got {counts}")
+
+        page.evaluate("() => window.DISTRACTOR.fill(true)")
+        page.wait_for_selector("#break:not([hidden])")
+        check("session 1 ends at the break screen", page.locator("#break").is_visible())
+        check("the break reports the session count",
+              page.inner_text("#br-count") == "90 of 90", page.inner_text("#br-count"))
+        check("session 1 is recorded at the break",
+              page.evaluate("() => window.DISTRACTOR.peek().attempts") == 90,
+              str(page.evaluate("() => window.DISTRACTOR.peek().attempts")))
+
+        page.click("#br-go")
+        page.wait_for_selector("#t-choices .choice")
+        peek = page.evaluate("() => window.DISTRACTOR.peek()")
+        check("session 2 starts at question 91", peek["idx"] == 90, str(peek["idx"]))
+        check("session 2 is flagged as the second session", peek["session"] == 1)
+        page.evaluate("() => window.DISTRACTOR.fill(true)")
+        page.wait_for_selector("#report:not([hidden])")
+        check("an all-correct mock scores 100%", page.inner_text("#r-pct") == "100%",
+              page.inner_text("#r-pct"))
+        check("the mock report covers the whole paper",
+              page.evaluate("() => document.querySelectorAll('#r-review .rq').length") == 180,
+              str(page.evaluate("() => document.querySelectorAll('#r-review .rq').length")))
+        check("all ten topics appear in the mock report",
+              page.evaluate("() => document.querySelectorAll('#r-topic .bar').length") == 10,
+              str(page.evaluate("() => document.querySelectorAll('#r-topic .bar').length")))
+        check("both sessions are recorded",
+              page.evaluate("() => window.DISTRACTOR.peek().attempts") == 180,
+              str(page.evaluate("() => window.DISTRACTOR.peek().attempts")))
+        page.click("#r-done")
+
         check("still no console errors", not errors, "; ".join(errors[:3]))
 
         if shots:

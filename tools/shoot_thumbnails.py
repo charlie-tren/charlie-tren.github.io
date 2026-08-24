@@ -63,6 +63,7 @@ SITES = {
     "woop-woop": "https://charlietrenorden.com/woop-woop/",
     "shortfall": "https://charlietrenorden.com/shortfall/",
     "pendulum": "https://charlietrenorden.com/pendulum/",
+    "distractor": "https://charlietrenorden.com/distractor/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -86,6 +87,9 @@ READY = {
     # Pendulum draws its charts from a megabyte of JSON after load. Without this
     # the shot lands on the loading state, which is a card showing nothing.
     "pendulum": "#area polygon",
+    # The mode list is static markup; the topic counts only appear once the
+    # question bank has been fetched, so they are what proves the page is ready.
+    "distractor": "#f-topics label",
 }
 READY_TIMEOUT = 30000
 

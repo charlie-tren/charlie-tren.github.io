@@ -14,6 +14,7 @@ DATA = pathlib.Path(__file__).resolve().parent.parent / "data"
 QUALIFIERS = [
     "most likely", "least likely", "best described", "most appropriate",
     "most accurate", "least appropriate", "least accurate", "closest to",
+    "most directly", "most consistent",
 ]
 
 # Forms the Level I exam does not use. Each is a regex against the lower-cased stem.
