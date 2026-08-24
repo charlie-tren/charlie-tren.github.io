@@ -35,6 +35,16 @@ def check(name, got, want=None):
           + ("" if want is None else f"  (want {want})"))
 
 
+def settings(page):
+    page.click("#to-settings")
+    page.wait_for_selector("#settings:not([hidden])")
+
+
+def home(page):
+    page.click("#from-settings")
+    page.wait_for_selector("#home:not([hidden])")
+
+
 def answer(page, n, choice=0):
     page.click("[data-mode='free']")
     page.click("#f-start")
@@ -58,12 +68,15 @@ def main() -> int:
 
         laptop = browser.new_context().new_page()
         laptop.goto(url, wait_until="networkidle")
+        settings(laptop)
         laptop.fill("#pl-key", key)
         laptop.click("#pl-keysave")
         laptop.wait_for_timeout(2500)
-        check("the key is accepted", laptop.inner_text("#pl-sync").startswith("synced"), True)
+        check("the key is accepted",
+              laptop.inner_text(".syncstate").startswith("synced"), True)
         laptop.fill("#pl-exam", "2027-02-20")
         laptop.dispatch_event("#pl-exam", "change")
+        home(laptop)
         answer(laptop, 3)
         laptop.evaluate("() => window.CFA_COMPANION.sync()")
         laptop.wait_for_timeout(3000)
@@ -74,9 +87,11 @@ def main() -> int:
         phone.goto(url, wait_until="networkidle")
         check("phone starts empty",
               phone.evaluate("() => window.CFA_COMPANION.peek().attempts"), 0)
+        settings(phone)
         phone.fill("#pl-key", key)
         phone.click("#pl-keysave")
         phone.wait_for_timeout(3500)
+        home(phone)
         check("phone pulled the answers",
               phone.evaluate("() => window.CFA_COMPANION.peek().attempts"), 3)
         check("phone pulled the exam date too",
@@ -101,6 +116,7 @@ def main() -> int:
         # A wrong key must see nothing, since the key is the whole boundary.
         stranger = browser.new_context().new_page()
         stranger.goto(url, wait_until="networkidle")
+        settings(stranger)
         stranger.fill("#pl-key", "z" + secrets.token_hex(12))
         stranger.click("#pl-keysave")
         stranger.wait_for_timeout(3000)

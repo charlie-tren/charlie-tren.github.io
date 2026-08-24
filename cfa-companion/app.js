@@ -21,7 +21,7 @@
   var committed = {};        // qid -> true, once recorded in a strict section
 
   var el = {};
-  ["home", "test", "break", "report", "progress", "history", "builder", "topicpick",
+  ["home", "test", "break", "report", "settings", "to-settings", "from-settings", "progress", "history", "builder", "topicpick",
    "modenote", "t-pos", "t-topic", "t-clock", "t-flag", "t-hl", "t-overview", "t-end", "t-stem",
    "t-choices", "t-feedback", "t-prev", "t-next", "t-ovpanel", "ov-grid", "ov-close",
    "b-topics", "b-count", "b-timed", "b-strict", "b-cancel", "f-topics", "f-start",
@@ -234,14 +234,20 @@
   }
 
   function paintSync(state, detail) {
-    var e = el["pl-sync"];
-    e.className = "syncstate" + (state === "bad" ? " bad" : state === "busy" ? " busy" : "");
-    if (!store.key) { e.textContent = "not syncing"; return; }
-    if (state === "busy") { e.textContent = "syncing"; return; }
-    if (state === "bad") { e.textContent = detail || "sync failed"; return; }
-    var ago = store.syncedAt ? Math.round((Date.now() - store.syncedAt) / 60000) : null;
-    e.textContent = ago === null ? "not synced yet"
-      : ago < 1 ? "synced just now" : "synced " + ago + "m ago";
+    var cls = "syncstate" + (state === "bad" ? " bad" : state === "busy" ? " busy" : "");
+    var text;
+    if (!store.key) text = "not syncing";
+    else if (state === "busy") text = "syncing";
+    else if (state === "bad") text = detail || "sync failed";
+    else {
+      var ago = store.syncedAt ? Math.round((Date.now() - store.syncedAt) / 60000) : null;
+      text = ago === null ? "not synced yet"
+        : ago < 1 ? "synced just now" : "synced " + ago + "m ago";
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".syncstate"), function (e) {
+      e.className = cls;
+      e.textContent = text;
+    });
   }
 
   function syncNow() {
@@ -300,6 +306,8 @@
   function wireSync() {
     el["pl-key"].value = store.key || "";
     paintSync("ok");
+    el["to-settings"].addEventListener("click", function () { show("settings"); });
+    el["from-settings"].addEventListener("click", function () { show("home"); });
 
     el["pl-keysave"].addEventListener("click", function () {
       var v = el["pl-key"].value.trim();
@@ -1170,7 +1178,9 @@
   }
 
   function show(name) {
-    ["home", "test", "break", "report"].forEach(function (s) { el[s].hidden = s !== name; });
+    ["home", "test", "break", "report", "settings"].forEach(function (s) {
+      el[s].hidden = s !== name;
+    });
     el["t-ovpanel"].hidden = true;
     if (name === "home") { refreshHome(); paintPlan(); }
   }

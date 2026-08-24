@@ -49,25 +49,9 @@
         <div class="stat"><span class="figure" id="pl-today">0m</span><span class="cap">today</span></div>
       </div>
       <div class="pbar"><span id="pl-bar"></span></div>
-      <div class="planrow">
-        <label for="pl-exam">Exam date</label>
-        <input type="date" id="pl-exam">
-        <label for="pl-target">Target</label>
-        <input type="number" id="pl-target" min="1" max="2000" step="10" value="300">
-        <span class="unit">hours</span>
-      </div>
-      <div class="planrow">
-        <label for="pl-key">Sync key</label>
-        <input type="text" id="pl-key" autocomplete="off" spellcheck="false" placeholder="paste the key from your other device">
-        <button type="button" class="ghost small" id="pl-keysave">Use</button>
-        <button type="button" class="ghost small" id="pl-keynew">New key</button>
+      <div class="planfoot">
         <span class="syncstate" id="pl-sync">not syncing</span>
-      </div>
-      <div class="planrow">
-        <label for="pl-extra">Hours studied off the site</label>
-        <input type="number" id="pl-extra" min="0" max="24" step="0.25" placeholder="1.5">
-        <button type="button" class="ghost small" id="pl-addbtn">Add</button>
-        <button type="button" class="ghost small" id="pl-resetbtn">Reset the clock</button>
+        <button type="button" class="chip" id="to-settings">Settings</button>
       </div>
     </section>
 
@@ -129,7 +113,6 @@
       <h2>Where you stand</h2>
       <figure class="chart"><figcaption>Accuracy by topic, all attempts</figcaption><div id="h-topic"></div></figure>
       <figure class="chart"><figcaption>Median seconds a question, against the 90 second budget</figcaption><div id="h-pace"></div></figure>
-      <p class="reset"><button type="button" id="wipe" class="ghost small">Clear my history</button></p>
     </section>
   </section>
 
@@ -172,6 +155,42 @@
       </div>
       <div class="ovgrid" id="ov-grid"></div>
     </aside>
+  </section>
+
+  <!-- Settings -->
+  <section id="settings" class="screen" hidden>
+    <div class="testbar">
+      <span class="pos">Settings</span>
+      <span class="tbtns"><button type="button" class="chip" id="from-settings">Done</button></span>
+    </div>
+
+    <h2>Your exam</h2>
+    <div class="planrow">
+      <label for="pl-exam">Exam date</label>
+      <input type="date" id="pl-exam">
+      <label for="pl-target">Target</label>
+      <input type="number" id="pl-target" min="1" max="2000" step="10" value="300">
+      <span class="unit">hours</span>
+    </div>
+    <div class="planrow">
+      <label for="pl-key">Sync key</label>
+      <input type="text" id="pl-key" autocomplete="off" spellcheck="false" placeholder="paste the key from your other device">
+      <button type="button" class="ghost small" id="pl-keysave">Use</button>
+      <button type="button" class="ghost small" id="pl-keynew">New key</button>
+      <span class="syncstate">not syncing</span>
+    </div>
+    <div class="planrow">
+      <label for="pl-extra">Hours studied off the site</label>
+      <input type="number" id="pl-extra" min="0" max="24" step="0.25" placeholder="1.5">
+      <button type="button" class="ghost small" id="pl-addbtn">Add</button>
+      <button type="button" class="ghost small" id="pl-resetbtn">Reset the clock</button>
+    </div>
+
+    <h2>Answers</h2>
+    <div class="planrow">
+      <button type="button" class="ghost small" id="wipe">Clear my history</button>
+      <span class="unit">every answer and timing stored in this browser</span>
+    </div>
   </section>
 
   <!-- Break between mock sessions -->
