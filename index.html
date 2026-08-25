@@ -94,6 +94,10 @@
   /* Pendulum's mark is a Newton's cradle, left blue, centre purple, right red. The card
      wears it so the name reads the same here as on the site. The rods take currentColor
      so it follows the theme; the bobs are the site's own left-centre-right palette. */
+  /* Ghostwriters wears its ghost, the same as Pendulum wears its cradle: the card
+     should read the way the site itself does. */
+  .meta .name.ghostmark { display: inline-flex; align-items: center; gap: .6rem; }
+  .meta .name.ghostmark svg { height: .82em; width: .82em; flex: none; }
   .meta .name.cradlemark { display: inline-flex; align-items: center; gap: .95rem; }
   .meta .name.cradlemark svg { height: .78em; width: auto; flex: none; opacity: .75; }
   /* Hovering the card releases the cradle: the held ball falls, stops dead on impact,
@@ -384,8 +388,8 @@
   <a class="proj" href="https://charlietrenorden.com/ghostwriters/">
     <div class="thumb"><img src="assets/ghostwriters.webp" alt="Screenshot of Ghostwriters, showing an essay in the style of a long-dead writer" loading="lazy" width="1400" height="875"></div>
     <div class="meta">
-      <div class="head"><span class="name">Ghostwriters</span><span class="status s-wip">In progress</span></div>
-      <p class="desc">Writers who died before the thing they are describing existed. Orwell on the doorbell camera, Diogenes on the self-checkout, Kafka on the unsubscribe flow.</p>
+      <div class="head"><span class="name ghostmark"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M28 74V47a22 22 0 0 1 44 0v27l-7.3-6-7.3 6-7.4-6-7.3 6-7.4-6z" fill="currentColor"/><circle cx="42" cy="48" r="4.2" fill="var(--bg)"/><circle cx="58" cy="48" r="4.2" fill="var(--bg)"/><path d="M60 63c-3.5 3.2-9 3.4-12.8.6" fill="none" stroke="var(--bg)" stroke-width="3" stroke-linecap="round"/></svg>Ghostwriters</span><span class="status s-wip">In progress</span></div>
+      <p class="desc">Dead writers on things they never saw. Kafka on the unsubscribe flow, Orwell on the doorbell camera.</p>
       <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
