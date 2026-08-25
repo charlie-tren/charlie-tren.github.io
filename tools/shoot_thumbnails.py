@@ -200,12 +200,12 @@ ANCHOR = {
     # The top of the page is the hero and a scatter that is currently just a sorted
     # curve. The cards, with real company names and per-flag scores, are the product.
     #
-    # 0.245 is measured, not taste: it puts the frame's top edge a few pixels above
-    # #pagerTop, so the shot opens on the "1-20 of 656" pager and the test header and
-    # then runs into whole cards. 0.35 started inside #filterPanel and sliced its
-    # dropdowns in half; including that panel whole would cost 48% of the frame and
-    # leave room for two cards.
-    "shortfall": {"selector": "#cards", "context_above": 0.245},
+    # 0.245 opened on the "1-20 of 656" pager and ran into whole cards. Charlie asked
+    # for further up the page on 25/08/2026, so 0.48 - the next clean stop, because
+    # anything between the two slices #filterPanel's dropdowns in half. It costs
+    # roughly half the frame and leaves room for two cards, which is the trade he
+    # asked for.
+    "shortfall": {"selector": "#cards", "context_above": 0.48},
 }
 
 VIEW = {"width": 1280, "height": 800}
