@@ -4,6 +4,11 @@
    has no icon of its own, and a page with no description so Google writes its own
    snippet.
 
+   Since 25/08/2026 it also checks the analytics beacon. Five live projects had
+   silently never been instrumented - the stats dashboard showed six sites and looked
+   healthy, because a site that reports nothing is indistinguishable from a site with
+   no visitors. That is exactly the failure this file exists for.
+
    Every one of those is invisible until someone looks at a tab, which is why this
    exists as a test rather than a habit.
 
@@ -22,6 +27,9 @@ const SITES = {
   "The Lindy Effect":  "https://charlietrenorden.com/lindy-effect/",
   "Pendulum":          "https://charlietrenorden.com/pendulum/",
   "CFA Companion":     "https://charlietrenorden.com/cfa-companion/",
+  "Ghostwriters":      "https://charlietrenorden.com/ghostwriters/",
+  "Pendulum: Inequality": "https://charlietrenorden.com/inequality/",
+  "Equity Research":   "https://charlietrenorden.com/research/",
   "Crowdwise":         "https://crowdwise.charlietrenorden.com/",
   "DCF Studio":        "https://dcf.charlietrenorden.com/GOOGL",
   "One Story":         "https://one-story.charlietrenorden.com/",
@@ -62,6 +70,12 @@ for (const [name, url] of Object.entries(SITES)) {
 
   check(`${name}: has a meta description`,
     /<meta\s+name="description"\s+content="[^"]{20,}"/i.test(head));
+
+  /* Checked against the WHOLE page, not `head`: the beacon is the last thing in
+     <head> and on a big single-file page that sits well past the 8KB slice. */
+  check(`${name}: reports to Cloudflare Web Analytics`,
+    html.includes("static.cloudflareinsights.com/beacon.min.js"),
+    "invisible to stats.charlietrenorden.com");
 
   const icons = [...head.matchAll(/<link[^>]*rel="(icon|apple-touch-icon)"[^>]*>/gi)];
   check(`${name}: has its own icon tags`, icons.length > 0,
