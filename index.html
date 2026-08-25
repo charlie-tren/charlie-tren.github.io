@@ -169,8 +169,11 @@
      pill. It was previously faint text in a thin border - visually the same object as
      .s-wip "In progress" - which read as though these were simply unfinished.
      Three distinct treatments now: .s-live is filled, .s-wip is outlined, .tag is a
-     flat wash with no border and no uppercase, so it reads as a descriptor. */
-  .tag { font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .02em;
+     flat wash with no border, so it reads as a descriptor. Uppercased since
+     25/08/2026 at Charlie's ask - the wash still separates it from the two status
+     pills, which are sentence case. */
+  .tag { font: 500 10.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .07em;
+         text-transform: uppercase;
          padding: .32rem .55rem; border-radius: 3px; white-space: nowrap;
          color: var(--soft); background: var(--motif-bg); border: none; }
 
@@ -355,8 +358,8 @@
   <a class="proj" href="https://charlietrenorden.com/shortfall/">
     <div class="thumb"><img src="assets/shortfall.webp" alt="Screenshot of Shortfall, showing company cards with per-flag scores" loading="lazy" width="1400" height="875"></div>
     <div class="meta">
-      <div class="head"><span class="name">Shortfall</span><span class="status s-wip">In progress</span></div>
-      <p class="desc">Six ways the numbers can flatter a company, run across the S&amp;P 500 and ASX 200 - every flag printed next to the innocent explanation for it.</p>
+      <div class="head"><span class="name">Shortfall</span><span class="status s-live">Live</span></div>
+      <p class="desc">Six accounting tests over the S&amp;P 500 and ASX 200. Every company scored against its sector peers.</p>
       <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
   </a>
