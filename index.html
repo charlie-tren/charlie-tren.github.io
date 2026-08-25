@@ -98,6 +98,12 @@
      should read the way the site itself does. */
   .meta .name.ghostmark { display: inline-flex; align-items: center; gap: .6rem; }
   .meta .name.ghostmark svg { height: .82em; width: .82em; flex: none; }
+  /* He floats when you hover the card - a ghost bobbing, not a logo doing a trick. */
+  .proj:hover .ghostmark svg { animation: bob 2s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0) rotate(0); }
+    30% { transform: translateY(-13%) rotate(-4deg); }
+    65% { transform: translateY(5%) rotate(3deg); } }
+  @media (prefers-reduced-motion: reduce) { .proj:hover .ghostmark svg { animation: none; } }
   .meta .name.cradlemark { display: inline-flex; align-items: center; gap: .95rem; }
   .meta .name.cradlemark svg { height: .78em; width: auto; flex: none; opacity: .75; }
   /* Hovering the card releases the cradle: the held ball falls, stops dead on impact,
@@ -388,7 +394,7 @@
   <a class="proj" href="https://charlietrenorden.com/ghostwriters/">
     <div class="thumb"><img src="assets/ghostwriters.webp" alt="Screenshot of Ghostwriters, showing an essay in the style of a long-dead writer" loading="lazy" width="1400" height="875"></div>
     <div class="meta">
-      <div class="head"><span class="name ghostmark"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M28 74V47a22 22 0 0 1 44 0v27l-7.3-6-7.3 6-7.4-6-7.3 6-7.4-6z" fill="currentColor"/><circle cx="42" cy="48" r="4.2" fill="var(--bg)"/><circle cx="58" cy="48" r="4.2" fill="var(--bg)"/><path d="M60 63c-3.5 3.2-9 3.4-12.8.6" fill="none" stroke="var(--bg)" stroke-width="3" stroke-linecap="round"/></svg>Ghostwriters</span><span class="status s-wip">In progress</span></div>
+      <div class="head"><span class="name ghostmark"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M26 76V50a24 24 0 0 1 48 0v26l-8-7-8 7-8-7-8 7-8-7z" fill="currentColor"/><circle cx="41" cy="49" r="5.4" fill="var(--bg)"/><circle cx="59" cy="49" r="5.4" fill="var(--bg)"/></svg>Ghostwriters</span><span class="status s-wip">In progress</span></div>
       <p class="desc">Dead writers on things they never saw. Kafka on the unsubscribe flow, Orwell on the doorbell camera.</p>
       <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
     </div>
