@@ -64,7 +64,7 @@ SITES = {
     "shortfall": "https://charlietrenorden.com/shortfall/",
     "pendulum": "https://charlietrenorden.com/pendulum/",
     "cfa-companion": "https://charlietrenorden.com/cfa-companion/",
-    "dystopianist": "https://charlietrenorden.com/dystopianist/",
+    "ghostwriters": "https://charlietrenorden.com/ghostwriters/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
