@@ -1,0 +1,74 @@
+name: Pull Ghostwriters
+
+# Ghostwriters generates its essays in charlie-tren/dystopianist and renders them to
+# docs/ there, but the live site is charlietrenorden.com/ghostwriters/ - a folder in
+# THIS repo, because Pages will not serve that one. Something has to carry the pages
+# across, and doing it from this side means no cross-repo token exists anywhere: this
+# workflow's own GITHUB_TOKEN can push here, and a public source repo needs no
+# credential to read.
+#
+# The alternative was a fine-grained PAT stored in dystopianist. This is the same
+# result with one fewer secret to hold, rotate and leak.
+#
+# Timed after the generator's 20:19 cron plus GitHub's habitual 15-25 minute lateness
+# (see thumbnails.yml for the measurements). If it runs before the essay lands it
+# copies yesterday's pages, sees no diff, and does nothing - so being early is free.
+
+on:
+  schedule:
+    - cron: "53 21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone the generator
+        id: clone
+        run: |
+          if git clone --depth 1 https://github.com/charlie-tren/dystopianist.git gen 2>/dev/null; then
+            echo "ok=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=no" >> "$GITHUB_OUTPUT"
+            echo "::warning::could not clone charlie-tren/dystopianist - it is still \
+            private, so nothing can be pulled. Either make it public or give its own \
+            workflow a HUB_TOKEN and let it push here instead."
+          fi
+
+      - name: Copy the rendered pages in
+        if: steps.clone.outputs.ok == 'yes'
+        run: |
+          test -f gen/docs/index.html || { echo "::error::gen/docs looks wrong"; exit 1; }
+          rm -rf ghostwriters
+          cp -r gen/docs ghostwriters
+          rm -rf gen
+
+      - name: Commit
+        if: steps.clone.outputs.ok == 'yes'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ghostwriters
+          if git diff --cached --quiet; then
+            echo "already up to date"
+            exit 0
+          fi
+          git commit -m "ghostwriters: $(date -u +%Y-%m-%d)"
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "push attempt $attempt lost a race - replaying onto main"
+            git fetch origin main
+            git reset --soft origin/main
+            git add ghostwriters
+            git diff --cached --quiet && exit 0
+            git commit -m "ghostwriters: $(date -u +%Y-%m-%d)"
+            sleep 3
+          done
+          echo "::error::could not push after 3 attempts"
+          exit 1
