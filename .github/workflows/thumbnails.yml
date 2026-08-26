@@ -94,7 +94,16 @@ jobs:
             fi
             echo "push attempt $attempt lost a race - replaying onto main"
             git fetch origin main || true
-            git reset --soft origin/main
+            # --mixed, NOT --soft. `reset --soft` moves HEAD and leaves the INDEX
+            # holding this run's entire checked-out tree, so the follow-up commit
+            # replays every file as it stood at checkout - silently REVERTING
+            # anything anyone else pushed in between. On 26/08/2026 this run
+            # undid an estate-wide analytics change across seven files and a card
+            # description from another session, in a commit titled "Refresh card
+            # thumbnails". --mixed resets the index to origin/main and leaves the
+            # working tree alone, so `git add assets` stages the new shots and
+            # nothing else.
+            git reset --mixed origin/main
             git add assets
             if git diff --cached --quiet; then
               echo "someone else shot the same thing - nothing left to push."
