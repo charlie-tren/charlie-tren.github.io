@@ -76,6 +76,7 @@
       <span class="roomcode" id="code">----</span>
       <button class="btn ghost" id="copyBtn" type="button">Copy invite link</button>
       <span id="progress"></span>
+      <span id="answered"></span>
       <!-- A room setting, not a round action, which is why it sits up here with the
            code rather than in the host row with reveal and advance. -->
       <span class="modeswitch" id="modeSwitch" hidden role="group" aria-label="How many axes">
@@ -115,9 +116,11 @@
       <p class="padaxis bottom" id="axBottom"></p>
     </div>
 
+    <!-- One button, not two. Advancing before the reveal skipped past what
+         everyone had just answered, and gating a separate Next on the reveal
+         would have left a dead control sitting there most of the time. -->
     <div class="hostrow" id="hostrow" hidden>
-      <button class="btn" id="revealBtn" type="button">Show everyone</button>
-      <button class="btn ghost" id="nextBtn" type="button">Next statement</button>
+      <button class="btn" id="advanceBtn" type="button">Show everyone</button>
       <button class="btn ghost" id="compareBtn" type="button" disabled>Compare answers</button>
     </div>
     <p class="tally" id="tally"></p>

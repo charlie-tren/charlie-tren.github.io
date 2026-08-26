@@ -15,7 +15,7 @@
   var CODE_RE = /^[A-Z0-9]{4}$/;
   var el = function (id) { return document.getElementById(id); };
   var ws = null, me = null, myX = 0.5, myY = 0.5, sendTimer = null, pending = false;
-  var mode = "line";
+  var mode = "line", locked = false;
   var room = null, myName = null, token = null;
   var beat = null, retry = null, tries = 0, paused = false;
 
@@ -145,7 +145,12 @@
     el("statement").hidden = mode !== "line";
     el("track").hidden = mode !== "line";
     el("padwrap").hidden = mode !== "plane";
-    el("nextBtn").textContent = mode === "plane" ? "Next pair" : "Next statement";
+
+    /* The reveal locks the round in. The room refuses a move once it is shown,
+       so this only stops a control from looking live when it is not. */
+    locked = !!s.revealed;
+    el("slider").disabled = locked;
+    el("pad").classList.toggle("locked", locked);
 
     /* Other players are drawn separately from you; your own position is the
        slider thumb or the pin, so it is never drawn twice. */
@@ -158,10 +163,12 @@
     note(s.revealed
       ? "Revealed - " + s.players.length + (s.players.length === 1 ? " player" : " players")
       : placed + " of " + s.players.length + " placed");
+    el("answered").textContent = s.rounds ? plural(s.rounds, "round") + " answered" : "";
 
     el("hostrow").hidden = !me.admin;
-    el("revealBtn").disabled = s.revealed;
-    el("revealBtn").textContent = s.revealed ? "Shown" : "Show everyone";
+    el("advanceBtn").textContent = s.revealed
+      ? (mode === "plane" ? "Next pair" : "Next statement")
+      : "Show everyone";
     /* Live as soon as two people have placed, not only once the host has
        advanced - a room that has answered one statement can compare it. */
     el("compareBtn").disabled = !(s.rounds || placed >= 2);
@@ -477,6 +484,7 @@
        the finger. touch-action:none on .pad stops the page scrolling under it. */
     var pad = el("pad");
     function placeFrom(e) {
+      if (locked) return;
       var r = pad.getBoundingClientRect();
       myX = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
       myY = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
@@ -503,6 +511,7 @@
     /* Arrows, so the square is reachable without a pointer. The slider got this
        free by being a real range input; this has to ask. */
     pad.addEventListener("keydown", function (e) {
+      if (locked) return;
       var step = e.shiftKey ? 0.1 : 0.02, dx = 0, dy = 0;
       if (e.key === "ArrowLeft") dx = -step;
       else if (e.key === "ArrowRight") dx = step;
@@ -521,8 +530,10 @@
       b.addEventListener("click", function () { send({ t: "mode", mode: b.dataset.mode }); });
     });
 
-    el("revealBtn").addEventListener("click", function () { send({ t: "reveal" }); });
-    el("nextBtn").addEventListener("click", function () {
+    /* Show, then advance. One control doing both in that order is what stops a
+       round being advanced past before anyone has seen it. */
+    el("advanceBtn").addEventListener("click", function () {
+      if (el("advanceBtn").textContent === "Show everyone") return send({ t: "reveal" });
       send({ t: "next" });
       resetMe();
     });

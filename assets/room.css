@@ -362,3 +362,10 @@ input[type=range].slider::-moz-range-thumb { width: 18px; height: 18px; border-r
 /* "You", over your own marker at the reveal. Slightly brighter than the other
    names because it is the one you are looking for. */
 .dot-m.me b, .pad-m.me b { color: var(--ink); }
+
+/* Locked in by the reveal. The room refuses a move once it is shown; this is so
+   the control stops inviting one. */
+.pad.locked { cursor: default; opacity: .85; }
+input[type=range].slider:disabled::-webkit-slider-thumb { cursor: default; }
+input[type=range].slider:disabled::-moz-range-thumb { cursor: default; }
+#answered { color: var(--faint); }
