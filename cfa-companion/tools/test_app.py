@@ -46,8 +46,32 @@ def main() -> int:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1100, "height": 900})
         errors = []
-        page.on("pageerror", lambda e: errors.append(str(e)))
-        page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+
+        # The two analytics beacons cannot load from a 127.0.0.1 origin: the
+        # Cloudflare one fails CORS because it checks the referring origin, and both
+        # fail DNS on a runner with no egress. Neither says anything about the page,
+        # and counting them made this suite permanently red, which is a large part of
+        # why nothing was running it. That the beacons are actually present is
+        # checked against the LIVE page by tools/test_estate_head.mjs, which is the
+        # only place the check can mean anything.
+        BEACON_HOSTS = ("cloudflareinsights.com", "beacon.charlietrenorden.com",
+                        "static.cloudflareinsights.com")
+        def page_error(text):
+            return not any(h in text for h in BEACON_HOSTS)
+
+        page.on("pageerror", lambda e: errors.append(str(e)) if page_error(str(e)) else None)
+
+        # A console "Failed to load resource" carries no URL, so it cannot be told
+        # apart from a beacon failure by its text. requestfailed does carry one, so
+        # resource failures are collected from there instead and the console handler
+        # keeps only real script errors. A genuinely broken asset still fails this,
+        # and names itself.
+        page.on("console", lambda m: errors.append(m.text)
+                if m.type == "error"
+                and not m.text.startswith("Failed to load resource")
+                and page_error(m.text) else None)
+        page.on("requestfailed", lambda r: errors.append(f"request failed: {r.url}")
+                if page_error(r.url) else None)
 
         # --- the study plan ----------------------------------------------------
         # Seed a known state and check the arithmetic, rather than trusting it.
