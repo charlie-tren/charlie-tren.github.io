@@ -9,6 +9,11 @@ investment calls is worse than no price at all.
 GUARD BEFORE WRITE: if a quote cannot be fetched, the previous one in prices.json is
 reused and the page says when it was taken. The page is only refused outright if there
 is no price at all for a name, because a row with a blank return would read as flat.
+
+TARGET is optional per report and is NOT recomputed here. It is a judgement made in the
+research at a point in time, so it belongs in reports.json beside the call rather than
+being derived from a live price - a target that moved with the market would be worthless
+as a record of what was actually claimed.
 """
 import json, sys
 from datetime import datetime, timezone
