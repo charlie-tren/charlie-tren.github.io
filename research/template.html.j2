@@ -86,13 +86,13 @@
   :root[data-theme="dark"]  { --pos: #6ea67f; --neg: #c2705c; }
   :root[data-theme="light"] { --pos: #3f7355; --neg: #a24a34; }
 
-  .cols { display: grid; grid-template-columns: 1fr auto 100px 100px 100px 78px; gap: 1.1rem;
+  .cols { display: grid; grid-template-columns: 1fr auto 108px 108px 78px; gap: 1.2rem;
           padding: 0 .2rem .55rem; border-bottom: 1px solid var(--rule);
           font: 600 10.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .13em;
           text-transform: uppercase; color: var(--faint); }
   .cols span:nth-child(n+3) { text-align: right; }
-  .item { display: grid; grid-template-columns: 1fr auto 100px 100px 100px 78px; align-items: center;
-          gap: 1.1rem; padding: 1.05rem .2rem; border-bottom: 1px solid var(--rule);
+  .item { display: grid; grid-template-columns: 1fr auto 108px 108px 78px; align-items: center;
+          gap: 1.2rem; padding: 1.05rem .2rem; border-bottom: 1px solid var(--rule);
           text-decoration: none; color: inherit; transition: background .2s; }
   .sub { display: block; font: 400 12.5px/1.4 ui-sans-serif, system-ui, sans-serif; color: var(--soft); margin-top: .18rem; }
   .call { font: 500 12.5px/1 ui-sans-serif, system-ui, sans-serif; color: var(--ink);
@@ -107,11 +107,6 @@
   .call.neg      { color: var(--neg); border-color: var(--neg); }
   .money { font: 400 13px/1.4 ui-monospace, Consolas, monospace; color: var(--soft);
            text-align: right; white-space: nowrap; }
-  /* The target is the one number on the row that is a judgement rather than a
-     market fact, so it takes the ink colour while the observed prices stay soft.
-     Not the accent: that is reserved for things you can click. */
-  .money.target { color: var(--ink); }
-  .money.target.na { color: var(--faint); }
   .since { font: 500 14px/1 ui-monospace, Consolas, monospace; text-align: right; white-space: nowrap; }
   .since.up { color: var(--pos); }
   .since.dn { color: var(--neg); }
@@ -136,16 +131,12 @@
     .atcall { grid-column: 2; grid-row: 2; }
     .now    { grid-column: 3; grid-row: 2; }
     .since  { grid-column: 3; grid-row: 1; justify-self: end; }
-    /* Target gets its own line rather than a fourth cell on row 2: three labelled
-       numbers in one phone row put "At call" and "Target" on top of each other. */
-    .target { grid-column: 1 / 4; grid-row: 3; justify-self: start; }
     /* The column headers are gone on a phone, so each number names itself. */
-    .atcall:not(:empty)::before, .now:not(:empty)::before, .target:not(:empty)::before {
+    .atcall:not(:empty)::before, .now:not(:empty)::before {
       color: var(--faint); font-size: 11px; letter-spacing: .06em;
       text-transform: uppercase; padding-right: .35rem; }
     .atcall:not(:empty)::before { content: "At call"; }
     .now:not(:empty)::before { content: "Now"; }
-    .target:not(:empty)::before { content: "Target"; }
   }
 </style>
 </head>
@@ -161,7 +152,7 @@
 
   <!-- New tab on every report: these are PDFs, and a PDF that replaces the page
        strands the reader with only the back button to get home. -->
-  <div class="cols"><span>Report</span><span>Call</span><span>At call</span><span>Target</span><span>Now</span><span>Since</span></div>
+  <div class="cols"><span>Report</span><span>Call</span><span>At call</span><span>Now</span><span>Since</span></div>
 
   <div class="list">
 {% for r in rows %}    <a class="item" href="{{ r.pdf }}" target="_blank" rel="noopener">
@@ -169,13 +160,10 @@
         <span class="sub">{{ r.kind }} &middot; {{ r.date_label }}</span></span>
 {% if r.call %}      <span class="call {{ r.tone }}">{{ r.call }}</span>
       <span class="money atcall">{{ r.call_price | money(r.currency) }}</span>
-{% if r.target %}      <span class="money target" title="12-month target">{{ r.target | money(r.currency) }}</span>
-{% else %}      <span class="money target na">&mdash;</span>
-{% endif %}      <span class="money now" title="Latest close {{ r.asof }}">{{ r.price | money(r.currency) }}</span>
+      <span class="money now" title="Latest close {{ r.asof }}">{{ r.price | money(r.currency) }}</span>
       <span class="since {{ 'up' if r.ret >= 0 else 'dn' }}">{{ '%+.1f'|format(r.ret) }}%</span>
 {% else %}      <span class="call none">General research</span>
       <span class="money atcall"></span>
-      <span class="money target"></span>
       <span class="money now"></span>
       <span class="since na">&mdash;</span>
 {% endif %}    </a>
