@@ -19,8 +19,17 @@ name: Refresh card thumbnails
 # Odd minutes on purpose: GitHub's scheduler drops on-the-hour jobs.
 on:
   schedule:
-    - cron: "05 21 * * *"      # daily - the three sites that change every day
-    - cron: "23 23 * * *"      # catch-up, for a late Photocopy frame
+    #
+    # THE CATCH-UP MUST LAND BEFORE CHARLIE LOOKS, which is 07:55 AEST / 21:55 UTC.
+    # On 26/08/2026 GitHub dropped the 21:05 run entirely. The catch-up at 23:23 UTC
+    # is 09:23 AEST - an hour and a half after he had already seen stale cards and
+    # reported them. The content jobs it photographs were moved earlier the same day
+    # for the same reason; this one has to clear their new backup at 21:05 and still
+    # beat 21:55, which 21:30 does with ~16-22 minutes of scheduler lateness.
+    - cron: "05 21 * * *"      # 21:05 UTC / 07:05 AEST - daily, the three that change
+    - cron: "30 21 * * *"      # 21:30 UTC / 07:30 AEST - catch-up that he can actually
+                               # see, after Photocopy's 21:05 backup has landed
+    - cron: "23 23 * * *"      # 23:23 UTC / 09:23 AEST - third line, after the fact
     - cron: "43 21 * * 1"      # Mondays - all nine, in case a site was redesigned
   workflow_dispatch:
     inputs:
