@@ -15,6 +15,7 @@
   --paper:#f4f0e6; --paper2:#efe9db; --card:#fbf8f1;
   --ink:#211f1a; --ink-soft:#6a6354; --line:#ddd4c0; --line2:#cfc4ad;
   --again:#8c2f2f; --hard:#9a6a24; --good:#4e6b3c; --easy:#345b78; --oxblood:#7a2e2e;
+  --accent:#7a2e2e;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
@@ -29,7 +30,7 @@ body{
 .mark{color:var(--oxblood);font-size:22px;}
 .nav{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;align-items:center;}
 .navlink{text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
-.navlink .arw{color:var(--accent,#82a8ca);}
+.navlink .arw{color:var(--accent);}
 .navbtn{background:none;border:none;font:inherit;font-size:14px;color:var(--ink-soft);padding:6px 11px;border-radius:7px;cursor:pointer;transition:.15s;font-weight:500;}
 .navbtn:hover{color:var(--ink);background:var(--paper2);}
 .navbtn.on{color:var(--oxblood);background:var(--paper2);}
@@ -535,7 +536,7 @@ function viewHome(){
   let hero;
   if(total===0){hero='<h1 class="h1">A quiet place for words.</h1><p class="lead">Add the words you want to keep. Each day it surfaces the ones you are about to forget, and stretches the gaps wider as they stick.</p><button class="cta" data-act="nav" data-view="add">Add words \u2192</button>';}
   else if(work===0){hero='<h1 class="h1">Nothing due.</h1><p class="lead">You are caught up. '+total+' word'+(total===1?'':'s')+' in rotation, '+finished+' finished both ways.</p><button class="cta ghost" data-act="nav" data-view="add">Add more words \u2192</button>';}
-  else{hero='<h1 class="h1">'+work+' review'+(work===1?'':'s')+' to do.</h1><p class="lead">'+due+' due'+(nt?', '+nt+' new':'')+'. Each word is learnt both ways \u2014 meaning and spelling. Roughly '+Math.ceil(work*0.1)+'\u2013'+Math.ceil(work*0.25)+' minutes.</p><button class="cta" data-act="start">Begin review \u2192</button>';}
+  else{hero='<h1 class="h1">'+work+' review'+(work===1?'':'s')+' to do.</h1><p class="lead">'+due+' due'+(nt?', '+nt+' new':'')+'. Each word is learnt both ways: meaning and spelling. Roughly '+Math.ceil(work*0.1)+'\u2013'+Math.ceil(work*0.25)+' minutes.</p><button class="cta" data-act="start">Begin review \u2192</button>';}
   let spark='';for(let i=0;i<14;i++){spark+='<div class="bar-wrap" title="'+up[i]+' due"><div class="bar" style="height:'+(up[i]/peak*100)+'%;opacity:'+(up[i]?1:0.25)+'"></div><div class="bar-x">'+(i===0?'now':(i%2===0?'+'+i:''))+'</div></div>';}
   const panel=total>0?'<div class="panel"><div class="panel-t">Next two weeks</div><div class="spark">'+spark+'</div><div class="panel-note">Target retention '+Math.round(state.settings.retention*100)+'%. Each correct recall pushes that direction\u2019s next appearance further out; a word is finished once both directions are locked in.</div></div>':'';
   return '<div class="main"><div class="hero"><div class="date">'+dateStr+'</div>'+hero+'</div>'
@@ -549,7 +550,7 @@ function viewReview(){
   if(!item){
     const pending=sessionPending();
     let title,lead;
-    if(pending>0){title="Caught up for now.";lead=ses.done+' review'+(ses.done===1?'':'s')+' this session. '+pending+' card'+(pending===1?' is':'s are')+' on a short learning step and will resurface in a few minutes \u2014 take a breather, then come back.';}
+    if(pending>0){title="Caught up for now.";lead=ses.done+' review'+(ses.done===1?'':'s')+' this session. '+pending+' card'+(pending===1?' is':'s are')+' on a short learning step and will resurface in a few minutes. Take a breather, then come back.';}
     else{title="All done.";lead=ses.done+' review'+(ses.done===1?'':'s')+' this session'+(ses.again?', '+ses.again+' needed another pass':'')+'. Nothing left in the queue.';}
     return '<div class="main"><div class="hero"><h1 class="h1">'+title+'</h1><p class="lead">'+lead+'</p><button class="cta" data-act="nav" data-view="home">Back to today \u2192</button></div></div>';
   }
@@ -565,7 +566,7 @@ function viewReview(){
       inner=promptTop+'<div class="ansbox"><input id="f-answer" class="answer" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="type the word\u2026"><button class="reveal" data-act="reveal">Check <kbd>\u21B5</kbd></button></div>';
     }else{
       const v=checkAnswer(ses.typed,card.word);
-      const mark=v==="correct"?'<span class="ok">\u2713 correct</span>':v==="almost"?'<span class="ok">\u2713 almost \u2014 the spelling is</span>':v==="empty"?'<span class="no">\u2014 no answer; it\u2019s</span>':'<span class="no">\u2717 not quite; it\u2019s</span>';
+      const mark=v==="correct"?'<span class="ok">\u2713 correct</span>':v==="almost"?'<span class="ok">\u2713 almost, the spelling is</span>':v==="empty"?'<span class="no">\u2014 no answer; it\u2019s</span>':'<span class="no">\u2717 not quite; it\u2019s</span>';
       const yours=ses.typed?'<div class="yours">you typed: <b>'+esc(ses.typed)+'</b></div>':'';
       const G=v==="correct"?3:v==="almost"?2:1;
       inner=promptTop+'<div class="answered">'+yours+'<div class="reveal-word">'+mark+'<span class="word">'+esc(card.word)+'</span>'+(card.pron?'<span class="pron-inline">'+esc(card.pron)+'</span>':'')+'</div></div>'+contBar(G);
@@ -594,7 +595,7 @@ function viewAdd(){
       +'<label class="field"><span>Example <em>(optional)</em></span><input id="f-example" placeholder="a perspicacious reading of the market"></label>'
       +'<button class="cta" data-act="single-add">Add word</button></div>';
   }else{
-    inner='<div class="fields"><p class="help">One per line, pipe-separated: <code>word | pronunciation | phonetic | meaning | example</code><br>Pronunciation, phonetic and example are optional \u2014 or use just <code>word | meaning</code>.</p>'
+    inner='<div class="fields"><p class="help">One per line, pipe-separated: <code>word | pronunciation | phonetic | meaning | example</code><br>Pronunciation, phonetic and example are optional, or use just <code>word | meaning</code>.</p>'
       +'<textarea id="f-bulk" class="textarea" rows="9" placeholder="sanguine | SANG-gwin | /\u02c8s\u00e6\u014b\u0261w\u026an/ | optimistic, cheerful | a sanguine outlook"></textarea>'
       +'<button class="cta" data-act="bulk-add">Add list</button></div>';
   }
@@ -628,11 +629,11 @@ function viewManage(){
 function viewSettings(){
   const s=state.settings;
   return '<div class="main"><h2 class="h2">Settings</h2><div class="set">'
-    +'<div class="set-row"><div><div class="set-l">Target retention</div><div class="set-h">Probability you will recall a word when it resurfaces. 90% is the FSRS efficiency sweet spot \u2014 higher means more reviews, lower means more forgetting.</div></div><div class="set-c"><input type="range" min="0.8" max="0.97" step="0.01" value="'+s.retention+'" data-act="set-retention"><span class="set-v">'+Math.round(s.retention*100)+'%</span></div></div>'
-    +'<div class="set-row"><div><div class="set-l">New cards per day</div><div class="set-h">Each word has two cards \u2014 recall the meaning, and spell the word \u2014 so this many fresh cards enter rotation each day.</div></div><div class="set-c"><input type="number" min="1" max="100" value="'+s.newPerDay+'" data-act="set-new"></div></div>'
+    +'<div class="set-row"><div><div class="set-l">Target retention</div><div class="set-h">Probability you will recall a word when it resurfaces. 90% is the FSRS efficiency sweet spot: higher means more reviews, lower means more forgetting.</div></div><div class="set-c"><input type="range" min="0.8" max="0.97" step="0.01" value="'+s.retention+'" data-act="set-retention"><span class="set-v">'+Math.round(s.retention*100)+'%</span></div></div>'
+    +'<div class="set-row"><div><div class="set-l">New cards per day</div><div class="set-h">Each word has two cards, recall the meaning and spell the word, so this many fresh cards enter rotation each day.</div></div><div class="set-c"><input type="number" min="1" max="100" value="'+s.newPerDay+'" data-act="set-new"></div></div>'
     +'<div class="set-row"><div><div class="set-l">Automatic backup</div><div class="set-h">Once a day, the first time you review, the app saves a dated copy of your whole deck to your Downloads folder. Keep Downloads (or the file) in a synced folder like OneDrive for offsite backup. Last backup: '+(state.backupDate||'never')+'.</div></div><div class="set-c"><input type="checkbox" '+(s.autoBackup?'checked ':'')+'data-act="set-backup"><button class="mini" data-act="backup-now">Back up now</button></div></div></div>'
     +'<button class="danger" data-act="reset">Reset deck to the starter list</button>'
-    +'<p class="foot">Each word is learnt in both directions \u2014 recall the meaning (receptive) and type the word (productive) \u2014 following the <b>successive relearning</b> method: a direction is finished only after '+TARGET_SUCCESS+' correct recalls on separate days, once its gap has grown past '+TARGET_GAP+' days, and a word is finished when both directions are done. Spacing is FSRS-6 (Free Spaced Repetition Scheduler), population default parameters, power-law forgetting curve, with fixed learning steps on top (Again/Hard hold short; Good graduates at 1 day, Easy at 4). Your deck lives in this browser\u2019s local storage on this machine \u2014 it persists offline. Export regularly as a backup.</p></div>';
+    +'<p class="foot">Each word is learnt in both directions, recall the meaning (receptive) and type the word (productive), following the <b>successive relearning</b> method: a direction is finished only after '+TARGET_SUCCESS+' correct recalls on separate days, once its gap has grown past '+TARGET_GAP+' days, and a word is finished when both directions are done. Spacing is FSRS-6 (Free Spaced Repetition Scheduler), population default parameters, power-law forgetting curve, with fixed learning steps on top (Again/Hard hold short; Good graduates at 1 day, Easy at 4). Your deck lives in this browser\u2019s local storage on this machine, so it persists offline. Export regularly as a backup.</p></div>';
 }
 /* ask the browser to keep our localStorage out of its eviction pool (best effort, no prompt in Chrome) */
 function requestPersistence(){try{if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().then(function(){},function(){});}}catch(e){}}
