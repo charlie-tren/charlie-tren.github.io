@@ -1,0 +1,30 @@
+name: Estate registrations
+
+# Reads files in this repo only, so unlike the estate-head check it costs nothing
+# and runs on the push that breaks it rather than up to a week later.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "tools/shoot_thumbnails.py"
+      - "tools/test_estate_head.mjs"
+      - "tools/test_estate_registration.mjs"
+      - ".github/workflows/registration.yml"
+  # Also weekly: a project page in another repo can drop the link that made a
+  # sub-page reachable without this repo changing at all.
+  # Odd minute - GitHub drops on-the-hour scheduled runs under load.
+  schedule:
+    - cron: "37 20 * * 2"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - run: node tools/test_estate_registration.mjs
