@@ -77,6 +77,15 @@ for (const [name, url] of Object.entries(SITES)) {
     html.includes("static.cloudflareinsights.com/beacon.min.js"),
     "invisible to stats.charlietrenorden.com");
 
+  /* The second tag counts returning PEOPLE, which Web Analytics cannot: it is
+     cookieless and collects no visitor identifier at all. A page missing this one
+     still reports pageviews, so the dashboard looks healthy while quietly filing
+     every one of that page's repeat visitors as somebody new - the same shape of
+     silent failure the line above exists for. */
+  check(`${name}: reports returning visitors`,
+    html.includes("beacon.charlietrenorden.com/b.js"),
+    "its repeat visitors all count as first-timers");
+
   const icons = [...head.matchAll(/<link[^>]*rel="(icon|apple-touch-icon)"[^>]*>/gi)];
   check(`${name}: has its own icon tags`, icons.length > 0,
     "falls back to the hub's mark at /favicon.ico");
