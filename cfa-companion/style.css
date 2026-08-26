@@ -545,7 +545,7 @@ footer.site {
   color: var(--ink-3);
   font-size: 0.86rem;
 }
-footer.site p { margin: 0 0 0.6rem; }
+footer.site p { margin: 0; }
 footer.site .tm { font-size: 0.78rem; line-height: 1.5; }
 footer.site sup { font-size: 0.7em; }
 
