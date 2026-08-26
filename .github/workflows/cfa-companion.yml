@@ -3,9 +3,7 @@ name: Validate the CFA Companion question bank
 on:
   push:
     paths:
-      - "cfa-companion/data/**"
-      - "cfa-companion/tools/validate.py"
-      - "cfa-companion/bank.js"
+      - "cfa-companion/**"
       - ".github/workflows/cfa-companion.yml"
   workflow_dispatch:
 
@@ -24,3 +22,24 @@ jobs:
       - name: Check bank.js was rebuilt from the JSON it was generated from
         working-directory: cfa-companion
         run: python tools/build_bank.py --check
+
+  # 624 lines of end-to-end checks existed in the repo and nothing ran them: they
+  # served the page, drove it through a full mock exam and measured the layout at
+  # three widths, and were referenced by nothing but their own docstring. Kept as a
+  # separate job so a browser install never delays the cheap bank validation.
+  #
+  # tools/test_sync.py is deliberately NOT here. It drives the live Worker with two
+  # profiles and leaves a row behind on every run, so it stays a manual check.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install playwright
+      - run: python -m playwright install --with-deps chromium
+      - name: Drive the page through a full mock and measure the layout
+        working-directory: cfa-companion
+        run: python tools/test_app.py
