@@ -315,7 +315,24 @@ input[type=range].slider::-moz-range-thumb { width: 18px; height: 18px; border-r
 .padrow { display: flex; align-items: center; justify-content: center; gap: .5rem; }
 /* The square never gets wider than it is tall, so a laptop does not stretch it
    into a rectangle where "the middle" stops meaning the middle. */
-.pad { position: relative; flex: 0 1 min(100%, 26rem); aspect-ratio: 1;
+/* Sized by whichever runs out first, the row's width or the window's height,
+   rather than a flat 26rem that left a laptop mostly empty below the square.
+   Width drives it and aspect-ratio supplies the height: setting max-height
+   against a flex-basis width gives a rectangle instead, because the ratio loses
+   to the explicit basis.
+
+   27rem is the MEASURED chrome above and below the square - tabs, room bar,
+   axis labels, host row, tally - read off the rendered page rather than
+   estimated, because a first guess of 21rem put the host controls below the
+   fold on an 800px-tall window.
+
+   Read it inside out: shrink to the height available, never below the 26rem it
+   used to be, never wider than the row. The floor matters because subtracting
+   the chrome from a short laptop gives something SMALLER than the old fixed
+   size, and the outer min() is what stops that floor overflowing a phone.
+   Measured: 1280x1249 gets 544, 1280x800 holds at 416, a 375px phone gets 327. */
+.pad { position: relative; flex: 0 1 auto;
+  width: min(100%, max(26rem, min(34rem, calc(100dvh - 27rem)))); aspect-ratio: 1;
   border: 1px solid var(--rule); border-radius: 10px; touch-action: none; cursor: crosshair;
   /* Quarters, with the centre cross drawn stronger over the top by .padrule. */
   background-image:
