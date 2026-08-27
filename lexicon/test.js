@@ -12,7 +12,14 @@ global.Blob=function(){};
 global.alert=function(){};
 
 const html=fs.readFileSync(path.join(__dirname,"index.html"),"utf8");
-const body=html.split("<script>")[1].split("</script>")[0];
+/* The APP block, found by what is in it rather than by where it is. This used to
+   take the first <script> in the file, which stopped being the app on 27/08/2026
+   when the analytics gate went in above it: the suite then evaluated eleven lines
+   of beacon loader and threw on the first app symbol it reached. Position is not an
+   identity. */
+const blocks=html.split("<script>").slice(1).map(b=>b.split("</script>")[0]);
+const body=blocks.find(b=>b.includes("FSRS"));
+if(!body){ console.log("could not find the app <script> block"); process.exit(1); }
 
 let pass=0, fail=0; const fails=[];
 function A(cond,msg){ if(cond){pass++;} else {fail++; fails.push(msg);} }
