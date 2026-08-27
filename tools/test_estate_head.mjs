@@ -77,6 +77,16 @@ for (const [name, url] of Object.entries(SITES)) {
     html.includes("static.cloudflareinsights.com/beacon.min.js"),
     "invisible to stats.charlietrenorden.com");
 
+  /* Both beacons load through an inline gate now rather than from static tags, so
+     the two checks either side of this one would pass on a page that still had the
+     URLs written down and no longer loaded them. This asserts the gate itself is
+     there. What it CANNOT check is whether the logic still works - a page that
+     gated everyone out would pass all three - which is what site-stats'
+     tests/test_gate.py watches the network for. */
+  check(`${name}: loads its analytics through the gate`,
+    html.includes("ct.nostats") && html.includes("navigator.webdriver"),
+    "ungated, so Charlie and every agent count as audience");
+
   const icons = [...head.matchAll(/<link[^>]*rel="(icon|apple-touch-icon)"[^>]*>/gi)];
   check(`${name}: has its own icon tags`, icons.length > 0,
     "falls back to the hub's mark at /favicon.ico");
