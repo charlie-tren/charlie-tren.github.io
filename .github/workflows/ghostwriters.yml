@@ -18,6 +18,12 @@ on:
   schedule:
     - cron: "53 21 * * *"
   workflow_dispatch:
+  # Fired by the heartbeat Worker (site-stats/heartbeat) at 20:30 UTC, from
+  # OUTSIDE GitHub Actions. On 26/08/2026 GitHub's scheduler went down and took
+  # every cron on the estate with it, including the catch-ups; a backup that
+  # shares a failure domain with the thing it backs up is not a backup.
+  repository_dispatch:
+    types: [heartbeat-ghostwriters]
 
 permissions:
   contents: write
