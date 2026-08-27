@@ -34,7 +34,14 @@ const SITES = {
   "DCF Studio":        "https://dcf.charlietrenorden.com/GOOGL",
   "One Story":         "https://one-story.charlietrenorden.com/",
   "The Aftertimes":    "https://aftertimes.charlietrenorden.com/",
-  "Chronoscape":       "https://chronoscape.charlietrenorden.com/iceland/",
+  /* The APEX, not the old chronoscape. subdomain. That subdomain is the stale
+     Cloudflare Pages project the site was migrated OFF on 20/08/2026, and it
+     does not redirect: it answers 200 with a frozen copy of the whole site. So
+     every check in this file was passing against a snapshot rather than against
+     anything anyone deploys, and would never have caught a Chronoscape
+     regression. Found 27/08/2026 when the gate assertion failed here and
+     nowhere else. */
+  "Chronoscape":       "https://charlietrenorden.com/chronoscape/iceland/",
 };
 
 /* PNG: walk the chunks to the first IDAT is overkill; the corner pixel is what
