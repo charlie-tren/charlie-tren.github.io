@@ -26,6 +26,18 @@ on:
     # reported them. The content jobs it photographs were moved earlier the same day
     # for the same reason; this one has to clear their new backup at 21:05 and still
     # beat 21:55, which 21:30 does with ~16-22 minutes of scheduler lateness.
+    #
+    # CORRECTION, 28/08/2026. The note above says GitHub "dropped" the 21:05 run,
+    # which is true, but the reason given elsewhere - a congested 20:00-21:00 UTC
+    # band - was invented. GitHub's status history records four Actions incidents
+    # on 26/08 (15:09, 15:11, 22:56, plus a billing disruption at 23:37), and 168
+    # scheduled runs across this estate started normally in the 18:00-23:00 window
+    # in the week before. The extra catch-up is still worth having, because it is
+    # the only one that lands before he looks. The band theory is not.
+    #
+    # What this DOES mean: when the scheduler itself is down, every cron here
+    # fails together and nothing recovers the day. Cards go stale until someone
+    # dispatches by hand. That gap is real and is not solved by more crons.
     - cron: "05 21 * * *"      # 21:05 UTC / 07:05 AEST - daily, the three that change
     - cron: "30 21 * * *"      # 21:30 UTC / 07:30 AEST - catch-up that he can actually
                                # see, after Photocopy's 21:05 backup has landed
