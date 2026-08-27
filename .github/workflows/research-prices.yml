@@ -21,7 +21,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: pip install --quiet yfinance jinja2
+      - run: pip install --quiet yfinance jinja2 pytest
+
+      # Before any quote is fetched. This is the only code on the hub that can be
+      # silently wrong: it divides a live quote by the price printed in a report and
+      # publishes the result as a percentage return next to a Buy or a Hold. The guard
+      # below was verified by hand once; these keep it true, along with the return
+      # maths, the sign, the cached-quote fallback and the rating colours.
+      - run: python -m pytest research -q
 
       # build.py exits non-zero if a name has no price at all, old or new, so a total
       # data failure fails the run rather than publishing a page with a blank return.
