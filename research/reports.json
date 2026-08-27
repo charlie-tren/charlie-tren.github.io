@@ -2,6 +2,20 @@
   "_comment": "Source of truth for the research page. Hand-edited when a report lands; build.py adds the live price. call: the rating as printed in the PDF, or null for a piece with no explicit call, which renders as 'General research'. call_price: the price the report itself states, so the return is measured from what was actually written down.",
   "reports": [
     {
+      "name": "Vita Coco",
+      "ticker": "COCO",
+      "symbol": "COCO",
+      "currency": "US$",
+      "kind": "Company research",
+      "date": "2026-08-27",
+      "date_label": "Aug 2026",
+      "call": "Buy",
+      "call_price": 63.57,
+      "call_price_note": "Current Price, page 1",
+      "target": 75.0,
+      "pdf": "/assets/research/vita-coco-coco-2026-08.pdf"
+    },
+    {
       "name": "Stride",
       "ticker": "LRN",
       "symbol": "LRN",
