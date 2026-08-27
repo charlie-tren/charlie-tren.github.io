@@ -43,6 +43,11 @@ on:
                                # see, after Photocopy's 21:05 backup has landed
     - cron: "23 23 * * *"      # 23:23 UTC / 09:23 AEST - third line, after the fact
     - cron: "43 21 * * 1"      # Mondays - all nine, in case a site was redesigned
+  # Fired by the heartbeat Worker (site-stats/heartbeat) at 21:40 UTC - AFTER its
+  # 20:30 content slot, because a card job that runs before the content it
+  # photographs produces a picture of yesterday. That is the original complaint.
+  repository_dispatch:
+    types: [heartbeat-thumbnails]
   workflow_dispatch:
     inputs:
       target:
@@ -75,6 +80,10 @@ jobs:
 
       - name: Pick the target
         id: target
+        # A repository_dispatch from the heartbeat Worker has neither
+        # `inputs.target` nor `github.event.schedule`, so it falls through to
+        # `daily` - which is what it should shoot. That is deliberate, not an
+        # oversight: do not "fix" it by adding a client_payload branch.
         run: |
           if [ -n "${{ inputs.target }}" ]; then
             echo "value=${{ inputs.target }}" >> "$GITHUB_OUTPUT"
