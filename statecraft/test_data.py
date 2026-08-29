@@ -142,3 +142,99 @@ def test_indicator_coverage_is_reported_not_assumed():
           f"({100 * have / total:.0f}%)")
     assert have / total >= 0.85, (
         f"coverage has fallen to {have}/{total}; the reveal plots empty tracks below this")
+
+
+def test_every_domain_moves_its_own_axis_and_every_axis_is_moved():
+    """No domain is unmeasured and no axis is decoration. A domain with no axis
+    has no evidence behind it in the reveal; an axis nothing can move is a
+    number on the page for its own sake."""
+    domain_axes = {d["axis"] for d in DOMAINS}
+    moved = set()
+    for d in DOMAINS:
+        for o in d["options"]:
+            moved.update(o["axis"].keys())
+    for a in AXES:
+        if a["domain"] is not None:
+            assert a["id"] in domain_axes, f"{a['id']} is claimed by no domain"
+        assert a["id"] in moved, f"{a['id']} is moved by no option"
+
+
+def test_the_financial_budget_actually_binds():
+    """If the cheapest tax option can fund the most expensive selection in every
+    other domain, the constraint is theatre and the whole point of difference
+    is gone."""
+    cheapest_revenue = min(o["revenue"] for d in DOMAINS if d["id"] == "tax"
+                           for o in d["options"])
+    dearest_spend = sum(max(o["financial"] for o in d["options"])
+                        for d in DOMAINS if d["id"] != "tax")
+    assert dearest_spend > cheapest_revenue, (
+        f"the dearest possible country costs {dearest_spend:.1f}% of GDP and the "
+        f"leanest tax raises {cheapest_revenue:.1f}%: the budget never binds")
+
+
+def test_no_option_is_strictly_dominated():
+    """An option cheaper on all three budgets than another in the same domain
+    would make that other option one nobody rationally picks. Report them; this
+    is a calibration signal, not necessarily a fault, because an option may be
+    dearer and still wanted."""
+    dominated = []
+    for d in DOMAINS:
+        if d["id"] == "tax":
+            continue
+        for a in d["options"]:
+            for b in d["options"]:
+                if a["id"] == b["id"]:
+                    continue
+                if (a["financial"] <= b["financial"] and a["political"] <= b["political"]
+                        and a["social"] <= b["social"]
+                        and (a["financial"], a["political"], a["social"])
+                        != (b["financial"], b["political"], b["social"])):
+                    dominated.append((b["id"], "dominated by", a["id"]))
+    print(f"\nstrictly dominated options: {dominated}")
+    assert len(dominated) <= 6, f"too many dominated options to be deliberate: {dominated}"
+
+
+from build_data import effective_axis_values
+
+
+def test_every_effective_axis_value_fits_inside_its_axis_bounds():
+    """The value the page PLOTS, derived or hand, must sit inside the track it is
+    plotted on. Outside it, the marker is clamped to an edge and the reader is
+    shown a position that is not the number: silent, and it reads as a fact.
+
+    This is the check that catches an option written on a different basis from
+    the axis it moves. ho_singapore carried 78.0 on a social RENTAL axis bounded
+    (0, 38), because 78 is the share of people living in HDB housing and not the
+    share of dwellings let below market. Both sides now sit on the OECD PH4.2
+    basis, and Singapore correctly reads low.
+
+    A None value is 'does not apply' and cannot be out of bounds. Contributions
+    to redistribution are checked here too, since they are plotted on the same
+    fourteen tracks as everything else."""
+    bounds = {a["id"]: a["bounds"] for a in AXES}
+    for option_id, (effective, _hand, basis) in effective_axis_values().items():
+        for axis, value in effective.items():
+            if value is None:
+                continue
+            lo, hi = bounds[axis]
+            assert lo <= value <= hi, (
+                f"{option_id} sits at {value} on {axis}, whose bounds are "
+                f"({lo}, {hi}); the marker would be clamped and read as a fact "
+                f"[{basis}]")
+
+
+from timezones import TIMEZONES, FALLBACK
+
+
+def test_every_mapped_timezone_names_a_country_in_the_matrix():
+    codes = {c["code"] for c in COUNTRIES}
+    for tz, code in TIMEZONES.items():
+        assert code in codes, f"{tz} maps to {code}, which is not in the matrix"
+    assert FALLBACK in codes
+
+
+def test_the_common_timezones_resolve():
+    for tz in ["Australia/Brisbane", "Europe/London", "America/New_York",
+               "Europe/Copenhagen", "Asia/Singapore", "Asia/Tokyo",
+               "Europe/Berlin", "America/Los_Angeles", "Pacific/Auckland"]:
+        assert tz in TIMEZONES, f"{tz} is unmapped and would fall back"
