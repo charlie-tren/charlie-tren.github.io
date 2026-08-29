@@ -115,3 +115,30 @@ def test_option_country_tags_name_a_country_that_holds_that_option():
                     assert in_matrix[code][d["id"]] == o["id"], (
                         f"{o['id']} is tagged {code}, but the matrix has {code}.{d['id']} "
                         f"= {in_matrix[code][d['id']]}")
+
+
+def test_every_indicator_cell_is_sourced_and_dated():
+    axis_ids = {a["id"] for a in AXES}
+    for c in COUNTRIES:
+        for axis, cell in c["indicators"].items():
+            assert axis in axis_ids, f"{c['code']} has an unknown axis {axis}"
+            assert "value" in cell, f"{c['code']}.{axis} has no value"
+            assert cell.get("year"), f"{c['code']}.{axis} has no year"
+            assert cell.get("source"), f"{c['code']}.{axis} has no source"
+            if cell["value"] is None:
+                assert cell.get("na_reason"), (
+                    f"{c['code']}.{axis} is null with no reason: 'does not apply' must "
+                    f"say why, and 'no data' is a missing key instead")
+
+
+def test_indicator_coverage_is_reported_not_assumed():
+    """Not every cell exists, and that is allowed. What is not allowed is nobody
+    knowing how many are missing. This prints the denominator and fails only
+    below the floor agreed at launch."""
+    axis_ids = [a["id"] for a in AXES]
+    total = len(COUNTRIES) * len(axis_ids)
+    have = sum(1 for c in COUNTRIES for a in axis_ids if a in c["indicators"])
+    print(f"\nindicator coverage: {have} of {total} cells "
+          f"({100 * have / total:.0f}%)")
+    assert have / total >= 0.85, (
+        f"coverage has fallen to {have}/{total}; the reveal plots empty tracks below this")
