@@ -15,7 +15,7 @@
   var CODE_RE = /^[A-Z0-9]{4}$/;
   var el = function (id) { return document.getElementById(id); };
   var ws = null, me = null, myX = 0.5, myY = 0.5, sendTimer = null, pending = false;
-  var mode = "line", locked = false;
+  var mode = "line", locked = false, myPlaced = false, serial = null;
   var room = null, myName = null, token = null;
   var beat = null, retry = null, tries = 0, paused = false;
 
@@ -135,6 +135,26 @@
     mode = s.mode === "plane" ? "plane" : "line";
     document.documentElement.style.setProperty("--me", me.colour);
     el("progress").textContent = s.index + " of " + s.total;
+
+    /* The room turns the round over for everyone, so everyone resets. Only the
+       host used to, being the one who pressed the button, and the rest of the
+       room was left looking at a pin sitting where they had put it last round
+       while the room had them unplaced in the middle.
+       Nothing resets on the FIRST state: a drag made while the socket was still
+       opening is already on its way, and this would put it back to the centre. */
+    /* Both branches are gated on the room actually reporting these, because the
+       page and the Worker deploy separately: an older room says nothing about
+       your placement, and reading that silence as "not placed" would re-send a
+       move on every broadcast forever. */
+    if (typeof s.serial === "number") {
+      if (serial === null) serial = s.serial;
+      else if (s.serial !== serial) { serial = s.serial; resetMe(); }
+      /* Otherwise, if the room does not have you where you think you are, say it
+         again. One reconciliation covers every way a placement can go missing -
+         a dropped socket, a send into a dead one, a message the room never saw -
+         rather than a guess at each of them. */
+      else if (myPlaced && me.placed === false && !s.revealed && !sendTimer) pushMove();
+    }
 
     /* One axis or two is a room setting, so only the host sees the switch, and
        everyone's view follows whatever the room says it is. */
@@ -371,6 +391,11 @@
     el("slider").value = 500;
     myX = 0.5;
     myY = 0.5;
+    myPlaced = false;
+    /* A move still waiting on a socket belongs to the round it was made in. Sent
+       into this one it would place you in the middle of a prompt you have not
+       answered, and the tally would say the room was ready when it was not. */
+    pending = false;
     el("mepin").style.left = "50%";
     el("mepin").style.top = "50%";
   }
@@ -388,12 +413,17 @@
      A move made before the socket opens is REMEMBERED, not dropped - dragging
      during connect used to leave you showing as unplaced for the whole round. */
   function pushMove() {
+    myPlaced = true;
     if (!ws || ws.readyState !== 1) { pending = true; return; }
     if (sendTimer) return;
     sendTimer = setTimeout(function () {
       sendTimer = null;
-      pending = false;
-      send({ t: "move", x: myX, y: myY });
+      /* Cleared only if it actually went. A move sent into a socket that had
+         already died was forgotten here, so the room kept whatever position it
+         last heard: you sat looking at your own dot where you had put it while
+         everyone else watched you frozen where you were before. It came back the
+         moment you moved again, which is why it read as a tap not registering. */
+      pending = !send({ t: "move", x: myX, y: myY });
     }, 70);
   }
 
@@ -534,8 +564,9 @@
        round being advanced past before anyone has seen it. */
     el("advanceBtn").addEventListener("click", function () {
       if (el("advanceBtn").textContent === "Show everyone") return send({ t: "reveal" });
+      /* No local reset here: the round serial resets everybody, host included,
+         and two mechanisms doing one job is how they drift apart. */
       send({ t: "next" });
-      resetMe();
     });
     el("compareBtn").addEventListener("click", function () { send({ t: "results" }); });
     el("resumeBtn").addEventListener("click", function () { send({ t: "resume" }); });
