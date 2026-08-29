@@ -9,9 +9,14 @@ def test_fourteen_axes_each_fully_described():
     ids = [a["id"] for a in AXES]
     assert len(set(ids)) == 14, "axis ids must be unique"
     for a in AXES:
-        assert a["label"], f"{a['id']} has no label"
-        assert a["unit"], f"{a['id']} has no unit"
-        assert a["source"], f"{a['id']} has no source"
-        assert a["direction"] in ("higher", "lower", "neither")
-        lo, hi = a["bounds"]
+        # .get rather than [] throughout: indexing raises KeyError before the
+        # assertion's message is built, so a missing key fails with the key name
+        # and not with the axis it belongs to. The whole value of these checks is
+        # that the red names the thing that is wrong.
+        assert a.get("label"), f"{a['id']} has no label"
+        assert a.get("unit"), f"{a['id']} has no unit"
+        assert a.get("source"), f"{a['id']} has no source"
+        assert a.get("direction") in ("higher", "lower", "neither"), \
+            f"{a['id']} has no usable direction"
+        lo, hi = a.get("bounds", (0, 0))
         assert lo < hi, f"{a['id']} bounds are not ordered"
