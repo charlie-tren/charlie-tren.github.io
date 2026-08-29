@@ -25,7 +25,7 @@ AXES = [
      "unit": "% of GDP", "direction": "neither", "bounds": (0, 10),
      "source": "World Bank"},
     {"id": "social_housing", "domain": "housing", "label": "Social housing",
-     "unit": "% of stock", "direction": "neither", "bounds": (0, 90),
+     "unit": "% of stock", "direction": "neither", "bounds": (0, 38),
      "source": "OECD Affordable Housing Database"},
     {"id": "pension_spend", "domain": "retirement", "label": "Public pension spend",
      "unit": "% of GDP", "direction": "neither", "bounds": (0, 18),
