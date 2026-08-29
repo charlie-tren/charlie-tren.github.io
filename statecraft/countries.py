@@ -293,9 +293,13 @@ COUNTRIES = [
          "incarceration": {"value": 131.0, "year": 2026,
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
+    # NL energy changed from en_hydro to en_carbon_tax 2026-08-29. The Dutch grid is
+    # 253.6 g/kWh, which is not the clean grid en_hydro claims, and the Netherlands
+    # prices carbon through the EU ETS plus a national industrial CO2 levy. Sources
+    # are on the en_carbon_tax option in policies.py.
     {"code": "NL", "name": "Netherlands", "timezones": ["Europe/Amsterdam"],
      "choices": {"tax": "tax_continental", "healthcare": "hc_insurance", "education": "ed_vocational",
-                 "housing": "ho_social", "retirement": "re_super", "energy": "en_hydro",
+                 "housing": "ho_social", "retirement": "re_super", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_bargaining",
                  "defence": "de_alliance", "immigration": "im_open", "justice": "ju_rehab",
                  "family": "fa_targeted"},
@@ -551,9 +555,15 @@ COUNTRIES = [
          "incarceration": {"value": 78.0, "year": 2026,
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
+    # SG energy changed from en_hydro to en_carbon_tax 2026-08-29. The public
+    # transport half of en_hydro is true of Singapore and the clean grid half is
+    # not: the grid is 497.1 g/kWh, close to the fossil end of the axis. Singapore
+    # has taxed carbon since 2019 and raised the rate five-fold in 2024. Sources are
+    # on the en_carbon_tax option in policies.py. The speech cell is unchanged and
+    # Singapore is now the only country on sp_order.
     {"code": "SG", "name": "Singapore", "timezones": ["Asia/Singapore"],
      "choices": {"tax": "tax_anglo", "healthcare": "hc_savings", "education": "ed_market",
-                 "housing": "ho_singapore", "retirement": "re_private", "energy": "en_hydro",
+                 "housing": "ho_singapore", "retirement": "re_private", "energy": "en_carbon_tax",
                  "speech": "sp_order", "voting": "vo_fptp", "work": "wo_at_will",
                  "defence": "de_conscript", "immigration": "im_points", "justice": "ju_corporal",
                  "family": "fa_none"},
@@ -577,10 +587,18 @@ COUNTRIES = [
          "incarceration": {"value": 178.0, "year": 2024,
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
+    # JP changed on two cells 2026-08-29. Energy en_hydro to en_carbon_tax: the
+    # grid has been coal and gas heavy since Fukushima at 477.3 g/kWh, and Japan
+    # has had a carbon tax since 2012 with the GX-ETS mandatory from April 2026.
+    # Speech sp_order to sp_hate_limits: at 0.847 Japan sits above the UK and
+    # Israel, both of which are on sp_hate_limits, so the lower bucket was not
+    # supportable. This is the weaker of the two speech moves and the caveat, that
+    # the 2016 hate speech act carries no penalty, is recorded on the option in
+    # policies.py rather than hidden.
     {"code": "JP", "name": "Japan", "timezones": ["Asia/Tokyo"],
      "choices": {"tax": "tax_anglo", "healthcare": "hc_insurance", "education": "ed_market",
-                 "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_hydro",
-                 "speech": "sp_order", "voting": "vo_proportional", "work": "wo_minimum",
+                 "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_carbon_tax",
+                 "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_minimum",
                  "defence": "de_alliance", "immigration": "im_closed", "justice": "ju_rehab",
                  "family": "fa_targeted"},
      "indicators": {
@@ -613,10 +631,17 @@ COUNTRIES = [
          "incarceration": {"value": 33.0, "year": 2025,
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
+    # KR changed on two cells 2026-08-29. Energy en_nuclear to en_carbon_tax:
+    # nuclear is the largest single source at 31.1% of generation but coal and LNG
+    # are about 56% together, so "most power from reactors" is false, and the
+    # K-ETS has priced emissions since 2015. Speech sp_order to sp_hate_limits:
+    # V-Dem puts Korean freedom of expression at 0.933, level with Canada, so a
+    # public-order restriction cell was a claim about Korea that the measure
+    # contradicts. Sources are on both options in policies.py.
     {"code": "KR", "name": "South Korea", "timezones": ["Asia/Seoul"],
      "choices": {"tax": "tax_anglo", "healthcare": "hc_insurance", "education": "ed_market",
-                 "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_nuclear",
-                 "speech": "sp_order", "voting": "vo_proportional", "work": "wo_at_will",
+                 "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_carbon_tax",
+                 "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_at_will",
                  "defence": "de_conscript", "immigration": "im_closed", "justice": "ju_standard",
                  "family": "fa_none"},
      "indicators": {
