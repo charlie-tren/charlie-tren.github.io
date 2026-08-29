@@ -43,7 +43,7 @@ AXES = [
      "unit": "%", "direction": "neither", "bounds": (0, 100),
      "source": "OECD/AIAS ICTWSS"},
     {"id": "military_burden", "domain": "defence", "label": "Military burden",
-     "unit": "% of GDP", "direction": "neither", "bounds": (0, 8),
+     "unit": "% of GDP", "direction": "neither", "bounds": (0, 10),
      "source": "SIPRI Military Expenditure Database"},
     {"id": "foreign_born", "domain": "immigration", "label": "Foreign-born share",
      "unit": "%", "direction": "neither", "bounds": (0, 90),
