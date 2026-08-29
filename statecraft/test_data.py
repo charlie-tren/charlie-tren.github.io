@@ -20,3 +20,33 @@ def test_fourteen_axes_each_fully_described():
             f"{a['id']} has no usable direction"
         lo, hi = a.get("bounds", (0, 0))
         assert lo < hi, f"{a['id']} bounds are not ordered"
+
+
+from policies import DOMAINS
+
+TAX_DOMAIN = "tax"
+
+
+def test_every_option_is_fully_costed():
+    for d in DOMAINS:
+        assert d["options"], f"{d['id']} has no options"
+        assert 4 <= len(d["options"]) <= 6, f"{d['id']} has {len(d['options'])} options"
+        for o in d["options"]:
+            assert o.get("label"), f"{o['id']} has no label"
+            assert o.get("detail"), f"{o['id']} has no detail"
+            assert o.get("countries"), f"{o['id']} is tagged to no country"
+            pol = o.get("political")
+            assert pol is not None and 0 <= pol <= 100, f"{o['id']} political out of range"
+            soc = o.get("social")
+            assert soc is not None and 0 <= soc <= 100, f"{o['id']} social out of range"
+            if d["id"] == TAX_DOMAIN:
+                assert "revenue" in o, f"{o['id']} is a tax option with no revenue"
+                assert "financial" not in o, f"{o['id']} must not also carry a financial cost"
+            else:
+                assert "financial" in o, f"{o['id']} has no financial cost"
+                assert "revenue" not in o, f"{o['id']} is not a tax option"
+
+
+def test_option_ids_are_globally_unique():
+    ids = [o["id"] for d in DOMAINS for o in d["options"]]
+    assert len(set(ids)) == len(ids), "option ids collide across domains"
