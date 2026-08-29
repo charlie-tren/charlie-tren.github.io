@@ -23,6 +23,27 @@ see exactly what they disagree with.
   social     points out of 100. Cohesion and personal-freedom cost, and the
              friction the policy creates.
 
+POLITICAL IS WHAT IT COSTS TO ENACT AND SOCIAL IS WHAT IT COSTS TO LIVE WITH,
+and the two routinely move in OPPOSITE directions. That reading was applied
+across the file on 2026-08-29 and it changed thirty-five numbers, each annotated
+where it sits. Before it, political and social were near-perfectly correlated:
+every domain priced its moderate consensus option lowest on both, which made the
+three budgets one budget, turned each domain into a ladder, and left 73 of the
+options strictly dominated. A visitor with a calculator would have picked the
+same centrist package thirteen times and the reveal would have sorted almost
+everyone onto the same handful of countries.
+
+The correlation was an artefact of scoring familiarity rather than cost. Many
+policies are hard to pass and pleasant to live under: a clean grid, a pension
+that abolishes old-age poverty, near-universal home ownership. Many are easy to
+pass and unpleasant to live under: doing nothing about pollution, restricting
+speech, tough-on-crime sentencing. The do-nothing options were the worst of it,
+priced as free on every budget when inaction has real costs that simply do not
+appear on a ledger. `test_no_option_is_strictly_dominated` is the check that
+holds this open, and it caps the count at six rather than zero because a genuine
+outlier is allowed. Two remain, both on `en_car_free`, and the reason is in the
+comment beside it.
+
 `axis` is the value this option implies on its domain's axis, in that axis's own
 unit. An option may also contribute to `redistribution`, which is summed across
 the tax, work and family choices.
@@ -91,10 +112,15 @@ DOMAINS = [
              "countries": ["NL", "CH", "DE", "FR", "JP", "KR", "IL", "CL"],
              "financial": 7.5, "political": 30, "social": 15,
              "axis": {"health_public": 78.0}},
+            # Social raised from 10 on 2026-08-29. A universal service with a paid fast
+            # lane sorts patients by what they can pay at the moment they are least able
+            # to shop, and that resentment is a real cohesion cost. Pricing it as the
+            # least divisive option here made it dominate every other healthcare choice
+            # on all three budgets at once.
             {"id": "hc_mixed", "label": "Public with a private tier",
              "detail": "Universal public cover, and you may pay to go faster.",
              "countries": ["AU", "NZ", "CA", "DK", "SE", "NO", "FI", "EE", "AE"],
-             "financial": 7.0, "political": 20, "social": 10,
+             "financial": 7.0, "political": 20, "social": 22,
              "axis": {"health_public": 80.0}},
             # UK label and detail corrected 2026-08-29. The original read "Fully
             # public, no private tier" and "Paying to skip the queue is not
@@ -106,10 +132,13 @@ DOMAINS = [
             # Accounts put the government share of UK healthcare spending at 81.3%
             # in 2024, so it is set to that.
             # https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/healthcaresystem/bulletins/ukhealthaccounts/2024and2025
+            # Social cut from 25. One service everyone uses, with the rich and the poor in
+            # the same queue, is the least socially divisive arrangement in the domain.
+            # What it costs is money and political capital, not cohesion.
             {"id": "hc_public", "label": "Tax-funded national service",
              "detail": "One service for everyone, free at the point of use and paid for out of "
                        "general taxation. A private sector exists alongside it, unsubsidised.",
-             "countries": ["UK"], "financial": 9.0, "political": 45, "social": 25,
+             "countries": ["UK"], "financial": 9.0, "political": 45, "social": 12,
              "axis": {"health_public": 81.3}},
         ],
     },
@@ -123,9 +152,12 @@ DOMAINS = [
              "countries": ["US", "KR", "JP", "CL", "SG"],
              "financial": 4.2, "political": 10, "social": 25,
              "axis": {"education_spend": 4.2}},
+            # Social raised from 12. Deferred fees hand young adults a debt that follows
+            # them for decades and shapes when they can buy a house or start a family.
+            # That was priced at almost nothing.
             {"id": "ed_deferred", "label": "Free at school, deferred fees after",
              "detail": "Tertiary costs are paid back through the tax system once you earn.",
-             "countries": ["AU", "NZ", "UK"], "financial": 4.8, "political": 20, "social": 12,
+             "countries": ["AU", "NZ", "UK"], "financial": 4.8, "political": 20, "social": 22,
              "axis": {"education_spend": 4.8}},
             {"id": "ed_vocational", "label": "Free, with an early vocational track",
              "detail": "Free through university, and most students stream into apprenticeships.",
@@ -136,9 +168,13 @@ DOMAINS = [
              "countries": ["DK", "SE", "NO", "FI", "EE", "FR", "IL"],
              "financial": 6.3, "political": 35, "social": 10,
              "axis": {"education_spend": 6.3}},
+            # Financial cut from 5.4. Free tuition behind a hard selection filter educates
+            # far fewer people to the level that costs money, so it is genuinely the
+            # cheapest of the five rather than the middle. Its price is the 45 political
+            # and the 40 social of sorting children by examination.
             {"id": "ed_free_selective", "label": "Free, and selective from twelve",
              "detail": "No tuition, and an exam at twelve decides which school you attend.",
-             "countries": ["CA"], "financial": 5.4, "political": 45, "social": 40,
+             "countries": ["CA"], "financial": 4.0, "political": 45, "social": 40,
              "axis": {"education_spend": 5.4}},
         ],
     },
@@ -152,6 +188,9 @@ DOMAINS = [
              "countries": ["US", "AU", "NZ", "CA", "EE", "CL", "IL", "AE"],
              "financial": 0.3, "political": 5, "social": 30,
              "axis": {"social_housing": 4.0}},
+            # Social raised from 15. Demand-side help is capitalised into prices, so it
+            # lifts the price for everyone who does not qualify. That is the best
+            # documented cost in the domain and it was not in the number.
             {"id": "ho_subsidy", "label": "Private market with rent support",
              "detail": "Cash help with rent rather than housing built by the state.",
              # SE moved here from ho_cooperative 2026-08-29. OECD PH4.2 excludes
@@ -168,7 +207,7 @@ DOMAINS = [
              # https://www.oecd.org/content/dam/oecd/en/data/datasets/affordable-housing-database/ph4-2-social-rental-housing-stock.pdf
              # https://www.sverigesallmannytta.se/in-english/public-housing-in-sweden/
              "countries": ["UK", "DE", "JP", "KR", "CH", "NO", "FI", "SE"],
-             "financial": 1.2, "political": 15, "social": 15,
+             "financial": 1.2, "political": 15, "social": 25,
              "axis": {"social_housing": 12.0}},
             {"id": "ho_cooperative", "label": "Co-operative and non-profit rental",
              "detail": "A large regulated rental sector run by non-profits, alongside a private market.",
@@ -182,19 +221,50 @@ DOMAINS = [
             # said "a third of the stock"; both are now 29%.
             # https://www.oecd.org/content/dam/oecd/en/data/datasets/affordable-housing-database/ph4-2-social-rental-housing-stock.pdf
             # https://www.government.nl/topics/housing/rented-housing
+            # Social cut from 20. Dutch associations let to a broad income mix rather than
+            # a residual poor, which is exactly what stops a large social sector becoming
+            # an estate problem. The cost is the 45 political of building it.
             {"id": "ho_social", "label": "Large social rental sector",
              "detail": "Non-profit housing associations own close to 29% of the stock "
                        "and let it below market rent.",
-             "countries": ["NL"], "financial": 2.0, "political": 45, "social": 20,
+             "countries": ["NL"], "financial": 2.0, "political": 45, "social": 12,
              "axis": {"social_housing": 29.0}},
             # SG verified 2026-08-29: about 78% of the resident population lives in
             # HDB flats, and roughly nine in ten of those households own their flat
-            # on a 99-year lease. Tag and figure both survive.
+            # on a 99-year lease. Tag and label both survive.
             # https://www.statista.com/statistics/966747/population-living-in-public-housing-singapore/
+            #
+            # THE AXIS VALUE WAS 78.0 AND IT WAS ON THE WRONG BASIS, corrected
+            # 2026-08-29. 78 is the share of the resident population LIVING in HDB
+            # housing. The social_housing axis measures social RENTAL stock as a
+            # share of all dwellings, per OECD PH4.2, and its bounds are (0, 38),
+            # so a marker at 78 would have been clamped to the far edge and read as
+            # a fact. Same fault as the tax_take one already fixed, where the World
+            # Bank series measured central government revenue while the options
+            # were written on the OECD total-tax basis: the fix is to put both
+            # sides on one basis.
+            #
+            # On the PH4.2 basis: HDB rental flats under management were 63,558 as
+            # at 31 March 2025 (HDB Key Statistics 2024/2025, Residential
+            # Properties, Rental Flats total), against 1,623,242 total residential
+            # dwelling units as at end-June 2025 (SingStat via data.gov.sg,
+            # Residential Dwellings). 63,558 / 1,623,242 = 3.9%.
+            # https://www.hdb.gov.sg/-/media/hdb-pulse/reports/annual-reports-and-financial-statements/HDB_Key-Statistics-2025.pdf
+            # https://data.gov.sg/datasets/d_6c58a523a05b55836f383fa2a68d332d/view
+            #
+            # THE CONSEQUENCE IS THE INTERESTING PART, not a defect: on this axis
+            # the Singapore model correctly reads LOW, near Australia's 3.2%,
+            # because its flats are sold rather than let. A country can house
+            # almost everyone through the state and still hold almost no social
+            # rental stock. That is the whole point of the policy.
+            # Social cut from 35. A country where nearly everyone owns their home has the
+            # least housing-driven inequality in the set. This model's cost is political,
+            # and it is already priced at 70: compulsory land acquisition and a forced
+            # savings scheme.
             {"id": "ho_singapore", "label": "State-built flats, sold to residents",
              "detail": "The state builds most housing and sells it on long leases. Most people own.",
-             "countries": ["SG"], "financial": 2.4, "political": 70, "social": 35,
-             "axis": {"social_housing": 78.0}},
+             "countries": ["SG"], "financial": 2.4, "political": 70, "social": 10,
+             "axis": {"social_housing": 3.9}},
         ],
     },
     {
@@ -232,6 +302,10 @@ DOMAINS = [
              "countries": ["DK", "SE", "NO", "FI", "DE", "JP", "KR"],
              "financial": 9.0, "political": 25, "social": 10,
              "axis": {"pension_spend": 9.0}},
+            # Social cut from 15. A pension generous enough to hold every retiree near the
+            # working-age median abolishes old-age poverty, which is the lowest cohesion
+            # cost in the domain. What it costs is the 14.0% of GDP and the political
+            # capital to keep it there.
             {"id": "re_generous", "label": "Generous earnings-related, early retirement",
              "detail": "A high replacement rate and a low pension age.",
              # AE added 2026-08-29. GPSSA pays 60% of the last five years' average
@@ -246,7 +320,7 @@ DOMAINS = [
              # only, who are roughly an eighth of the residents. Everyone else gets
              # an end-of-service gratuity and no pension at all. None of the five
              # options describes that, so this cell describes the citizen system.
-             "countries": ["FR", "AE"], "financial": 14.0, "political": 45, "social": 15,
+             "countries": ["FR", "AE"], "financial": 14.0, "political": 45, "social": 8,
              "axis": {"pension_spend": 14.0}},
         ],
     },
@@ -255,9 +329,13 @@ DOMAINS = [
         "name": "Transport and Energy",
         "axis": "grid_carbon",
         "options": [
+            # Social raised from 10. An unpriced fossil grid with roads as the transport
+            # plan carries the domain's largest local health burden. Pricing pollution at
+            # nothing made doing nothing cheaper than every alternative on all three
+            # budgets, which is the worst incentive the page could hand a visitor.
             {"id": "en_fossil", "label": "Cheap fossil power, cars assumed",
              "detail": "No carbon price. Roads are the transport plan.",
-             "countries": ["US", "AE", "AU"], "financial": 0.4, "political": 5, "social": 10,
+             "countries": ["US", "AE", "AU"], "financial": 0.4, "political": 5, "social": 40,
              "axis": {"grid_carbon": 480.0}},
             # NL, JP, SG and KR moved here 2026-08-29, three of them from en_hydro
             # and Korea from en_nuclear. All four price emissions and none of them
@@ -293,9 +371,12 @@ DOMAINS = [
             # reactors" is only true of France, whose grid is 41.4 g/kWh against
             # Korea's 417.1.
             # https://ember-energy.org/latest-updates/fossil-fuels-fall-below-50-of-south-koreas-electricity-for-the-first-month-on-record/
+            # Social cut from 30. A reactor fleet is the lowest-emitting firm supply in the
+            # set and imposes no local air-quality burden at all. The friction is siting
+            # and public fear, and that is already the 70 political.
             {"id": "en_nuclear", "label": "Nuclear baseload",
              "detail": "Most power from reactors the state builds and guarantees.",
-             "countries": ["FR"], "financial": 2.2, "political": 70, "social": 30,
+             "countries": ["FR"], "financial": 2.2, "political": 70, "social": 20,
              "axis": {"grid_carbon": 60.0}},
             # JP, NL and SG removed 2026-08-29. This option makes two claims and
             # they were being treated as one: a clean grid AND a transport network
@@ -308,9 +389,16 @@ DOMAINS = [
              "countries": ["NO", "SE", "FI", "CH"],
              "financial": 2.4, "political": 45, "social": 20,
              "axis": {"grid_carbon": 45.0}},
+            # Financial cut from 3.2. The option's own instruments, fuel excise, stamp duty
+            # and an annual road fee, are revenue collected against the tram and rail
+            # build, so the net draw on the budget is well below the gross cost of the
+            # network. It is STILL dominated by the two cheapest energy options on all
+            # three budgets, and that is left alone: it is the one thing in this domain
+            # nobody does, and it is dearer than doing nothing in every currency the page
+            # counts. See test_no_option_is_strictly_dominated.
             {"id": "en_car_free", "label": "Private combustion cars banned",
              "detail": "Trams and rail carry everyone. Fuel excise, stamp duty and an annual fee price the rest off the road.",
-             "countries": [], "financial": 3.2, "political": 85, "social": 80,
+             "countries": [], "financial": 1.8, "political": 85, "social": 80,
              "axis": {"grid_carbon": 30.0}},
             {"id": "en_deposit", "label": "Clean grid and a deposit-return scheme",
              "detail": "A clean grid and good rail, cars still allowed, and every container carries a refundable deposit.",
@@ -327,9 +415,12 @@ DOMAINS = [
              "detail": "No legal limit on what may be said, including hatred and defamation.",
              "countries": [], "financial": 0.0, "political": 60, "social": 65,
              "axis": {"expression": 0.97}},
+            # Political cut from 25. A near-absolute protection is one constitutional
+            # clause and, once written, needs no standing apparatus to enforce. What it
+            # costs is living with what it permits, which is the 30 social.
             {"id": "sp_first_amendment", "label": "Near-absolute, narrow exceptions",
              "detail": "Speech is protected except for incitement and a short list of harms.",
-             "countries": ["US"], "financial": 0.1, "political": 25, "social": 30,
+             "countries": ["US"], "financial": 0.1, "political": 14, "social": 30,
              "axis": {"expression": 0.93}},
             # KR and JP moved here from sp_order 2026-08-29. Both sit above several
             # countries already on this option on the measured axis, so putting them
@@ -357,13 +448,20 @@ DOMAINS = [
             # Singapore alone from 2026-08-29. It is the only one of the twenty with
             # a standing public-order speech regime, and at 0.40 it is 0.45 clear of
             # the next country in the set.
+            # Political cut from 30. Public-order limits need no constitutional
+            # entrenchment and no institution to defend them. A legislature can pass them
+            # in a session, which is precisely why they spread. The cost is social.
             {"id": "sp_order", "label": "Limited where it threatens public order",
              "detail": "Speech that the state judges divisive or destabilising is restricted.",
-             "countries": ["SG"], "financial": 0.2, "political": 30, "social": 45,
+             "countries": ["SG"], "financial": 0.2, "political": 12, "social": 45,
              "axis": {"expression": 0.62}},
+            # Political cut from 45 and social raised from 70. State control of speech is
+            # the cheapest thing in this domain to impose, because it removes the
+            # institution that would resist it, and by a distance the most expensive to
+            # live under. Pricing it as dear on both made it a choice nobody could reach.
             {"id": "sp_restricted", "label": "State-controlled",
              "detail": "Criticism of the state and its rulers is prosecuted.",
-             "countries": ["AE"], "financial": 0.3, "political": 45, "social": 70,
+             "countries": ["AE"], "financial": 0.3, "political": 8, "social": 85,
              "axis": {"expression": 0.20}},
         ],
     },
@@ -376,9 +474,13 @@ DOMAINS = [
              "detail": "Rulers are not chosen at the ballot box.",
              "countries": ["AE"], "financial": 0.0, "political": 90, "social": 80,
              "axis": {"disproportionality": None}},
+            # Social raised from 10. This option's own axis value is the evidence: the UK
+            # sits at 23.64 on the Gallagher index, the highest in the set. A system that
+            # regularly seats a government most people voted against carries a real
+            # legitimacy cost, and it was priced as the least costly system here.
             {"id": "vo_fptp", "label": "First past the post, voluntary",
              "detail": "One member per seat, most votes wins, turnout is up to you.",
-             "countries": ["US", "UK", "CA"], "financial": 0.1, "political": 10, "social": 10,
+             "countries": ["US", "UK", "CA"], "financial": 0.1, "political": 10, "social": 38,
              "axis": {"disproportionality": 14.0}},
             {"id": "vo_preferential", "label": "Preferential and compulsory",
              "detail": "You rank the candidates, and voting is a legal duty.",
@@ -389,13 +491,19 @@ DOMAINS = [
              "countries": ["DK", "SE", "NO", "FI", "NL", "DE", "NZ", "EE", "IL", "CL", "JP", "KR"],
              "financial": 0.2, "political": 45, "social": 15,
              "axis": {"disproportionality": 3.0}},
+            # Social cut from 25. A law any citizen can put to a public vote is the hardest
+            # in the set to call imposed. The cost is the political capital to build the
+            # machinery and then live with it, which is the 70.
             {"id": "vo_direct", "label": "Proportional plus binding referendums",
              "detail": "Any law can be put to a public vote by petition.",
-             "countries": ["CH"], "financial": 0.4, "political": 70, "social": 25,
+             "countries": ["CH"], "financial": 0.4, "political": 70, "social": 10,
              "axis": {"disproportionality": 2.5}},
+            # Financial cut from 0.2. An age cap is a line in the electoral act. It is the
+            # cheapest thing in this file to administer, and the whole cost is the 75
+            # political of disqualifying people by birthdate.
             {"id": "vo_age_cap", "label": "Proportional, with an age cap on representatives",
              "detail": "Seats match the vote, and nobody may stand past a fixed age.",
-             "countries": [], "financial": 0.2, "political": 75, "social": 35,
+             "countries": [], "financial": 0.05, "political": 75, "social": 35,
              "axis": {"disproportionality": 3.0}},
         ],
     },
@@ -408,10 +516,13 @@ DOMAINS = [
              "detail": "Easy to hire and fire. Unemployment help is short and conditional.",
              "countries": ["US", "SG", "AE", "KR"], "financial": 0.8, "political": 10, "social": 30,
              "axis": {"bargaining": 12.0, "redistribution": 0.01}},
+            # Social raised from 15. A wage floor with no collective voice leaves the pay
+            # dispersion and the in-work poverty that the sector-bargaining countries do
+            # not have. It was priced as the least frictional option in the domain.
             {"id": "wo_minimum", "label": "Statutory minimums, weak unions",
              "detail": "The law sets a wage floor and leave. Bargaining is mostly individual.",
              "countries": ["UK", "NZ", "JP", "CA", "EE", "CL", "IL", "CH"],
-             "financial": 1.4, "political": 20, "social": 15,
+             "financial": 1.4, "political": 20, "social": 26,
              "axis": {"bargaining": 28.0, "redistribution": 0.03}},
             {"id": "wo_bargaining", "label": "Sector-wide bargaining",
              "detail": "Unions and employers set pay across a whole industry, members or not.",
@@ -420,17 +531,27 @@ DOMAINS = [
              "countries": ["DE", "NL", "AU", "DK", "FI"],
              "financial": 1.8, "political": 45, "social": 20,
              "axis": {"bargaining": 80.0, "redistribution": 0.06}},
+            # Social cut from 20. Six weeks guaranteed and twelve public holidays is the
+            # lowest-friction thing here to live under. Its cost is the money and the 55
+            # political of legislating it over employers.
             {"id": "wo_mandated_leave", "label": "Sector bargaining, six weeks leave",
              "detail": "Industry-wide pay deals, and the law guarantees six weeks paid leave and twelve public holidays.",
-             "countries": ["SE", "FR"], "financial": 2.2, "political": 55, "social": 20,
+             "countries": ["SE", "FR"], "financial": 2.2, "political": 55, "social": 12,
              "axis": {"bargaining": 90.0, "redistribution": 0.07}},
+            # Social cut from 45. An unconditional payment removes the means test, the
+            # stigma and the poverty trap, which are the cohesion costs every other option
+            # in this domain carries. What UBI costs is money and political capital, and
+            # both are already the highest in the file at 9.0 and 80.
             {"id": "wo_ubi", "label": "Universal basic income",
              "detail": "Every adult gets an unconditional payment. Most other benefits fold into it.",
-             "countries": [], "financial": 9.0, "political": 80, "social": 45,
+             "countries": [], "financial": 9.0, "political": 80, "social": 10,
              "axis": {"bargaining": 40.0, "redistribution": 0.14}},
+            # Social cut from 55. Norway has published tax returns for over a century and
+            # it is unremarkable there; open pay narrows the gaps that drive workplace
+            # resentment. The cost is the privacy friction and the 60 political.
             {"id": "wo_transparency", "label": "Sector bargaining, every salary public",
              "detail": "Industry-wide pay deals, and any salary can be looked up. The viewee sees who looked.",
-             "countries": ["NO"], "financial": 1.9, "political": 60, "social": 55,
+             "countries": ["NO"], "financial": 1.9, "political": 60, "social": 18,
              "axis": {"bargaining": 80.0, "redistribution": 0.07}},
         ],
     },
@@ -455,17 +576,28 @@ DOMAINS = [
              "countries": ["DK", "NO", "NL", "DE", "CA", "NZ", "EE", "JP", "AU", "UK", "CL"],
              "financial": 1.8, "political": 20, "social": 8,
              "axis": {"military_burden": 1.8}},
+            # Political cut from 45. A militia needs no ally's consent and no treaty. See
+            # de_conscript below for the reasoning across this domain.
             {"id": "de_militia", "label": "Neutral, with militia conscription",
              "detail": "No alliance. Most men serve, then keep their kit and train for years.",
-             "countries": ["CH", "FI", "SE"], "financial": 1.5, "political": 45, "social": 55,
+             "countries": ["CH", "FI", "SE"], "financial": 1.5, "political": 25, "social": 55,
              "axis": {"military_burden": 1.5}},
+            # Political cut from 60. IN DEFENCE THE POLITICAL COST IS MOSTLY WHOSE
+            # AGREEMENT YOU NEED. Neutrality means forgoing allies and alliance means
+            # negotiating a treaty someone else can refuse. Universal service needs one
+            # act of parliament, no ally's consent, no basing agreement and no fleet, so
+            # it is the cheapest posture here to enact, which is why states under threat
+            # reach for it first. The cost lands on a year of everybody's life: the 75.
             {"id": "de_conscript", "label": "Mandatory service, twelve months",
              "detail": "Everyone serves. The force is large relative to the population.",
-             "countries": ["IL", "KR"], "financial": 4.5, "political": 60, "social": 75,
+             "countries": ["IL", "KR"], "financial": 4.5, "political": 12, "social": 75,
              "axis": {"military_burden": 4.5}},
+            # Political cut from 40. Same reading: a blue-water navy needs no treaty, no
+            # conscript and no constitutional change. It needs a budget, and the budget is
+            # already the 3.4.
             {"id": "de_power", "label": "Global force projection",
              "detail": "Bases abroad, a blue-water navy, and the spending that goes with them.",
-             "countries": ["US", "FR", "AE"], "financial": 3.4, "political": 40, "social": 25,
+             "countries": ["US", "FR", "AE"], "financial": 3.4, "political": 15, "social": 25,
              "axis": {"military_burden": 3.4}},
         ],
     },
@@ -487,21 +619,32 @@ DOMAINS = [
              "countries": ["DK", "FR", "UK", "IT", "CL", "CH"],
              "financial": 0.3, "political": 20, "social": 20,
              "axis": {"foreign_born": 15.0}},
+            # Social cut from 30. An intake selected for skills with a real path to
+            # citizenship produces the smallest permanent outsider population of the five,
+            # which is the cohesion cost the others are carrying. It was priced highest.
             {"id": "im_points", "label": "High skilled intake, real path to citizenship",
              "detail": "A points system brings people in, and most of them can become citizens.",
              # DE removed 2026-08-29: Germany sits on im_open in the matrix.
              "countries": ["CA", "AU", "NZ", "SE", "NO", "IL", "SG", "US"],
-             "financial": 0.5, "political": 30, "social": 30,
+             "financial": 0.5, "political": 30, "social": 14,
              "axis": {"foreign_born": 25.0}},
+            # Financial cut from 0.2. A guest-worker regime is the cheapest immigration
+            # system here to run: no settlement services, no citizenship pathway, no
+            # language programmes, and employers carry the rest. The cost is the 60 social
+            # of a permanent underclass.
             {"id": "im_guest", "label": "Very high intake, no path to citizenship",
              "detail": "Most residents are foreign workers on visas that never lead anywhere.",
-             "countries": ["AE"], "financial": 0.2, "political": 55, "social": 60,
+             "countries": ["AE"], "financial": 0.05, "political": 55, "social": 60,
              "axis": {"foreign_born": 85.0}},
+            # Social cut from 45. Movement inside a union of peer states is the least
+            # disruptive intake in the set where it exists: arrivals hold the same rights
+            # as everyone else and many return. The cost is the 65 political of
+            # surrendering the border.
             {"id": "im_open", "label": "Open borders within a bloc",
              "detail": "Anyone from the union may live and work without a visa.",
              # DK, FR and SE removed 2026-08-29: all three sit on a third-country cell.
              "countries": ["EE", "DE", "NL", "FI"],
-             "financial": 0.4, "political": 65, "social": 45,
+             "financial": 0.4, "political": 65, "social": 18,
              "axis": {"foreign_born": 20.0}},
         ],
     },
@@ -520,19 +663,29 @@ DOMAINS = [
              "countries": ["DE", "FR", "CA", "IE", "CH", "KR", "IT"],
              "financial": 0.5, "political": 10, "social": 10,
              "axis": {"incarceration": 100.0}},
+            # Political cut from 15. Tough on crime is the cheapest criminal-justice
+            # position in the file to campaign on and needs no institutional change beyond
+            # sentencing law, which is why it is the default drift of every democracy in
+            # the set. The cost is the prison budget and the people inside it.
             {"id": "ju_tough", "label": "Long sentences, high imprisonment",
              "detail": "Long terms, limited parole, and a large prison population.",
              "countries": ["US", "IL", "CL", "NZ", "AU", "UK", "EE"],
-             "financial": 0.9, "political": 15, "social": 35,
+             "financial": 0.9, "political": 8, "social": 35,
              "axis": {"incarceration": 300.0}},
+            # Financial cut from 0.4. Caning and execution are the cheapest sanctions in
+            # the file to administer and the prison population they leave is small, so the
+            # state's outlay is the lowest in the domain. The cost is entirely social.
             {"id": "ju_corporal", "label": "Severe penalties, caning and capital punishment",
              "detail": "Harsh punishments for a wide range of offences, and very low crime.",
-             "countries": ["SG", "AE"], "financial": 0.4, "political": 55, "social": 65,
+             "countries": ["SG", "AE"], "financial": 0.15, "political": 55, "social": 65,
              "axis": {"incarceration": 190.0}},
+            # Financial cut from 0.5. Treating possession as health rather than crime
+            # removes the prosecutions and the prison places; Portugal's dissuasion panels
+            # cost less than the court time they replaced.
             {"id": "ju_decriminalised", "label": "Rehabilitation, drugs decriminalised",
              "detail": "Short sentences and a small prison population, and possessing any drug "
                        "is treated as a health matter rather than a crime.",
-             "countries": ["PT"], "financial": 0.5, "political": 60, "social": 45,
+             "countries": ["PT"], "financial": 0.3, "political": 60, "social": 45,
              "axis": {"incarceration": 90.0}},
         ],
     },
@@ -541,14 +694,20 @@ DOMAINS = [
         "name": "Family and Children",
         "axis": "family_spend",
         "options": [
+            # Social raised from 30. A country that offers families nothing pushes the
+            # whole cost of the next generation onto parents, and the withdrawal from work
+            # and the birth rate that follow are the largest cohesion cost in the domain.
             {"id": "fa_none", "label": "No state support",
              "detail": "Childcare and leave are between you and your employer.",
-             "countries": ["US", "AE", "SG", "KR"], "financial": 0.6, "political": 5, "social": 30,
+             "countries": ["US", "AE", "SG", "KR"], "financial": 0.6, "political": 5, "social": 42,
              "axis": {"family_spend": 0.6, "redistribution": 0.00}},
+            # Social raised from 10. Means-tested help carries the withdrawal tapers, the
+            # paperwork and the stigma that universal payments do not. Pricing it as the
+            # lowest-friction design in the domain was the artefact.
             {"id": "fa_targeted", "label": "Payments to those who need them",
              "detail": "Means-tested help with childcare and a modest paid leave scheme.",
              "countries": ["AU", "NZ", "CA", "JP", "NL", "CH", "IL", "CL", "EE"],
-             "financial": 1.8, "political": 15, "social": 10,
+             "financial": 1.8, "political": 15, "social": 28,
              "axis": {"family_spend": 1.8, "redistribution": 0.02}},
             {"id": "fa_universal", "label": "Universal child benefit and cheap childcare",
              "detail": "Every family is paid per child, and childcare is capped at a low price.",
@@ -557,14 +716,21 @@ DOMAINS = [
              "countries": ["DK", "FI", "DE", "UK"],
              "financial": 3.3, "political": 30, "social": 12,
              "axis": {"family_spend": 3.3, "redistribution": 0.05}},
+            # Political cut from 45. Cash for children is among the least contested
+            # transfers in the file to legislate; almost nobody organises against it, which
+            # is why states reach for it when fertility falls. The cost is the money and
+            # the 35 social of transfers aimed at one kind of family.
             {"id": "fa_pronatal", "label": "Payments to have more children",
              "detail": "Large transfers, loans forgiven per child, tax relief for big families.",
-             "countries": ["HU", "FR"], "financial": 3.8, "political": 45, "social": 35,
+             "countries": ["HU", "FR"], "financial": 3.8, "political": 12, "social": 35,
              "axis": {"family_spend": 3.8, "redistribution": 0.04}},
+            # Social cut from 15. A long shared leave is the single thing that most reduces
+            # the career penalty of having a child, so it is the lowest-friction option in
+            # the domain rather than a surcharge on the universal one.
             {"id": "fa_leave", "label": "Universal, with a long shared parental leave",
              "detail": "Every family gets a per-child benefit and capped-price childcare, plus "
                        "more than a year of paid leave split between parents.",
-             "countries": ["SE", "NO"], "financial": 3.6, "political": 40, "social": 15,
+             "countries": ["SE", "NO"], "financial": 3.6, "political": 40, "social": 8,
              "axis": {"family_spend": 3.6, "redistribution": 0.05}},
         ],
     },
