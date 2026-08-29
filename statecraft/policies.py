@@ -154,12 +154,25 @@ DOMAINS = [
              "axis": {"social_housing": 4.0}},
             {"id": "ho_subsidy", "label": "Private market with rent support",
              "detail": "Cash help with rent rather than housing built by the state.",
-             "countries": ["UK", "DE", "JP", "KR", "CH", "NO", "FI"],
+             # SE moved here from ho_cooperative 2026-08-29. OECD PH4.2 excludes
+             # Sweden from the social rental housing indicator outright, because
+             # municipal housing company rents "are not set at below-market levels
+             # and are thus not considered as social housing in this indicator".
+             # Sveriges Allmannytta puts allmannyttan at just under 20% of the
+             # stock, but it is let at market rent and is open to everyone, so it
+             # is not a below-market non-profit sector. Sweden's redistributive
+             # housing instrument is the cash allowance (bostadsbidrag, and
+             # bostadstillagg for pensioners), which is exactly this option. Not
+             # ho_market, because rents are regulated on the bruksvarde system and
+             # a fifth of the stock is municipally owned.
+             # https://www.oecd.org/content/dam/oecd/en/data/datasets/affordable-housing-database/ph4-2-social-rental-housing-stock.pdf
+             # https://www.sverigesallmannytta.se/in-english/public-housing-in-sweden/
+             "countries": ["UK", "DE", "JP", "KR", "CH", "NO", "FI", "SE"],
              "financial": 1.2, "political": 15, "social": 15,
              "axis": {"social_housing": 12.0}},
             {"id": "ho_cooperative", "label": "Co-operative and non-profit rental",
              "detail": "A large regulated rental sector run by non-profits, alongside a private market.",
-             "countries": ["DK", "SE", "FR"], "financial": 1.6, "political": 35, "social": 15,
+             "countries": ["DK", "FR"], "financial": 1.6, "political": 35, "social": 15,
              "axis": {"social_housing": 22.0}},
             # NL verified 2026-08-29 and the figure cut. OECD PH4.2 groups the
             # Netherlands with Austria and Denmark at "over 20% of the total housing
@@ -200,7 +213,10 @@ DOMAINS = [
             {"id": "re_private", "label": "Private accounts, mandatory",
              "detail": "Retirement is funded mostly out of your own compulsory fund. "
                        "The state pension is a floor only.",
-             "countries": ["CL", "SG", "AE"], "financial": 3.0, "political": 55, "social": 30,
+             # AE removed 2026-08-29 and moved to re_generous. There are no
+             # mandatory individual accounts in the UAE. GPSSA is a contributory
+             # pay-as-you-go defined-benefit scheme.
+             "countries": ["CL", "SG"], "financial": 3.0, "political": 55, "social": 30,
              "axis": {"pension_spend": 3.0}},
             {"id": "re_super", "label": "Means-tested pension plus mandatory saving",
              "detail": "A state pension for those who need it, and compulsory employer contributions.",
@@ -218,7 +234,19 @@ DOMAINS = [
              "axis": {"pension_spend": 9.0}},
             {"id": "re_generous", "label": "Generous earnings-related, early retirement",
              "detail": "A high replacement rate and a low pension age.",
-             "countries": ["FR"], "financial": 14.0, "political": 45, "social": 15,
+             # AE added 2026-08-29. GPSSA pays 60% of the last five years' average
+             # contribution salary at 15 years of service, rising 2% a year to a
+             # cap of 100% at 35 years, with a pension age of 60 and a resignation
+             # pension from 50 after 20 years. A 100% ceiling and a pension at 60
+             # is a higher replacement rate and a lower age than France, so this is
+             # the tighter of the two earnings-related options.
+             # https://www.gpssa.gov.ae/pages/en/help/faq/what-retirement-age-and-what-are-pension-entitlement-conditions-once-retired
+             # https://u.ae/en/information-and-services/jobs/working-in-uae-government-sector/pensions-and-social-security-for-uae-citizens
+             # CAVEAT the reveal must carry: GPSSA covers Emirati and GCC nationals
+             # only, who are roughly an eighth of the residents. Everyone else gets
+             # an end-of-service gratuity and no pension at all. None of the five
+             # options describes that, so this cell describes the citizen system.
+             "countries": ["FR", "AE"], "financial": 14.0, "political": 45, "social": 15,
              "axis": {"pension_spend": 14.0}},
         ],
     },
@@ -331,7 +359,9 @@ DOMAINS = [
              "axis": {"bargaining": 28.0, "redistribution": 0.03}},
             {"id": "wo_bargaining", "label": "Sector-wide bargaining",
              "detail": "Unions and employers set pay across a whole industry, members or not.",
-             "countries": ["DE", "NL", "AU", "DK", "NO", "FI"],
+             # NO removed 2026-08-29: Norway sits on wo_transparency, which is sector
+             # bargaining PLUS the skattelister, and is the more specific claim.
+             "countries": ["DE", "NL", "AU", "DK", "FI"],
              "financial": 1.8, "political": 45, "social": 20,
              "axis": {"bargaining": 80.0, "redistribution": 0.06}},
             {"id": "wo_mandated_leave", "label": "Sector bargaining, six weeks leave",
@@ -357,6 +387,13 @@ DOMAINS = [
              "detail": "No alliance, no conscription, a force sized for the border only.",
              "countries": ["IE"], "financial": 0.7, "political": 35, "social": 10,
              "axis": {"military_burden": 0.7}},
+            # AU queried and KEPT 2026-08-29. The option says "an alliance", not
+            # NATO, and it already carries NZ, JP and CL, none of which are NATO
+            # members either. Australia's treaty alliance is ANZUS, with AUKUS
+            # layered on top, and SIPRI puts its 2025 spend at 1.9% of GDP against
+            # this option's 1.8, so both limbs of the detail hold. The government's
+            # own 2.8% figure is on the NATO definition and is not comparable.
+            # https://www.sbs.com.au/news/article/global-military-spending-reaches-record-4-trillion/5014ife89
             {"id": "de_alliance", "label": "Small force inside an alliance",
              "detail": "Defence is shared with allies, so the standing force is modest.",
              "countries": ["DK", "NO", "NL", "DE", "CA", "NZ", "EE", "JP", "AU", "UK", "CL"],
@@ -387,12 +424,17 @@ DOMAINS = [
              "axis": {"foreign_born": 3.0}},
             {"id": "im_controlled", "label": "Controlled intake, long path to citizenship",
              "detail": "Selective entry, and naturalisation takes the better part of a decade.",
-             "countries": ["DK", "FI", "NL", "FR", "UK", "IT", "CL", "EE", "CH"],
+             # EE, FI and NL removed 2026-08-29: all three sit on im_open in the matrix.
+             # Every EU state is simultaneously open within the bloc and selective
+             # outside it, so a country tagged on both makes this domain claim two
+             # cells at once and the reveal would print whichever it hit first.
+             "countries": ["DK", "FR", "UK", "IT", "CL", "CH"],
              "financial": 0.3, "political": 20, "social": 20,
              "axis": {"foreign_born": 15.0}},
             {"id": "im_points", "label": "High skilled intake, real path to citizenship",
              "detail": "A points system brings people in, and most of them can become citizens.",
-             "countries": ["CA", "AU", "NZ", "SE", "NO", "DE", "IL", "SG", "US"],
+             # DE removed 2026-08-29: Germany sits on im_open in the matrix.
+             "countries": ["CA", "AU", "NZ", "SE", "NO", "IL", "SG", "US"],
              "financial": 0.5, "political": 30, "social": 30,
              "axis": {"foreign_born": 25.0}},
             {"id": "im_guest", "label": "Very high intake, no path to citizenship",
@@ -401,7 +443,8 @@ DOMAINS = [
              "axis": {"foreign_born": 85.0}},
             {"id": "im_open", "label": "Open borders within a bloc",
              "detail": "Anyone from the union may live and work without a visa.",
-             "countries": ["EE", "DE", "NL", "FR", "DK", "SE", "FI"],
+             # DK, FR and SE removed 2026-08-29: all three sit on a third-country cell.
+             "countries": ["EE", "DE", "NL", "FI"],
              "financial": 0.4, "political": 65, "social": 45,
              "axis": {"foreign_born": 20.0}},
         ],
@@ -453,7 +496,9 @@ DOMAINS = [
              "axis": {"family_spend": 1.8, "redistribution": 0.02}},
             {"id": "fa_universal", "label": "Universal child benefit and cheap childcare",
              "detail": "Every family is paid per child, and childcare is capped at a low price.",
-             "countries": ["DK", "SE", "NO", "FI", "DE", "UK"],
+             # SE and NO removed 2026-08-29: both sit on fa_leave, which is this option
+             # plus the long shared parental leave and is the more specific claim.
+             "countries": ["DK", "FI", "DE", "UK"],
              "financial": 3.3, "political": 30, "social": 12,
              "axis": {"family_spend": 3.3, "redistribution": 0.05}},
             {"id": "fa_pronatal", "label": "Payments to have more children",

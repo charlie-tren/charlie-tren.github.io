@@ -87,3 +87,31 @@ def test_thirteen_domains_in_a_fixed_order():
                 "speech", "voting", "work", "defence", "immigration", "justice", "family"]
     assert [d["id"] for d in DOMAINS] == expected, (
         "domain order is the URL encoding order: reordering breaks every shared link")
+
+
+from countries import COUNTRIES
+
+
+def test_every_country_has_exactly_one_option_in_every_domain():
+    domain_ids = {d["id"] for d in DOMAINS}
+    options_by_domain = {d["id"]: {o["id"] for o in d["options"]} for d in DOMAINS}
+    for c in COUNTRIES:
+        assert set(c["choices"]) == domain_ids, (
+            f"{c['code']} covers {sorted(set(c['choices']))}, needs {sorted(domain_ids)}")
+        for dom, opt in c["choices"].items():
+            assert opt in options_by_domain[dom], f"{c['code']}.{dom} = {opt} is not an option"
+
+
+def test_option_country_tags_name_a_country_that_holds_that_option():
+    """A tag on an option is a claim that some country does this. Where that
+    country is in the matrix, the matrix must agree. Tags naming countries
+    outside the twenty are allowed and are how the menu proves it is not
+    invented, so they are skipped rather than failed."""
+    in_matrix = {c["code"]: c["choices"] for c in COUNTRIES}
+    for d in DOMAINS:
+        for o in d["options"]:
+            for code in o["countries"]:
+                if code in in_matrix:
+                    assert in_matrix[code][d["id"]] == o["id"], (
+                        f"{o['id']} is tagged {code}, but the matrix has {code}.{d['id']} "
+                        f"= {in_matrix[code][d['id']]}")
