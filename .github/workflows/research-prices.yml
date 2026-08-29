@@ -8,6 +8,13 @@ on:
   schedule:
     - cron: "50 21 * * 1-5"
   workflow_dispatch:
+  # Fired by the heartbeat Worker (site-stats/heartbeat) at 20:30 UTC, from
+  # OUTSIDE GitHub Actions. Added 29/08/2026 once GitHub's scheduler was measured
+  # running 3-7 hours late for this account every night: these prices appear on a
+  # live page next to a Buy or Hold call, so arriving mid-afternoon is visible.
+  # The Worker skips this one at weekends, matching the 1-5 cron above.
+  repository_dispatch:
+    types: [heartbeat-prices]
 
 jobs:
   prices:
