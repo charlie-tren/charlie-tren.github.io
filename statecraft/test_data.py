@@ -80,3 +80,10 @@ def test_a_null_axis_value_is_does_not_apply_not_missing():
     for d in DOMAINS:
         for o in d["options"]:
             assert d["axis"] in o["axis"], f"{o['id']} does not set {d['axis']}"
+
+
+def test_thirteen_domains_in_a_fixed_order():
+    expected = ["tax", "healthcare", "education", "housing", "retirement", "energy",
+                "speech", "voting", "work", "defence", "immigration", "justice", "family"]
+    assert [d["id"] for d in DOMAINS] == expected, (
+        "domain order is the URL encoding order: reordering breaks every shared link")
