@@ -34,7 +34,13 @@ def test_every_option_is_fully_costed():
         for o in d["options"]:
             assert o.get("label"), f"{o['id']} has no label"
             assert o.get("detail"), f"{o['id']} has no detail"
-            assert o.get("countries"), f"{o['id']} is tagged to no country"
+            # The KEY must exist; the LIST may be empty. An empty list is the
+            # deliberate claim that no country does this, which the reveal prints
+            # in as many words. A missing key is a forgotten field. Requiring a
+            # tag outright would delete UBI, absolute free speech, a car-free
+            # country and the age cap, which are the aspirational half of the menu.
+            assert isinstance(o.get("countries"), list), \
+                f"{o['id']} has no countries list"
             pol = o.get("political")
             assert pol is not None and 0 <= pol <= 100, f"{o['id']} political out of range"
             soc = o.get("social")
@@ -45,6 +51,20 @@ def test_every_option_is_fully_costed():
             else:
                 assert "financial" in o, f"{o['id']} has no financial cost"
                 assert "revenue" not in o, f"{o['id']} is not a tax option"
+
+
+def test_the_menu_stays_grounded():
+    """Untagged options are allowed and are the aspirational half of the menu.
+    Too many of them and the page stops being a comparison with real countries
+    and becomes a wishlist, which is the failure the country tags exist to
+    prevent. Print the share rather than only asserting on it: a bare pass here
+    says nothing about which way the number is drifting."""
+    options = [o for d in DOMAINS for o in d["options"]]
+    untagged = [o["id"] for o in options if not o["countries"]]
+    share = len(untagged) / len(options)
+    print(f"\nuntagged options: {len(untagged)} of {len(options)} "
+          f"({share:.0%}) {untagged}")
+    assert share <= 0.20, f"the menu has drifted into a wishlist: {untagged}"
 
 
 def test_option_ids_are_globally_unique():

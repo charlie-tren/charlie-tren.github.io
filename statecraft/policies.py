@@ -1,9 +1,16 @@
 """The thirteen domains and their options.
 
-Every option must be something a real country actually does, and carries the
-country tags to prove it. That constraint is what stops the menu being
-one-sided: the original spec's list was almost entirely interventionist, which
-would have collapsed every visitor onto Denmark and killed the reveal.
+Most options are something a real country actually does, and carry the country
+tags to prove it. That constraint is what stops the menu being one-sided: the
+original spec's list was almost entirely interventionist, which would have
+collapsed every visitor onto Denmark and killed the reveal.
+
+A SMALL MINORITY carry an empty `countries` list on purpose, and the empty list
+is a deliberate claim rather than a missing field: nobody does this. Universal
+basic income, absolute freedom of speech, banning private combustion cars and an
+age cap on representatives are all things a visitor should be able to choose and
+no country has. The reveal says so in as many words, and `test_the_menu_stays_
+grounded` holds the untagged share down so the page cannot drift into a wishlist.
 
 COSTS ARE SUBJECTIVE AND THE PAGE SAYS SO. They are published in full in the
 method section, as on DCF Studio and One Story, so a reader who disagrees can
@@ -53,15 +60,17 @@ DOMAINS = [
              "detail": "High broad-based income tax and a high VAT.",
              "countries": ["DK", "SE", "NO", "FI"], "revenue": 46.0, "political": 40, "social": 30,
              "axis": {"tax_take": 46.0, "redistribution": 0.24}},
-            # tax_departure ("Nordic take plus a departure tax", residents pay to
-            # leave and the money subsidises arrivals) was cut. It shipped with an
-            # empty country list because no country does it, which fails both the
-            # module's own rule that every option must be something a real country
-            # actually does and the test that enforces it. Exit taxes on unrealised
-            # gains are real, in Norway and the US among others, but no country runs
-            # one as a headline revenue regime that pays for immigration, so there is
-            # nothing honest to tag it to. The tax domain now has five options, the
-            # same as every other domain here.
+            # Untagged on purpose. Exit taxes on unrealised gains are real, in
+            # Norway and the US among others, but no country runs one as a headline
+            # revenue regime that pays for immigration, so there is nothing to tag
+            # it to and the reveal says "which no country does". Cut once during
+            # Task 2 for failing a test that required a tag; the TEST was the thing
+            # that was wrong, since four more untagged options land in Tasks 3 and 4
+            # and they are the aspirational half of the menu.
+            {"id": "tax_departure", "label": "Nordic take plus a departure tax",
+             "detail": "As above, and residents pay to leave, subsidising arrivals.",
+             "countries": [], "revenue": 47.0, "political": 60, "social": 55,
+             "axis": {"tax_take": 47.0, "redistribution": 0.25}},
         ],
     },
     {
