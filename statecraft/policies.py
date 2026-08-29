@@ -259,18 +259,53 @@ DOMAINS = [
              "detail": "No carbon price. Roads are the transport plan.",
              "countries": ["US", "AE", "AU"], "financial": 0.4, "political": 5, "social": 10,
              "axis": {"grid_carbon": 480.0}},
+            # NL, JP, SG and KR moved here 2026-08-29, three of them from en_hydro
+            # and Korea from en_nuclear. All four price emissions and none of them
+            # has the clean grid en_hydro claims: NL 253.6, KR 417.1, JP 477.3 and
+            # SG 497.1 g/kWh against 28 to 58 for the four that stayed.
+            #   NL  EU ETS plus a national CO2 levy on industry since 2021, a floor
+            #       of EUR 87.90/t in 2025 against an EU ETS price of EUR 66.76.
+            #       https://www.pwc.nl/en/insights-and-publications/tax-news/pwc-special-budget-day/taxplan-2021-co-2-levy.html
+            #   SG  carbon tax since 2019, raised five-fold to S$25/t in 2024 and
+            #       legislated to S$45/t for 2026 to 2027, covering the facilities
+            #       responsible for about 80% of national emissions.
+            #       https://www.nccs.gov.sg/singapores-climate-action/mitigation-efforts/carbontax/
+            #   JP  a carbon tax since 2012, low at JPY 289/t, and the GX-ETS became
+            #       mandatory for emitters above 100kt on 1 April 2026.
+            #       https://icapcarbonaction.com/en/ets/japan-gx-ets
+            #   KR  the K-ETS has priced emissions since 2015 and covered 77.75% of
+            #       national greenhouse gases in 2023.
+            #       https://icapcarbonaction.com/en/ets/korea-emissions-trading-system-k-ets
+            # KNOWN WIDE, and reported by check_spread.py as such: this option names
+            # an instrument and the axis measures an outcome, so a priced grid that
+            # burns oil shale (EE 319) sits beside one that burns almost nothing
+            # (NZ 93). Same shape as vo_fptp. Pricing carbon is not the same claim
+            # as having decarbonised.
             {"id": "en_carbon_tax", "label": "Carbon tax, private cars kept",
              "detail": "Emissions are priced. People still drive.",
-             "countries": ["CA", "NZ", "UK", "DK", "CL", "EE"],
+             "countries": ["CA", "NZ", "UK", "DK", "CL", "EE", "NL", "JP", "SG", "KR"],
              "financial": 0.6, "political": 35, "social": 25,
              "axis": {"grid_carbon": 180.0}},
+            # KR removed 2026-08-29. Nuclear is Korea's largest single source but
+            # not most of its power: on provisional January to November 2025 figures
+            # nuclear was 169.3 TWh (31.1%) against coal 157.9 TWh and LNG 148.5 TWh,
+            # so fossil generation is about 56% between them. "Most power from
+            # reactors" is only true of France, whose grid is 41.4 g/kWh against
+            # Korea's 417.1.
+            # https://ember-energy.org/latest-updates/fossil-fuels-fall-below-50-of-south-koreas-electricity-for-the-first-month-on-record/
             {"id": "en_nuclear", "label": "Nuclear baseload",
              "detail": "Most power from reactors the state builds and guarantees.",
-             "countries": ["FR", "KR"], "financial": 2.2, "political": 70, "social": 30,
+             "countries": ["FR"], "financial": 2.2, "political": 70, "social": 30,
              "axis": {"grid_carbon": 60.0}},
+            # JP, NL and SG removed 2026-08-29. This option makes two claims and
+            # they were being treated as one: a clean grid AND a transport network
+            # good enough to skip a car. All three had the second and none had the
+            # first. Singapore's grid is overwhelmingly gas and Japan's has been
+            # coal and gas heavy since Fukushima. The four that remain are 28.1 to
+            # 57.5 g/kWh, which is what the option says.
             {"id": "en_hydro", "label": "Renewables and heavy public transport",
              "detail": "A clean grid, and a network good enough that a car is optional.",
-             "countries": ["NO", "SE", "FI", "CH", "JP", "NL", "SG"],
+             "countries": ["NO", "SE", "FI", "CH"],
              "financial": 2.4, "political": 45, "social": 20,
              "axis": {"grid_carbon": 45.0}},
             {"id": "en_car_free", "label": "Private combustion cars banned",
@@ -296,14 +331,35 @@ DOMAINS = [
              "detail": "Speech is protected except for incitement and a short list of harms.",
              "countries": ["US"], "financial": 0.1, "political": 25, "social": 30,
              "axis": {"expression": 0.93}},
+            # KR and JP moved here from sp_order 2026-08-29. Both sit above several
+            # countries already on this option on the measured axis, so putting them
+            # a bucket below was a claim the data will not carry: KR 0.933 is level
+            # with CA 0.933, and JP 0.847 is above UK 0.833 and IL 0.822.
+            #   KR  no public-order speech regime of the Singaporean kind. What
+            #       Korea has is criminal defamation (up to 2 years, 5 for false
+            #       statements) and criminal insult (up to 1 year), which is a
+            #       limit on speech attacking a person or group.
+            #       https://futurefreespeech.org/south-korea/
+            #   JP  the borderline case, and the weaker of the two fits, so the
+            #       caveat is recorded rather than smoothed over. The 2016 Hate
+            #       Speech Elimination Act condemns group-directed speech but sets
+            #       no penalty, so the crime doing the work is the Penal Code
+            #       insult offence, raised in 2022 from 30 days detention to up to
+            #       a year, plus local ordinances such as Kawasaki's.
+            #       https://www.loc.gov/item/global-legal-monitor/2016-08-31/japan-new-act-targets-hate-speech-against-persons-from-outside-japan/
+            #       https://monolith.law/en/general-corporate/contempt-severe-punishment
             {"id": "sp_hate_limits", "label": "Free, with hate-speech limits",
              "detail": "Broad protection, and speech attacking a group is a crime.",
-             "countries": ["DK", "SE", "NO", "FI", "NL", "DE", "FR", "UK", "CA", "AU", "NZ", "EE", "CH", "IL", "CL"],
+             "countries": ["DK", "SE", "NO", "FI", "NL", "DE", "FR", "UK", "CA", "AU", "NZ", "EE", "CH", "IL", "CL",
+                           "JP", "KR"],
              "financial": 0.2, "political": 15, "social": 15,
              "axis": {"expression": 0.88}},
+            # Singapore alone from 2026-08-29. It is the only one of the twenty with
+            # a standing public-order speech regime, and at 0.40 it is 0.45 clear of
+            # the next country in the set.
             {"id": "sp_order", "label": "Limited where it threatens public order",
              "detail": "Speech that the state judges divisive or destabilising is restricted.",
-             "countries": ["SG", "JP", "KR"], "financial": 0.2, "political": 30, "social": 45,
+             "countries": ["SG"], "financial": 0.2, "political": 30, "social": 45,
              "axis": {"expression": 0.62}},
             {"id": "sp_restricted", "label": "State-controlled",
              "detail": "Criticism of the state and its rulers is prosecuted.",
