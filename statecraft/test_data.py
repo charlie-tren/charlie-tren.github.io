@@ -70,3 +70,13 @@ def test_the_menu_stays_grounded():
 def test_option_ids_are_globally_unique():
     ids = [o["id"] for d in DOMAINS for o in d["options"]]
     assert len(set(ids)) == len(ids), "option ids collide across domains"
+
+
+def test_a_null_axis_value_is_does_not_apply_not_missing():
+    """Electoral disproportionality is meaningless without competitive elections.
+    None means the measure does not apply. A missing key would mean the option
+    forgot to set its own domain's axis, which is a different fault and is
+    caught by test_every_domain_moves_its_own_axis."""
+    for d in DOMAINS:
+        for o in d["options"]:
+            assert d["axis"] in o["axis"], f"{o['id']} does not set {d['axis']}"
