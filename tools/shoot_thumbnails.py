@@ -94,9 +94,11 @@ READY = {
     # first VISIBLE thing that only exists after the questions have loaded.
     "cfa-companion": "#banksize",
     # Statecraft paints its thirteen domains from data.json after load, so the
-    # shot lands on an empty column without this. An option card is the first
-    # thing that only exists once the data has arrived.
-    "statecraft": ".opt",
+    # shot lands on an empty column without this. WAS ".opt", which stopped
+    # existing on 30/08/2026 when the option cards became sliders: the job would
+    # have waited 30s, skipped, and failed the run. A range input is the thing
+    # that only exists once the data has arrived.
+    "statecraft": "#domains input[type=range]",
 }
 READY_TIMEOUT = 30000
 
@@ -220,7 +222,11 @@ ANCHOR = {
     # masthead-and-dropdowns card this ANCHOR table exists to prevent.
     # Framed on the first domain with enough context above to keep the meters in,
     # since the meters are what make the options read as choices with a price.
-    "statecraft": {"selector": "#dom_tax", "context_above": 0.34},
+    # Re-aimed 30/08/2026 at the chart, which is now the best thing on the page:
+    # twenty countries plotted, the visitor's design marked among them, and the
+    # revenue curve with the unaffordable region shaded. Enough context above to
+    # keep the wordmark, since a card should read as a website.
+    "statecraft": {"selector": ".chart", "context_above": 0.18},
 }
 
 VIEW = {"width": 1280, "height": 800}
