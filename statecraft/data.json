@@ -183,7 +183,7 @@
           "countries": [
             "AE"
           ],
-          "revenue": 27.8,
+          "rate": 16.0,
           "political": 25,
           "social": 20,
           "axis": {
@@ -203,7 +203,7 @@
           "countries": [
             "EE"
           ],
-          "revenue": 33.0,
+          "rate": 33.0,
           "political": 30,
           "social": 15,
           "axis": {
@@ -232,7 +232,7 @@
             "CL",
             "SG"
           ],
-          "revenue": 34.0,
+          "rate": 34.0,
           "political": 10,
           "social": 8,
           "axis": {
@@ -255,7 +255,7 @@
             "NL",
             "UK"
           ],
-          "revenue": 43.0,
+          "rate": 43.0,
           "political": 25,
           "social": 20,
           "axis": {
@@ -278,7 +278,7 @@
             "NO",
             "FI"
           ],
-          "revenue": 46.0,
+          "rate": 46.0,
           "political": 40,
           "social": 30,
           "axis": {
@@ -296,7 +296,7 @@
           "label": "Nordic take plus a departure tax",
           "detail": "A high broad-based take, and residents pay to leave, subsidising arrivals.",
           "countries": [],
-          "revenue": 47.0,
+          "rate": 47.0,
           "political": 60,
           "social": 55,
           "axis": {
@@ -1740,6 +1740,7 @@
         "Australia/Hobart",
         "Australia/Darwin"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_mixed",
@@ -1834,6 +1835,7 @@
       "timezones": [
         "Pacific/Auckland"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_mixed",
@@ -1934,6 +1936,7 @@
         "America/Anchorage",
         "Pacific/Honolulu"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_private",
@@ -2028,6 +2031,7 @@
       "timezones": [
         "Europe/London"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_continental",
         "healthcare": "hc_public",
@@ -2127,6 +2131,7 @@
         "America/Halifax",
         "America/St_Johns"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_mixed",
@@ -2221,6 +2226,7 @@
       "timezones": [
         "Europe/Berlin"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_continental",
         "healthcare": "hc_insurance",
@@ -2315,6 +2321,7 @@
       "timezones": [
         "Europe/Paris"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_continental",
         "healthcare": "hc_insurance",
@@ -2409,6 +2416,7 @@
       "timezones": [
         "Europe/Amsterdam"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_continental",
         "healthcare": "hc_insurance",
@@ -2503,6 +2511,7 @@
       "timezones": [
         "Europe/Copenhagen"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_nordic",
         "healthcare": "hc_mixed",
@@ -2597,6 +2606,7 @@
       "timezones": [
         "Europe/Stockholm"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_nordic",
         "healthcare": "hc_mixed",
@@ -2692,6 +2702,7 @@
       "timezones": [
         "Europe/Oslo"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_nordic",
         "healthcare": "hc_mixed",
@@ -2786,6 +2797,7 @@
       "timezones": [
         "Europe/Helsinki"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_nordic",
         "healthcare": "hc_mixed",
@@ -2880,6 +2892,7 @@
       "timezones": [
         "Europe/Tallinn"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_flat",
         "healthcare": "hc_mixed",
@@ -2974,6 +2987,7 @@
       "timezones": [
         "Europe/Zurich"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3068,6 +3082,7 @@
       "timezones": [
         "Asia/Singapore"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_savings",
@@ -3137,6 +3152,7 @@
       "timezones": [
         "Asia/Tokyo"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3231,6 +3247,7 @@
       "timezones": [
         "Asia/Seoul"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3325,6 +3342,7 @@
       "timezones": [
         "Asia/Jerusalem"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3419,6 +3437,7 @@
       "timezones": [
         "America/Santiago"
       ],
+      "nonTaxRevenue": 0.0,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3514,6 +3533,7 @@
       "timezones": [
         "Asia/Dubai"
       ],
+      "nonTaxRevenue": 11.8,
       "choices": {
         "tax": "tax_minimal",
         "healthcare": "hc_mixed",

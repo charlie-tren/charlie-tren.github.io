@@ -30,6 +30,7 @@ outside the twenty mapped timezones actually lands on.
 """
 
 import json
+import re
 import pathlib
 import sys
 
@@ -62,25 +63,54 @@ DESCRIPTION = ("Design a country one policy at a time, "
 REFORM_POOL = 250
 
 
+def tax_curve():
+    """The tax curve constants, READ OUT OF budget.js rather than copied here.
+
+    budget.js is the one named place they live. A second copy in this file could
+    be retuned in one place and left stale in the other, and the only symptom
+    would be a share card quoting a capacity the page does not agree with. The
+    regex is asserted, so a rename fails loudly here instead of silently
+    reverting the card to whatever was hard-coded.
+    """
+    src = (HERE / "budget.js").read_text(encoding="utf-8")
+    m = re.search(r"export const TAX = Object\.freeze\(\{\s*MIN:\s*([\d.]+),\s*"
+                  r"MAX:\s*([\d.]+),\s*KINK:\s*([\d.]+),\s*LEAK:\s*([\d.]+)\s*\}\);", src)
+    assert m, "could not read the TAX constants out of budget.js"
+    lo, hi, kink, leak = (float(g) for g in m.groups())
+    return lo, hi, kink, leak
+
+
+def realised_revenue(rate):
+    """What a headline take of `rate` actually collects. Mirrors budget.js."""
+    lo, hi, kink, leak = tax_curve()
+    r = min(hi, max(lo, rate))
+    return r - leak * max(0.0, r - kink) ** 2
+
+
 def default_budgets(data):
     """The three budgets for the opening view: the fallback country, unchanged.
 
     Mirrors budgets() in budget.js. Political and social are charged only on
     domains changed away from the starting country, and on load nothing has
     been changed, so both are zero by construction rather than by assumption.
+
+    Capacity is what the country's own tax rate realises, plus its non-tax
+    revenue, floored at what it already spends.
     """
     code = data["fallback"]
     country = next(c for c in data["countries"] if c["code"] == code)
     choices = country["choices"]
 
-    capacity = spend = 0.0
+    rate = 0.0
+    spend = 0.0
     for domain in data["domains"]:
         chosen = next(o for o in domain["options"] if o["id"] == choices[domain["id"]])
-        if isinstance(chosen.get("revenue"), (int, float)):
-            capacity += chosen["revenue"]
+        if isinstance(chosen.get("rate"), (int, float)):
+            rate = chosen["rate"]
         if isinstance(chosen.get("financial"), (int, float)):
             spend += chosen["financial"]
 
+    capacity = max(realised_revenue(rate) + country.get("nonTaxRevenue", 0.0), spend)
     capacity, spend = round(capacity, 1), round(spend, 1)
     return code, [
         ("Budget", f"{spend:.1f} of {capacity:.1f}% of GDP",

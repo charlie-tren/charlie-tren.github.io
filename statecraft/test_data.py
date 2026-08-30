@@ -46,11 +46,45 @@ def test_every_option_is_fully_costed():
             soc = o.get("social")
             assert soc is not None and 0 <= soc <= 100, f"{o['id']} social out of range"
             if d["id"] == TAX_DOMAIN:
-                assert "revenue" in o, f"{o['id']} is a tax option with no revenue"
+                assert "rate" in o, f"{o['id']} is a tax option with no rate"
                 assert "financial" not in o, f"{o['id']} must not also carry a financial cost"
+                assert "revenue" not in o, (
+                    f"{o['id']} still carries `revenue`, which was one number doing "
+                    f"two jobs: it is `rate`, a headline tax take, plus the starting "
+                    f"country's nonTaxRevenue")
             else:
                 assert "financial" in o, f"{o['id']} has no financial cost"
+                assert "rate" not in o, f"{o['id']} is not a tax option"
                 assert "revenue" not in o, f"{o['id']} is not a tax option"
+
+
+TAX_SLIDER = (12, 55)
+
+
+def test_every_tax_rate_sits_on_the_slider_and_matches_its_own_axis():
+    """The tax domain is a RATE now, not a menu, and the six options are the
+    labelled stops the slider lands on. Two things have to hold or the slider and
+    the reveal disagree.
+
+    First, every stop must be reachable: a stop outside 12 to 55 is an option no
+    visitor can select and a cell the reveal can still print.
+
+    Second, the stop's rate must equal its own hand tax_take axis value. They are
+    the same claim written twice, and they drifted apart once already: tax_minimal
+    carried 27.8 against an axis of 16.0, because the field was carrying general
+    government revenue rather than a tax take. That is what the split into `rate`
+    plus `nonTaxRevenue` fixed, and this is the check that stops it recurring."""
+    lo, hi = TAX_SLIDER
+    tax = next(d for d in DOMAINS if d["id"] == TAX_DOMAIN)
+    rates = [o["rate"] for o in tax["options"]]
+    assert rates == sorted(rates), f"tax stops are out of order: {rates}"
+    assert len(set(rates)) == len(rates), f"two tax stops share a rate: {rates}"
+    for o in tax["options"]:
+        assert lo <= o["rate"] <= hi, (
+            f"{o['id']} sits at {o['rate']}, off a slider that runs {lo} to {hi}")
+        assert o["rate"] == o["axis"]["tax_take"], (
+            f"{o['id']} raises {o['rate']} but plots at {o['axis']['tax_take']} on "
+            f"the tax_take axis; those are the same number said twice")
 
 
 def test_the_menu_stays_grounded():
@@ -117,6 +151,28 @@ def test_option_country_tags_name_a_country_that_holds_that_option():
                         f"= {in_matrix[code][d['id']]}")
 
 
+def test_every_country_carries_a_non_tax_revenue():
+    """A state's income is tax plus non-tax income, and the second term is a fact
+    about the country a visitor inherits rather than a policy they choose. The
+    field must be PRESENT on all twenty, not merely present where it is
+    interesting: a missing key would read as zero, and zero is a claim.
+
+    Non-negative because a negative would mean the state pays to exist, which is
+    not a thing this model can price. Nineteen of twenty are genuinely zero to
+    the nearest tenth of a point of GDP. The UAE is the case the field exists for
+    and its sourcing is on its own row."""
+    for c in COUNTRIES:
+        assert "nonTaxRevenue" in c, (
+            f"{c['code']} has no nonTaxRevenue; a missing key would be read as "
+            f"zero, and zero is a claim about the country")
+        v = c["nonTaxRevenue"]
+        assert isinstance(v, (int, float)) and not isinstance(v, bool), \
+            f"{c['code']} nonTaxRevenue is {v!r}, which is not a number"
+        assert v >= 0, f"{c['code']} nonTaxRevenue is {v}, which is negative"
+    non_zero = {c["code"]: c["nonTaxRevenue"] for c in COUNTRIES if c["nonTaxRevenue"]}
+    print(f"\nnon-tax revenue, % of GDP: {non_zero}")
+
+
 def test_every_indicator_cell_is_sourced_and_dated():
     axis_ids = {a["id"] for a in AXES}
     for c in COUNTRIES:
@@ -159,17 +215,26 @@ def test_every_domain_moves_its_own_axis_and_every_axis_is_moved():
         assert a["id"] in moved, f"{a['id']} is moved by no option"
 
 
-def test_the_financial_budget_actually_binds():
-    """If the cheapest tax option can fund the most expensive selection in every
+def test_the_financial_budget_actually_binds_at_the_bottom_of_the_slider():
+    """If the leanest tax rate can fund the most expensive selection in every
     other domain, the constraint is theatre and the whole point of difference
-    is gone."""
-    cheapest_revenue = min(o["revenue"] for d in DOMAINS if d["id"] == "tax"
-                           for o in d["options"])
+    is gone.
+
+    THIS CHECK USED TO CARRY THE WHOLE CLAIM and it no longer can, because
+    capacity is no longer a number in this file. It is realised(rate) plus
+    nonTaxRevenue, and the realisation curve lives in budget.js, which Python
+    cannot read without keeping a second copy of the constants. Copying them
+    here would mean the curve could be retuned in one place and validated
+    against the other. So the harder half of the claim, that the budget still
+    binds at the TOP of the slider, is asserted in test_logic.mjs next to the
+    curve itself, and what stays here is the half the data alone can settle."""
+    leanest_rate = min(o["rate"] for d in DOMAINS if d["id"] == "tax"
+                       for o in d["options"])
     dearest_spend = sum(max(o["financial"] for o in d["options"])
                         for d in DOMAINS if d["id"] != "tax")
-    assert dearest_spend > cheapest_revenue, (
+    assert dearest_spend > leanest_rate, (
         f"the dearest possible country costs {dearest_spend:.1f}% of GDP and the "
-        f"leanest tax raises {cheapest_revenue:.1f}%: the budget never binds")
+        f"leanest tax rate is {leanest_rate:.1f}%: the budget never binds")
 
 
 def test_no_option_is_strictly_dominated():

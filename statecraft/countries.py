@@ -9,6 +9,13 @@ citation behind it.
 is a claim about what the country actually does, and it appears in the reveal
 next to that country's name, so it is checked against a source before it ships.
 
+`nonTaxRevenue` is income the state has that is not tax, in % of GDP, and it is
+inherited from the starting country rather than chosen. A state's income is tax
+PLUS non-tax income, and for nineteen of the twenty the second term rounds to
+nothing. For the UAE it is most of the budget. Total capacity is the realised
+value of the chosen tax rate plus this, floored at what the country already
+spends. See budget.js.
+
 `indicators` carries a value, a year and a source per axis. A value of None is
 "does not apply" and must never be confused with a missing key, which is "no
 data". Both are handled separately in the reveal.
@@ -39,6 +46,7 @@ COUNTRIES = [
     {"code": "AU", "name": "Australia", "timezones": ["Australia/Sydney", "Australia/Melbourne",
         "Australia/Brisbane", "Australia/Perth", "Australia/Adelaide", "Australia/Hobart",
         "Australia/Darwin"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_mixed", "education": "ed_deferred",
                  "housing": "ho_market", "retirement": "re_super", "energy": "en_fossil",
                  "speech": "sp_hate_limits", "voting": "vo_preferential", "work": "wo_bargaining",
@@ -75,6 +83,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "NZ", "name": "New Zealand", "timezones": ["Pacific/Auckland"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_mixed", "education": "ed_deferred",
                  "housing": "ho_market", "retirement": "re_super", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_minimum",
@@ -113,6 +122,7 @@ COUNTRIES = [
     {"code": "US", "name": "United States", "timezones": ["America/New_York", "America/Chicago",
         "America/Denver", "America/Los_Angeles", "America/Phoenix", "America/Anchorage",
         "Pacific/Honolulu"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_private", "education": "ed_market",
                  "housing": "ho_market", "retirement": "re_flat", "energy": "en_fossil",
                  "speech": "sp_first_amendment", "voting": "vo_fptp", "work": "wo_at_will",
@@ -149,6 +159,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "UK", "name": "United Kingdom", "timezones": ["Europe/London"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_continental", "healthcare": "hc_public", "education": "ed_deferred",
                  "housing": "ho_subsidy", "retirement": "re_flat", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_fptp", "work": "wo_minimum",
@@ -186,6 +197,7 @@ COUNTRIES = [
      }},
     {"code": "CA", "name": "Canada", "timezones": ["America/Toronto", "America/Vancouver",
         "America/Edmonton", "America/Winnipeg", "America/Halifax", "America/St_Johns"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_mixed", "education": "ed_free_selective",
                  "housing": "ho_market", "retirement": "re_flat", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_fptp", "work": "wo_minimum",
@@ -222,6 +234,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "DE", "name": "Germany", "timezones": ["Europe/Berlin"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_continental", "healthcare": "hc_insurance", "education": "ed_vocational",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_deposit",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_bargaining",
@@ -258,6 +271,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "FR", "name": "France", "timezones": ["Europe/Paris"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_continental", "healthcare": "hc_insurance", "education": "ed_free",
                  "housing": "ho_cooperative", "retirement": "re_generous", "energy": "en_nuclear",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_mandated_leave",
@@ -298,6 +312,7 @@ COUNTRIES = [
     # prices carbon through the EU ETS plus a national industrial CO2 levy. Sources
     # are on the en_carbon_tax option in policies.py.
     {"code": "NL", "name": "Netherlands", "timezones": ["Europe/Amsterdam"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_continental", "healthcare": "hc_insurance", "education": "ed_vocational",
                  "housing": "ho_social", "retirement": "re_super", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_bargaining",
@@ -334,6 +349,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "DK", "name": "Denmark", "timezones": ["Europe/Copenhagen"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
                  "housing": "ho_cooperative", "retirement": "re_earnings", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_bargaining",
@@ -375,6 +391,7 @@ COUNTRIES = [
     # feeds has no Swedish social housing to report. The reasoning and the sources
     # are on the ho_subsidy option in policies.py.
     {"code": "SE", "name": "Sweden", "timezones": ["Europe/Stockholm"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_mandated_leave",
@@ -412,6 +429,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "NO", "name": "Norway", "timezones": ["Europe/Oslo"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_transparency",
@@ -448,6 +466,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "FI", "name": "Finland", "timezones": ["Europe/Helsinki"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_bargaining",
@@ -484,6 +503,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "EE", "name": "Estonia", "timezones": ["Europe/Tallinn"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_flat", "healthcare": "hc_mixed", "education": "ed_free",
                  "housing": "ho_market", "retirement": "re_super", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_minimum",
@@ -520,6 +540,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "CH", "name": "Switzerland", "timezones": ["Europe/Zurich"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_insurance", "education": "ed_vocational",
                  "housing": "ho_subsidy", "retirement": "re_super", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_direct", "work": "wo_minimum",
@@ -562,6 +583,7 @@ COUNTRIES = [
     # on the en_carbon_tax option in policies.py. The speech cell is unchanged and
     # Singapore is now the only country on sp_order.
     {"code": "SG", "name": "Singapore", "timezones": ["Asia/Singapore"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_savings", "education": "ed_market",
                  "housing": "ho_singapore", "retirement": "re_private", "energy": "en_carbon_tax",
                  "speech": "sp_order", "voting": "vo_fptp", "work": "wo_at_will",
@@ -596,6 +618,7 @@ COUNTRIES = [
     # the 2016 hate speech act carries no penalty, is recorded on the option in
     # policies.py rather than hidden.
     {"code": "JP", "name": "Japan", "timezones": ["Asia/Tokyo"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_insurance", "education": "ed_market",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_minimum",
@@ -639,6 +662,7 @@ COUNTRIES = [
     # public-order restriction cell was a claim about Korea that the measure
     # contradicts. Sources are on both options in policies.py.
     {"code": "KR", "name": "South Korea", "timezones": ["Asia/Seoul"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_insurance", "education": "ed_market",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_at_will",
@@ -675,6 +699,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "IL", "name": "Israel", "timezones": ["Asia/Jerusalem"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_insurance", "education": "ed_free",
                  "housing": "ho_market", "retirement": "re_flat", "energy": "en_fossil",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_minimum",
@@ -711,6 +736,7 @@ COUNTRIES = [
                            "source": "World Prison Brief, prison population rate per 100,000 of national population"},
      }},
     {"code": "CL", "name": "Chile", "timezones": ["America/Santiago"],
+     "nonTaxRevenue": 0.0,
      "choices": {"tax": "tax_anglo", "healthcare": "hc_insurance", "education": "ed_market",
                  "housing": "ho_market", "retirement": "re_private", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_minimum",
@@ -753,6 +779,17 @@ COUNTRIES = [
     # salary, with a pension age of 60. Sources and the expatriate caveat are on
     # the re_generous option in policies.py.
     {"code": "AE", "name": "United Arab Emirates", "timezones": ["Asia/Dubai"],
+     # THE ONLY NON-ZERO CELL IN THE FILE, and the reason the field exists.
+     # IMF general government revenue for the UAE is 27.8% of GDP in 2024,
+     # against a total TAX take of about 16.0. The 11.8 points between them
+     # are hydrocarbon and investment income, which no tax-to-GDP series
+     # captures a cent of. It was modelled as tax until 2026-08-30, which
+     # meant a visitor who moved the UAE off tax_minimal lost the oil.
+     # https://www.imf.org/external/datamapper/rev@FPP/ARE
+     # Cross-checked against the same dataset's expenditure series (21.4%,
+     # and 27.8 less 21.4 is the 6.4% surplus the 2025 Article IV states)
+     # and against CBUAE's Quarterly Economic Review (26.9% in H1 2024).
+     "nonTaxRevenue": 11.8,
      "choices": {"tax": "tax_minimal", "healthcare": "hc_mixed", "education": "ed_vocational",
                  "housing": "ho_market", "retirement": "re_generous", "energy": "en_fossil",
                  "speech": "sp_restricted", "voting": "vo_none", "work": "wo_at_will",
