@@ -20,8 +20,8 @@
       "unit": "%",
       "direction": "neither",
       "bounds": [
-        0,
-        100
+        28,
+        92
       ],
       "source": "WHO Global Health Expenditure Database"
     },
@@ -32,8 +32,8 @@
       "unit": "% of GDP",
       "direction": "neither",
       "bounds": [
-        0,
-        10
+        1.8,
+        7.8
       ],
       "source": "World Bank"
     },
@@ -56,8 +56,8 @@
       "unit": "% of GDP",
       "direction": "neither",
       "bounds": [
-        0,
-        18
+        2.5,
+        14.5
       ],
       "source": "OECD Pensions at a Glance"
     },
@@ -152,8 +152,8 @@
       "unit": "% of GDP",
       "direction": "neither",
       "bounds": [
-        0,
-        5
+        0.4,
+        3.6
       ],
       "source": "OECD Social Expenditure Database"
     },

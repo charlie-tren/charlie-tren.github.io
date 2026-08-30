@@ -401,10 +401,13 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 
 .fp-them-fill { fill: var(--them); fill-opacity: 0.14; stroke: none; }
 
+/* Dashed, and painted over your fill rather than under it. Solid and underneath
+   it vanished the moment three sliders had moved. */
 .fp-them-line {
   fill: none;
   stroke: var(--them);
   stroke-width: 1.75;
+  stroke-dasharray: 5 3.5;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
