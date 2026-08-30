@@ -136,11 +136,32 @@ export function countryOf(data, code) {
  * @param {string} code two-letter country code
  * @returns {{start: string, taxRate: number, selection: object, locked: string[]}}
  */
+/**
+ * The rate a country actually starts on.
+ *
+ * ITS OWN MEASURED TAX TAKE WHERE THERE IS ONE, not its option's rate. An
+ * option's rate is one hand-set number standing for every country tagged to it,
+ * and `tax_anglo` alone carries ten countries whose real takes run from
+ * Singapore's 12.1 to Japan's 34.1. Starting all ten at 34 handed Australia 9.1
+ * points of headroom it does not have, and the effect was to disable the
+ * cascade: a visitor could push almost anything to its dearest option and never
+ * see a thing get cut to pay for it, which is the whole mechanic.
+ *
+ * On measured rates the mean headroom across the twenty falls from 8.4 to 4.5,
+ * which is about what a real government runs. The UAE has no measured take, so
+ * it keeps its option's 16.0 and its oil is carried separately as nonTaxRevenue.
+ */
+export function startingRate(data, country) {
+  const cell = country && country.indicators ? country.indicators.tax_take : null;
+  if (cell && typeof cell.value === 'number') return cell.value;
+  return rateForOption(data, country.choices[TAX_DOMAIN]);
+}
+
 export function startingState(data, code) {
   const country = countryOf(data, code) || countryOf(data, data.fallback);
   return {
     start: country.code,
-    taxRate: rateForOption(data, country.choices[TAX_DOMAIN]),
+    taxRate: startingRate(data, country),
     selection: { ...country.choices },
     locked: [],
   };
@@ -194,7 +215,10 @@ export function capacityOf(data, state) {
   // what the slider was added to do. Fixed as a constant top-up, capacity now
   // tracks the rate one for one in both directions and a tax cut forces a
   // cascade, which is the point.
-  const startRate = rateForOption(data, baseline.tax);
+  // Measured at the country's OWN starting rate, which is its measured tax take
+  // where it has one. Using the option's rate here instead would size the top-up
+  // off a number the country never actually raises.
+  const startRate = country ? startingRate(data, country) : 0;
   const topUp = Math.max(0, inherited - (realisedRevenue(startRate) + nonTax));
 
   return {
