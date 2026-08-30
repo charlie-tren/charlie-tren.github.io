@@ -5,6 +5,8 @@
 // picker, the meters and the thirteen domains, and keeps them in step.
 
 import { budgets, blockers } from './budget.js';
+import { rank } from './match.js';
+import { renderReveal } from './reveal.js';
 import { encode, decode, countryForTimezone, detectTimezone } from './state.js';
 
 const THEME_KEY = 'sc-theme';
@@ -74,6 +76,7 @@ let startCode = null;      // the country the design departs from
 let baseline = {};         // that country's own choices, what reform is priced against
 let selection = {};        // the live design
 let touched = false;       // has the visitor actually changed anything yet
+let revealed = false;      // has the visitor asked for the result at least once
 
 function countryName(code) {
   const hit = data.countries.find((c) => c.code === code);
@@ -159,6 +162,109 @@ function paintDomains() {
   });
 }
 
+/* Method -------------------------------------------------------------------
+ * Painted once at boot. It depends on data.json and nothing else, so nothing
+ * here re-renders when a choice changes.
+ *
+ * Alignment is set on the column, header cell included. A right-aligned figure
+ * under a left-aligned header is the failure this guards against, and it only
+ * shows up once a placeholder string lands in a numeric column. */
+
+/** Signed, so one column can hold both what an option raises and what it spends. */
+function budgetEffect(o) {
+  const v = typeof o.revenue === 'number' ? o.revenue : -(o.financial || 0);
+  return `${v > 0 ? '+' : ''}${one(v)}`;
+}
+
+function costTable() {
+  const rows = data.domains.map((d) => (d.options || []).map((o) => `
+      <tr>
+        <td>${esc(d.name)}</td>
+        <td>${esc(o.label)}</td>
+        <td class="num">${esc(budgetEffect(o))}</td>
+        <td class="num">${esc(o.political)}</td>
+        <td class="num">${esc(o.social)}</td>
+      </tr>`).join('')).join('');
+
+  return `
+    <table class="mt">
+      <thead>
+        <tr>
+          <th scope="col">Domain</th>
+          <th scope="col">Option</th>
+          <th scope="col" class="num">Budget, % of GDP</th>
+          <th scope="col" class="num">Political capital</th>
+          <th scope="col" class="num">Public patience</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function axisTable() {
+  const rows = data.axes.map((a) => `
+      <tr>
+        <td>${esc(a.label)}</td>
+        <td>${esc(a.unit)}</td>
+        <td>${esc(a.bounds[0])} to ${esc(a.bounds[1])}</td>
+        <td>${esc(a.source)}</td>
+      </tr>`).join('');
+
+  return `
+    <table class="mt">
+      <thead>
+        <tr>
+          <th scope="col">Axis</th>
+          <th scope="col">Unit</th>
+          <th scope="col">Track runs</th>
+          <th scope="col">Source</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function paintMethod() {
+  const options = data.domains.reduce((n, d) => n + (d.options || []).length, 0);
+  const hand = [];
+  for (const d of data.domains) {
+    for (const o of (d.options || [])) {
+      if (o.axis_basis === 'hand') hand.push(`${d.name}, ${o.label}`);
+    }
+  }
+  const derived = options - hand.length;
+
+  document.getElementById('method').innerHTML = `
+  <h2>How Statecraft Works</h2>
+
+  <h3>What the Match Counts</h3>
+  <p>The match is a count. One point for each of the ${data.domains.length} domains where your choice is the policy that country actually has, and no point otherwise. Nothing is weighted, nothing is normalised, and a domain you might think matters more than another does not score more than another. Where two countries tie on the count, the one closer to your design on the measured axes is listed first.</p>
+
+  <h3>What the Three Budgets Are</h3>
+  <p>The Budget is real. Tax raises a share of GDP and every other policy spends one, and both figures are in the same unit an economist would use. Political capital and public patience are points, because there is no honest unit for institutional capital or for social friction, and inventing one would dress a judgement up as a measurement. Both are charged only on the domains you change from your starting country: no country spends political capital to keep the policy it already has.</p>
+  <p>The costs below are judgements. Publishing them is the point, because a reader who thinks mandatory military service should cost more political capital than the 12 points charged here can see the exact number to argue with.</p>
+
+  <details class="mdet">
+    <summary>Every option and what it costs</summary>
+    <p class="mnote">A plus in the Budget column raises revenue, a minus spends it. All ${options} options.</p>
+    <div class="scroller">${costTable()}</div>
+  </details>
+
+  <details class="mdet">
+    <summary>The ${data.axes.length} axes, their units and their sources</summary>
+    <p class="mnote">Track runs is the span the reveal plots between, set wide enough to hold every coded country.</p>
+    <div class="scroller">${axisTable()}</div>
+  </details>
+
+  <h3>The Source of Your Own Figures</h3>
+  <p>Every option carries a figure on its domain's axis, and that figure is what the reveal plots as your design. Where countries in this set run the policy, the figure is the median of their measured values. Median rather than mean, so a single classification artefact cannot drag the marker: the WHO counts compulsory Swiss health cover as private insurance, which puts Switzerland at 33 per cent public where the rest of its option sits between 48 and 85.</p>
+  <p>${derived} of the ${options} options are derived that way. The remaining ${hand.length} are set by hand, either because no coded country runs them or because the countries that do have no measurement on that axis. They are: ${esc(hand.join('; '))}. Redistribution is summed from your tax, work and family choices rather than owned by one domain, so it stays hand-set throughout. Where an option is the policy of a single country, its figure is that one country's cell, and the reveal says so on the track.</p>
+
+  <h3>What Is Not Here Yet</h3>
+  <p>${data.countries.length} countries are coded so far and that number will grow. A country's own indicators are read as three separate claims and never merged: a figure with a year and a source, a blank with a reason it does not apply, and an axis the country has no reading on at all.</p>
+  <p>The page opens on a guess made from your browser's timezone, so the first thing you see is a country rather than an empty form. The starting country picker changes it.</p>`;
+}
+
 function paintMeter(key, b, text) {
   const box = document.getElementById(`m-${key}`);
   document.getElementById(`f-${key}`).textContent = text;
@@ -195,15 +301,47 @@ function render() {
   const names = { financial: 'the budget', political: 'political capital', social: 'public patience' };
   const btn = document.getElementById('revealBtn');
   btn.disabled = stuck.length > 0;
+  btn.textContent = revealed ? 'Back to the result' : 'Show me which country this is';
   document.getElementById('blockedNote').textContent = stuck.length
     ? `You have spent more than you have of ${stuck.map((k) => names[k]).join(' and ')}. Trim something to reveal.`
     : '';
+
+  // Once asked for, the result follows the design. A visitor who changes a
+  // domain after revealing should not have to press the button a second time
+  // to stop the panel telling them something that is no longer true.
+  const result = document.getElementById('result');
+  if (revealed && !stuck.length) {
+    result.innerHTML = renderReveal(data, rank(data, selection), selection);
+    result.hidden = false;
+  } else {
+    result.hidden = true;
+  }
+
+  syncFinishSpace();
 
   // A fresh visit and a shared link must not look alike, so the default is
   // never written. The hash appears the moment the visitor changes something.
   if (touched) {
     history.replaceState(null, '', `#${encode(data, startCode, selection)}`);
   }
+}
+
+/* The pinned action --------------------------------------------------------
+ * The reveal button is pinned to the bottom of the viewport, because the page
+ * it belongs to is thirteen domains of five or six cards and the button used
+ * to sit under all of them. Measured at 390px that was a fourteen thousand
+ * pixel scroll to reach the only thing the page exists to do.
+ *
+ * The bar is out of flow, so the page reserves exactly its height at the
+ * bottom. Measured rather than guessed: the blocked note wraps to two lines on
+ * a phone and a hard-coded padding would let the bar sit over the last
+ * paragraph of the method section. */
+
+function syncFinishSpace() {
+  const bar = document.querySelector('.finish');
+  if (!bar) return;
+  const h = bar.offsetHeight;
+  document.body.style.paddingBottom = h ? `${h + 16}px` : '';
 }
 
 /* Boot ---------------------------------------------------------------------- */
@@ -225,8 +363,22 @@ function setUpControls() {
   });
 
   document.getElementById('revealBtn').addEventListener('click', () => {
-    // The reveal panel is a later task.
+    const first = !revealed;
+    revealed = true;
+    if (first) render();
+    const result = document.getElementById('result');
+    if (result.hidden) return;
+    // Instant, not smoothed. The page is sixteen thousand pixels tall and a
+    // smooth scroll over that distance measured at roughly three seconds of
+    // animation before the visitor sees the thing they asked for. Nothing else
+    // on the page moves, so there is nothing for prefers-reduced-motion to do.
+    result.scrollIntoView({ behavior: 'auto', block: 'start' });
+    // Sending focus with the viewport, so a keyboard or screen-reader visitor
+    // lands in the panel rather than back at the top of thirteen domains.
+    result.focus({ preventScroll: true });
   });
+
+  window.addEventListener('resize', syncFinishSpace);
 }
 
 async function boot() {
@@ -245,6 +397,7 @@ async function boot() {
 
   paintPicker();
   paintDomains();
+  paintMethod();
   setUpControls();
   render();
 }
