@@ -1,0 +1,204 @@
+"""Renders statecraft/og-card.png, the 1200x630 share card.
+
+WHY THIS EXISTS AT ALL. index.html declares twitter:card as
+summary_large_image and points og:image at og-card.png. That pair is worse
+than no card tags: the tag tells X and Slack to reserve a large image slot,
+and with nothing to put in it they render the slot empty, so every share of
+the site looks like a broken page.
+
+TWO RULES SHAPE WHAT IS DRAWN, and both are the kind of thing that is easy to
+get wrong in a way nobody notices until the link is already out.
+
+1. DARK, FROM THE PAGE'S OWN TOKENS. Every image asset on this estate is dark.
+   A light rectangle dropped into a dark chat thread reads as a page from
+   somewhere else, which is the opposite of what a share card is for. The
+   palette below is lifted from the dark block of style.css rather than picked
+   to look nice here, so restyling the page and not restyling the card shows up
+   as a diff instead of as drift.
+
+2. IT SHOWS THE DEFAULT VIEW. The page opens on a country guessed from the
+   visitor's timezone with that country's own settings and nothing changed
+   yet, so political capital and public patience are both at zero of 250 and
+   only the money meter has anything in it. The card shows exactly that. A card
+   showing three full meters would be advertising a state of the page that
+   nobody arrives at, and the reader who clicks would go looking for it.
+
+The meter figures are COMPUTED FROM data.json rather than typed in, using the
+same arithmetic as budget.js, so they cannot quietly go stale when a cost
+changes. The country is data.json's own fallback, which is what a visitor
+outside the twenty mapped timezones actually lands on.
+"""
+
+import json
+import pathlib
+import sys
+
+HERE = pathlib.Path(__file__).parent
+DATA = HERE / "data.json"
+OUT = HERE / "og-card.png"
+SCRATCH = HERE / "_card_scratch.html"
+
+WIDTH, HEIGHT = 1200, 630
+
+# The dark block of style.css, verbatim. Update both or neither.
+BG = "#0f1319"
+PANEL = "#171c24"
+INK = "#e6e9ee"
+SOFT = "#8a94a3"
+FAINT = "#5d6675"
+RULE = "#262d38"
+TRACK = "#222933"
+ACCENT = "#82a8ca"
+
+SERIF = ('"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, '
+         '"Times New Roman", serif')
+SANS = ('-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, '
+        '"Helvetica Neue", Arial, sans-serif')
+
+# Kept identical to og:description in index.html.
+DESCRIPTION = ("Design a country one policy at a time, "
+               "and find out which real one you built.")
+
+REFORM_POOL = 250
+
+
+def default_budgets(data):
+    """The three budgets for the opening view: the fallback country, unchanged.
+
+    Mirrors budgets() in budget.js. Political and social are charged only on
+    domains changed away from the starting country, and on load nothing has
+    been changed, so both are zero by construction rather than by assumption.
+    """
+    code = data["fallback"]
+    country = next(c for c in data["countries"] if c["code"] == code)
+    choices = country["choices"]
+
+    capacity = spend = 0.0
+    for domain in data["domains"]:
+        chosen = next(o for o in domain["options"] if o["id"] == choices[domain["id"]])
+        if isinstance(chosen.get("revenue"), (int, float)):
+            capacity += chosen["revenue"]
+        if isinstance(chosen.get("financial"), (int, float)):
+            spend += chosen["financial"]
+
+    capacity, spend = round(capacity, 1), round(spend, 1)
+    return code, [
+        ("Budget", f"{spend:.1f} of {capacity:.1f}% of GDP",
+         spend / capacity if capacity else 0),
+        ("Political capital", f"0 of {REFORM_POOL}", 0.0),
+        ("Public patience", f"0 of {REFORM_POOL}", 0.0),
+    ]
+
+
+def meter_html(name, figure, fraction):
+    pct = max(0.0, min(1.0, fraction)) * 100
+    return f"""
+      <div class="meter">
+        <span class="m-name">{name}</span>
+        <span class="m-fig">{figure}</span>
+        <span class="m-track"><span class="m-fill" style="width:{pct:.4f}%"></span></span>
+      </div>"""
+
+
+def page_html(meters):
+    return f"""<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  html, body {{ width: {WIDTH}px; height: {HEIGHT}px; }}
+  body {{
+    background: {BG};
+    color: {INK};
+    font-family: {SANS};
+    padding: 76px 84px 72px;
+    display: flex;
+    flex-direction: column;
+  }}
+  h1 {{
+    font-family: {SERIF};
+    font-weight: 400;
+    font-size: 92px;
+    letter-spacing: -0.015em;
+    line-height: 1;
+    color: {INK};
+  }}
+  .lede {{
+    margin-top: 26px;
+    max-width: 830px;
+    color: {SOFT};
+    font-size: 32px;
+    line-height: 1.4;
+  }}
+  .meters {{
+    margin-top: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0 44px;
+    padding: 30px 38px 34px;
+    border: 1px solid {RULE};
+    border-radius: 18px;
+    background: {PANEL};
+  }}
+  .meter {{ display: flex; flex-direction: column; min-width: 0; }}
+  .m-name {{ color: {SOFT}; font-size: 21px; }}
+  .m-fig {{
+    margin: 6px 0 16px;
+    color: {INK};
+    font-size: 27px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }}
+  .m-track {{
+    margin-top: auto;
+    height: 10px;
+    border-radius: 999px;
+    background: {TRACK};
+    overflow: hidden;
+  }}
+  .m-fill {{ display: block; height: 100%; border-radius: 999px; background: {ACCENT}; }}
+  .foot {{ margin-top: 26px; color: {FAINT}; font-size: 20px; letter-spacing: 0.01em; }}
+</style></head>
+<body>
+  <h1>Statecraft</h1>
+  <p class="lede">{DESCRIPTION}</p>
+  <div class="meters">{''.join(meter_html(*m) for m in meters)}
+  </div>
+  <p class="foot">charlietrenorden.com/statecraft</p>
+</body></html>"""
+
+
+def main():
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("playwright is not installed: pip install playwright && "
+              "playwright install chromium", file=sys.stderr)
+        return 1
+
+    data = json.loads(DATA.read_text(encoding="utf-8"))
+    code, meters = default_budgets(data)
+    SCRATCH.write_text(page_html(meters), encoding="utf-8")
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            page = browser.new_page(
+                viewport={"width": WIDTH, "height": HEIGHT},
+                device_scale_factor=1,
+            )
+            page.goto(SCRATCH.as_uri())
+            page.screenshot(path=str(OUT))
+            browser.close()
+    finally:
+        SCRATCH.unlink(missing_ok=True)
+
+    size = OUT.stat().st_size
+    print(f"wrote {OUT}")
+    print(f"  {WIDTH}x{HEIGHT}, {size:,} bytes ({size / 1024:.1f} KiB)")
+    print(f"  opening view: {code}, nothing changed")
+    for name, figure, _ in meters:
+        print(f"    {name:<18} {figure}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
