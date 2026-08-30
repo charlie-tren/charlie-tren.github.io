@@ -9,7 +9,7 @@
 
 import { readFileSync } from 'node:fs';
 import { rank } from './match.js';
-import { budgets, blockers } from './budget.js';
+import { budgets, blockers, rateForOption } from './budget.js';
 
 const data = JSON.parse(readFileSync(new URL('./data.json', import.meta.url)));
 const DOMAINS = data.domains;
@@ -40,7 +40,17 @@ for (let i = 0; i < DRAWS; i += 1) {
     selection[d.id] = d.options[Math.floor(rnd() * d.options.length)].id;
   }
 
-  const b = budgets(data, selection, start.choices);
+  // The draw picks a tax option rather than a rate, so the rate is that stop's
+  // own headline take. A design drawn this way is what the cascade would have
+  // had to pay for, not what it settled on: this script asks whether the reveal
+  // discriminates, so it discards an unaffordable design rather than cutting it
+  // back to one.
+  const b = budgets(data, {
+    start: start.code,
+    taxRate: rateForOption(data, selection.tax),
+    selection,
+    locked: [],
+  });
   if (blockers(b).length) { blocked += 1; continue; }
 
   const ranked = rank(data, selection);

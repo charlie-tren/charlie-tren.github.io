@@ -5,7 +5,11 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { budgets, blockers, REFORM_POOL } from './budget.js';
+import {
+  budgets, blockers, capacityOf, optionForRate, rateForOption, realisedRevenue,
+  spendOf, startingState, REFORM_POOL, TAX,
+} from './budget.js';
+import { applyChange, ladder, setLock, setTaxRate } from './cascade.js';
 import { axisValues, rank } from './match.js';
 import { encode, decode, countryForTimezone, detectTimezone } from './state.js';
 
@@ -15,6 +19,10 @@ const data = JSON.parse(readFileSync(join(here, 'data.json'), 'utf8'));
 const byCode = (code) => data.countries.find((c) => c.code === code);
 const domain = (id) => data.domains.find((d) => d.id === id);
 const option = (domainId, optionId) => domain(domainId).options.find((o) => o.id === optionId);
+const one = (n) => Math.round(n * 10) / 10;
+
+/** A state built by hand, for the cases where the point is an illegal position. */
+const stateOf = (code, overrides = {}) => ({ ...startingState(data, code), ...overrides });
 
 test('data.json has the shape the modules assume', () => {
   assert.equal(data.domains.length, 13);
@@ -28,59 +36,139 @@ test('all twenty countries can afford to be themselves', () => {
   const financiallyOver = [];
 
   for (const country of data.countries) {
-    const b = budgets(data, country.choices, country.choices);
+    const b = budgets(data, startingState(data, country.code));
     assert.equal(b.political.used, 0, `${country.code} should spend no political capital on its own status quo`);
     assert.equal(b.social.used, 0, `${country.code} should spend no social capital on its own status quo`);
     assert.equal(b.changedCount, 0, `${country.code} has changed nothing`);
     if (b.financial.over) financiallyOver.push(country.code);
   }
 
-  // TWENTY OF TWENTY, and the UAE was the one that used to fail. Two changes got
-  // it here and the order matters, because only the first was a data fix.
+  // TWENTY OF TWENTY, and the UAE was the one that used to fail. Three changes
+  // got it here and the order matters, because only two were data fixes.
   //
   // First, tax_minimal raised 16.0% of GDP, which was a TAX TAKE standing in for
   // general government REVENUE. For a petrostate those are different things. It
-  // now raises 27.8%, the IMF figure for 2024, cross-checked against the Article
-  // IV surplus. That closed three-quarters of the gap, from -16.0 to -4.2.
+  // was raised to 27.8%, the IMF figure for 2024, cross-checked against the
+  // Article IV surplus, and that closed three-quarters of the gap.
   //
-  // The residual -4.2 was NOT a revenue problem and must not be fixed by
-  // reaching for a bigger revenue number: 2022 reads 32.55% and would have made
-  // this test pass on its own, which is exactly the wrong reason to pick a year.
-  // It was the same wrong-basis fault on the SPENDING side. The UAE's modelled
-  // spend is 32.0% of GDP against IMF general government expenditure of 21.4%,
-  // mostly because re_generous carries France's 14.0% pension outlay while
-  // GPSSA covers Emirati and GCC nationals only, roughly an eighth of residents.
+  // Second, and this is the fix the 27.8 was standing in for: a state's income
+  // is tax PLUS non-tax income, and one field cannot be both. The tax option now
+  // carries a headline RATE of 16.0 and the UAE's row carries a nonTaxRevenue of
+  // 11.8, which is the hydrocarbon and investment income no tax-to-GDP series
+  // captures. 16.0 realised is 16.0, and 16.0 plus 11.8 is the same 27.8. The
+  // difference is that the oil now survives a change of tax policy, which is the
+  // only reading of it that was ever true.
   //
-  // So the second change is in budget.js, not in the data: financial capacity is
-  // the tax revenue OR what the starting country already spends, whichever is
-  // larger. A country manifestly manages to run its own settings, so those are
-  // affordable by definition and only ADDITIONAL spending needs funding. That
-  // also makes all three budgets say one thing: you inherit a country and you
-  // pay for what you change.
+  // The residual gap was NOT a revenue problem and must not be fixed by reaching
+  // for a bigger revenue number: 2022 reads 32.55% and would have made this test
+  // pass on its own, which is exactly the wrong reason to pick a year. It was
+  // the same wrong-basis fault on the SPENDING side. The UAE's modelled spend is
+  // 32.0% of GDP against IMF general government expenditure of 21.4%, mostly
+  // because re_generous carries France's 14.0% pension outlay while GPSSA covers
+  // Emirati and GCC nationals only, roughly an eighth of residents.
+  //
+  // So the third change is in budget.js, not in the data: financial capacity is
+  // what the state raises OR what the starting country already spends, whichever
+  // is larger. A country manifestly manages to run its own settings, so those
+  // are affordable by definition and only ADDITIONAL spending needs funding.
+  // That also makes all three budgets say one thing: you inherit a country and
+  // you pay for what you change.
   assert.deepEqual(financiallyOver, []);
   assert.equal(data.countries.length, 20);
 
-  // The floor only ever binds for the UAE. Nineteen countries raise more in tax
-  // than they spend, so their capacity is untouched by it, and this asserts that
+  // The floor only ever binds for the UAE. Nineteen countries raise more than
+  // they spend, so their capacity is untouched by it, and this asserts that
   // rather than assuming it: if the floor ever starts propping up a second
   // country, something has gone wrong in the cost model and should be looked at.
-  const propped = data.countries.filter((c) => {
-    const b = budgets(data, c.choices, c.choices);
-    return b.financial.inherited > b.financial.taxRevenue;
-  }).map((c) => c.code);
-  assert.deepEqual(propped, ['AE']);
+  //
+  // TWO COUNTRIES ARE PROPPED UP NOW, and the second one arrived with the tax
+  // curve rather than with a data change, so it is worth saying what it is.
+  // France runs tax_continental, a headline 43, which realises 41.3. Its modelled
+  // spend is 42.2, so it is 0.9 short of funding itself out of tax and the floor
+  // carries it. Under the old flat 43 it cleared by 0.8.
+  //
+  // That is not a fault to tune away. France genuinely does not fund its
+  // spending out of revenue: general government expenditure has exceeded revenue
+  // every year for half a century, and the 2024 deficit was 5.8% of GDP. A model
+  // in which the highest-spending country in the set balances its books would be
+  // the wrong answer arriving quietly. The two floored countries are exactly the
+  // two that do not pay for themselves out of tax, one on oil and one on debt.
+  //
+  // A THIRD would be worth looking at, because the next closest is Israel at 3.3
+  // points of headroom and nothing else is inside 4.
+  const propped = data.countries
+    .filter((c) => budgets(data, startingState(data, c.code)).financial.floored)
+    .map((c) => c.code);
+  assert.deepEqual(propped, ['FR', 'AE']);
 
-  const ae = budgets(data, byCode('AE').choices, byCode('AE').choices);
-  assert.equal(ae.financial.taxRevenue, 27.8, 'IMF general government revenue, UAE 2024');
+  const ae = budgets(data, startingState(data, 'AE'));
   assert.equal(ae.financial.capacity, 32.0, 'floored at what the UAE already spends');
   assert.equal(ae.financial.left, 0);
   assert.deepEqual(blockers(ae), []);
 
   // And the floor must not become a way to spend freely: one dearer choice on
   // top of the UAE's own settings still goes over.
-  const greedy = { ...byCode('AE').choices, healthcare: 'hc_public' };
-  assert.ok(budgets(data, greedy, byCode('AE').choices).financial.over,
+  const greedy = stateOf('AE');
+  greedy.selection = { ...greedy.selection, healthcare: 'hc_public' };
+  assert.ok(budgets(data, greedy).financial.over,
     'the floor must not stop the financial budget binding');
+});
+
+// 1a. THE CURVE. Seven calibration points, and the two shape properties the rest
+// of the design leans on.
+test('realised revenue matches its calibration and is monotonic and concave', () => {
+  const points = [[12, 12.0], [30, 30.0], [34, 33.8], [40, 39.0], [46, 43.4], [50, 46.0], [55, 48.8]];
+  for (const [rate, expected] of points) {
+    assert.equal(one(realisedRevenue(rate)), expected, `realised(${rate})`);
+  }
+
+  // Monotonic: pushing the slider up never lowers the budget. A control that
+  // sometimes takes money away when you push it up reads as a bug, whatever the
+  // economics say, so the curve must not turn over inside the slider.
+  let last = -Infinity;
+  let lastGain = Infinity;
+  for (let r = TAX.MIN; r <= TAX.MAX; r += 0.5) {
+    const v = realisedRevenue(r);
+    assert.ok(v > last, `realised must rise: ${r} gave ${v} after ${last}`);
+    if (last > -Infinity) {
+      const gain = v - last;
+      // Concave: each half point of headline tax buys no more than the one
+      // before it. Strictly less once past the kink, and equal below it.
+      assert.ok(gain <= lastGain + 1e-9, `realised must be concave, ${r} gained ${gain} after ${lastGain}`);
+      lastGain = gain;
+    }
+    last = v;
+  }
+
+  // The last point of tax raises about half a point of revenue.
+  assert.equal(one(realisedRevenue(TAX.MAX) - realisedRevenue(TAX.MAX - 1)), 0.5);
+
+  // Off the ends of the slider the value is held, not extrapolated. A negative
+  // capacity from a rate of 900 is not a state of the world worth modelling.
+  assert.equal(realisedRevenue(-40), realisedRevenue(TAX.MIN));
+  assert.equal(realisedRevenue(900), realisedRevenue(TAX.MAX));
+  assert.equal(realisedRevenue('nonsense'), realisedRevenue(TAX.MIN));
+});
+
+// 1b. Moved here from test_data.py, because the claim now needs the curve and
+// the curve lives in JavaScript.
+test('the financial budget still binds at the top of the slider', () => {
+  const dearest = data.domains
+    .filter((d) => d.id !== 'tax')
+    .reduce((sum, d) => sum + Math.max(...d.options.map((o) => o.financial)), 0);
+
+  assert.ok(dearest > realisedRevenue(TAX.MAX), `the dearest possible country costs `
+    + `${one(dearest)}% of GDP and the dearest tax rate realises `
+    + `${one(realisedRevenue(TAX.MAX))}%: the budget never binds`);
+
+  // KNOWN AND REPORTED, not asserted away: add the UAE's 11.8 of non-tax revenue
+  // and the top of the slider DOES fund the dearest menu in every domain. That
+  // is the correct behaviour of a petrostate that also taxes like Denmark, and
+  // it is why the political pool has to be the binding constraint at the top
+  // rather than the money.
+  const petro = realisedRevenue(TAX.MAX) + Math.max(...data.countries.map((c) => c.nonTaxRevenue));
+  assert.ok(petro > dearest, 'if this ever fails the non-tax figure has moved and '
+    + 'the comment above is stale');
 });
 
 // 2. Changing one domain charges exactly that option's cost, and changing back charges nothing.
@@ -88,8 +176,9 @@ test('changing one domain charges exactly that option, and changing back charges
   const au = byCode('AU');
   assert.equal(au.choices.housing, 'ho_market');
 
-  const reformed = { ...au.choices, housing: 'ho_singapore' };
-  const b = budgets(data, reformed, au.choices);
+  const start = startingState(data, 'AU');
+  const reformed = { ...start.selection, housing: 'ho_singapore' };
+  const b = budgets(data, { ...start, selection: reformed });
   const ho = option('housing', 'ho_singapore');
 
   assert.equal(ho.political, 70);
@@ -101,13 +190,13 @@ test('changing one domain charges exactly that option, and changing back charges
   assert.equal(b.changed[0].domain, 'housing');
 
   // Financial moves by the difference in cost, not by the full new cost.
-  const baseB = budgets(data, au.choices, au.choices);
+  const baseB = budgets(data, start);
   assert.equal(
     b.financial.used,
-    Math.round((baseB.financial.used - option('housing', 'ho_market').financial + ho.financial) * 10) / 10,
+    one(baseB.financial.used - option('housing', 'ho_market').financial + ho.financial),
   );
 
-  const back = budgets(data, { ...reformed, housing: 'ho_market' }, au.choices);
+  const back = budgets(data, { ...start, selection: { ...reformed, housing: 'ho_market' } });
   assert.equal(back.political.used, 0);
   assert.equal(back.social.used, 0);
   assert.equal(back.changedCount, 0);
@@ -115,19 +204,21 @@ test('changing one domain charges exactly that option, and changing back charges
 
 // 3. The pool binds.
 test('the political pool binds when every domain is changed to its dearest option', () => {
-  const dk = byCode('DK');
+  const start = startingState(data, 'DK');
   const dearest = {};
   for (const d of data.domains) {
     dearest[d.id] = d.options.reduce((a, b) => (b.political > a.political ? b : a)).id;
   }
-  const b = budgets(data, dearest, dk.choices);
+  const b = budgets(data, {
+    ...start, selection: dearest, taxRate: rateForOption(data, dearest.tax),
+  });
   assert.ok(b.political.used > REFORM_POOL, `expected over ${REFORM_POOL}, got ${b.political.used}`);
   assert.ok(b.political.over);
   assert.ok(blockers(b).includes('political'));
 
   // And the pool is not so tight that a couple of reforms already blow it.
-  const twoReforms = { ...dk.choices, housing: 'ho_singapore', energy: 'en_car_free' };
-  assert.equal(budgets(data, twoReforms, dk.choices).political.over, false);
+  const twoReforms = { ...start.selection, housing: 'ho_singapore', energy: 'en_car_free' };
+  assert.equal(budgets(data, { ...start, selection: twoReforms }).political.over, false);
 });
 
 // 4. A country matches itself on all thirteen domains and tops its own ranking.
@@ -287,4 +378,239 @@ test('redistribution is summed across every contributing domain', () => {
   // Every other axis is set by its own domain, not accumulated.
   assert.equal(values.tax_take, option('tax', 'tax_anglo').axis.tax_take);
   assert.equal(values.social_housing, option('housing', 'ho_market').axis.social_housing);
+});
+
+/* The cascade ------------------------------------------------------------- */
+
+/** Every domain locked except the ones named. */
+function lockAllExcept(state, ...open) {
+  return data.domains
+    .map((d) => d.id)
+    .filter((id) => !open.includes(id))
+    .reduce((s, id) => setLock(s, id, true), state);
+}
+
+const cutOn = (r, domainId) => r.cuts.find((c) => c.domain === domainId) || null;
+
+// 12. The lock is absolute.
+test('a locked domain never moves, however large the overspend', () => {
+  // Australia buys a universal basic income, which still fits. Then everything
+  // is locked but justice, which can give up 0.75 at the very most, and the tax
+  // rate is dropped to the bottom of the slider. The overspend is several times
+  // anything the cascade can cover, which is the point: the pressure has nowhere
+  // to go but the locks.
+  const rich = applyChange(data, startingState(data, 'AU'), 'work', 'wo_ubi');
+  const start = lockAllExcept(rich.state, 'justice', 'tax');
+  const r = setTaxRate(data, start, TAX.MIN);
+
+  assert.ok(r.shortfall > 5, `expected a large shortfall, got ${r.shortfall}`);
+  for (const d of data.domains) {
+    if (d.id === 'justice' || d.id === 'tax') continue;
+    assert.equal(r.state.selection[d.id], start.selection[d.id],
+      `${d.id} is locked and must not have moved`);
+  }
+  assert.equal(r.cuts.filter((c) => c.domain !== 'justice').length, 0);
+
+  // And a locked domain cannot be moved by hand either. A lock that only stops
+  // the cascade is a lock the visitor undoes by accident.
+  const refused = applyChange(data, start, 'housing', 'ho_singapore');
+  assert.equal(refused.ok, false);
+  assert.equal(refused.reason, 'locked');
+  assert.deepEqual(refused.state.selection, start.selection);
+});
+
+// 13. The control does not fight the user.
+test('the domain just moved is never cut by its own cascade', () => {
+  const start = startingState(data, 'AU');
+
+  // Work to a universal basic income is the single dearest move on the board:
+  // 1.8 to 9.0, which is 7.2 of GDP against 9.1 of headroom.
+  const first = applyChange(data, start, 'work', 'wo_ubi');
+  assert.equal(first.state.selection.work, 'wo_ubi');
+  assert.deepEqual(first.cuts, [], 'that one still fits, so nothing has paid for it yet');
+
+  // Now the rate comes down underneath it and the cascade has to find real money.
+  const r = setTaxRate(data, first.state, 30);
+  assert.ok(r.cuts.length > 0, 'the rate cut should have forced a cascade');
+  assert.equal(cutOn(r, 'tax'), null, 'the tax slider must not cut itself');
+
+  // And the same the other way round: move work while the money is already tight
+  // and work itself is untouched by the cascade it causes.
+  const tight = setTaxRate(data, start, 26);
+  const moved = applyChange(data, tight.state, 'work', 'wo_ubi');
+  assert.equal(moved.state.selection.work, 'wo_ubi', 'the moved domain must stick');
+  assert.equal(cutOn(moved, 'work'), null, 'the moved domain must not be cut');
+  assert.ok(moved.cuts.length > 0, 'something else should have paid for it');
+});
+
+// 14. Same in, same out.
+test('the cascade is deterministic', () => {
+  const start = startingState(data, 'SE');
+  const tight = setTaxRate(data, start, 33).state;
+
+  const once = applyChange(data, tight, 'retirement', 're_generous');
+  const twice = applyChange(data, tight, 'retirement', 're_generous');
+  assert.deepEqual(once, twice);
+  assert.ok(once.cuts.length > 0, 'a test of determinism needs something to have happened');
+
+  // Not just twice in a row from one object: rebuilding the state from scratch
+  // has to land in the same place too, or the result depends on the history and
+  // not on the position.
+  const rebuilt = applyChange(data, setTaxRate(data, startingState(data, 'SE'), 33).state,
+    'retirement', 're_generous');
+  assert.deepEqual(rebuilt.state.selection, once.state.selection);
+  assert.deepEqual(rebuilt.cuts, once.cuts);
+});
+
+// 15. The big programmes pay the most.
+test('the cut is allocated in proportion to what each domain spends', () => {
+  // Australia at the bottom of the slider has exactly no headroom, because the
+  // floor holds capacity at what it already spends. Retirement is then on 5.0
+  // and justice on 0.9, everything else is locked, and moving healthcare to a
+  // national service costs 2.0. Proportional targets are 1.69 and 0.31, so
+  // retirement is asked first and its first step alone covers the lot.
+  const broke = setTaxRate(data, startingState(data, 'AU'), TAX.MIN);
+  assert.equal(broke.budgets.financial.left, 0, 'no headroom, and nothing cut to get there');
+  const start = lockAllExcept(broke.state, 'retirement', 'justice', 'healthcare');
+  const r = applyChange(data, start, 'healthcare', 'hc_public');
+
+  const big = cutOn(r, 'retirement');
+  const small = cutOn(r, 'justice');
+  assert.ok(big, 'the bigger spender should have been cut');
+  assert.equal(small, null, 'the smaller spender should not have been touched at all');
+  assert.ok(big.saved >= (small ? small.saved : 0),
+    'the bigger spender must give up at least as much as the smaller one');
+  assert.equal(r.ok, true);
+
+  // The step is down its own ladder, one rung, and the rung below is the next
+  // strictly cheaper option rather than the next one in the file.
+  const rungs = ladder(data, 'retirement');
+  const from = rungs.findIndex((o) => o.id === big.from);
+  const to = rungs.findIndex((o) => o.id === big.to);
+  assert.ok(to < from, 'a cut must move down the ladder');
+  assert.equal(big.steps, 1);
+});
+
+// 16. The tax slider buys something, and less of it the higher it goes.
+test('raising the rate raises capacity, and buys less at the top than the bottom', () => {
+  const au = startingState(data, 'AU');
+  const at = (rate) => capacityOf(data, { ...au, taxRate: rate });
+
+  // Above the floor, capacity is strictly increasing in the rate.
+  for (let r = 30; r < TAX.MAX; r += 1) {
+    assert.ok(at(r + 1).capacity > at(r).capacity,
+      `capacity must rise from ${r} to ${r + 1}`);
+  }
+
+  // The marginal point is worth less the higher you are. Measured on what is
+  // raised rather than on capacity, because below a country's own spending the
+  // floor is what binds and the rate moves nothing.
+  const low = at(21).raised - at(20).raised;
+  const high = at(51).raised - at(50).raised;
+  assert.equal(one(low), 1.0, 'below the kink a point of tax is a point of revenue');
+  assert.ok(high < low, `the marginal point at 50 (${one(high)}) must buy less than at 20 (${one(low)})`);
+  assert.equal(one(high), 0.6);
+
+  // And it buys real policy, not just a bigger number. From Australia's own rate
+  // to the top of the slider funds the dearest option in several domains at once.
+  const rich = setTaxRate(data, au, TAX.MAX).state;
+  const headroom = capacityOf(data, rich).capacity - spendOf(data, rich.selection);
+  assert.ok(headroom > 20, `expected the top of the slider to fund real change, got ${one(headroom)}`);
+});
+
+// 17. The UAE runs on something that is not tax.
+test('the UAE capacity comes from non-tax revenue and is not attributed to tax', () => {
+  const ae = startingState(data, 'AE');
+  const b = budgets(data, ae);
+
+  assert.equal(b.financial.taxRate, 16.0, 'the headline tax take, not the revenue');
+  assert.equal(b.financial.realisedTax, 16.0, 'below the kink, so it realises in full');
+  assert.equal(b.financial.nonTaxRevenue, 11.8, 'hydrocarbon and investment income');
+  assert.equal(one(b.financial.realisedTax + b.financial.nonTaxRevenue), 27.8,
+    'IMF general government revenue, UAE 2024');
+
+  // The tax side of the page must agree with the tax side of the budget. If the
+  // 11.8 were still being carried as tax, the axis and the rate would disagree
+  // by exactly that, which is the fault this split fixed.
+  assert.equal(option('tax', 'tax_minimal').rate, 16.0);
+  assert.equal(option('tax', 'tax_minimal').axis.tax_take, 16.0);
+  assert.equal(axisValues(data, ae.selection).tax_take, 16.0);
+
+  // Nineteen of twenty carry nothing, so the field is not a fudge factor.
+  const others = data.countries.filter((c) => c.code !== 'AE');
+  assert.deepEqual([...new Set(others.map((c) => c.nonTaxRevenue))], [0]);
+
+  // THE OIL SURVIVES A CHANGE OF TAX POLICY, which is the whole point of moving
+  // it off the tax option. A visitor who taxes the UAE like Denmark keeps it.
+  const nordic = setTaxRate(data, ae, 46).state;
+  const after = budgets(data, nordic);
+  assert.equal(after.financial.nonTaxRevenue, 11.8);
+  assert.equal(one(after.financial.capacity), one(realisedRevenue(46) + 11.8));
+  assert.ok(after.financial.capacity > b.financial.capacity + 20,
+    'taxing a petrostate properly should be transformative, not marginal');
+});
+
+// 18. It says so rather than spinning.
+test('a cascade that cannot cover the overspend reports it', () => {
+  // Israel has 3.3 of headroom and a universal basic income costs 7.6 more than
+  // what it runs now. Justice is the only thing left unlocked to pay for it and
+  // it is worth 0.75 all the way down, so the cascade runs out.
+  const start = lockAllExcept(startingState(data, 'IL'), 'justice', 'work');
+  const r = applyChange(data, start, 'work', 'wo_ubi');
+
+  assert.equal(r.ok, false);
+  assert.equal(r.reason, 'shortfall');
+  assert.ok(r.shortfall > 0, 'the shortfall must be reported as a number');
+  assert.ok(r.budgets.financial.over, 'and the budget must still read as over');
+
+  // The state it hands back is the one it reached, cuts and all, rather than a
+  // refusal: the visitor is over budget and can see by how much, and what the
+  // attempt already cost them.
+  assert.equal(r.state.selection.justice, ladder(data, 'justice')[0].id,
+    'the one unlocked domain should have been taken all the way down');
+  assert.equal(one(r.budgets.financial.exact.left), -r.shortfall);
+});
+
+// 19. Cuts are reforms too, except when they are reversals.
+test('cascaded cuts are charged, and a cut back to the starting option is free', () => {
+  const au = startingState(data, 'AU');
+  assert.equal(au.selection.housing, 'ho_market');
+
+  // Put Australia on the Singapore housing model first, then lock everything but
+  // housing and retirement so the cascade has exactly one place to look.
+  const withFlats = applyChange(data, au, 'housing', 'ho_singapore');
+  assert.equal(withFlats.state.selection.housing, 'ho_singapore');
+  assert.equal(withFlats.budgets.political.used, option('housing', 'ho_singapore').political);
+
+  // A small squeeze: the rate comes down to 26 with housing the only thing that
+  // can move, which is 0.8 to find. Housing steps part way down and stops on an
+  // option that is not Australia's own, so it is a reform and it is charged. The
+  // tax stop the slider landed on is charged too, and both are named here rather
+  // than netted off, because the sum is the thing being tested.
+  const squeeze = setTaxRate(data, lockAllExcept(withFlats.state, 'housing', 'tax'), 26);
+  const partial = cutOn(squeeze, 'housing');
+  assert.ok(partial, 'housing should have paid for the tax cut');
+  assert.notEqual(partial.to, 'ho_market', 'this case is the part-way cut');
+  assert.ok(partial.steps > 1, 'and it took more than one rung');
+  assert.equal(
+    squeeze.budgets.political.used,
+    option('tax', squeeze.state.selection.tax).political + option('housing', partial.to).political,
+    'a cut that lands somewhere new is a reform and someone has to pass it',
+  );
+
+  // A big squeeze: housing is pushed all the way back to what Australia already
+  // does, and that is a reversal rather than a reform, so it costs nothing.
+  const pinned = lockAllExcept(withFlats.state, 'housing', 'retirement');
+  const shove = applyChange(data, pinned, 'retirement', 're_generous');
+  const full = cutOn(shove, 'housing');
+  assert.ok(full, 'housing should have been cut');
+  assert.equal(full.to, 'ho_market', 'and cut all the way back to the starting option');
+  assert.equal(full.from, 'ho_singapore');
+  assert.equal(full.steps, 4);
+  assert.equal(
+    shove.budgets.political.used,
+    option('retirement', 're_generous').political,
+    "a cut back to the country's own option must be charged nothing",
+  );
+  assert.equal(shove.budgets.changedCount, 1);
 });

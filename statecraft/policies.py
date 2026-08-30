@@ -17,7 +17,12 @@ method section, as on DCF Studio and One Story, so a reader who disagrees can
 see exactly what they disagree with.
 
   financial  % of GDP. Only on non-tax options. Drawn down from the revenue the
-             tax choice raises.
+             tax rate raises.
+  rate       % of GDP. Only on tax options. The HEADLINE tax take that option
+             represents, which is where the tax slider sits when it lands on
+             that option. It is not the money the state gets: budget.js runs it
+             through a concave realisation curve first, and adds the country's
+             non-tax revenue. See the calibration block in budget.js.
   political  points out of 100. Institutional capital: constitutional change,
              entrenched interests, electoral risk.
   social     points out of 100. Cohesion and personal-freedom cost, and the
@@ -55,16 +60,23 @@ DOMAINS = [
         "name": "Tax and Redistribution",
         "axis": "tax_take",
         "options": [
-            # REVENUE AND TAX TAKE ARE DIFFERENT THINGS FOR A RESOURCE STATE, and
-            # `revenue` was carrying a tax-take number. Corrected 2026-08-30 from
-            # 16.0 to 27.8.
+            # REVENUE AND TAX TAKE ARE DIFFERENT THINGS FOR A RESOURCE STATE.
+            # This option carried a `revenue` of 16.0, which was a tax take; on
+            # 2026-08-30 that was raised to 27.8, which is general government
+            # revenue; and on the SAME DAY the field was split in two, which is
+            # what it should have been from the start.
             #
-            # `revenue` is the capacity this option gives a visitor to spend: the
-            # money the state actually has, which is GENERAL GOVERNMENT REVENUE.
-            # For a petrostate that is mostly hydrocarbon and investment income,
-            # and no tax-to-GDP series captures a cent of it. The detail line
-            # already said "revenue from resources", so the label was right and
-            # the number was the thing that was wrong.
+            # A state's income is tax PLUS non-tax income, and one number cannot
+            # be both. `rate` is now the headline TAX take only, back at 16.0,
+            # and the 11.8 points of hydrocarbon and investment income that make
+            # up the difference live on the UAE's own row in countries.py as
+            # `nonTaxRevenue`, because they are a fact about the country a
+            # visitor starts from and not about the tax policy they choose. A
+            # visitor who moves the UAE to a Nordic tax rate keeps the oil.
+            # Modelling it as tax meant they lost it, which was never right.
+            #
+            # The sourcing below is what fixes 27.8, and 27.8 less a 16.0 tax
+            # take is where the 11.8 comes from.
             #
             # IMF general government revenue for the UAE is 27.8% of GDP in 2024.
             # https://www.imf.org/external/datamapper/rev@FPP/ARE
@@ -83,18 +95,18 @@ DOMAINS = [
             # UAE in 2024 because it is FEDERAL government only, which is the same
             # wrong-basis trap tax_take itself was moved off.
             #
-            # THE AXIS VALUE DELIBERATELY DOES NOT FOLLOW IT and stays at 16.0.
-            # The tax_take axis is total TAX revenue as a share of GDP on an OECD
-            # Revenue Statistics / IMF basis, and for the UAE that is genuinely
-            # low: 5% VAT since 2018 and 9% corporate tax since 2023, against
-            # bounds of (10, 60). The two numbers are 11.8 points apart and that
-            # gap IS the option, not an inconsistency to be tidied away. Making
-            # them agree would either overstate how heavily the UAE taxes or
-            # re-break the budget. AE carries no measured tax_take cell, so this
-            # hand value is what the page plots.
+            # THE AXIS VALUE AND THE RATE NOW AGREE, at 16.0, and that is the
+            # point of the split rather than a coincidence. The tax_take axis is
+            # total TAX revenue as a share of GDP on an OECD Revenue Statistics
+            # / IMF basis, and for the UAE that is genuinely low: 5% VAT since
+            # 2018 and 9% corporate tax since 2023, against bounds of (10, 60).
+            # The 11.8 points that used to sit in this field, and made the two
+            # disagree, are non-tax revenue and are recorded as such. AE carries
+            # no measured tax_take cell, so this hand value is what the page
+            # plots.
             {"id": "tax_minimal", "label": "Minimal state",
              "detail": "No income tax. Revenue from resources and consumption.",
-             "countries": ["AE"], "revenue": 27.8, "political": 25, "social": 20,
+             "countries": ["AE"], "rate": 16.0, "political": 25, "social": 20,
              "axis": {"tax_take": 16.0, "redistribution": 0.01}},
             # EE verified 2026-08-29: still a genuine flat rate, 22% for 2026. The
             # legislated rise to 24% was reversed in December 2025, and the
@@ -103,20 +115,20 @@ DOMAINS = [
             # https://www.ey.com/en_ee/insights/tax/significant-tax-changes-in-estonia-in-2025-2026
             {"id": "tax_flat", "label": "Flat income tax",
              "detail": "One rate on all income, few deductions.",
-             "countries": ["EE"], "revenue": 33.0, "political": 30, "social": 15,
+             "countries": ["EE"], "rate": 33.0, "political": 30, "social": 15,
              "axis": {"tax_take": 33.0, "redistribution": 0.08}},
             {"id": "tax_anglo", "label": "Moderate progressive",
              "detail": "Progressive rates, a middling take, broad exemptions.",
              "countries": ["US", "AU", "NZ", "CA", "JP", "KR", "CH", "IL", "CL", "SG"],
-             "revenue": 34.0, "political": 10, "social": 8,
+             "rate": 34.0, "political": 10, "social": 8,
              "axis": {"tax_take": 34.0, "redistribution": 0.11}},
             {"id": "tax_continental", "label": "High, funded by payroll",
              "detail": "Heavy social contributions on wages alongside income tax.",
-             "countries": ["DE", "FR", "NL", "UK"], "revenue": 43.0, "political": 25, "social": 20,
+             "countries": ["DE", "FR", "NL", "UK"], "rate": 43.0, "political": 25, "social": 20,
              "axis": {"tax_take": 43.0, "redistribution": 0.18}},
             {"id": "tax_nordic", "label": "Nordic take",
              "detail": "High broad-based income tax and a high VAT.",
-             "countries": ["DK", "SE", "NO", "FI"], "revenue": 46.0, "political": 40, "social": 30,
+             "countries": ["DK", "SE", "NO", "FI"], "rate": 46.0, "political": 40, "social": 30,
              "axis": {"tax_take": 46.0, "redistribution": 0.24}},
             # Untagged on purpose. Exit taxes on unrealised gains are real, in
             # Norway and the US among others, but no country runs one as a headline
@@ -127,7 +139,7 @@ DOMAINS = [
             # and they are the aspirational half of the menu.
             {"id": "tax_departure", "label": "Nordic take plus a departure tax",
              "detail": "A high broad-based take, and residents pay to leave, subsidising arrivals.",
-             "countries": [], "revenue": 47.0, "political": 60, "social": 55,
+             "countries": [], "rate": 47.0, "political": 60, "social": 55,
              "axis": {"tax_take": 47.0, "redistribution": 0.25}},
         ],
     },
