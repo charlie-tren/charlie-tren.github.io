@@ -66,7 +66,11 @@ SITES = {
     "cfa-companion": "https://charlietrenorden.com/cfa-companion/",
     "ghostwriters": "https://charlietrenorden.com/ghostwriters/",
     "statecraft": "https://charlietrenorden.com/statecraft/",
-    "sticky-situations": "https://charlietrenorden.com/sticky-situations/",
+    # ?demo=1, not the lobby. The landing screen is a name field and a button,
+    # which shows none of the game - the same fault the chronoscape entry above
+    # exists to avoid. The demo renders a worked round through the page's own
+    # render path, so the card cannot show something the game does not do.
+    "sticky-situations": "https://charlietrenorden.com/sticky-situations/?demo=1",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
