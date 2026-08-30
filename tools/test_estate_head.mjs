@@ -28,6 +28,7 @@ const SITES = {
   "Pendulum":          "https://charlietrenorden.com/pendulum/",
   "CFA Companion":     "https://charlietrenorden.com/cfa-companion/",
   "Ghostwriters":      "https://charlietrenorden.com/ghostwriters/",
+  "Statecraft":        "https://charlietrenorden.com/statecraft/",
   "Pendulum: Inequality": "https://charlietrenorden.com/inequality/",
   "Equity Research":   "https://charlietrenorden.com/research/",
   "Crowdwise":         "https://crowdwise.charlietrenorden.com/",
