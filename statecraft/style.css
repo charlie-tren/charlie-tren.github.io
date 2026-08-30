@@ -20,12 +20,8 @@
   --on-accent: #ffffff;
   --over: #9c5539;
   --agree: #4f7d5e;
-  --sc0: #8a95a0;
-  --sc1: #6f9079;
-  --sc2: #5b8a6b;
-  --sc3: #3a7350;
+  --them: #7d5f96;
   --band: #f6ece6;
-  --plot: #fcfcfb;
   --held: #7a6a4e;
   --held-bg: #f4efe4;
 }
@@ -45,12 +41,8 @@
   --on-accent: #ffffff;
   --over: #9c5539;
   --agree: #4f7d5e;
-  --sc0: #8a95a0;
-  --sc1: #6f9079;
-  --sc2: #5b8a6b;
-  --sc3: #3a7350;
+  --them: #7d5f96;
   --band: #f6ece6;
-  --plot: #fcfcfb;
   --held: #7a6a4e;
   --held-bg: #f4efe4;
 }
@@ -70,12 +62,8 @@
   --on-accent: #0f1319;
   --over: #c98a68;
   --agree: #7fae8d;
-  --sc0: #79828f;
-  --sc1: #7d9e88;
-  --sc2: #93bc9f;
-  --sc3: #aed8ba;
+  --them: #b79ad2;
   --band: #241d18;
-  --plot: #131820;
   --held: #c2a86f;
   --held-bg: #241f16;
 }
@@ -96,12 +84,8 @@
     --on-accent: #0f1319;
     --over: #c98a68;
     --agree: #7fae8d;
-    --sc0: #79828f;
-    --sc1: #7d9e88;
-    --sc2: #93bc9f;
-    --sc3: #aed8ba;
+    --them: #b79ad2;
     --band: #241d18;
-    --plot: #131820;
     --held: #c2a86f;
     --held-bg: #241f16;
   }
@@ -361,10 +345,15 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   line-height: 1.45;
 }
 
-/* The opening chart -------------------------------------------------------
- * Drawn at container pixel scale by chart.js: the viewBox comes from the host's
- * own bounding rect so one user unit is one CSS pixel and an 11px label is 11px
- * on a phone. */
+/* The opening fingerprint --------------------------------------------------
+ * Thirteen spokes, one per policy domain, each scaled to that domain's own
+ * measured range. Drawn at container pixel scale by chart.js: the viewBox comes
+ * from the host's own bounding rect so one user unit is one CSS pixel and an
+ * 11.5px label is 11.5px on a phone.
+ *
+ * TWO HUES, NOT TWO SHADES. Your design and the country you started from are
+ * different subjects rather than two readings of the same thing, so the accent
+ * blue carries one and --them carries the other. */
 
 .chart {
   margin: 0 0 1.2rem;
@@ -381,48 +370,56 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 
 .ch-host {
   width: 100%;
-  height: 300px;
+  height: 400px;
   min-width: 0;
 }
 
 .ch-host svg { display: block; }
 
-.ch-plot { fill: var(--plot); stroke: var(--rule); stroke-width: 1; }
-.ch-band { fill: var(--band); }
-.ch-grid { stroke: var(--rule); stroke-width: 1; }
-
-.ch-curve {
+.fp-ring {
   fill: none;
-  stroke: var(--over);
-  stroke-width: 2;
-  stroke-linejoin: round;
+  stroke: var(--rule);
+  stroke-width: 1;
 }
 
-.ch-tick {
-  fill: var(--faint);
-  font: 400 11px/1 var(--font-body);
-  font-variant-numeric: tabular-nums;
+.fp-ring-out { stroke: var(--faint); stroke-opacity: 0.55; }
+
+.fp-spoke { stroke: var(--rule); stroke-width: 1; }
+
+/* A policy with no reading on one side or the other. Dashed, and the outline
+   breaks across it rather than dropping to the hub. */
+.fp-spoke-na {
+  stroke: var(--faint);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
 }
 
-.ch-axis {
+.fp-lab {
   fill: var(--soft);
   font: 400 11.5px/1 var(--font-body);
 }
 
-.ch-code {
-  fill: var(--soft);
-  font: 400 11px/1 var(--font-body);
+.fp-them-fill { fill: var(--them); fill-opacity: 0.14; stroke: none; }
+
+.fp-them-line {
+  fill: none;
+  stroke: var(--them);
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }
 
-.ch-dot { stroke: var(--panel); stroke-width: 1.5; }
-.ch-s0 { fill: var(--sc0); }
-.ch-s1 { fill: var(--sc1); }
-.ch-s2 { fill: var(--sc2); }
-.ch-s3 { fill: var(--sc3); }
+.fp-you-fill { fill: var(--accent); fill-opacity: 0.16; stroke: none; }
 
-.ch-you-halo { fill: var(--panel); opacity: 0.85; }
-.ch-you { fill: none; stroke: var(--accent); stroke-width: 2.5; }
-.ch-you-core { fill: var(--accent); }
+.fp-you-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.fp-hit { fill: transparent; stroke: none; }
 
 .ch-key {
   display: flex;
@@ -437,52 +434,33 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 .ck {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
   min-width: 0;
 }
 
-.ck-ramp {
-  flex: 1 0 100%;
-  gap: 0.25rem;
-}
-
-.ck-n { white-space: nowrap; }
-
 .ck-sw {
   flex: none;
-  width: 0.6rem;
-  height: 0.6rem;
-  border-radius: 50%;
+  width: 0.85rem;
+  height: 0.55rem;
+  border-radius: 0.15rem;
 }
 
-.ck-ramp .ck-sw { margin-left: 0.4rem; }
-.ck-ramp .ck-sw:first-of-type { margin-left: 0.15rem; }
-
-.ck-sw.ch-s0 { background: var(--sc0); }
-.ck-sw.ch-s1 { background: var(--sc1); }
-.ck-sw.ch-s2 { background: var(--sc2); }
-.ck-sw.ch-s3 { background: var(--sc3); }
-
 .ck-you {
-  width: 0.7rem;
-  height: 0.7rem;
-  background: transparent;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
   border: 2px solid var(--accent);
 }
 
-.ck-curve {
-  width: 0.85rem;
-  height: 0.2rem;
-  border-radius: 999px;
-  background: var(--over);
+.ck-them {
+  background: color-mix(in srgb, var(--them) 14%, transparent);
+  border: 2px solid var(--them);
 }
 
-.ck-band {
-  width: 0.7rem;
-  height: 0.6rem;
-  border-radius: 0.15rem;
-  background: var(--band);
-  border: 1px solid var(--rule);
+.ck-gap {
+  background: none;
+  border: 0;
+  border-top: 2px dashed var(--faint);
+  border-radius: 0;
+  height: 0;
 }
 
 .ch-cap {
@@ -1264,7 +1242,7 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   .domain.tax { padding: 0.75rem 0.8rem 0.85rem; }
   .chart { padding: 0.75rem 0.7rem 0.85rem; }
   .chart h2 { font-size: 1.15rem; }
-  .ch-host { height: 250px; }
+  .ch-host { height: 275px; }
   .ch-key { gap: 0.15rem 0.7rem; }
   .cascade { bottom: 4.2rem; width: calc(100% - 1.2rem); padding: 0.6rem 0.7rem 0.65rem; }
   .d-big { font-size: 1.5rem; }

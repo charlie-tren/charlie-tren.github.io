@@ -143,17 +143,15 @@ function paintPicker() {
   sel.value = state.start;
 }
 
-function paintKey() {
+/** Names both shapes, and the break in an outline where a policy has no reading. */
+function paintKey(startCode, gaps) {
+  const gapNote = (gaps || []).length
+    ? `<span class="ck"><i class="ck-sw ck-gap" aria-hidden="true"></i>Break in the outline: ${esc((gaps || []).join(' and '))} has no reading here</span>`
+    : '';
   document.getElementById('chartKey').innerHTML = `
     <span class="ck"><i class="ck-sw ck-you" aria-hidden="true"></i>Your design</span>
-    <span class="ck"><i class="ck-sw ck-curve" aria-hidden="true"></i>What your tax funds</span>
-    <span class="ck"><i class="ck-sw ck-band" aria-hidden="true"></i>More than it funds</span>
-    <span class="ck ck-ramp"><span class="ck-n">Policies you share:</span>
-      <i class="ck-sw ch-s0" aria-hidden="true"></i><span class="ck-n">0 to 4</span>
-      <i class="ck-sw ch-s1" aria-hidden="true"></i><span class="ck-n">5 to 7</span>
-      <i class="ck-sw ch-s2" aria-hidden="true"></i><span class="ck-n">8 to 11</span>
-      <i class="ck-sw ch-s3" aria-hidden="true"></i><span class="ck-n">12 or 13</span>
-    </span>`;
+    <span class="ck"><i class="ck-sw ck-them" aria-hidden="true"></i>${esc(countryName(startCode))}, where you started</span>
+    ${gapNote}`;
 }
 
 /** One slider per domain, painted once. Values are written by render(). */
@@ -357,14 +355,14 @@ function paintChart() {
   if (!host || !data) return;
   const live = liveState();
   const b = budgets(data, live);
-  const matched = new Map(rank(data, live.selection).map((r) => [r.code, r.matched]));
-  drawChart(host, data, base, {
+  const info = drawChart(host, data, base, {
     startCode: live.start,
+    selection: live.selection,
     rate: b.financial.taxRate,
-    spend: b.financial.exact.used,
-    capacity: b.financial.exact.capacity,
-    matched,
   });
+  // The key names the starting country, so it is rewritten whenever the chart
+  // is: the picker can change which country the second shape belongs to.
+  paintKey(live.start, info ? info.gaps : []);
 }
 
 /* Moving a slider ----------------------------------------------------------- */
@@ -664,7 +662,6 @@ async function boot() {
   }
 
   paintPicker();
-  paintKey();
   paintDomains();
   paintMethod();
   setUpControls();
