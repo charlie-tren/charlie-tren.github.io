@@ -1,24 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="Statecraft">
   <title>Statecraft</title>
   <!--
-    A fader bank: three budgets, set to three different levels. The same mark
-    the header wears, where it animates the cascade the page runs on.
+    A fader bank: three budgets set to three different levels. The header wears
+    the same mark, where it animates the cascade the page runs on.
 
     DRAWN ON A 16 UNIT GRID, NOT A 96 UNIT ONE SCALED DOWN. Every edge is an
-    integer or a half, so at 16px each unit is one pixel and nothing lands in
-    between to be antialiased into grey mush.
+    integer or a half, so at 16px one unit is one pixel and nothing lands in
+    between to be antialiased into mush.
 
-    The tracks are dropped at favicon size and only the three handles survive.
-    Three 1-unit tracks behind three 4-unit handles is four greys in sixteen
-    pixels, which reads as texture rather than as a control. Handles alone keep
-    the shape, and the differing heights are what carry the meaning.
+    THE TRACKS ARE THE WHOLE MARK, which the previous version got wrong. It kept
+    the three handles and dropped the tracks, on the reasoning that four greys in
+    sixteen pixels reads as texture. What it actually produced was three
+    horizontal bars of near-equal length in a rounded square, which is a
+    hamburger menu. Nothing says a bar can slide except the line it slides along.
+    At 40% the tracks are present enough to carry that and quiet enough not to
+    compete with the caps. Checked at 16, 20 and 32 against a light and a dark
+    tab strip.
 
-    A FILLED SATURATED TILE RATHER THAN BARE INK, and no prefers-color-scheme
-    swap. A favicon sits on browser chrome, not on the page: Chrome's is near
-    white in light mode and near #202124 in dark, and accent blue holds against
-    both. Checked at 16px on both.
+    A FILLED SATURATED TILE, and no prefers-color-scheme swap. A favicon sits on
+    browser chrome, not on the page: Chrome's is near white in light mode and
+    near #202124 in dark, and this blue holds against both.
   -->
   <rect width="16" height="16" rx="3" fill="#2f6fb2"/>
+  <g fill="#fbfbfa" opacity=".4">
+    <rect x="3.5" y="2.5" width="1" height="11" rx=".5"/>
+    <rect x="7.5" y="2.5" width="1" height="11" rx=".5"/>
+    <rect x="11.5" y="2.5" width="1" height="11" rx=".5"/>
+  </g>
   <g fill="#fbfbfa">
     <rect x="2" y="9" width="4" height="2" rx="1"/>
     <rect x="6" y="4" width="4" height="2" rx="1"/>

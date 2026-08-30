@@ -356,10 +356,17 @@ export function drawChart(host, data, base, view) {
   }
 
   const themFill = el('path', { class: 'fp-them-fill' });
-  const themLine = el('path', { class: 'fp-them-line' });
   const youFill = el('path', { class: 'fp-you-fill' });
   const youLine = el('path', { class: 'fp-you-line' });
-  svg.append(themFill, themLine, youFill, youLine);
+  const themLine = el('path', { class: 'fp-them-line' });
+  // THE STARTING COUNTRY'S OUTLINE GOES LAST, over your fill.
+  //
+  // Drawn underneath it disappeared: your shape carries a fill, so once three
+  // sliders had moved, the country you started from was a sliver visible in one
+  // corner. The point of this graphic is the GAP between the two outlines, and
+  // an outline you cannot see has no gap. It is unfilled and dashed so it reads
+  // as a reference line rather than as a second country competing for attention.
+  svg.append(themFill, youFill, youLine, themLine);
 
   // A readable value per spoke, on hover and for a screen reader.
   base.spokes.forEach((spoke, i) => {
