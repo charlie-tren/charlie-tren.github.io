@@ -179,14 +179,33 @@ export function capacityOf(data, state) {
   const raised = realisedTax + nonTax;
   const inherited = spendOf(data, baseline);
 
+  // THE TOP-UP IS FIXED AT THE COUNTRY YOU INHERITED, NOT RECOMPUTED AS YOU DRAG.
+  //
+  // The floor exists so a country can afford to be ITSELF: the UAE's modelled
+  // spend is 32.0% of GDP against 27.8 of real income, because every option is
+  // priced once on figures that mostly describe European states. That gap is a
+  // property of the country you started from, so it is measured once, at that
+  // country's OWN tax rate, and then carried as a constant.
+  //
+  // Written as max(raised, inherited) instead, it silently ate the bottom half
+  // of the tax slider: dragging Australia from 34 down to 12 moved the budget by
+  // nothing at all, because inherited spend was above realised revenue the whole
+  // way down. Half the control did nothing, which is exactly the opposite of
+  // what the slider was added to do. Fixed as a constant top-up, capacity now
+  // tracks the rate one for one in both directions and a tax cut forces a
+  // cascade, which is the point.
+  const startRate = rateForOption(data, baseline.tax);
+  const topUp = Math.max(0, inherited - (realisedRevenue(startRate) + nonTax));
+
   return {
     rate,
     realisedTax,
     nonTaxRevenue: nonTax,
     raised,
     inherited,
-    capacity: Math.max(raised, inherited),
-    floored: inherited > raised,
+    topUp,
+    capacity: raised + topUp,
+    floored: topUp > 0,
   };
 }
 
@@ -233,6 +252,10 @@ export function budgets(data, state) {
       realisedTax: round1(cap.realisedTax),
       nonTaxRevenue: round1(cap.nonTaxRevenue),
       inherited: round1(cap.inherited),
+      // The constant subsidy sized at the country you inherited. Surfaced so the
+      // page can say where the money comes from, and so a test can assert it
+      // does not move when the rate does.
+      topUp: round1(cap.topUp),
       floored: cap.floored,
       // Unrounded, for anything that has to decide rather than display.
       exact: { capacity: cap.capacity, used: spend, left },

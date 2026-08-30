@@ -464,13 +464,21 @@ test('the cascade is deterministic', () => {
 
 // 15. The big programmes pay the most.
 test('the cut is allocated in proportion to what each domain spends', () => {
-  // Australia at the bottom of the slider has exactly no headroom, because the
-  // floor holds capacity at what it already spends. Retirement is then on 5.0
-  // and justice on 0.9, everything else is locked, and moving healthcare to a
-  // national service costs 2.0. Proportional targets are 1.69 and 0.31, so
-  // retirement is asked first and its first step alone covers the lot.
-  const broke = setTaxRate(data, startingState(data, 'AU'), TAX.MIN);
-  assert.equal(broke.budgets.financial.left, 0, 'no headroom, and nothing cut to get there');
+  // Australia taxed down to 26 has a little over a point of headroom. Retirement
+  // is then on 5.0 and justice on 0.9, everything else is locked, and moving
+  // healthcare to a national service costs 2.0, so the cascade has to find the
+  // difference. Proportional targets put nearly all of it on retirement, and its
+  // first step down covers the lot.
+  //
+  // This used to run at the very bottom of the slider and lean on the floor
+  // holding capacity at what Australia already spends. The floor is now a fixed
+  // top-up measured at the starting country's own rate rather than a running
+  // max, precisely so that the bottom half of the slider is not inert, so there
+  // is no longer a rate at which headroom is conveniently exactly zero.
+  const broke = setTaxRate(data, startingState(data, 'AU'), 26);
+  assert.ok(broke.budgets.financial.left > 0 && broke.budgets.financial.left < 2,
+    'a small known headroom, so the move below has to be part paid for');
+  assert.deepEqual(broke.cuts, [], 'and nothing cut on the way there');
   const start = lockAllExcept(broke.state, 'retirement', 'justice', 'healthcare');
   const r = applyChange(data, start, 'healthcare', 'hc_public');
 
@@ -545,9 +553,22 @@ test('the UAE capacity comes from non-tax revenue and is not attributed to tax',
   const nordic = setTaxRate(data, ae, 46).state;
   const after = budgets(data, nordic);
   assert.equal(after.financial.nonTaxRevenue, 11.8);
-  assert.equal(one(after.financial.capacity), one(realisedRevenue(46) + 11.8));
+
+  // The top-up is a CONSTANT, measured once at the UAE's own rate, so it is
+  // still here at 46 and capacity is revenue plus it. Written as a running
+  // max(raised, inherited) instead, the whole bottom of the slider did nothing,
+  // because inherited spend sat above realised revenue the entire way down.
+  assert.equal(one(after.financial.topUp), one(b.financial.topUp));
+  assert.equal(one(after.financial.capacity),
+    one(realisedRevenue(46) + 11.8 + after.financial.topUp));
   assert.ok(after.financial.capacity > b.financial.capacity + 20,
     'taxing a petrostate properly should be transformative, not marginal');
+
+  // And the slider now cuts both ways: taxing the UAE at the floor of the range
+  // takes real money off it, where the old running max swallowed the whole move.
+  const stripped = budgets(data, setTaxRate(data, ae, TAX.MIN).state);
+  assert.ok(stripped.financial.capacity < b.financial.capacity - 3,
+    'cutting tax must reduce what you have to spend');
 });
 
 // 18. It says so rather than spinning.
