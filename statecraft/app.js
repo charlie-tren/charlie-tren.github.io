@@ -143,14 +143,21 @@ function paintPicker() {
   sel.value = state.start;
 }
 
-/** Names both shapes, and the break in an outline where a policy has no reading. */
-function paintKey(startCode, gaps) {
+/** Names the shapes on screen, and the break where a policy has no reading.
+ *
+ * The starting country's entry appears only once its outline does. Until the
+ * visitor moves something the two shapes are identical and the reference is
+ * hidden, so naming it would point at a line nobody can see. */
+function paintKey(startCode, gaps, differs) {
   const gapNote = (gaps || []).length
     ? `<span class="ck"><i class="ck-sw ck-gap" aria-hidden="true"></i>Break in the outline: ${esc((gaps || []).join(' and '))} has no reading here</span>`
     : '';
+  const themEntry = differs
+    ? `<span class="ck"><i class="ck-sw ck-them" aria-hidden="true"></i>${esc(countryName(startCode))}, where you started</span>`
+    : '';
   document.getElementById('chartKey').innerHTML = `
     <span class="ck"><i class="ck-sw ck-you" aria-hidden="true"></i>Your design</span>
-    <span class="ck"><i class="ck-sw ck-them" aria-hidden="true"></i>${esc(countryName(startCode))}, where you started</span>
+    ${themEntry}
     ${gapNote}`;
 }
 
@@ -362,7 +369,13 @@ function paintChart() {
   });
   // The key names the starting country, so it is rewritten whenever the chart
   // is: the picker can change which country the second shape belongs to.
-  paintKey(live.start, info ? info.gaps : []);
+  const differs = info ? info.differs : false;
+  paintKey(live.start, info ? info.gaps : [], differs);
+  // States what is on screen. Until something moves that is simply the starting
+  // country, and saying so is more use than describing the chart.
+  document.getElementById('chartCap').textContent = differs
+    ? `The dashed outline is ${countryName(live.start)}, where you began.`
+    : `This is ${countryName(live.start)}, until you change something.`;
 }
 
 /* Moving a slider ----------------------------------------------------------- */

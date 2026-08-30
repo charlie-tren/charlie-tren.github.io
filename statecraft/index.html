@@ -59,7 +59,9 @@
     <h2 id="chartH">Your Country's Fingerprint</h2>
     <div class="ch-host" id="chartHost"></div>
     <p class="ch-key" id="chartKey"></p>
-    <p class="ch-cap">You start with your country's thirteen policies, so the two outlines begin as one.</p>
+    <!-- Written by app.js, because on load there is only one outline and a caption
+       naming two would point at something not on screen. -->
+  <p class="ch-cap" id="chartCap"></p>
   </section>
 
   <section class="picker" aria-label="Starting country">
