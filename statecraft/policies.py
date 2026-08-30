@@ -55,9 +55,46 @@ DOMAINS = [
         "name": "Tax and Redistribution",
         "axis": "tax_take",
         "options": [
+            # REVENUE AND TAX TAKE ARE DIFFERENT THINGS FOR A RESOURCE STATE, and
+            # `revenue` was carrying a tax-take number. Corrected 2026-08-30 from
+            # 16.0 to 27.8.
+            #
+            # `revenue` is the capacity this option gives a visitor to spend: the
+            # money the state actually has, which is GENERAL GOVERNMENT REVENUE.
+            # For a petrostate that is mostly hydrocarbon and investment income,
+            # and no tax-to-GDP series captures a cent of it. The detail line
+            # already said "revenue from resources", so the label was right and
+            # the number was the thing that was wrong.
+            #
+            # IMF general government revenue for the UAE is 27.8% of GDP in 2024.
+            # https://www.imf.org/external/datamapper/rev@FPP/ARE
+            # (machine-readable at /external/datamapper/api/v1/rev/ARE)
+            # Checked 2026-08-30. Cross-checked twice, because the fault being
+            # fixed here is a plausible number on the wrong basis and a second
+            # plausible number would not have caught it:
+            #   - the same dataset's expenditure series reads 21.4% for 2024, and
+            #     27.8 less 21.4 is the 6.4% of GDP general government surplus the
+            #     2025 Article IV states for 2024, so this is the series the
+            #     Article IV reports from.
+            #   - CBUAE's Quarterly Economic Review puts general government
+            #     revenue at 26.9% of GDP in H1 2024. Different institution, same
+            #     neighbourhood.
+            # For contrast, the World Bank's GC.REV.XGRT.GD.ZS reads 3.0% for the
+            # UAE in 2024 because it is FEDERAL government only, which is the same
+            # wrong-basis trap tax_take itself was moved off.
+            #
+            # THE AXIS VALUE DELIBERATELY DOES NOT FOLLOW IT and stays at 16.0.
+            # The tax_take axis is total TAX revenue as a share of GDP on an OECD
+            # Revenue Statistics / IMF basis, and for the UAE that is genuinely
+            # low: 5% VAT since 2018 and 9% corporate tax since 2023, against
+            # bounds of (10, 60). The two numbers are 11.8 points apart and that
+            # gap IS the option, not an inconsistency to be tidied away. Making
+            # them agree would either overstate how heavily the UAE taxes or
+            # re-break the budget. AE carries no measured tax_take cell, so this
+            # hand value is what the page plots.
             {"id": "tax_minimal", "label": "Minimal state",
              "detail": "No income tax. Revenue from resources and consumption.",
-             "countries": ["AE"], "revenue": 16.0, "political": 25, "social": 20,
+             "countries": ["AE"], "revenue": 27.8, "political": 25, "social": 20,
              "axis": {"tax_take": 16.0, "redistribution": 0.01}},
             # EE verified 2026-08-29: still a genuine flat rate, 22% for 2026. The
             # legislated rise to 24% was reversed in December 2025, and the
