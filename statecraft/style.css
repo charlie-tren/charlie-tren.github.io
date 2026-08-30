@@ -625,17 +625,24 @@ h1 {
   border-radius: 50%;
 }
 
-/* The ring is what keeps two close values readable. Your design and the
-   country's land within a pixel of each other on several axes, and a flat
-   filled dot on top of an outlined one reads as a single marker. */
+/* TWO SHADES, NOT TWO SHAPES. Your value and the country's are the same kind
+   of thing measured the same way, so a filled dot against a hollow ring reads
+   as two different species and pulls the eye to whichever is outlined. Distinguish
+   marks by shade when they are the same kind of thing.
+   The ring was there for a real reason, which the shading has to keep solving:
+   on several axes the two values land within a pixel of each other, and one flat
+   dot over another reads as a single marker. So both keep the same
+   panel-coloured halo, which separates them on overlap without making one of
+   them a different object. Accent for your design, muted for the country,
+   matching the key below and the layout this panel was designed from. */
 .ax-you {
-  background: var(--ink);
+  background: var(--accent);
   box-shadow: 0 0 0 1.5px var(--panel);
 }
 
 .ax-them {
-  background: var(--panel);
-  border: 2px solid var(--soft);
+  background: var(--soft);
+  box-shadow: 0 0 0 1.5px var(--panel);
 }
 
 .ax-ends {
@@ -673,12 +680,10 @@ h1 {
   border-radius: 50%;
 }
 
-.ax-sw-you { background: var(--ink); }
+/* The key uses the same two shades as the markers, for the same reason. */
+.ax-sw-you { background: var(--accent); }
 
-.ax-sw-them {
-  background: var(--panel);
-  border: 2px solid var(--soft);
-}
+.ax-sw-them { background: var(--soft); }
 
 .ax-prov {
   margin: 0.15rem 0 0;
