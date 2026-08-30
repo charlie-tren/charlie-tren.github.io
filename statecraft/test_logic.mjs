@@ -19,10 +19,12 @@ const data = JSON.parse(readFileSync(join(here, 'data.json'), 'utf8'));
 const byCode = (code) => data.countries.find((c) => c.code === code);
 
 // THE COUNTRIES THAT CAN BE AN ANSWER. data.countries is forty-five rows and
-// only twenty-nine of them carry a policy matrix; the other sixteen are measured
+// only thirty-seven of them carry a policy matrix; the other eight are measured
 // only, added 30/08/2026, and have `choices: {}`. Nine of the original
 // twenty-five, Ireland, Italy, Spain, Portugal, Austria, Belgium, Greece,
-// Luxembourg and Iceland, were coded on 30/08/2026 and moved across. Every test below that starts
+// Luxembourg and Iceland, were coded on 30/08/2026, and Czechia, Poland,
+// Slovakia, Slovenia, Croatia, Lithuania, Latvia and Hungary the same day, so
+// sixteen became eight. Every test below that starts
 // from a country's choices, encodes them into a URL, or asks what a country
 // matches has to run over THIS list, because the other sixteen have nothing
 // to start from. Reading it through match.js rather than filtering here keeps
@@ -38,8 +40,8 @@ const stateOf = (code, overrides = {}) => ({ ...startingState(data, code), ...ov
 test('data.json has the shape the modules assume', () => {
   assert.equal(data.domains.length, 13);
   assert.equal(data.countries.length, 45);
-  assert.equal(MATCHABLE.length, 29);
-  assert.equal(data.countries.filter((c) => !c.matchable).length, 16);
+  assert.equal(MATCHABLE.length, 37);
+  assert.equal(data.countries.filter((c) => !c.matchable).length, 8);
   assert.equal(data.axes.length, 14);
   assert.equal(data.fallback, 'AU');
 
@@ -69,7 +71,7 @@ test('data.json has the shape the modules assume', () => {
 // and this is the test that it is doing the work.
 test('rank never returns a country with no policy matrix', () => {
   const unmatchable = new Set(data.countries.filter((c) => !c.matchable).map((c) => c.code));
-  assert.ok(unmatchable.size >= 16, 'there should be measured-only countries to exclude');
+  assert.ok(unmatchable.size >= 8, 'there should be measured-only countries to exclude');
 
   // Every matchable country's own design.
   for (const country of MATCHABLE) {
@@ -104,7 +106,7 @@ test('rank never returns a country with no policy matrix', () => {
 });
 
 // 1. Every country can afford to be itself.
-test('all twenty-nine countries can afford to be themselves', () => {
+test('all thirty-seven countries can afford to be themselves', () => {
   const financiallyOver = [];
 
   for (const country of MATCHABLE) {
@@ -149,8 +151,13 @@ test('all twenty-nine countries can afford to be themselves', () => {
   // Ireland, Italy, Spain, Portugal, Austria, Belgium, Greece, Luxembourg and
   // Iceland were coded. None of the nine needed a nonTaxRevenue or the floor to
   // pay for its own status quo.
+  // STILL EMPTY WITH EIGHT MORE, checked 30/08/2026 when Czechia, Poland,
+  // Slovakia, Slovenia, Croatia, Lithuania, Latvia and Hungary were coded. None
+  // of the eight needed a nonTaxRevenue or the floor to pay for its own status
+  // quo, which is the expected result: all eight measure a tax take of 33% to
+  // 38% of GDP against modelled spends below that.
   assert.deepEqual(financiallyOver, []);
-  assert.equal(MATCHABLE.length, 29);
+  assert.equal(MATCHABLE.length, 37);
 
   // The floor only ever binds for the UAE. Nineteen countries raise more than
   // they spend, so their capacity is untouched by it, and this asserts that

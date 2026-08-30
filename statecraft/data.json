@@ -1694,14 +1694,14 @@
           "political": 12,
           "social": 35,
           "axis": {
-            "family_spend": 2.6,
+            "family_spend": 2.45,
             "redistribution": 0.04
           },
           "axis_hand": {
             "family_spend": 3.8,
             "redistribution": 0.04
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 2 countries"
         },
         {
           "id": "fa_leave",
@@ -4290,8 +4290,22 @@
         "Europe/Prague"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_insurance",
+        "education": "ed_vocational",
+        "housing": "ho_subsidy",
+        "retirement": "re_earnings",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_alliance",
+        "immigration": "im_open",
+        "justice": "ju_tough",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 34.0,
@@ -4372,8 +4386,22 @@
         "Europe/Warsaw"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_insurance",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_earnings",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_alliance",
+        "immigration": "im_open",
+        "justice": "ju_tough",
+        "family": "fa_pronatal"
+      },
       "indicators": {
         "tax_take": {
           "value": 36.6,
@@ -4454,8 +4482,22 @@
         "Europe/Bratislava"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_insurance",
+        "education": "ed_vocational",
+        "housing": "ho_market",
+        "retirement": "re_earnings",
+        "energy": "en_nuclear",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_alliance",
+        "immigration": "im_controlled",
+        "justice": "ju_standard",
+        "family": "fa_universal"
+      },
       "indicators": {
         "tax_take": {
           "value": 35.6,
@@ -4536,8 +4578,22 @@
         "Europe/Ljubljana"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_insurance",
+        "education": "ed_vocational",
+        "housing": "ho_market",
+        "retirement": "re_earnings",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_bargaining",
+        "defence": "de_alliance",
+        "immigration": "im_controlled",
+        "justice": "ju_rehab",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 38.3,
@@ -4618,8 +4674,22 @@
         "Europe/Zagreb"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_insurance",
+        "education": "ed_vocational",
+        "housing": "ho_market",
+        "retirement": "re_super",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_bargaining",
+        "defence": "de_alliance",
+        "immigration": "im_controlled",
+        "justice": "ju_standard",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 38.4,
@@ -4690,8 +4760,22 @@
         "Europe/Vilnius"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_anglo",
+        "healthcare": "hc_insurance",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_flat",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_fptp",
+        "work": "wo_minimum",
+        "defence": "de_alliance",
+        "immigration": "im_controlled",
+        "justice": "ju_standard",
+        "family": "fa_universal"
+      },
       "indicators": {
         "tax_take": {
           "value": 33.1,
@@ -4772,8 +4856,22 @@
         "Europe/Riga"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_anglo",
+        "healthcare": "hc_mixed",
+        "education": "ed_market",
+        "housing": "ho_market",
+        "retirement": "re_super",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_alliance",
+        "immigration": "im_open",
+        "justice": "ju_tough",
+        "family": "fa_universal"
+      },
       "indicators": {
         "tax_take": {
           "value": 34.9,
@@ -5046,8 +5144,22 @@
         "Europe/Budapest"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_flat",
+        "healthcare": "hc_insurance",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_earnings",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_fptp",
+        "work": "wo_minimum",
+        "defence": "de_alliance",
+        "immigration": "im_controlled",
+        "justice": "ju_tough",
+        "family": "fa_pronatal"
+      },
       "indicators": {
         "tax_take": {
           "value": 34.4,
@@ -5600,12 +5712,16 @@
     "Europe/Vienna": "AT",
     "Europe/Brussels": "BE",
     "Europe/Athens": "GR",
+    "Europe/Prague": "CZ",
+    "Europe/Warsaw": "PL",
+    "Europe/Bratislava": "SK",
+    "Europe/Ljubljana": "SI",
+    "Europe/Zagreb": "HR",
+    "Europe/Vilnius": "LT",
+    "Europe/Riga": "LV",
     "Atlantic/Reykjavik": "IS",
     "Europe/Luxembourg": "LU",
-    "Europe/Prague": "DE",
-    "Europe/Warsaw": "DE",
-    "Europe/Riga": "EE",
-    "Europe/Vilnius": "EE",
+    "Europe/Budapest": "HU",
     "Asia/Hong_Kong": "SG",
     "Asia/Kuala_Lumpur": "SG",
     "Asia/Shanghai": "SG",
