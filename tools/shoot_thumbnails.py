@@ -194,6 +194,9 @@ SCHEME = {
     # a PREPARE step to set a localStorage key.
     "photocopy": "dark",
     "shortfall": "dark",
+    # Statecraft follows prefers-color-scheme with nothing stored, same as the two
+    # above, so emulation alone flips it and no PREPARE step is needed.
+    "statecraft": "dark",
 }
 
 # Pages whose top is a masthead rather than the product: frame on an element
