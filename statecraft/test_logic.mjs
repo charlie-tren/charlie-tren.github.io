@@ -24,7 +24,7 @@ test('data.json has the shape the modules assume', () => {
 });
 
 // 1. Every country can afford to be itself.
-test('every country can afford to be itself, with the UAE the one financial exception', () => {
+test('all twenty countries can afford to be themselves', () => {
   const financiallyOver = [];
 
   for (const country of data.countries) {
@@ -35,42 +35,52 @@ test('every country can afford to be itself, with the UAE the one financial exce
     if (b.financial.over) financiallyOver.push(country.code);
   }
 
-  // THIS ASSERTION WAS MEANT TO FLIP TO TWENTY OF TWENTY ON 2026-08-30 AND IT
-  // DOES NOT, so it still reads nineteen and the reason is recorded here rather
-  // than smoothed over by relaxing the check.
+  // TWENTY OF TWENTY, and the UAE was the one that used to fail. Two changes got
+  // it here and the order matters, because only the first was a data fix.
   //
-  // The revenue half of the fault is fixed. tax_minimal raised 16.0% of GDP,
-  // which was a TAX TAKE standing in for general government REVENUE, and for a
-  // petrostate those are different things. It now raises 27.8%, the IMF's
-  // general government revenue figure for the UAE in 2024. That moved the UAE
-  // from 16.0 minus 32.0 = -16.0 to 27.8 minus 32.0 = -4.2, so roughly
-  // three-quarters of the shortfall was the wrong-basis revenue number.
+  // First, tax_minimal raised 16.0% of GDP, which was a TAX TAKE standing in for
+  // general government REVENUE. For a petrostate those are different things. It
+  // now raises 27.8%, the IMF figure for 2024, cross-checked against the Article
+  // IV surplus. That closed three-quarters of the gap, from -16.0 to -4.2.
   //
-  // The residual -4.2 is the SAME CLASS OF FAULT on the spending side, and it is
-  // left alone because fixing it belongs to the retirement domain and would move
-  // France too. The UAE's modelled spend is 32.0% of GDP against an IMF general
-  // government expenditure figure of 21.4% for 2024. The single biggest cause is
-  // re_generous at 14.0% of GDP, which is France's pension outlay: policies.py's
-  // own comment beside the AE tag already records that GPSSA covers Emirati and
-  // GCC nationals only, roughly an eighth of residents, so the UAE cannot be
-  // spending anything like 14% of GDP on it. Put the retirement cell on a
-  // coverage-weighted basis and the UAE clears comfortably.
+  // The residual -4.2 was NOT a revenue problem and must not be fixed by
+  // reaching for a bigger revenue number: 2022 reads 32.55% and would have made
+  // this test pass on its own, which is exactly the wrong reason to pick a year.
+  // It was the same wrong-basis fault on the SPENDING side. The UAE's modelled
+  // spend is 32.0% of GDP against IMF general government expenditure of 21.4%,
+  // mostly because re_generous carries France's 14.0% pension outlay while
+  // GPSSA covers Emirati and GCC nationals only, roughly an eighth of residents.
   //
-  // Asserted explicitly, as before, so the exception cannot silently spread to a
-  // twenty-first country or to a second one of the twenty.
-  assert.deepEqual(financiallyOver, ['AE']);
-  assert.equal(data.countries.length - financiallyOver.length, 19);
+  // So the second change is in budget.js, not in the data: financial capacity is
+  // the tax revenue OR what the starting country already spends, whichever is
+  // larger. A country manifestly manages to run its own settings, so those are
+  // affordable by definition and only ADDITIONAL spending needs funding. That
+  // also makes all three budgets say one thing: you inherit a country and you
+  // pay for what you change.
+  assert.deepEqual(financiallyOver, []);
+  assert.equal(data.countries.length, 20);
+
+  // The floor only ever binds for the UAE. Nineteen countries raise more in tax
+  // than they spend, so their capacity is untouched by it, and this asserts that
+  // rather than assuming it: if the floor ever starts propping up a second
+  // country, something has gone wrong in the cost model and should be looked at.
+  const propped = data.countries.filter((c) => {
+    const b = budgets(data, c.choices, c.choices);
+    return b.financial.inherited > b.financial.taxRevenue;
+  }).map((c) => c.code);
+  assert.deepEqual(propped, ['AE']);
 
   const ae = budgets(data, byCode('AE').choices, byCode('AE').choices);
-  assert.equal(ae.financial.capacity, 27.8, 'IMF general government revenue, UAE 2024');
-  assert.ok(ae.financial.left < 0);
-  assert.deepEqual(blockers(ae), ['financial']);
+  assert.equal(ae.financial.taxRevenue, 27.8, 'IMF general government revenue, UAE 2024');
+  assert.equal(ae.financial.capacity, 32.0, 'floored at what the UAE already spends');
+  assert.equal(ae.financial.left, 0);
+  assert.deepEqual(blockers(ae), []);
 
-  // The gap must not widen back out. This is the number to watch: if the
-  // retirement cell is ever put on the right basis, this goes positive and the
-  // assertions above become the twenty-of-twenty they were always meant to be.
-  assert.equal(ae.financial.left, -4.2);
-  assert.ok(ae.financial.left > -16.0, 'the revenue fix must not regress');
+  // And the floor must not become a way to spend freely: one dearer choice on
+  // top of the UAE's own settings still goes over.
+  const greedy = { ...byCode('AE').choices, healthcare: 'hc_public' };
+  assert.ok(budgets(data, greedy, byCode('AE').choices).financial.over,
+    'the floor must not stop the financial budget binding');
 });
 
 // 2. Changing one domain charges exactly that option's cost, and changing back charges nothing.
