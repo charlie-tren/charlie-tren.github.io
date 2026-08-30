@@ -65,6 +65,7 @@ SITES = {
     "pendulum": "https://charlietrenorden.com/pendulum/",
     "cfa-companion": "https://charlietrenorden.com/cfa-companion/",
     "ghostwriters": "https://charlietrenorden.com/ghostwriters/",
+    "statecraft": "https://charlietrenorden.com/statecraft/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -92,6 +93,10 @@ READY = {
     # that start hidden, so waiting on those waits forever. The bank count is the
     # first VISIBLE thing that only exists after the questions have loaded.
     "cfa-companion": "#banksize",
+    # Statecraft paints its thirteen domains from data.json after load, so the
+    # shot lands on an empty column without this. An option card is the first
+    # thing that only exists once the data has arrived.
+    "statecraft": ".opt",
 }
 READY_TIMEOUT = 30000
 
