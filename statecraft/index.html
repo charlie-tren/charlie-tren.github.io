@@ -31,7 +31,20 @@
     <button class="toggle" id="themeBtn" type="button" aria-label="Switch between light and dark theme"><span class="dot" aria-hidden="true"></span><span id="themeLbl">Dark</span></button>
     <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
   </div>
-  <h1>Statecraft</h1>
+  <!-- The mark is the mechanic: three faders, and on hover the middle one is
+       pushed up while the other two fall to pay for it. That is the whole page
+       in a logo, so it animates rather than sitting still. Reduced motion is
+       honoured below and the resting state is the interesting one anyway. -->
+  <h1><svg class="mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+    <g class="fd-track">
+      <rect x="2.6" y="1.6" width="1.2" height="12.8" rx=".6"/>
+      <rect x="7.4" y="1.6" width="1.2" height="12.8" rx=".6"/>
+      <rect x="12.2" y="1.6" width="1.2" height="12.8" rx=".6"/>
+    </g>
+    <rect class="fd fd-a" x="1.2" y="8.6" width="4" height="2.2" rx="1.1"/>
+    <rect class="fd fd-b" x="6" y="6.4" width="4" height="2.2" rx="1.1"/>
+    <rect class="fd fd-c" x="10.8" y="7.4" width="4" height="2.2" rx="1.1"/>
+  </svg>Statecraft</h1>
   <p class="lede">Design a country one policy at a time, pay for every choice, and find out which real country you built.</p>
 </header>
 

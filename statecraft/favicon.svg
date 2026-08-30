@@ -1,29 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="Statecraft">
   <title>Statecraft</title>
   <!--
-    Three bars of different heights for the three budgets: money, political
-    capital and public patience.
+    A fader bank: three budgets, set to three different levels. The same mark
+    the header wears, where it animates the cascade the page runs on.
 
-    DRAWN ON A 16 UNIT GRID, NOT A 96 UNIT ONE SCALED DOWN. The viewBox is
-    0 0 16 16 and every edge is an integer, so at the size this is actually
-    seen each unit is exactly one pixel and nothing lands on a half pixel to
-    be antialiased into grey mush. Bars are 2 wide with 2 gaps, which is the
-    coarsest three-bar arrangement that still fits, and they share a baseline
-    at y=13 so the differing heights are the only thing that reads.
+    DRAWN ON A 16 UNIT GRID, NOT A 96 UNIT ONE SCALED DOWN. Every edge is an
+    integer or a half, so at 16px each unit is one pixel and nothing lands in
+    between to be antialiased into grey mush.
+
+    The tracks are dropped at favicon size and only the three handles survive.
+    Three 1-unit tracks behind three 4-unit handles is four greys in sixteen
+    pixels, which reads as texture rather than as a control. Handles alone keep
+    the shape, and the differing heights are what carry the meaning.
 
     A FILLED SATURATED TILE RATHER THAN BARE INK, and no prefers-color-scheme
-    swap. The estate is dark aware, but a favicon sits on browser chrome, not
-    on the page, and Chrome's chrome is near white in light mode and near
-    #202124 in dark. Accent blue holds against both. The alternative, a
-    #fbfbfa tile with blue bars, is the page's own light palette but it
-    dissolves into a light tab strip at the edges. Checked at 16px against
-    both, which is the requirement; one design that passes both beats two
-    designs where only one got looked at.
+    swap. A favicon sits on browser chrome, not on the page: Chrome's is near
+    white in light mode and near #202124 in dark, and accent blue holds against
+    both. Checked at 16px on both.
   -->
   <rect width="16" height="16" rx="3" fill="#2f6fb2"/>
   <g fill="#fbfbfa">
-    <rect x="3"  y="8" width="2" height="5"/>
-    <rect x="7"  y="4" width="2" height="9"/>
-    <rect x="11" y="6" width="2" height="7"/>
+    <rect x="2" y="9" width="4" height="2" rx="1"/>
+    <rect x="6" y="4" width="4" height="2" rx="1"/>
+    <rect x="10" y="7" width="4" height="2" rx="1"/>
   </g>
 </svg>

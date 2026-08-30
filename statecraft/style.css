@@ -156,9 +156,60 @@ header.wrap { padding-top: 1rem; }
 .home .back { color: var(--faint); }
 
 h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   margin: 1.4rem 0 0.35rem;
   font-size: clamp(2rem, 6vw, 2.7rem);
   letter-spacing: -0.01em;
+}
+
+/* The fader mark. Sized off the type so it scales with the clamped h1 rather
+   than needing its own breakpoints. */
+.mark {
+  flex: none;
+  width: 0.86em;
+  height: 0.86em;
+  overflow: visible;
+}
+
+.fd-track rect { fill: var(--rule); }
+.fd { fill: var(--accent); }
+
+/* The middle fader is pushed up and the outer two fall to pay for it, which is
+   the cascade the page runs on. Translations are in USER UNITS, not pixels: the
+   viewBox is 0 0 16 16 scaled into under 40px, so a "2" here is about 4px on
+   screen. Each phase gets its own timing function inside the keyframes, because
+   one curve across a whole cycle does not move like a hand on a fader: it
+   should go decisively, hold while you look at it, then ease back. */
+h1:hover .fd-b, h1:focus-within .fd-b { animation: fd-up 2.2s ease-in-out infinite; }
+h1:hover .fd-a, h1:focus-within .fd-a { animation: fd-down-a 2.2s ease-in-out infinite; }
+h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out infinite; }
+
+@keyframes fd-up {
+  0%   { transform: translateY(0); animation-timing-function: cubic-bezier(.3,.8,.4,1); }
+  30%  { transform: translateY(-4.4px); animation-timing-function: linear; }
+  70%  { transform: translateY(-4.4px); animation-timing-function: cubic-bezier(.4,0,.6,1); }
+  100% { transform: translateY(0); }
+}
+/* The two donors move by different amounts and at a slight lag, because a
+   proportional cut is not an equal one and they are not one object. */
+@keyframes fd-down-a {
+  0%   { transform: translateY(0); animation-timing-function: cubic-bezier(.3,.6,.4,1); }
+  36%  { transform: translateY(2.6px); animation-timing-function: linear; }
+  70%  { transform: translateY(2.6px); animation-timing-function: cubic-bezier(.4,0,.6,1); }
+  100% { transform: translateY(0); }
+}
+@keyframes fd-down-c {
+  0%   { transform: translateY(0); animation-timing-function: cubic-bezier(.3,.6,.4,1); }
+  42%  { transform: translateY(1.8px); animation-timing-function: linear; }
+  72%  { transform: translateY(1.8px); animation-timing-function: cubic-bezier(.4,0,.6,1); }
+  100% { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  h1:hover .fd-a, h1:hover .fd-b, h1:hover .fd-c,
+  h1:focus-within .fd-a, h1:focus-within .fd-b, h1:focus-within .fd-c { animation: none; }
 }
 
 .lede {
