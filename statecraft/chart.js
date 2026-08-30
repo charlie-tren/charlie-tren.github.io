@@ -114,7 +114,15 @@ export function fingerprint(data, base, view) {
     them.push(b);
     if (a === null || b === null) gaps.push(spoke.name);
   }
-  return { you, them, gaps };
+  // Computed ONCE, here, and used by both the drawing and the key. Worked out
+  // separately in two places they could disagree, and the failure would be a
+  // key naming an outline that is not on screen.
+  const differs = you.some((v, i) => {
+    const t = them[i];
+    if (v === null || t === null) return v !== t;
+    return Math.abs(v - t) > 0.002;
+  });
+  return { you, them, gaps, differs };
 }
 
 /** Ring geometry for thirteen spokes, twelve o'clock first and clockwise. */
@@ -314,9 +322,9 @@ export function drawChart(host, data, base, view) {
   const box = host.getBoundingClientRect();
   const w = Math.max(240, Math.round(box.width));
   const h = Math.max(200, Math.round(box.height));
-  if (w < 240 || h < 160) return { gaps: [] };
+  if (w < 240 || h < 160) return { gaps: [], differs: false };
 
-  const { you, them, gaps } = fingerprint(data, base, view);
+  const { you, them, gaps, differs } = fingerprint(data, base, view);
   const tier = chooseTier(host, base, w, h);
   const { cx, cy, outer } = geometryFor(tier, w, h);
   const angs = angles(base.spokes.length);
@@ -377,13 +385,27 @@ export function drawChart(host, data, base, view) {
     svg.appendChild(hit);
   });
 
-  const paint = (a, b) => {
+  // THE REFERENCE OUTLINE IS HIDDEN WHILE IT HAS NOTHING TO SAY.
+  //
+  // On load the two shapes are identical by construction, and the reference is
+  // painted last so it sits over your fill. The result was that the page opened
+  // showing nothing but a dashed grey outline: your design's own colour was
+  // underneath it and never appeared, and the card shot from the live page came
+  // back with no accent in it at all. A dashed line lying exactly on a solid one
+  // is also just noise, since there is no gap yet to read.
+  //
+  // So it appears the moment the two differ, which is also when it starts
+  // meaning something. `moved` is passed by the caller.
+  const paint = (a, b, differs) => {
     const t = shapePath(cx, cy, angs, b, outer);
     const y = shapePath(cx, cy, angs, a, outer);
     themFill.setAttribute('d', t.fill);
     themLine.setAttribute('d', t.stroke);
     youFill.setAttribute('d', y.fill);
     youLine.setAttribute('d', y.stroke);
+    const show = differs ? 'inline' : 'none';
+    themFill.style.display = show;
+    themLine.style.display = show;
   };
 
   // Animation. The outline eases toward its new shape so a slider move is
@@ -398,12 +420,12 @@ export function drawChart(host, data, base, view) {
     && prev.them.every((v, i) => (v === null) === (them[i] === null));
 
   if (!canAnimate) {
-    paint(you, them);
+    paint(you, them, differs);
     shapes.set(host, { you: you.slice(), them: them.slice(), raf: 0 });
   } else {
     const cur = { you: prev.you.slice(), them: prev.them.slice(), raf: 0 };
     shapes.set(host, cur);
-    paint(cur.you, cur.them);
+    paint(cur.you, cur.them, differs);
     let last = performance.now();
     const step = (now) => {
       const k = 1 - Math.exp(-(now - last) / 70);
@@ -419,12 +441,12 @@ export function drawChart(host, data, base, view) {
           moving = true;
         }
       }
-      paint(cur.you, cur.them);
+      paint(cur.you, cur.them, differs);
       cur.raf = moving ? requestAnimationFrame(step) : 0;
     };
     cur.raf = requestAnimationFrame(step);
   }
 
   host.replaceChildren(svg);
-  return { gaps };
+  return { gaps, differs };
 }
