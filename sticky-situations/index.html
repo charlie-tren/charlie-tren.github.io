@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sticky Situations</title>
+<meta name="description" content="Everyone plays a card. Nobody knows whose is whose until the room has voted.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sticky Situations">
+<meta property="og:description" content="Everyone plays a card. Nobody knows whose is whose until the room has voted.">
+<meta property="og:url" content="https://charlietrenorden.com/sticky-situations/">
+<meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192">
+<script>
+  /* set theme before paint to avoid a flash - same key as the hub */
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      var dark = saved ? saved === "dark"
+        : !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<link rel="stylesheet" href="/assets/room.css">
+<link rel="stylesheet" href="/assets/sticky.css">
+<script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */
+(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
+</head>
+<body>
+<div class="page">
+  <div class="bar">
+    <a class="home" href="/"><span class="back">&larr;</span>&nbsp;Other projects</a>
+    <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
+  </div>
+
+  <section class="lobby" id="lobby">
+    <h2 id="lobbyTitle">Create a room</h2>
+    <p class="lede-s" id="lobbyLede">Everyone plays a card. Nobody knows whose is whose until the room has voted.</p>
+
+    <label class="field"><span>Your name</span>
+      <input id="name" type="text" maxlength="24" autocomplete="given-name" placeholder="Charlie"></label>
+
+    <!-- Arriving from an invite link, only one of these two makes sense, so the
+         other is hidden rather than offered and ignored. -->
+    <div id="createBlock">
+      <div class="btnrow"><button class="btn block" id="startBtn" type="button">Create a room</button></div>
+      <p class="or">Have a code?</p>
+      <div class="joinrow">
+        <!-- inputmode, not type=number: a number input brings spinners and strips
+             leading zeros, and "0421" is a valid code. -->
+        <input id="joincode" type="text" maxlength="4" inputmode="numeric" autocomplete="off"
+               spellcheck="false" placeholder="Room code" aria-label="Room code">
+        <button class="btn ghost" id="joinBtn" type="button">Join</button>
+      </div>
+    </div>
+
+    <div id="joinBlock" hidden>
+      <div class="btnrow"><button class="btn block" id="joinBtn2" type="button">Join room</button></div>
+      <p class="or">Not the room you wanted?</p>
+      <div class="btnrow"><button class="btn ghost" id="startBtn2" type="button">Create my own</button></div>
+    </div>
+
+    <p class="err" id="err"></p>
+  </section>
+
+  <section id="room" hidden>
+    <div class="roomtop">
+      <span class="roomcode" id="code">----</span>
+      <button class="btn ghost" id="copyBtn" type="button">Copy invite link</button>
+      <span id="progress"></span>
+    </div>
+
+    <!-- Everyone, always. Names and scores are not secret, and a scoreboard
+         nobody can see is not a scoreboard. -->
+    <ol class="seats" id="seats"></ol>
+
+    <!-- Before the game starts. The host is the only one who can begin, so
+         everybody else is told what is being waited for rather than shown a
+         button that would be refused. -->
+    <div id="preGame">
+      <p class="waiting" id="waiting"></p>
+      <div class="hostrow" id="startRow" hidden>
+        <button class="btn" id="beginBtn" type="button">Start the game</button>
+      </div>
+    </div>
+
+    <div id="play" hidden>
+      <p class="modifier" id="modifier" hidden></p>
+      <p class="statement" id="situation"></p>
+      <p class="criteria" id="criteria"></p>
+
+      <!-- Your hand. Only ever sent to you. -->
+      <div id="handWrap" hidden>
+        <div class="handhead">
+          <h3 class="sect">Your Hand</h3>
+          <!-- One swap for the whole game, so the control says what it costs
+               rather than only what it does. Hidden once it is spent: a dead
+               button sitting there is worse than no button. -->
+          <button class="btn ghost small" id="swapBtn" type="button" hidden>Swap a card</button>
+        </div>
+        <div class="cards hand" id="hand"></div>
+        <p class="tally" id="handNote"></p>
+      </div>
+
+      <!-- The table. Anonymous until the round has scored. -->
+      <div id="tableWrap" hidden>
+        <h3 class="sect" id="tableHead">On The Table</h3>
+        <div class="cards table" id="table"></div>
+      </div>
+
+      <div class="hostrow" id="hostrow" hidden>
+        <button class="btn" id="advanceBtn" type="button">Open the vote</button>
+      </div>
+      <p class="tally" id="tally"></p>
+    </div>
+
+    <div id="over" hidden>
+      <h2 class="reshead">Final Scores</h2>
+      <ol class="simlist" id="final"></ol>
+    </div>
+  </section>
+</div>
+
+<script src="/assets/sticky-situations.js"></script>
+</body>
+</html>

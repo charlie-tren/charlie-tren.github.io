@@ -66,6 +66,7 @@ SITES = {
     "cfa-companion": "https://charlietrenorden.com/cfa-companion/",
     "ghostwriters": "https://charlietrenorden.com/ghostwriters/",
     "statecraft": "https://charlietrenorden.com/statecraft/",
+    "sticky-situations": "https://charlietrenorden.com/sticky-situations/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -188,6 +189,8 @@ PREPARE = {
 SCHEME = {
     "cfa-companion": "dark",
     "beyond-small-talk": "dark",
+    # Same family as Beyond Small Talk: a room you open on a phone in a dark pub.
+    "sticky-situations": "dark",
     "woop-woop": "dark",
     "pendulum": "dark",
     # Both verified 19/08/2026 to key off prefers-color-scheme with no stored choice:
