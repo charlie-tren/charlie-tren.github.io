@@ -483,4 +483,43 @@
     try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (x) {}
     sync();
   });
+
+  /* A worked round, for the homepage card. The lobby is a name field and a
+     button, which tells a viewer nothing about the game, and the shooter cannot
+     stand up a four-player room to photograph a real one.
+
+     This goes through the SAME render() as a live game rather than injecting
+     markup, so the card cannot drift into showing something the game does not
+     do. Every card and the situation are real entries from the Plus One deck.
+     No socket is opened and no room is created. */
+  if (new URLSearchParams(location.search).get("demo") === "1") {
+    var them = [
+      { id: "p1", name: "Charlie", score: 7, playing: true, played: true, voted: true },
+      { id: "p2", name: "Bo", score: 9, playing: true, played: true, voted: true },
+      { id: "p3", name: "Cal", score: 6, playing: true, played: true, voted: true },
+      { id: "p4", name: "Di", score: 8, playing: true, played: true, voted: true },
+    ];
+    show("room");
+    el("code").textContent = "1478";
+    render({
+      t: "state", serial: 1, phase: "scored", round: 4, rounds: 10,
+      theme: "Plus One",
+      criteria: "The winning guest is the one who makes the night go best for you. They do not have to enjoy it.",
+      situation: "You are at the opening night of your friend's one-man show. It runs two hours and there are eleven seats.",
+      modifier: null,
+      players: them,
+      you: {
+        id: "p1", name: "Charlie", admin: true, playing: true,
+        hand: [], handCards: [], played: true, voted: true,
+        redrawUsed: false, mySlot: 1,
+      },
+      table: [
+        { slot: 0, text: "a bloke in a full morph suit", owner: "p2", votes: 1 },
+        { slot: 1, text: "a life-size cardboard cutout of yourself", owner: "p1", votes: 2 },
+        { slot: 2, text: "a nan who is 94 and deaf", owner: "p4", votes: 0 },
+        { slot: 3, text: "a friend who has just got back from Bali", owner: "p3", votes: 0 },
+      ],
+      last: { round: 4, worst: false, double: false, sweep: null, gained: { p1: 2, p2: 1, p3: 0, p4: 0 } },
+    });
+  }
 })();
