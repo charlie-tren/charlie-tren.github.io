@@ -67,16 +67,21 @@
 
   <div id="domains"></div>
 
-  <section class="finish" aria-label="Reveal">
-    <button class="primary" id="revealBtn" type="button">Show me which country this is</button>
-    <p class="blocked" id="blockedNote" role="status"></p>
-  </section>
-
-  <section id="result" hidden></section>
+  <section id="result" tabindex="-1" hidden></section>
 
   <section id="method"></section>
 
 </main>
+
+<!-- Pinned to the viewport, and outside main, because it is out of the
+     document flow. The page reserves its measured height at the bottom in
+     app.js, so it never covers the end of the method section. -->
+<section class="finish" aria-label="Reveal">
+  <div class="finish-in">
+    <button class="primary" id="revealBtn" type="button">Show me which country this is</button>
+    <p class="blocked" id="blockedNote" role="status"></p>
+  </div>
+</section>
 
 <script type="module" src="app.js"></script>
 </body>

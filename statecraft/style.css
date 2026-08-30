@@ -390,9 +390,42 @@ h1 {
   border-radius: 0.3rem;
 }
 
-/* Finish ------------------------------------------------------------------ */
+/* Finish -------------------------------------------------------------------
+ * Pinned to the bottom of the viewport at every width. The page is thirteen
+ * domains of five or six cards, roughly fourteen thousand pixels on a phone
+ * and eleven thousand on a desktop, and the reveal button used to sit under
+ * all of it. It is now reachable from the first screen at both.
+ *
+ * No animation, so there is nothing for prefers-reduced-motion to turn off.
+ * The only movement the page makes is the scroll into the result panel, and
+ * that one is switched to an instant jump under reduced motion in app.js.
+ *
+ * app.js sets body padding-bottom to this bar's measured height, so the end of
+ * the page still clears it when the blocked note wraps to a second line. */
 
-.finish { margin: 0 0 2.5rem; }
+.finish {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  margin: 0;
+  border-top: 1px solid var(--rule);
+  background: var(--panel);
+  box-shadow: 0 -6px 16px -10px rgba(0, 0, 0, 0.45);
+}
+
+.finish-in {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.9rem;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0.6rem 1.25rem;
+  padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
+}
 
 .primary {
   padding: 0.65rem 1.1rem;
@@ -411,11 +444,336 @@ h1 {
   cursor: not-allowed;
 }
 
+/* Empty when nothing is over budget, so it must take no room at all: a
+   reserved line here would raise the pinned bar on every screen. */
 .blocked {
-  margin: 0.5rem 0 0;
-  min-height: 1.2rem;
+  flex: 1 1 12rem;
+  min-width: 0;
+  margin: 0;
   color: var(--over);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.blocked:empty { display: none; }
+
+/* Result -------------------------------------------------------------------- */
+
+#result {
+  /* The meters are pinned to the top of the viewport, so scrolling the panel
+     to y=0 would park the country name underneath them. */
+  scroll-margin-top: 6rem;
+  margin: 2.2rem 0 0;
+  padding: 1.4rem 1.2rem 1.6rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.6rem;
+  background: var(--panel);
+}
+
+#result:focus { outline: none; }
+
+#result:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.rv-eyebrow {
+  margin: 0;
+  color: var(--soft);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rv-country {
+  margin: 0.15rem 0 0.8rem;
+  font-size: clamp(1.9rem, 7vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.rv-score {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.rv-n {
+  font-weight: 600;
+  font-size: 1.25em;
+  font-variant-numeric: tabular-nums;
+}
+
+.rv-next {
+  margin: 0.15rem 0 0;
+  color: var(--soft);
+  font-size: 0.9rem;
+}
+
+#result h3 {
+  margin: 2rem 0 0.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--rule);
+  font-size: 1.2rem;
+}
+
+#result h3:first-of-type { margin-top: 1.8rem; }
+
+.rv-method {
+  margin: 1.8rem 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+  color: var(--faint);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+/* Divergences ---------------------------------------------------------------- */
+
+.dv {
+  margin: 1rem 0 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.5rem;
+  background: var(--raised);
+}
+
+.dv-dom {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-title);
+  font-size: 1.02rem;
+}
+
+.dv-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.dv-side { min-width: 0; }
+
+.dv-who {
+  margin: 0;
+  color: var(--soft);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.dv-opt {
+  margin: 0.1rem 0 0.2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.dv-where {
+  margin: 0;
+  color: var(--faint);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.dv-none {
+  margin: 0.9rem 0 0;
+  color: var(--soft);
+  font-size: 0.95rem;
+}
+
+/* Axes ----------------------------------------------------------------------- */
+
+.ax-cap {
+  margin: 0.35rem 0 0;
+  color: var(--soft);
   font-size: 0.85rem;
+}
+
+.axes { margin-top: 1rem; }
+
+.ax {
+  margin: 0 0 1.15rem;
+  min-width: 0;
+}
+
+.ax-name {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ax-unit {
+  color: var(--soft);
+  font-weight: 400;
+}
+
+/* Markers sit half outside the track at either end, so the track is inset to
+   keep them off the panel edge and off a sideways scroll at 390px. */
+.ax-track {
+  position: relative;
+  height: 0.35rem;
+  margin: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--track);
+}
+
+.ax-mk {
+  position: absolute;
+  top: 50%;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin: -0.35rem 0 0 -0.35rem;
+  border-radius: 50%;
+}
+
+/* The ring is what keeps two close values readable. Your design and the
+   country's land within a pixel of each other on several axes, and a flat
+   filled dot on top of an outlined one reads as a single marker. */
+.ax-you {
+  background: var(--ink);
+  box-shadow: 0 0 0 1.5px var(--panel);
+}
+
+.ax-them {
+  background: var(--panel);
+  border: 2px solid var(--soft);
+}
+
+.ax-ends {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.25rem 0 0;
+  color: var(--faint);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ax-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 1rem;
+  margin: 0.2rem 0 0;
+  color: var(--soft);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ax-k {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.ax-k-flat { color: var(--faint); }
+
+.ax-sw {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+}
+
+.ax-sw-you { background: var(--ink); }
+
+.ax-sw-them {
+  background: var(--panel);
+  border: 2px solid var(--soft);
+}
+
+.ax-prov {
+  margin: 0.15rem 0 0;
+  color: var(--faint);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.ag-list {
+  margin: 0.6rem 0 0;
+  color: var(--soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.rv-empty { margin: 0; color: var(--soft); }
+
+/* Method --------------------------------------------------------------------- */
+
+#method {
+  margin: 2.5rem 0 0;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--rule);
+}
+
+#method h2 {
+  margin: 0 0 0.2rem;
+  font-size: 1.6rem;
+}
+
+#method h3 {
+  margin: 1.6rem 0 0.3rem;
+  font-size: 1.15rem;
+}
+
+#method p {
+  margin: 0.5rem 0 0;
+  color: var(--soft);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.mdet {
+  margin: 1rem 0 0;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.5rem;
+  background: var(--panel);
+}
+
+.mdet > summary {
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.mdet[open] > summary { margin-bottom: 0.4rem; }
+
+#method .mnote {
+  margin: 0 0 0.6rem;
+  color: var(--faint);
+  font-size: 0.78rem;
+}
+
+.mt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.mt th,
+.mt td {
+  padding: 0.32rem 0.7rem 0.32rem 0;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+}
+
+.mt th {
+  color: var(--soft);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mt td { color: var(--soft); }
+
+/* Alignment belongs to the column, header included. Set on one and not the
+   other, a placeholder string left-aligns inside a right-aligned column and
+   the whole column stops reading as a column. */
+.mt th.num,
+.mt td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* Any pane that scrolls keeps its bar hidden and stays swipeable. */
@@ -450,4 +808,15 @@ h1 {
   .m-fig { font-size: 0.8rem; }
   .m-note { font-size: 0.74rem; }
   .d-head h2 { font-size: 1.2rem; }
+
+  .finish-in { padding-left: 1rem; padding-right: 1rem; }
+
+  #result { padding: 1.1rem 0.9rem 1.3rem; }
+
+  /* Side by side, a divergence gets about 150px a column at 390px, which
+     breaks option labels across four lines. Stacked, each side keeps its own
+     heading, so the reader still knows whose choice they are looking at. */
+  .dv-pair { grid-template-columns: minmax(0, 1fr); gap: 0.7rem; }
+
+  .ax-key { gap: 0.1rem 0.8rem; }
 }
