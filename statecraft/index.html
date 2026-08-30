@@ -50,6 +50,16 @@
 
 <main class="wrap">
 
+  <!-- The opening image. Both numbers are read out of the same model as the
+       sliders, so the marker starts exactly on the starting country's dot and
+       every slider drags it off. -->
+  <section class="chart" aria-labelledby="chartH">
+    <h2 id="chartH">Where Your Country Sits</h2>
+    <div class="ch-host" id="chartHost"></div>
+    <p class="ch-key" id="chartKey"></p>
+    <p class="ch-cap">You start on your own country's dot, and every slider below moves you off it.</p>
+  </section>
+
   <section class="picker" aria-label="Starting country">
     <label class="pick-lab" for="startSel">Start from</label>
     <select id="startSel"></select>
@@ -77,6 +87,11 @@
   </section>
 
   <p class="m-note">Tax sets the budget and every other policy spends it. Political capital and public patience are only charged on the policies you change: keeping the one your starting country already has is free.</p>
+
+  <!-- What paid for the last move. Sits directly under the pinned meters so a
+       cut in a domain the visitor cannot see is still announced, and each cut
+       is a button that takes them to it. -->
+  <div class="cascade" id="cascade" role="status" aria-live="polite" hidden></div>
 
   <div id="domains"></div>
 

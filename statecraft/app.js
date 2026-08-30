@@ -1,15 +1,26 @@
 // Statecraft, the builder screen. Wiring only.
 //
-// Every decision worth testing lives in budget.js, match.js and state.js.
-// This file owns the DOM and nothing else: it reads data.json, paints the
-// picker, the meters and the thirteen domains, and keeps them in step.
+// Every decision worth testing lives in budget.js, cascade.js, match.js and
+// state.js. This file owns the DOM and nothing else: it reads data.json, paints
+// the chart, the picker, the meters and the thirteen sliders, and keeps them in
+// step with one immutable state object.
+//
+// THE ONE RULE THIS FILE ADDS. A move is never applied by writing to `state`
+// directly. It goes through applyChange or setTaxRate, which return a whole new
+// state with the cascade already run, and then the page repaints from that. The
+// sliders are outputs, not the record.
 
-import { budgets, blockers } from './budget.js';
+import {
+  TAX, TAX_DOMAIN, budgets, blockers, realisedRevenue, rateForOption, startingState,
+} from './budget.js';
+import { applyChange, setTaxRate, toggleLock, isLocked, ladder } from './cascade.js';
 import { rank } from './match.js';
 import { renderReveal } from './reveal.js';
 import { encode, decode, countryForTimezone, detectTimezone } from './state.js';
+import { chartBase, drawChart } from './chart.js';
 
 const THEME_KEY = 'sc-theme';
+const RATE_STEP = 0.5;
 
 /* Theme -------------------------------------------------------------------
  * With nothing stored the page follows the system, so an explicit choice is
@@ -26,6 +37,10 @@ function writeStored(key, value) {
 
 function systemIsDark() {
   try { return window.matchMedia('(prefers-color-scheme: dark)').matches; } catch (err) { return false; }
+}
+
+function reducedMotion() {
+  try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (err) { return false; }
 }
 
 function currentTheme() {
@@ -55,6 +70,7 @@ function setUpTheme() {
       const next = currentTheme() === 'dark' ? 'light' : 'dark';
       applyTheme(next);
       writeStored(THEME_KEY, next);
+      paintChart();
     });
   }
 }
@@ -72,15 +88,31 @@ const one = (n) => Number(n).toFixed(1);
 /* State -------------------------------------------------------------------- */
 
 let data = null;
-let startCode = null;      // the country the design departs from
-let baseline = {};         // that country's own choices, what reform is priced against
-let selection = {};        // the live design
+let base = null;           // chartBase(data), fixed for the session
+let state = null;          // {start, taxRate, selection, locked}
+let previewRate = null;    // the tax slider mid-drag, before the cascade runs
 let touched = false;       // has the visitor actually changed anything yet
 let revealed = false;      // has the visitor asked for the result at least once
+let noteTimer = 0;
+const tweens = new Map();
 
 function countryName(code) {
   const hit = data.countries.find((c) => c.code === code);
   return hit ? hit.name : code;
+}
+
+function domainOf(id) {
+  return data.domains.find((d) => d.id === id);
+}
+
+function optionOf(domainId, optionId) {
+  const domain = domainOf(domainId);
+  return domain ? (domain.options || []).find((o) => o.id === optionId) : null;
+}
+
+function baseline() {
+  const country = data.countries.find((c) => c.code === state.start);
+  return country ? country.choices : {};
 }
 
 /** "Australia, Canada, Ireland and 3 more", or the deliberate "Nowhere yet." */
@@ -95,12 +127,9 @@ function whereLine(codes) {
   return `${shown.join(', ')} and ${list.length - 4} more.`;
 }
 
-function loadCountry(code) {
-  const country = data.countries.find((c) => c.code === code);
-  if (!country) return;
-  startCode = country.code;
-  baseline = Object.assign({}, country.choices);
-  selection = Object.assign({}, country.choices);
+/** The state the meters, the chart and the reveal are drawn from. */
+function liveState() {
+  return previewRate === null ? state : { ...state, taxRate: previewRate };
 }
 
 /* Painting ------------------------------------------------------------------ */
@@ -111,52 +140,99 @@ function paintPicker() {
   sel.innerHTML = sorted
     .map((c) => `<option value="${esc(c.code)}">${esc(c.name)}</option>`)
     .join('');
-  sel.value = startCode;
+  sel.value = state.start;
 }
 
+function paintKey() {
+  document.getElementById('chartKey').innerHTML = `
+    <span class="ck"><i class="ck-sw ck-you" aria-hidden="true"></i>Your design</span>
+    <span class="ck"><i class="ck-sw ck-curve" aria-hidden="true"></i>What your tax funds</span>
+    <span class="ck"><i class="ck-sw ck-band" aria-hidden="true"></i>More than that</span>
+    <span class="ck ck-ramp"><span class="ck-n">Already yours:</span>
+      <i class="ck-sw ch-s0" aria-hidden="true"></i><span class="ck-n">0 to 4</span>
+      <i class="ck-sw ch-s1" aria-hidden="true"></i><span class="ck-n">5 to 7</span>
+      <i class="ck-sw ch-s2" aria-hidden="true"></i><span class="ck-n">8 to 11</span>
+      <i class="ck-sw ch-s3" aria-hidden="true"></i><span class="ck-n">12 or 13</span>
+    </span>`;
+}
+
+/** One slider per domain, painted once. Values are written by render(). */
 function paintDomains() {
   const host = document.getElementById('domains');
+
   host.innerHTML = data.domains.map((domain) => {
-    const opts = (domain.options || []).map((o) => {
-      // Tax raises the money. Everything else spends it.
-      const money = typeof o.revenue === 'number'
-        ? `Raises ${one(o.revenue)}% of GDP`
-        : `Costs ${one(o.financial || 0)}% of GDP`;
-      return `
-      <label class="opt" data-domain="${esc(domain.id)}" data-option="${esc(o.id)}">
-        <input type="radio" name="d_${esc(domain.id)}" value="${esc(o.id)}">
-        <span class="o-body">
-          <span class="o-top">
-            <span class="o-label">${esc(o.label)}</span>
-            <span class="o-start" hidden>Where you started</span>
-          </span>
-          <span class="o-detail">${esc(o.detail)}</span>
-          <span class="o-where">${esc(whereLine(o.countries))}</span>
-          <span class="o-cost">
-            <span>${esc(money)}</span>
-            <span>Political capital ${esc(o.political)}</span>
-            <span>Public patience ${esc(o.social)}</span>
-          </span>
-        </span>
-      </label>`;
-    }).join('');
+    const isTax = domain.id === TAX_DOMAIN;
+    const rungs = isTax ? [] : ladder(data, domain.id);
+    const rangeAttrs = isTax
+      ? `min="${TAX.MIN}" max="${TAX.MAX}" step="${RATE_STEP}"`
+      : `min="0" max="${Math.max(0, rungs.length - 1)}" step="1"`;
+    const ends = isTax
+      ? [`Taxes least, ${TAX.MIN}%`, `Taxes most, ${TAX.MAX}%`]
+      : ['Spends least', 'Spends most'];
+
+    // A tick per stop, so a slider with five settings looks like a slider with
+    // five settings. On tax the ticks are the six coded regimes, which is the
+    // only thing about a continuous rate that is not continuous.
+    const stops = isTax
+      ? (domain.options || []).slice().sort((a, b) => a.rate - b.rate)
+        .map((o) => ({ id: o.id, at: (o.rate - TAX.MIN) / (TAX.MAX - TAX.MIN) }))
+      : rungs.map((o, i) => ({ id: o.id, at: rungs.length > 1 ? i / (rungs.length - 1) : 0 }));
+    const ticks = stops
+      .map((s) => `<i data-stop="${esc(s.id)}" style="left:${(s.at * 100).toFixed(3)}%"></i>`)
+      .join('');
 
     return `
-    <section class="domain" id="dom_${esc(domain.id)}" data-domain="${esc(domain.id)}">
+    <section class="domain${isTax ? ' tax' : ''}" id="dom_${esc(domain.id)}" data-domain="${esc(domain.id)}">
       <div class="d-head">
         <h2 id="h_${esc(domain.id)}">${esc(domain.name)}</h2>
-        <span class="chip" hidden>Changed</span>
+        <span class="chip" id="chip_${esc(domain.id)}" hidden>Changed</span>
+        <button class="lock" type="button" id="lock_${esc(domain.id)}"
+                data-lock="${esc(domain.id)}" aria-pressed="false"></button>
       </div>
-      <div class="opts" role="radiogroup" aria-labelledby="h_${esc(domain.id)}">${opts}</div>
+      <div class="d-slide">
+        <span class="d-rail" aria-hidden="true"></span>
+        <span class="d-ticks" id="tk_${esc(domain.id)}" aria-hidden="true">${ticks}</span>
+        <input class="rng" type="range" id="rng_${esc(domain.id)}" data-range="${esc(domain.id)}"
+               ${rangeAttrs} aria-labelledby="h_${esc(domain.id)}" aria-describedby="val_${esc(domain.id)}">
+        <p class="d-ends"><span>${esc(ends[0])}</span><span>${esc(ends[1])}</span></p>
+      </div>
+      <p class="d-val" id="val_${esc(domain.id)}"></p>
+      <p class="d-detail" id="det_${esc(domain.id)}"></p>
+      <p class="d-where" id="who_${esc(domain.id)}"></p>
+      <p class="d-cut" id="cut_${esc(domain.id)}" hidden></p>
     </section>`;
   }).join('');
 
+  host.addEventListener('input', (ev) => {
+    const input = ev.target;
+    if (!input || !input.dataset || !input.dataset.range) return;
+    const id = input.dataset.range;
+    if (id === TAX_DOMAIN) {
+      // Mid-drag the rate is a preview: the budget moves with the thumb, but
+      // nothing is cut until the visitor lets go. Cutting on every pixel of a
+      // drag would empty the country on the way past.
+      previewRate = Number(input.value);
+      touched = true;
+      render();
+      return;
+    }
+    const rungs = ladder(data, id);
+    const option = rungs[Number(input.value)];
+    if (option) commit(applyChange(data, state, id, option.id));
+  });
+
   host.addEventListener('change', (ev) => {
     const input = ev.target;
-    if (!input || input.type !== 'radio') return;
-    const label = input.closest('.opt');
-    if (!label) return;
-    selection[label.dataset.domain] = label.dataset.option;
+    if (!input || !input.dataset || input.dataset.range !== TAX_DOMAIN) return;
+    const rate = Number(input.value);
+    previewRate = null;
+    commit(setTaxRate(data, state, rate));
+  });
+
+  host.addEventListener('click', (ev) => {
+    const btn = ev.target.closest ? ev.target.closest('[data-lock]') : null;
+    if (!btn) return;
+    state = toggleLock(state, btn.dataset.lock);
     touched = true;
     render();
   });
@@ -164,16 +240,13 @@ function paintDomains() {
 
 /* Method -------------------------------------------------------------------
  * Painted once at boot. It depends on data.json and nothing else, so nothing
- * here re-renders when a choice changes.
- *
- * Alignment is set on the column, header cell included. A right-aligned figure
- * under a left-aligned header is the failure this guards against, and it only
- * shows up once a placeholder string lands in a numeric column. */
+ * here re-renders when a choice changes. */
 
 /** Signed, so one column can hold both what an option raises and what it spends. */
 function budgetEffect(o) {
-  const v = typeof o.revenue === 'number' ? o.revenue : -(o.financial || 0);
-  return `${v > 0 ? '+' : ''}${one(v)}`;
+  if (typeof o.rate === 'number') return `${o.rate}% take`;
+  const v = -(o.financial || 0);
+  return `${one(v)}`;
 }
 
 function costTable() {
@@ -241,12 +314,16 @@ function paintMethod() {
   <p>The match is a count. One point for each of the ${data.domains.length} domains where your choice is the policy that country actually has, and no point otherwise. Nothing is weighted, nothing is normalised, and a domain you might think matters more than another does not score more than another. Where two countries tie on the count, the one closer to your design on the measured axes is listed first.</p>
 
   <h3>What the Three Budgets Are</h3>
-  <p>The Budget is real. Tax raises a share of GDP and every other policy spends one, and both figures are in the same unit an economist would use. Political capital and public patience are points, because there is no honest unit for institutional capital or for social friction, and inventing one would dress a judgement up as a measurement. Both are charged only on the domains you change from your starting country: no country spends political capital to keep the policy it already has.</p>
+  <p>The Budget is real. Tax raises a share of GDP and every other policy spends one, and both figures are in the same unit an economist would use. Political capital and public patience are points, because there is no honest unit for institutional capital or for social friction, and inventing one would dress a judgement up as a measurement. Both are charged only on the domains you change from your starting country: no country spends political capital to keep the policy it already has, and a cut the budget forced on you is still a reform somebody has to pass.</p>
   <p>The costs below are judgements. Publishing them is the point, because a reader who thinks mandatory military service should cost more political capital than the 12 points charged here can see the exact number to argue with.</p>
+
+  <h3>What a Point of Tax Actually Raises</h3>
+  <p>The tax slider is a headline take: total tax revenue as a share of GDP. What the state collects is less than that, and increasingly less, because people work less, avoid more and move money. Below ${TAX.KINK} the two are the same. Above it, each point of headline take gives up ${TAX.LEAK} of a point for every point it is above ${TAX.KINK}, squared, so ${TAX.MAX} raises ${one(realisedRevenue(TAX.MAX))} rather than ${TAX.MAX}. The curve never turns over inside the slider, so pushing the rate up never lowers the budget.</p>
+  <p>Your capacity is what that rate realises, plus any non-tax revenue your starting country has, plus a fixed top-up if that country already spends more than it raises. The top-up is measured once, at the country you started from, and does not move when you drag the rate.</p>
 
   <details class="mdet">
     <summary>Every option and what it costs</summary>
-    <p class="mnote">A plus in the Budget column raises revenue, a minus spends it. All ${options} options.</p>
+    <p class="mnote">The Budget column is what an option spends, in % of GDP. The six tax regimes carry a headline rate instead, and the slider runs between them. All ${options} options.</p>
     <div class="scroller">${costTable()}</div>
   </details>
 
@@ -273,8 +350,129 @@ function paintMeter(key, b, text) {
   box.classList.toggle('over', !!b.over);
 }
 
-function render() {
-  const b = budgets(data, selection, baseline);
+/* The chart ---------------------------------------------------------------- */
+
+function paintChart() {
+  const host = document.getElementById('chartHost');
+  if (!host || !data) return;
+  const live = liveState();
+  const b = budgets(data, live);
+  const matched = new Map(rank(data, live.selection).map((r) => [r.code, r.matched]));
+  drawChart(host, data, base, {
+    startCode: live.start,
+    rate: b.financial.taxRate,
+    spend: b.financial.exact.used,
+    capacity: b.financial.exact.capacity,
+    matched,
+  });
+}
+
+/* Moving a slider ----------------------------------------------------------- */
+
+/** Slide a range input to a value it did not get to by hand. */
+function tweenRange(input, to) {
+  const from = Number(input.value);
+  if (from === to) return;
+  const old = tweens.get(input.id);
+  if (old) cancelAnimationFrame(old);
+  if (reducedMotion()) {
+    input.value = String(to);
+    return;
+  }
+  const started = performance.now();
+  const ms = 420;
+  const step = (now) => {
+    const t = Math.min(1, (now - started) / ms);
+    const eased = 1 - Math.pow(1 - t, 3);
+    input.value = String(from + (to - from) * eased);
+    if (t < 1) {
+      tweens.set(input.id, requestAnimationFrame(step));
+    } else {
+      input.value = String(to);
+      tweens.delete(input.id);
+    }
+  };
+  tweens.set(input.id, requestAnimationFrame(step));
+}
+
+/** Take the result of applyChange or setTaxRate and repaint from it. */
+function commit(res) {
+  if (!res) return;
+  // Defensive: a protected slider is disabled, so this should be unreachable.
+  if (!res.ok && res.reason === 'locked') {
+    showNote('<p class="cs-lead">That policy is protected, so it did not move. Release it first.</p>');
+    render();
+    return;
+  }
+  state = res.state;
+  touched = true;
+  render({ cuts: res.cuts, moved: res.moved, shortfall: res.shortfall });
+  announce(res);
+}
+
+/* What paid for the move ---------------------------------------------------- */
+
+function showNote(html) {
+  const box = document.getElementById('cascade');
+  box.innerHTML = `${html}<button class="cs-x" type="button" id="csX" aria-label="Dismiss">Dismiss</button>`;
+  box.hidden = false;
+  document.getElementById('csX').addEventListener('click', () => { box.hidden = true; });
+  if (noteTimer) clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => { box.hidden = true; }, 12000);
+  syncFinishSpace();
+}
+
+function announce(res) {
+  const box = document.getElementById('cascade');
+  if (!res.cuts.length && !res.shortfall) {
+    box.hidden = true;
+    return;
+  }
+
+  const movedName = res.moved ? res.moved.domainName : 'that change';
+  const items = res.cuts.map((c) => {
+    const now = optionOf(c.domain, c.to);
+    return `<li><button type="button" data-goto="${esc(c.domain)}" title="Now ${esc(now ? now.label : c.to)}">
+      <span class="cs-dom">${esc(c.domainName)}</span>
+      <span class="cs-now">saves ${esc(one(c.saved))}%</span>
+    </button></li>`;
+  }).join('');
+
+  const lead = res.cuts.length
+    ? `<p class="cs-lead">${esc(movedName)} was paid for by cutting ${res.cuts.length === 1 ? 'one policy' : `${res.cuts.length} policies`}. Go to what changed:</p>`
+    : `<p class="cs-lead">${esc(movedName)} could not be paid for.</p>`;
+
+  const short = res.shortfall
+    ? `<p class="cs-short">There is nothing left to cut and you are still ${esc(one(res.shortfall))}% of GDP over. Lower the spending yourself or raise the tax rate.</p>`
+    : '';
+
+  showNote(`${lead}${items ? `<ul class="cs-list">${items}</ul>` : ''}${short}`);
+
+  const box2 = document.getElementById('cascade');
+  box2.querySelectorAll('[data-goto]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const section = document.getElementById(`dom_${btn.dataset.goto}`);
+      if (!section) return;
+      section.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'center' });
+      flash(section);
+    });
+  });
+}
+
+function flash(section) {
+  section.classList.remove('cut');
+  // Reflow, so the class comes back and the animation runs a second time.
+  void section.offsetWidth;
+  section.classList.add('cut');
+}
+
+/* Render -------------------------------------------------------------------- */
+
+function render(change) {
+  const live = liveState();
+  const b = budgets(data, live);
+  const startChoices = baseline();
+  const cutIds = new Set((change && change.cuts ? change.cuts : []).map((c) => c.domain));
 
   paintMeter('financial', b.financial, `${one(b.financial.used)} of ${one(b.financial.capacity)}% of GDP`);
   paintMeter('political', b.political, `${b.political.used} of ${b.political.capacity}`);
@@ -282,20 +480,83 @@ function render() {
 
   const changed = new Set(b.changed.map((c) => c.domain));
 
-  document.querySelectorAll('#domains .domain').forEach((section) => {
-    const id = section.dataset.domain;
-    const isChanged = changed.has(id);
-    section.classList.toggle('changed', isChanged);
-    section.querySelector('.chip').hidden = !isChanged;
-  });
+  for (const domain of data.domains) {
+    const id = domain.id;
+    const section = document.getElementById(`dom_${id}`);
+    const input = document.getElementById(`rng_${id}`);
+    const locked = isLocked(live, id);
 
-  document.querySelectorAll('#domains .opt').forEach((label) => {
-    const chosen = selection[label.dataset.domain] === label.dataset.option;
-    const input = label.querySelector('input');
-    input.checked = chosen;
-    label.classList.toggle('on', chosen);
-    label.querySelector('.o-start').hidden = baseline[label.dataset.domain] !== label.dataset.option;
-  });
+    section.classList.toggle('changed', changed.has(id));
+    section.classList.toggle('locked', locked);
+    document.getElementById(`chip_${id}`).hidden = !changed.has(id);
+
+    const lock = document.getElementById(`lock_${id}`);
+    lock.textContent = locked ? 'Protected' : 'Protect';
+    lock.setAttribute('aria-pressed', locked ? 'true' : 'false');
+    lock.title = locked
+      ? 'This policy is held where it is and the budget will cut something else'
+      : 'Hold this policy where it is when the budget has to find money';
+    input.disabled = locked;
+
+    // The tick the starting country sits on, so the slider says where you began.
+    const ticks = document.getElementById(`tk_${id}`);
+    if (ticks) {
+      ticks.querySelectorAll('i').forEach((tick) => {
+        tick.classList.toggle('home', tick.dataset.stop === startChoices[id]);
+      });
+    }
+
+    if (id === TAX_DOMAIN) {
+      const rate = b.financial.taxRate;
+      const target = String(rate);
+      if (input.value !== target) {
+        if (cutIds.has(id)) tweenRange(input, rate); else input.value = target;
+      }
+      const stop = optionOf(id, live.selection[id]);
+      const nextPoint = rate >= TAX.MAX
+        ? realisedRevenue(TAX.MAX) - realisedRevenue(TAX.MAX - 1)
+        : realisedRevenue(Math.min(TAX.MAX, rate + 1)) - realisedRevenue(rate);
+      input.setAttribute('aria-valuetext', `${one(rate)} per cent of GDP, ${stop ? stop.label : ''}`);
+
+      document.getElementById(`val_${id}`).innerHTML = `
+        <span class="d-big">${esc(one(rate))}%</span>
+        <span class="d-opt">${esc(stop ? stop.label : '')}</span>
+        <span class="d-cost">political capital ${esc(stop ? stop.political : 0)}, public patience ${esc(stop ? stop.social : 0)}</span>
+        ${startChoices[id] === live.selection[id] ? '<span class="d-home">Where you started</span>' : ''}`;
+      document.getElementById(`det_${id}`).textContent =
+        `Raises ${one(b.financial.realisedTax)}% of GDP. The next point of tax adds ${one(nextPoint)}, and at ${TAX.MAX} a point would add only ${one(realisedRevenue(TAX.MAX) - realisedRevenue(TAX.MAX - 1))}.`;
+      document.getElementById(`who_${id}`).textContent = stop
+        ? `${stop.detail} ${whereLine(stop.countries)}`
+        : '';
+      continue;
+    }
+
+    const rungs = ladder(data, id);
+    const index = Math.max(0, rungs.findIndex((o) => o.id === live.selection[id]));
+    const option = rungs[index];
+    if (Number(input.value) !== index) {
+      if (cutIds.has(id)) tweenRange(input, index); else input.value = String(index);
+    }
+    input.setAttribute('aria-valuetext', `${option ? option.label : ''}, ${one(option ? option.financial : 0)} per cent of GDP, step ${index + 1} of ${rungs.length}`);
+
+    document.getElementById(`val_${id}`).innerHTML = `
+      <span class="d-opt">${esc(option ? option.label : '')}</span>
+      <span class="d-cost">${esc(one(option ? option.financial : 0))}% of GDP, political capital ${esc(option ? option.political : 0)}, public patience ${esc(option ? option.social : 0)}</span>
+      ${startChoices[id] === live.selection[id] ? '<span class="d-home">Where you started</span>' : ''}`;
+    document.getElementById(`det_${id}`).textContent = option ? option.detail : '';
+    document.getElementById(`who_${id}`).textContent = option ? whereLine(option.countries) : '';
+
+    const cutLine = document.getElementById(`cut_${id}`);
+    if (cutIds.has(id) && change.moved) {
+      cutLine.textContent = `Cut to pay for ${change.moved.domainName}.`;
+      cutLine.hidden = false;
+      flash(section);
+    } else if (!cutIds.has(id)) {
+      cutLine.hidden = true;
+    }
+  }
+
+  paintChart();
 
   const stuck = blockers(b);
   const names = { financial: 'the budget', political: 'political capital', social: 'public patience' };
@@ -311,7 +572,7 @@ function render() {
   // to stop the panel telling them something that is no longer true.
   const result = document.getElementById('result');
   if (revealed && !stuck.length) {
-    result.innerHTML = renderReveal(data, rank(data, selection), selection);
+    result.innerHTML = renderReveal(data, rank(data, live.selection), live.selection);
     result.hidden = false;
   } else {
     result.hidden = true;
@@ -320,28 +581,27 @@ function render() {
   syncFinishSpace();
 
   // A fresh visit and a shared link must not look alike, so the default is
-  // never written. The hash appears the moment the visitor changes something.
+  // never written. The hash appears the moment the visitor changes something,
+  // and it carries the rate, which the option index no longer implies.
   if (touched) {
-    history.replaceState(null, '', `#${encode(data, startCode, selection)}`);
+    history.replaceState(null, '', `#${encode(data, state.start, state.selection, state.taxRate)}`);
   }
 }
 
 /* The pinned action --------------------------------------------------------
- * The reveal button is pinned to the bottom of the viewport, because the page
- * it belongs to is thirteen domains of five or six cards and the button used
- * to sit under all of them. Measured at 390px that was a fourteen thousand
- * pixel scroll to reach the only thing the page exists to do.
- *
- * The bar is out of flow, so the page reserves exactly its height at the
- * bottom. Measured rather than guessed: the blocked note wraps to two lines on
- * a phone and a hard-coded padding would let the bar sit over the last
- * paragraph of the method section. */
+ * The reveal button is pinned to the bottom of the viewport, so the primary
+ * action is on the first screen at every width. The bar is out of flow, so the
+ * page reserves exactly its measured height at the bottom: the blocked note
+ * wraps to two lines on a phone and a hard-coded padding would let the bar sit
+ * over the last paragraph of the method section. */
 
 function syncFinishSpace() {
   const bar = document.querySelector('.finish');
   if (!bar) return;
   const h = bar.offsetHeight;
   document.body.style.paddingBottom = h ? `${h + 16}px` : '';
+  const note = document.getElementById('cascade');
+  if (note) note.style.bottom = `${h + 8}px`;
 }
 
 /* Boot ---------------------------------------------------------------------- */
@@ -350,15 +610,20 @@ function setUpControls() {
   const sel = document.getElementById('startSel');
   sel.addEventListener('change', () => {
     // A new starting country resets the baseline too, so political capital
-    // and public patience go back to nothing spent.
-    loadCountry(sel.value);
+    // and public patience go back to nothing spent, and nothing stays held
+    // over from a design that no longer exists.
+    state = startingState(data, sel.value);
+    previewRate = null;
     touched = true;
+    document.getElementById('cascade').hidden = true;
     render();
   });
 
   document.getElementById('resetBtn').addEventListener('click', () => {
-    selection = Object.assign({}, baseline);
+    state = startingState(data, state.start);
+    previewRate = null;
     touched = true;
+    document.getElementById('cascade').hidden = true;
     render();
   });
 
@@ -368,17 +633,16 @@ function setUpControls() {
     if (first) render();
     const result = document.getElementById('result');
     if (result.hidden) return;
-    // Instant, not smoothed. The page is sixteen thousand pixels tall and a
-    // smooth scroll over that distance measured at roughly three seconds of
-    // animation before the visitor sees the thing they asked for. Nothing else
-    // on the page moves, so there is nothing for prefers-reduced-motion to do.
     result.scrollIntoView({ behavior: 'auto', block: 'start' });
-    // Sending focus with the viewport, so a keyboard or screen-reader visitor
-    // lands in the panel rather than back at the top of thirteen domains.
     result.focus({ preventScroll: true });
   });
 
-  window.addEventListener('resize', syncFinishSpace);
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    syncFinishSpace();
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(paintChart, 90);
+  });
 }
 
 async function boot() {
@@ -386,20 +650,28 @@ async function boot() {
 
   const res = await fetch('data.json');
   data = await res.json();
+  base = chartBase(data);
 
   const shared = decode(data, location.hash);
   if (shared) {
-    loadCountry(shared.start);
-    selection = Object.assign({}, shared.selection);
+    state = startingState(data, shared.start);
+    state = { ...state, selection: { ...shared.selection } };
+    state.taxRate = shared.taxRate === null
+      ? rateForOption(data, shared.selection[TAX_DOMAIN])
+      : shared.taxRate;
   } else {
-    loadCountry(countryForTimezone(data, detectTimezone()));
+    state = startingState(data, countryForTimezone(data, detectTimezone()));
   }
 
   paintPicker();
+  paintKey();
   paintDomains();
   paintMethod();
   setUpControls();
   render();
+  // The chart is drawn from a measured rect, and at first paint the fonts may
+  // still be swapping. One more pass once layout has settled.
+  requestAnimationFrame(paintChart);
 }
 
 boot();

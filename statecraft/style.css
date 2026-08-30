@@ -20,6 +20,14 @@
   --on-accent: #ffffff;
   --over: #9c5539;
   --agree: #4f7d5e;
+  --sc0: #8a95a0;
+  --sc1: #6f9079;
+  --sc2: #5b8a6b;
+  --sc3: #3a7350;
+  --band: #f6ece6;
+  --plot: #fcfcfb;
+  --held: #7a6a4e;
+  --held-bg: #f4efe4;
 }
 
 :root[data-theme="light"] {
@@ -37,6 +45,14 @@
   --on-accent: #ffffff;
   --over: #9c5539;
   --agree: #4f7d5e;
+  --sc0: #8a95a0;
+  --sc1: #6f9079;
+  --sc2: #5b8a6b;
+  --sc3: #3a7350;
+  --band: #f6ece6;
+  --plot: #fcfcfb;
+  --held: #7a6a4e;
+  --held-bg: #f4efe4;
 }
 
 :root[data-theme="dark"] {
@@ -54,6 +70,14 @@
   --on-accent: #0f1319;
   --over: #c98a68;
   --agree: #7fae8d;
+  --sc0: #79828f;
+  --sc1: #7d9e88;
+  --sc2: #93bc9f;
+  --sc3: #aed8ba;
+  --band: #241d18;
+  --plot: #131820;
+  --held: #c2a86f;
+  --held-bg: #241f16;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -72,6 +96,14 @@
     --on-accent: #0f1319;
     --over: #c98a68;
     --agree: #7fae8d;
+    --sc0: #79828f;
+    --sc1: #7d9e88;
+    --sc2: #93bc9f;
+    --sc3: #aed8ba;
+    --band: #241d18;
+    --plot: #131820;
+    --held: #c2a86f;
+    --held-bg: #241f16;
   }
 }
 
@@ -329,28 +361,173 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   line-height: 1.45;
 }
 
+/* The opening chart -------------------------------------------------------
+ * Drawn at container pixel scale by chart.js: the viewBox comes from the host's
+ * own bounding rect so one user unit is one CSS pixel and an 11px label is 11px
+ * on a phone. */
+
+.chart {
+  margin: 0 0 1.2rem;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.6rem;
+  background: var(--panel);
+}
+
+.chart h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.ch-host {
+  width: 100%;
+  height: 300px;
+  min-width: 0;
+}
+
+.ch-host svg { display: block; }
+
+.ch-plot { fill: var(--plot); stroke: var(--rule); stroke-width: 1; }
+.ch-band { fill: var(--band); }
+.ch-grid { stroke: var(--rule); stroke-width: 1; }
+
+.ch-curve {
+  fill: none;
+  stroke: var(--over);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.ch-tick {
+  fill: var(--faint);
+  font: 400 11px/1 var(--font-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.ch-axis {
+  fill: var(--soft);
+  font: 400 11.5px/1 var(--font-body);
+}
+
+.ch-code {
+  fill: var(--soft);
+  font: 400 11px/1 var(--font-body);
+}
+
+.ch-dot { stroke: var(--panel); stroke-width: 1.5; }
+.ch-s0 { fill: var(--sc0); }
+.ch-s1 { fill: var(--sc1); }
+.ch-s2 { fill: var(--sc2); }
+.ch-s3 { fill: var(--sc3); }
+
+.ch-you-halo { fill: var(--panel); opacity: 0.85; }
+.ch-you { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+.ch-you-core { fill: var(--accent); }
+
+.ch-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.9rem;
+  margin: 0.55rem 0 0;
+  color: var(--soft);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.ck {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.ck-ramp {
+  flex: 1 0 100%;
+  gap: 0.25rem;
+}
+
+.ck-n { white-space: nowrap; }
+
+.ck-sw {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+}
+
+.ck-ramp .ck-sw { margin-left: 0.4rem; }
+.ck-ramp .ck-sw:first-of-type { margin-left: 0.15rem; }
+
+.ck-sw.ch-s0 { background: var(--sc0); }
+.ck-sw.ch-s1 { background: var(--sc1); }
+.ck-sw.ch-s2 { background: var(--sc2); }
+.ck-sw.ch-s3 { background: var(--sc3); }
+
+.ck-you {
+  width: 0.7rem;
+  height: 0.7rem;
+  background: transparent;
+  border: 2px solid var(--accent);
+}
+
+.ck-curve {
+  width: 0.85rem;
+  height: 0.2rem;
+  border-radius: 999px;
+  background: var(--over);
+}
+
+.ck-band {
+  width: 0.7rem;
+  height: 0.6rem;
+  border-radius: 0.15rem;
+  background: var(--band);
+  border: 1px solid var(--rule);
+}
+
+.ch-cap {
+  margin: 0.4rem 0 0;
+  color: var(--faint);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
 /* Domains ----------------------------------------------------------------- */
 
 .domain {
-  margin: 0 0 1.6rem;
+  margin: 0 0 1.35rem;
   padding: 0 0 0 0.9rem;
   border-left: 3px solid var(--rule);
 }
 
 .domain.changed { border-left-color: var(--accent); }
+.domain.locked { border-left-color: var(--held); }
+
+/* The tax slider sets the budget every other slider spends, so it is the one
+   control on the page that gets a panel of its own. */
+.domain.tax {
+  margin-bottom: 1.8rem;
+  padding: 0.85rem 1rem 1rem;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 0.6rem;
+  background: var(--panel);
+}
 
 .d-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.5rem 0.6rem;
-  margin: 0 0 0.7rem;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+  margin: 0 0 0.35rem;
 }
 
 .d-head h2 {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: 1.3rem;
 }
+
+.domain.tax .d-head h2 { font-size: 1.5rem; }
 
 .chip {
   padding: 0.1rem 0.45rem;
@@ -362,84 +539,303 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   white-space: nowrap;
 }
 
-.opts {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.opt {
-  display: block;
-  position: relative;
-  padding: 0.65rem 0.8rem;
+/* Pushed hard right so the head is one line at every width: name on the left,
+   the hold on the right, and the Changed pill between them when there is one. */
+.lock {
+  margin-left: auto;
+  padding: 0.22rem 0.6rem;
   border: 1px solid var(--rule);
-  border-radius: 0.5rem;
-  background: var(--panel);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--soft);
+  font: 400 0.76rem/1.3 var(--font-body);
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.opt:hover { border-color: var(--faint); }
+.lock:hover { color: var(--ink); border-color: var(--faint); }
 
-.opt input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
+.lock[aria-pressed="true"] {
+  border-color: var(--held);
+  background: var(--held-bg);
+  color: var(--held);
 }
 
-.o-body { display: block; }
+.lock:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 
-.o-top {
+/* Slider ------------------------------------------------------------------- */
+
+.d-slide {
+  position: relative;
+  margin: 0.15rem 0 0.1rem;
+}
+
+/* THE TRACK IS DRAWN UNDER THE INPUT, NOT BY IT. A range element paints above
+   anything absolutely positioned beside it, so ticks drawn behind a native
+   track are simply invisible. The rail and the ticks are painted here and the
+   input's own track is made transparent, which leaves the opaque thumb on top
+   where it belongs.
+
+   Both are inset by 10px, half the thumb's width, because that is where the
+   thumb's centre can actually reach. */
+.d-rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 10px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--track);
+  pointer-events: none;
+}
+
+.d-ticks {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 13px;
+  height: 0;
+  pointer-events: none;
+}
+
+.d-ticks i {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 8px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--rule);
+}
+
+.d-ticks i.home {
+  top: -7px;
+  height: 14px;
+  background: var(--agree);
+}
+
+.rng {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 1.6rem;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.rng::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.rng::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -7px;
+  border: 2px solid var(--panel);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+.rng::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.rng::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--panel);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+.rng:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+.rng:disabled { cursor: not-allowed; }
+.rng:disabled::-webkit-slider-thumb { background: var(--held); }
+.rng:disabled::-moz-range-thumb { background: var(--held); }
+
+.d-ends {
+  display: flex;
+  justify-content: space-between;
+  margin: -0.15rem 0 0;
+  color: var(--faint);
+  font-size: 0.72rem;
+}
+
+/* Readout ------------------------------------------------------------------ */
+
+.d-val {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.3rem 0.5rem;
+  gap: 0.1rem 0.55rem;
+  margin: 0.3rem 0 0;
+  min-width: 0;
 }
 
-.o-label {
+.d-big {
+  font-family: var(--font-title);
+  font-size: 1.7rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.d-opt {
   font-weight: 600;
   font-size: 0.98rem;
 }
 
-.o-start {
-  color: var(--agree);
-  font-size: 0.72rem;
-  white-space: nowrap;
-}
-
-.o-detail {
-  display: block;
-  margin: 0.15rem 0 0.3rem;
-  color: var(--soft);
-  font-size: 0.9rem;
-}
-
-.o-where {
-  display: block;
-  color: var(--faint);
-  font-size: 0.82rem;
-}
-
-.o-cost {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.15rem 0.9rem;
-  margin-top: 0.35rem;
+.d-cost {
   color: var(--faint);
   font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
 }
 
-.opt.on {
-  border-color: var(--accent);
-  background: var(--raised);
-  box-shadow: inset 3px 0 0 var(--accent);
+.d-home {
+  color: var(--agree);
+  font-size: 0.72rem;
+  white-space: nowrap;
 }
 
-.opt input:focus-visible + .o-body {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 0.3rem;
+.d-detail {
+  margin: 0.1rem 0 0;
+  color: var(--soft);
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
+
+.d-where {
+  margin: 0.05rem 0 0;
+  color: var(--faint);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.d-cut {
+  margin: 0.25rem 0 0;
+  color: var(--over);
+  font-size: 0.8rem;
+}
+
+/* A cut domain has to look like it just moved, because the thing that paid may
+   be nowhere near the thing the visitor touched. */
+.domain.cut { animation: cut-flash 1.6s ease-out 1; }
+
+@keyframes cut-flash {
+  0%   { border-left-color: var(--over); background: var(--band); }
+  60%  { border-left-color: var(--over); background: var(--band); }
+  100% { border-left-color: var(--rule); background: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .domain.cut { animation: none; border-left-color: var(--over); }
+}
+
+/* What paid for it ---------------------------------------------------------
+ * Fixed above the pinned reveal bar rather than parked next to the meters: the
+ * page is thirteen sliders long and a cut three domains below the fold has to
+ * announce itself where the visitor is actually looking. */
+
+.cascade {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 4.5rem;
+  z-index: 19;
+  width: calc(100% - 1.6rem);
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 0.65rem 0.9rem 0.7rem;
+  border: 1px solid var(--over);
+  border-radius: 0.6rem;
+  background: var(--panel);
+  box-shadow: 0 6px 20px -10px rgba(0, 0, 0, 0.5);
+}
+
+.cascade[hidden] { display: none; }
+
+.cs-lead {
+  margin: 0;
+  padding-right: 4.5rem;
+  color: var(--ink);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.cs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cs-list button {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.35rem;
+  max-width: 100%;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.4rem;
+  background: var(--raised);
+  color: var(--ink);
+  font: 400 0.78rem/1.35 var(--font-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+.cs-list button:hover { border-color: var(--faint); }
+
+.cs-list button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cs-dom { font-weight: 600; }
+.cs-now { color: var(--soft); }
+
+.cs-short {
+  margin: 0.4rem 0 0;
+  color: var(--over);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.cs-x {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.7rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--soft);
+  font: 400 0.72rem/1.3 var(--font-body);
+  cursor: pointer;
+}
+
+.cs-x:hover { color: var(--ink); border-color: var(--faint); }
 
 /* Finish -------------------------------------------------------------------
  * Pinned to the bottom of the viewport at every width. The page is thirteen
@@ -863,7 +1259,15 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   .m-name { font-size: 0.7rem; }
   .m-fig { font-size: 0.8rem; }
   .m-note { font-size: 0.74rem; }
-  .d-head h2 { font-size: 1.2rem; }
+  .d-head h2 { font-size: 1.16rem; }
+  .domain.tax .d-head h2 { font-size: 1.3rem; }
+  .domain.tax { padding: 0.75rem 0.8rem 0.85rem; }
+  .chart { padding: 0.75rem 0.7rem 0.85rem; }
+  .chart h2 { font-size: 1.15rem; }
+  .ch-host { height: 250px; }
+  .ch-key { gap: 0.15rem 0.7rem; }
+  .cascade { bottom: 4.2rem; width: calc(100% - 1.2rem); padding: 0.6rem 0.7rem 0.65rem; }
+  .d-big { font-size: 1.5rem; }
 
   .finish-in { padding-left: 1rem; padding-right: 1rem; }
 
