@@ -1279,12 +1279,12 @@
           "political": 35,
           "social": 10,
           "axis": {
-            "military_burden": 0.7
+            "military_burden": 0.2
           },
           "axis_hand": {
             "military_burden": 0.7
           },
-          "axis_basis": "hand"
+          "axis_basis": "derived from 1 country"
         },
         {
           "id": "de_alliance",
@@ -1415,12 +1415,12 @@
           "political": 20,
           "social": 20,
           "axis": {
-            "foreign_born": 14.2
+            "foreign_born": 14.0
           },
           "axis_hand": {
             "foreign_born": 15.0
           },
-          "axis_basis": "derived from 5 countries"
+          "axis_basis": "derived from 6 countries"
         },
         {
           "id": "im_points",
@@ -1533,12 +1533,12 @@
           "political": 10,
           "social": 10,
           "axis": {
-            "incarceration": 98.0
+            "incarceration": 103.0
           },
           "axis_hand": {
             "incarceration": 100.0
           },
-          "axis_basis": "derived from 5 countries"
+          "axis_basis": "derived from 7 countries"
         },
         {
           "id": "ju_tough",
@@ -1594,12 +1594,12 @@
           "political": 60,
           "social": 45,
           "axis": {
-            "incarceration": 90.0
+            "incarceration": 120.0
           },
           "axis_hand": {
             "incarceration": 90.0
           },
-          "axis_basis": "hand"
+          "axis_basis": "derived from 1 country"
         }
       ]
     },
@@ -3620,8 +3620,22 @@
         "Europe/Dublin"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_anglo",
+        "healthcare": "hc_mixed",
+        "education": "ed_free",
+        "housing": "ho_subsidy",
+        "retirement": "re_flat",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_neutral",
+        "immigration": "im_open",
+        "justice": "ju_standard",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 21.7,
@@ -3702,8 +3716,22 @@
         "Europe/Rome"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_mixed",
+        "education": "ed_market",
+        "housing": "ho_market",
+        "retirement": "re_generous",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_bargaining",
+        "defence": "de_alliance",
+        "immigration": "im_controlled",
+        "justice": "ju_standard",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 42.8,
@@ -3785,8 +3813,22 @@
         "Atlantic/Canary"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_public",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_generous",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_bargaining",
+        "defence": "de_alliance",
+        "immigration": "im_open",
+        "justice": "ju_standard",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 36.7,
@@ -3869,8 +3911,22 @@
         "Atlantic/Azores"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_mixed",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_generous",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_bargaining",
+        "defence": "de_alliance",
+        "immigration": "im_controlled",
+        "justice": "ju_decriminalised",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 35.1,
@@ -3951,8 +4007,22 @@
         "Europe/Vienna"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_insurance",
+        "education": "ed_vocational",
+        "housing": "ho_cooperative",
+        "retirement": "re_generous",
+        "energy": "en_hydro",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_bargaining",
+        "defence": "de_militia",
+        "immigration": "im_controlled",
+        "justice": "ju_standard",
+        "family": "fa_universal"
+      },
       "indicators": {
         "tax_take": {
           "value": 43.4,
@@ -4033,8 +4103,22 @@
         "Europe/Brussels"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_insurance",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_earnings",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_bargaining",
+        "defence": "de_alliance",
+        "immigration": "im_open",
+        "justice": "ju_standard",
+        "family": "fa_universal"
+      },
       "indicators": {
         "tax_take": {
           "value": 42.6,
@@ -4115,8 +4199,22 @@
         "Europe/Athens"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_insurance",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_generous",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_conscript",
+        "immigration": "im_controlled",
+        "justice": "ju_standard",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 39.8,
@@ -4756,8 +4854,22 @@
         "Atlantic/Reykjavik"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_anglo",
+        "healthcare": "hc_mixed",
+        "education": "ed_free",
+        "housing": "ho_subsidy",
+        "retirement": "re_super",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_bargaining",
+        "defence": "de_alliance",
+        "immigration": "im_open",
+        "justice": "ju_rehab",
+        "family": "fa_leave"
+      },
       "indicators": {
         "tax_take": {
           "value": 36.9,
@@ -4838,8 +4950,22 @@
         "Europe/Luxembourg"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_continental",
+        "healthcare": "hc_insurance",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_generous",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_alliance",
+        "immigration": "im_open",
+        "justice": "ju_standard",
+        "family": "fa_universal"
+      },
       "indicators": {
         "tax_take": {
           "value": 41.5,
@@ -5464,12 +5590,18 @@
     "Asia/Jerusalem": "IL",
     "America/Santiago": "CL",
     "Asia/Dubai": "AE",
-    "Europe/Dublin": "UK",
-    "Europe/Lisbon": "FR",
-    "Europe/Madrid": "FR",
-    "Europe/Rome": "FR",
-    "Europe/Vienna": "DE",
-    "Europe/Brussels": "NL",
+    "Europe/Dublin": "IE",
+    "Europe/Rome": "IT",
+    "Europe/Madrid": "ES",
+    "Atlantic/Canary": "ES",
+    "Europe/Lisbon": "PT",
+    "Atlantic/Madeira": "PT",
+    "Atlantic/Azores": "PT",
+    "Europe/Vienna": "AT",
+    "Europe/Brussels": "BE",
+    "Europe/Athens": "GR",
+    "Atlantic/Reykjavik": "IS",
+    "Europe/Luxembourg": "LU",
     "Europe/Prague": "DE",
     "Europe/Warsaw": "DE",
     "Europe/Riga": "EE",

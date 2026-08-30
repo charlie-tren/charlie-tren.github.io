@@ -1,14 +1,17 @@
-"""Forty-five countries, of which twenty are matchable.
+"""Forty-five countries, of which twenty-nine are matchable.
 
 TWO KINDS OF COUNTRY LIVE IN THIS FILE and the difference is `matchable`.
 
 A MATCHABLE country has all thirteen `choices` and can be the answer the reveal
-gives. There are twenty of them and they are the launch set.
+gives. There are twenty-nine of them: the launch twenty, plus Ireland, Italy,
+Spain, Portugal, Austria, Belgium, Greece, Luxembourg and Iceland, coded on
+30/08/2026 out of the measured-only pool.
 
 A MEASURED-ONLY country has `choices == {}` and `matchable == False`. It can
 appear on an axis and it counts towards indicator coverage, but it can never be
 a nearest neighbour, because there is nothing to match against. Twenty-five were
-added on 30/08/2026. This is the build-out predicted below: the axes are
+added on 30/08/2026 and nine of them were coded the same day, leaving sixteen.
+This is the build-out predicted below: the axes are
 automatable and went wide first, and the matrix follows one country at a time
 because every matrix cell is a human judgement with a citation behind it.
 
@@ -24,8 +27,8 @@ next to that country's name, so it is checked against a source before it ships.
 
 `nonTaxRevenue` is income the state has that is not tax, in % of GDP, and it is
 inherited from the starting country rather than chosen. A state's income is tax
-PLUS non-tax income, and for nineteen of the twenty matchable countries the
-second term rounds to nothing. On the twenty-five measured-only rows it is 0.0
+PLUS non-tax income, and for twenty-eight of the twenty-nine matchable countries the
+second term rounds to nothing. On the sixteen measured-only rows it is 0.0
 because it could not be sourced, which is a different claim and is written out
 above those rows. For the UAE it is most of the budget. Total capacity is the realised
 value of the chosen tax rate plus this, floored at what the country already
@@ -35,27 +38,39 @@ spends. See budget.js.
 "does not apply" and must never be confused with a missing key, which is "no
 data". Both are handled separately in the reveal.
 
-WHERE THE MATRIX IS THIN, measured 2026-08-29 over all 190 pairs of the twenty
-matchable countries. The measured-only rows have no matrix and cannot appear. No pair
-matches on all thirteen, so no country is unreachable in the reveal, but the
-count of shared cells on the closest pairs is the margin the whole match turns
-on:
+WHERE THE MATRIX IS THIN, re-measured 2026-08-30 over all 406 pairs of the
+twenty-nine matchable countries. The measured-only rows have no matrix and cannot
+appear. No pair matches on all thirteen, so no country is unreachable in the
+reveal, but the count of shared cells on the closest pairs is the margin the
+whole match turns on:
 
     11  SE NO   work, defence
+    11  IT PT   education, justice
+    11  BE LU   retirement, work
     10  SE FI   work, immigration, family
     10  NZ EE   tax, education, immigration
-    10  AU NZ   energy, voting, work
-     9  NZ CL   healthcare, education, retirement, immigration
-     9  NZ CA   education, retirement, voting, justice
-     9  NO FI   work, defence, immigration, family
-     9  DK FI   housing, energy, defence, immigration
+    10  IT ES   healthcare, immigration
+    10  GR LU   defence, immigration, family
+    10  ES PT   healthcare, immigration, justice
+    10  ES LU / ES BE / DE BE / AU NZ
 
-Sweden and Norway are separated by two cells, so a visitor who picks the Nordic
-package is sorted between them by the work and defence choices alone. Those two
-cells carry more weight than any others in this file, and NZ is the country most
-often near the top, which makes its row the one to check first. Re-run the pair
+ADDING NINE EUROPEAN COUNTRIES DID NOT MOVE THE CEILING, which stayed at eleven,
+but it added two more pairs to it. Sweden and Norway are separated by work and
+defence. Italy and Portugal are separated by education, Italian universities
+charge up to EUR 4,000 a year against Portugal's EUR 697 cap, and by justice,
+Portugal's drug decriminalisation. Belgium and Luxembourg are separated by
+retirement and work. Those six cells carry more weight than any others in this
+file and are the first to check if a pair ever reaches thirteen. Re-run the pair
 script after any cell change: a correction that looks local can quietly push a
 pair to thirteen.
+
+WHY SO MUCH OF THE NEW BLOCK AGREES. Seven of the nine sit on tax_continental,
+all nine on sp_hate_limits and all nine on vo_proportional, and none of that is
+laziness. Every EU member of the set runs heavy payroll-funded social insurance,
+every one is bound by Framework Decision 2008/913/JHA to criminalise incitement
+to hatred, and every one elects its parliament proportionally. The discrimination
+therefore comes from the domains where Europe genuinely differs: retirement,
+housing, defence, immigration and family.
 """
 
 COUNTRIES = [
@@ -877,8 +892,65 @@ COUNTRIES = [
     # ----------------------------------------------------------------------
     {"code": "IE", "name": "Ireland", "timezones": ["Europe/Dublin"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     # THREE OF IRELAND'S MEASURED CELLS ARE GDP-DISTORTED AND ARE NOT EVIDENCE
+     # AGAINST THE CHOICE ABOVE THEM. tax_take 21.7, education_spend 2.9 and
+     # pension_spend 2.9 are all shares of a GDP inflated by roughly two-fifths
+     # by multinational intellectual property and contract manufacturing that no
+     # Irish resident consumes. On the modified gross national income (GNI*)
+     # basis the CSO publishes for exactly this reason, the tax take is close to
+     # 35% rather than 21.7%. So Ireland is coded on what the policies ARE,
+     # and the three low cells are flagged here rather than read as facts about
+     # the policy.
+     # https://www.cso.ie/en/releasesandpublications/ep/p-nie/nie2023/modifiedgrossnationalincomegni/
+     "choices": {"tax": "tax_anglo",
+                 # THE WELL-KNOWN EXCEPTION, and it is hc_mixed rather than
+                 # hc_public. Ireland is a tax-funded public system in which
+                 # roughly 46% of the population also holds private cover and
+                 # uses it to be seen sooner, including in private beds inside
+                 # public hospitals. The public inpatient charge was abolished in
+                 # April 2023, so the public tier is now free at the point of
+                 # use, but the paid fast lane is the defining feature and
+                 # Slaintecare's single-tier target is not expected before 2030.
+                 # https://www.irishtimes.com/opinion/2026/08/20/slaintecare-is-meant-to-move-us-towards-universal-healthcare-so-why-has-this-not-happened/
+                 # Checked 2026-08-30.
+                 "healthcare": "hc_mixed",
+                 # Undergraduate tuition was abolished in 1996. What remains is a
+                 # flat state-set student contribution, EUR 2,000 to 3,000, plus
+                 # means-tested SUSI maintenance grants. Not ed_deferred: there
+                 # is no income-contingent loan of any kind.
+                 "education": "ed_free",
+                 # OECD PH4.2 places Ireland in the 10-19% band and the measured
+                 # cell reads 12.7%, but the instrument that has grown is the
+                 # Housing Assistance Payment, cash to a tenant renting
+                 # privately, which is ho_subsidy rather than state building.
+                 # https://www.oecd.org/content/dam/oecd/en/data/datasets/affordable-housing-database/ph4-2-social-rental-housing-stock.pdf
+                 "housing": "ho_subsidy",
+                 # Flat State Pension (Contributory), EUR 299.30 a week for
+                 # everyone at the full rate, and the My Future Fund
+                 # auto-enrolment that began on 1 January 2026 is opt-out from
+                 # month seven rather than compulsory, so saving is encouraged
+                 # and not required. That is re_flat, not re_super.
+                 # https://www.citizensinformation.ie/en/money-and-tax/personal-finance/pensions/auto-enrolment/
+                 # Checked 2026-08-30.
+                 "retirement": "re_flat",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 # PR-STV. The voter ranks candidates, but voting is voluntary,
+                 # and vo_preferential requires both, so this is vo_proportional.
+                 "voting": "vo_proportional",
+                 "work": "wo_minimum",
+                 # The de_neutral tag in policies.py holds. Militarily neutral,
+                 # no alliance, no conscription, and 0.2% of GDP, the lowest
+                 # military burden of the forty-five.
+                 "defence": "de_neutral",
+                 "immigration": "im_open", "justice": "ju_standard",
+                 # Child Benefit is universal at EUR 140 a month per child, but
+                 # fa_universal's second limb, childcare capped at a low price,
+                 # is false for Ireland: childcare is among the dearest in the
+                 # EU and the National Childcare Scheme subsidy is largely
+                 # income-assessed. Coded on the childcare limb and the 1.3% of
+                 # GDP, with the universal benefit noted as the tension.
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 21.7, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -911,8 +983,64 @@ COUNTRIES = [
      }},
     {"code": "IT", "name": "Italy", "timezones": ["Europe/Rome"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {"tax": "tax_continental",
+                 # The SSN is Beveridge in design, but hc_public's "free at the
+                 # point of use" is not true of it and hc_mixed's paid fast lane
+                 # is. Regional tickets of EUR 36 to 55 are charged for
+                 # specialist and diagnostic care, and intramoenia lets a public
+                 # hospital's own consultants sell faster appointments inside
+                 # the public hospital, to the point that in many hospitals the
+                 # private slots now outnumber the public ones. Spain, coded
+                 # hc_public below, has no equivalent of either.
+                 # https://feather-insurance.com/en-it/blog/public-health-insurance-ssn-guide
+                 # Checked 2026-08-30.
+                 "healthcare": "hc_mixed",
+                 # The only one of the nine coded ed_market, and the fit is on
+                 # the fee-charging limb only. Italian public universities set
+                 # their own fees between about EUR 500 and EUR 4,000 a year
+                 # within a national cap, graduated by ISEE household income.
+                 # The other half of the option, "loans, not grants", is false:
+                 # Italian support is regional borse di studio. Coded here
+                 # rather than ed_free because EUR 4,000 is not no tuition, and
+                 # the measured 4.1% of GDP sits on ed_market's 4.2.
+                 # https://eurydice.eacea.ec.europa.eu/countries/italy/national-student-fee
+                 # Checked 2026-08-30.
+                 "education": "ed_market",
+                 "housing": "ho_market",
+                 # Pension spend of 16.1% of GDP is the highest in the file
+                 # after Greece, and OECD Pensions at a Glance 2025 puts Italy
+                 # in the 70%-plus net replacement band. THE SECOND LIMB OF THIS
+                 # OPTION, a low pension age, IS THE ONE PLACE IT DOES NOT FIT:
+                 # the same report lists Italy among the countries whose future
+                 # normal retirement age is 70 or more. Coded on the spend and
+                 # the replacement rate, with the age recorded as the tension.
+                 # https://www.oecd.org/en/publications/2025/11/pensions-at-a-glance-2025_76510fe4/full-report/current-retirement-ages_0f63b747.html
+                 "retirement": "re_generous",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 # THE MEASURED CELL AND THIS CHOICE DISAGREE AND THE REASON IS
+                 # A MENU GAP, not an error in either. Italy's Gallagher index
+                 # is 12.37, the second highest of the matchable set after the
+                 # UK, because the Rosatellum is a mixed system: about 37% of
+                 # seats are single-member and won on a plurality, and 61% are
+                 # allocated proportionally. There is no mixed-member option in
+                 # this domain. vo_fptp would be the false half, since Italy
+                 # elects most of its parliament by list PR and coalition
+                 # government is the norm, so it is coded on the larger half.
+                 "voting": "vo_proportional",
+                 "work": "wo_bargaining", "defence": "de_alliance",
+                 # The im_controlled tag in policies.py holds: entry by decreto
+                 # flussi quota, and naturalisation after ten years of residence,
+                 # which the June 2025 referendum to cut to five failed to carry.
+                 "immigration": "im_controlled",
+                 # The ju_standard tag in policies.py holds. 110 per 100,000.
+                 "justice": "ju_standard",
+                 # The Assegno Unico e Universale is paid for every child, but
+                 # it is graduated by ISEE from about EUR 57 to EUR 201 a month
+                 # and Italy spends 1.4% of GDP on family benefits against
+                 # fa_universal's 3.3, with nursery coverage among the lowest in
+                 # the EU. Coded on the amount rather than the name.
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 42.8, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -945,8 +1073,47 @@ COUNTRIES = [
      }},
     {"code": "ES", "name": "Spain", "timezones": ["Europe/Madrid", "Atlantic/Canary"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {"tax": "tax_continental",
+                 # The one of the three southern Beveridge systems that is
+                 # genuinely hc_public. The SNS is funded from general taxation,
+                 # covers about 99.5% of residents and charges nothing at the
+                 # point of use for consultations or hospital care; the only
+                 # standing co-payment is on pharmaceuticals. Private cover
+                 # exists and is unsubsidised for the general population. Italy
+                 # and Portugal both charge user fees for care and are coded
+                 # hc_mixed on that difference.
+                 # https://www.commonwealthfund.org/sites/default/files/2026-04/2026_Country-Profiles_Spain.pdf
+                 # Checked 2026-08-30.
+                 "healthcare": "hc_public",
+                 # Fees are set by the regions inside a national band, roughly
+                 # EUR 700 to 2,000 a year, and several regions have cut or
+                 # abolished them outright. Grants, not loans.
+                 "education": "ed_free",
+                 "housing": "ho_market",
+                 # OECD Pensions at a Glance 2025 names Spain among the
+                 # countries with a net replacement rate of 85% or more, and the
+                 # measured pension spend is 12.3% of GDP.
+                 # https://www.oecd.org/en/publications/2025/11/pensions-at-a-glance-2025_76510fe4/full-report/net-pension-replacement-rates_a7a9e376.html
+                 "retirement": "re_generous",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 "voting": "vo_proportional", "work": "wo_bargaining",
+                 "defence": "de_alliance",
+                 # NOT im_controlled, and this is where Spain and Portugal part.
+                 # Spain runs the most permissive third-country regime in the
+                 # set: arraigo regularisation after two years of presence under
+                 # Royal Decree 1155/2024, an extraordinary regularisation of up
+                 # to 500,000 people that ran to 30 June 2026, and naturalisation
+                 # after two years for nationals of Latin American states. The
+                 # menu has no "liberal third-country entry" option, so this is
+                 # coded on the EU free movement limb.
+                 # https://www.cidob.org/en/publications/understanding-spains-extraordinary-regularisation-key-elements
+                 # Checked 2026-08-30.
+                 "immigration": "im_open",
+                 # 121 per 100,000, below the 128 to 542 band of ju_tough, even
+                 # though Spanish sentences served are long by EU standards.
+                 "justice": "ju_standard",
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 36.7, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -979,8 +1146,52 @@ COUNTRIES = [
      }},
     {"code": "PT", "name": "Portugal", "timezones": ["Europe/Lisbon", "Atlantic/Madeira", "Atlantic/Azores"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {"tax": "tax_continental",
+                 # The SNS is tax-funded and universal, but the public share of
+                 # health spending is 61.4%, the lowest of the nine and the
+                 # lowest of any Beveridge system in the file. Taxas moderadoras
+                 # are charged for emergency, diagnostic and some GP care, the
+                 # ADSE subsystem covers more than 1.3 million public servants
+                 # through private providers, and private hospital use is
+                 # substantial. That is a universal service with a paid tier
+                 # beside it, which is hc_mixed and not hc_public.
+                 # https://www.internationalinsurance.com/countries/portugal/healthcare/
+                 # Checked 2026-08-30.
+                 "healthcare": "hc_mixed",
+                 # The propina is capped at about EUR 697 a year for a first
+                 # cycle degree. Nominal by the standards of ed_market, and
+                 # support is by grant rather than loan.
+                 "education": "ed_free",
+                 "housing": "ho_market",
+                 # OECD Pensions at a Glance 2025 names Portugal among the
+                 # countries with a net replacement rate of 85% or more, against
+                 # 12.9% of GDP of pension spend.
+                 # https://www.oecd.org/en/publications/2025/11/pensions-at-a-glance-2025_76510fe4/full-report/net-pension-replacement-rates_a7a9e376.html
+                 "retirement": "re_generous",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 "voting": "vo_proportional", "work": "wo_bargaining",
+                 "defence": "de_alliance",
+                 # PORTUGAL WAS THE LIBERAL CASE AND IS NOT ANY MORE, which is
+                 # what separates it from Spain. Organic Law 1/2026, in force
+                 # from 19 May 2026, raises the residence needed for
+                 # naturalisation from five years to seven for EU and CPLP
+                 # nationals and ten for everyone else, counts only lawful
+                 # residence, and ends the manifestacao de interesse route.
+                 # "The better part of a decade" is now literally true.
+                 # https://www.sovereigngroup.com/news/portugal-nationality-law-update/
+                 # Checked 2026-08-30.
+                 "immigration": "im_controlled",
+                 # The ju_decriminalised tag in policies.py holds: possession of
+                 # any drug has been a matter for a dissuasion commission rather
+                 # than a court since 2001. NOTE the option's "small prison
+                 # population" reads oddly beside Portugal's 120 per 100,000,
+                 # which is mid-table and above Ireland, Italy and Austria. The
+                 # decriminalisation claim is what is unique and is true; the
+                 # prison-size claim is the loose half, and the derived axis
+                 # value now moves from the hand 90 to Portugal's own 120.
+                 "justice": "ju_decriminalised",
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 35.1, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1013,8 +1224,61 @@ COUNTRIES = [
      }},
     {"code": "AT", "name": "Austria", "timezones": ["Europe/Vienna"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {"tax": "tax_continental",
+                 "healthcare": "hc_insurance",
+                 # Public university is free for EU students within the standard
+                 # duration, and about two in five of a cohort go through the
+                 # dual apprenticeship system. Both limbs of the option, which
+                 # is why Austria is the only one of the nine coded here.
+                 "education": "ed_vocational",
+                 # Limited-profit housing associations, 97 co-operatives and 85
+                 # capital-based companies under the GBV federation, hold close
+                 # to a quarter of Austrian homes and let them on a cost-rent
+                 # capped at about 80% of market. The measured cell is 23.6%,
+                 # which is ho_cooperative's 22 rather than ho_social's 29.
+                 # https://www.oecd.org/en/publications/oecd-economic-surveys-austria-2026_7cea027b-en/full-report/restoring-the-affordability-and-improving-the-functioning-of-the-housing-market_7403868f.html
+                 # Checked 2026-08-30.
+                 "housing": "ho_cooperative",
+                 # 85%-plus net replacement rate in OECD Pensions at a Glance
+                 # 2025, 14.0% of GDP, and a corridor pension from 62.
+                 "retirement": "re_generous",
+                 # BOTH LIMBS OF en_hydro HOLD, which is the test the 2026-08-29
+                 # review applied when it moved NL, JP and SG off this option
+                 # for having the transport without the grid. Austria's
+                 # electricity is about 85% renewable and 46% hydro, and the
+                 # nationwide KlimaTicket buys unlimited public transport across
+                 # the country on one annual ticket. Austria also prices carbon
+                 # nationally at EUR 55/t on top of the EU ETS, so
+                 # en_carbon_tax is true of it as well; en_hydro is the more
+                 # specific claim and is the one coded.
+                 # https://oesterreichsenergie.at/en/our-electricity-system-1/renewables-in-austria
+                 # https://www.oecd.org/en/publications/ipac-policies-in-practice_22632907-en/austria-s-klimaticket-to-promote-low-carbon-mobility_408c8de9-en.html
+                 # Checked 2026-08-30. NOTE the grid is 116.9 g/kWh against 28
+                 # to 58 for the four countries already on this option, so
+                 # Austria widens it: clean by European standards, not Nordic.
+                 "energy": "en_hydro",
+                 "speech": "sp_hate_limits", "voting": "vo_proportional",
+                 "work": "wo_bargaining",
+                 # Constitutionally neutral since 1955, in no alliance, and six
+                 # months of conscription for men with a nine-month civilian
+                 # alternative. de_neutral is Ireland's cell and requires no
+                 # conscription, so this is de_militia.
+                 # https://www.thelocal.at/20220307/explained-how-does-austrias-mandatory-military-service-work/
+                 "defence": "de_militia",
+                 # Ten years of lawful residence for naturalisation, five of them
+                 # on a settlement permit, no dual nationality in the standard
+                 # case, and a points-scored Red-White-Red Card for third-country
+                 # workers. Textbook im_controlled, and the cell that separates
+                 # Austria from Germany, which sits on im_open.
+                 # https://www.migration.gv.at/en/types-of-immigration/permanent-immigration/
+                 # Checked 2026-08-30.
+                 "immigration": "im_controlled",
+                 "justice": "ju_standard",
+                 # Familienbeihilfe is paid for every child at EUR 200 to 250 a
+                 # month by age, with a sibling supplement, alongside subsidised
+                 # and in Vienna free kindergarten.
+                 "family": "fa_universal"},
      "indicators": {
          "tax_take": {"value": 43.4, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1047,8 +1311,47 @@ COUNTRIES = [
      }},
     {"code": "BE", "name": "Belgium", "timezones": ["Europe/Brussels"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {"tax": "tax_continental",
+                 # Registering with a mutualite is compulsory for every legal
+                 # resident, six non-profit national associations plus one public
+                 # fund compete for members and none may refuse anyone, and
+                 # INAMI/RIZIV sets the tariffs. hc_insurance exactly.
+                 # https://www.commissioner.brussels/joining-a-mutual-health-insurance-fund-compulsory-insurance/
+                 "healthcare": "hc_insurance",
+                 # About EUR 900 a year for EU students, and Belgium's 6.3% of
+                 # GDP is the highest public education spend of the nine after
+                 # Iceland. Not ed_vocational: the technical and vocational
+                 # secondary tracks are school-based rather than apprenticeship,
+                 # and they are not where most students go.
+                 "education": "ed_free",
+                 "housing": "ho_market",
+                 # NOT re_generous, and the exclusion is the evidence. OECD
+                 # Pensions at a Glance 2025 lists the 85%-plus replacement
+                 # countries as Austria, Greece, Luxembourg, the Netherlands,
+                 # Portugal, Spain and Turkiye, and Belgium is in neither that
+                 # group nor the 70%-plus one, on 10.7% of GDP.
+                 # https://www.oecd.org/en/publications/2025/11/pensions-at-a-glance-2025_76510fe4/full-report/net-pension-replacement-rates_a7a9e376.html
+                 "retirement": "re_earnings",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 # VOTING IN BELGIUM IS LEGALLY COMPULSORY, since 1893, with
+                 # fines of EUR 40 to 200 that are almost never enforced. The
+                 # menu's only compulsory option is vo_preferential, which is
+                 # Australia's ranked ballot, and Belgium uses list PR with a
+                 # Gallagher index of 3.83. There is no proportional-and-
+                 # compulsory option, so this is coded on proportionality, which
+                 # is what the domain's axis measures.
+                 # https://en.wikipedia.org/wiki/Voting_rights_in_Belgium
+                 "voting": "vo_proportional",
+                 # Coverage of 100%, joint committees per sector, national
+                 # interprofessional agreements and automatic wage indexation.
+                 "work": "wo_bargaining",
+                 "defence": "de_alliance", "immigration": "im_open",
+                 "justice": "ju_standard",
+                 # The Groeipakket and its Walloon and Brussels equivalents are
+                 # paid for every child regardless of income, and creche places
+                 # are income-scaled from a low cap.
+                 "family": "fa_universal"},
      "indicators": {
          "tax_take": {"value": 42.6, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1081,8 +1384,65 @@ COUNTRIES = [
      }},
     {"code": "GR", "name": "Greece", "timezones": ["Europe/Athens"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {"tax": "tax_continental",
+                 # THE WEAKEST FIT OF THE 117 CELLS AND IT IS RECORDED AS SUCH.
+                 # Greek health financing is roughly a third compulsory social
+                 # insurance through EOPYY, which has been the single purchaser
+                 # since 2011 and collects contributions via EFKA, a third state
+                 # budget, and over a third private, with out-of-pocket payments
+                 # at 34% of spending against an EU average of 16%. The
+                 # contributory limb is what puts it on hc_insurance, but EOPYY
+                 # is one public fund rather than the regulated market of
+                 # insurers the option describes, and the measured public share
+                 # of 50.6% is the lowest of the forty-five. No option in this
+                 # domain describes a universal system carrying a third of its
+                 # cost out of patients' pockets.
+                 # https://pmc.ncbi.nlm.nih.gov/articles/PMC12733077/
+                 # https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/12/country-health-profile-2025-country-notes_7e72146d/greece_71e37e79/9ca0bb52-en.pdf
+                 # Checked 2026-08-30.
+                 "healthcare": "hc_insurance",
+                 # Public universities charge no tuition for a first degree and
+                 # supply textbooks free. The cleanest ed_free of the nine, and
+                 # it disagrees with its own axis: Greece spends 3.4% of GDP on
+                 # education against the option's 6.3. Free and underfunded are
+                 # not the same claim, and the axis measures the second.
+                 "education": "ed_free",
+                 # Greece has essentially no social rental stock at all, which is
+                 # why the measured cell is absent rather than low: the Workers'
+                 # Housing Organisation was abolished in 2012. Owner-occupation
+                 # and family transfer carry the housing system.
+                 "housing": "ho_market",
+                 # THE WELL-KNOWN EXCEPTION, and the measured cell agrees with
+                 # the choice: 16.2% of GDP, the highest in the file, with an
+                 # 85%-plus net replacement rate in OECD Pensions at a Glance
+                 # 2025 even after the post-2010 cuts.
+                 # https://www.oecd.org/en/publications/2025/11/pensions-at-a-glance-2025_76510fe4/full-report/net-pension-replacement-rates_a7a9e376.html
+                 "retirement": "re_generous",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 # Compulsory on paper and unenforced in practice, same gap as
+                 # Belgium and Luxembourg. List PR with a majority bonus that
+                 # applies from the second election, which is what lifts the
+                 # Gallagher index to 8.97.
+                 "voting": "vo_proportional",
+                 # Collective bargaining coverage fell from 100% to 13 to 26%
+                 # after the memoranda, agreements are mostly at company level,
+                 # and the wage floor is now set directly by government, EUR 880
+                 # a month from 1 April 2025. A statutory minimum with weak
+                 # unions is wo_minimum, and Greece is at the bottom end of it.
+                 # https://www.etui.org/sites/default/files/2025-06/Greece_Collective%20bargaining%20and%20the%20minimum%20wage%20regime_2025.pdf
+                 # Checked 2026-08-30.
+                 "work": "wo_minimum",
+                 # A NATO member that still conscripts, which the option does not
+                 # exclude: twelve months of service, an active force above
+                 # 140,000, and 3.1% of GDP, the highest military burden of the
+                 # nine by a factor of two. de_alliance's "the standing force is
+                 # modest" is the limb Greece fails.
+                 # https://greekreporter.com/2025/07/24/greece-unveils-sweeping-defense-reforms/
+                 # Checked 2026-08-30.
+                 "defence": "de_conscript",
+                 "immigration": "im_controlled", "justice": "ju_standard",
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 39.8, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1347,8 +1707,74 @@ COUNTRIES = [
      }},
     {"code": "IS", "name": "Iceland", "timezones": ["Atlantic/Reykjavik"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # NOT tax_nordic, on the number. Iceland's tax take is 36.9% of
+                 # GDP in 2024, fourteenth of the thirty-eight OECD members and
+                 # 2.8 points above the OECD average, against 41 to 44 for the
+                 # four countries on tax_nordic. The structure argues the other
+                 # way, an income-tax-heavy mix and a 24% VAT, but the level is
+                 # nine points below the option and three above tax_anglo's. It
+                 # reads low for a Nordic because the second pension pillar is
+                 # funded rather than paid out of tax: employers pay in at least
+                 # 11.5% of wages and employees 4%, and the only general employer
+                 # social contribution is 6.35%.
+                 # https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/12/revenue-statistics-2025-country-notes_3708be73/iceland_af992b4b/43c3175c-en.pdf
+                 # Checked 2026-08-30.
+                 "tax": "tax_anglo",
+                 "healthcare": "hc_mixed",
+                 # Public universities charge a registration fee of about
+                 # ISK 75,000 and no tuition, and Iceland's 7.3% of GDP is the
+                 # highest public education spend of the forty-five.
+                 "education": "ed_free",
+                 "housing": "ho_subsidy",
+                 # Mandatory funded occupational pensions, minimum 15.5% of wages
+                 # between employer and employee, on top of a means-tested state
+                 # pension. Same design as the Netherlands, Switzerland and
+                 # Australia. The 2.9% of GDP public pension spend is low FOR
+                 # THAT REASON and is not evidence against the cell.
+                 # https://www.norden.org/en/info-norden/icelandic-pension-system
+                 "retirement": "re_super",
+                 # THE MEASURED CELL DISAGREES WITH THIS CHOICE AND NEITHER SIDE
+                 # IS WRONG. Iceland's electricity is 100% renewable, about 70%
+                 # hydro and 30% geothermal, at 27.8 g/kWh, the cleanest grid in
+                 # the file. That is en_hydro's first limb. Its second limb, a
+                 # network good enough that a car is optional, is decisively
+                 # false: Iceland has no railway at all, buses are the only
+                 # public transport, and car ownership is among the two or three
+                 # highest in the world at over 630 per 1,000 people. The
+                 # 2026-08-29 review moved NL, JP and SG off en_hydro for having
+                 # the transport without the grid, and Iceland is the mirror of
+                 # that case. It has priced carbon since 2010 and people drive,
+                 # which is what en_carbon_tax says and is true, so it is coded
+                 # here and the grid figure is the honest tension.
+                 # https://www.guinnessworldrecords.com/world-records/highest-rate-of-car-ownership
+                 # https://www.oecd.org/content/dam/oecd/en/publications/reports/2026/02/effective-carbon-rates-2025-country-notes_b08aeef1/iceland_37de81ee/47cd4da8-en.pdf
+                 # Checked 2026-08-30.
+                 "energy": "en_carbon_tax",
+                 "speech": "sp_hate_limits", "voting": "vo_proportional",
+                 # No statutory minimum wage at all. Pay floors are set by
+                 # sectoral collective agreements, which cover about 90% of
+                 # employees.
+                 "work": "wo_bargaining",
+                 # No armed forces of any kind, 0.0% of GDP, and a NATO founding
+                 # member since 1949. The extreme end of de_alliance rather than
+                 # de_neutral, which requires no alliance.
+                 "defence": "de_alliance",
+                 "immigration": "im_open",
+                 # 36 per 100,000, the lowest of the forty-five and barely half
+                 # the ju_rehab hand value of 60.
+                 "justice": "ju_rehab",
+                 # Twelve months of leave split six and six between parents for
+                 # children born from 2021, of which only six weeks is
+                 # transferable, plus municipal childcare and 3.8% of GDP, the
+                 # highest family spend in the file. THE CAVEAT: Icelandic child
+                 # benefit is income-tested, so fa_leave's universal per-child
+                 # benefit does not hold. Coded on the leave, which is the
+                 # option's distinguishing claim, and on the spend.
+                 # https://pub.norden.org/temanord2025-547/parental-leave-in-iceland.html
+                 # Checked 2026-08-30.
+                 "family": "fa_leave"},
      "indicators": {
          "tax_take": {"value": 36.9, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1381,8 +1807,68 @@ COUNTRIES = [
      }},
     {"code": "LU", "name": "Luxembourg", "timezones": ["Europe/Luxembourg"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     # LUXEMBOURG'S SPENDING RATIOS ARE ALL DIVIDED BY THE WRONG POPULATION.
+     # Roughly half the people who work in Luxembourg live in France, Belgium or
+     # Germany and commute in. They produce the GDP and are not residents, so
+     # every "% of GDP" cell on this row reads low against countries that do the
+     # same thing: education 3.7, pensions 8.6, health and family alike. Where a
+     # cell below disagrees with its axis, that is the first thing to suspect.
+     "choices": {"tax": "tax_continental",
+                 # Compulsory statutory health insurance through the Caisse
+                 # Nationale de Sante, a single public fund since the 2008 merger
+                 # rather than the competing insurers of the Belgian or Dutch
+                 # model, but Bismarckian and compulsory, which is the option's
+                 # claim. Public share 86.9%, the highest of the forty-five.
+                 # https://cns.public.lu/en/employeur/bases-bonnes-pratiques/assurance-maladie-bref.html
+                 "healthcare": "hc_insurance",
+                 # About EUR 800 a year at the University of Luxembourg. Not
+                 # ed_vocational: apprenticeship is a real track but not where
+                 # most students go.
+                 "education": "ed_free",
+                 "housing": "ho_market",
+                 # THE CELL THAT DISAGREES MOST SHARPLY WITH ITS OWN AXIS AND IS
+                 # STILL RIGHT. Pension spend of 8.6% of GDP sits on re_earnings'
+                 # 9.0, not re_generous' 14.0, so the number says one thing. Both
+                 # of the option's own limbs say the other, and on the OECD's
+                 # authority: Pensions at a Glance 2025 names Luxembourg among
+                 # the countries with a net replacement rate of 85% or more, AND
+                 # lists it with Colombia and Slovenia as the three lowest future
+                 # normal retirement ages in the OECD at 62. Early retirement
+                 # runs from 57 on a forty-year career and the effective
+                 # retirement age, 60 in 2022, is the lowest in the OECD. A high
+                 # replacement rate and a low pension age is what re_generous
+                 # says. The 8.6% is the cross-border denominator described
+                 # above, plus a young population. This cell is why check_spread
+                 # now reports re_generous as wide, and the width is real.
+                 # https://www.oecd.org/en/publications/2025/11/pensions-at-a-glance-2025_76510fe4/full-report/current-retirement-ages_0f63b747.html
+                 # https://www.oecd.org/en/publications/oecd-economic-surveys-luxembourg-2025_803b3ea1-en/full-report/securing-the-pension-system-for-future-generations_cc54d632.html
+                 # Checked 2026-08-30.
+                 "retirement": "re_generous",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 # Compulsory in law, unpunished since 1964. Same menu gap as
+                 # Belgium and Greece; coded on proportionality.
+                 "voting": "vo_proportional",
+                 # The highest statutory minimum wage in the EU, about EUR 2,570
+                 # a month, and collective bargaining coverage of 57% that is
+                 # largely company-level, with sectoral extension available but
+                 # not the norm. Between wo_minimum's 28 and wo_bargaining's 80,
+                 # and coded on the statutory floor doing the work. Switzerland
+                 # sits on wo_minimum at a similar coverage.
+                 # https://www.etui.org/sites/default/files/2025-06/Luxembourg_Collective%20bargaining%20and%20minimum%20wage%20regime_2025.pdf
+                 # Checked 2026-08-30.
+                 "work": "wo_minimum",
+                 "defence": "de_alliance",
+                 # 51.2% foreign-born, the highest of the forty-five outside the
+                 # Gulf, and overwhelmingly Portuguese, French and Italian EU
+                 # citizens. The purest case of open borders within a bloc in the
+                 # file, and it pulls this option's derived axis value up.
+                 "immigration": "im_open",
+                 "justice": "ju_standard",
+                 # The allocation pour l'avenir des enfants is paid per child
+                 # without a means test, and every child gets twenty hours a week
+                 # of free childcare.
+                 "family": "fa_universal"},
      "indicators": {
          "tax_take": {"value": 41.5, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
