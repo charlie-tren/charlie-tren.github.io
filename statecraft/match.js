@@ -53,13 +53,31 @@ function axisDistance(data, mine, country) {
 }
 
 /**
- * One row per country, sorted by matched descending then distance ascending.
- * The match is a COUNT. Distance is only a tiebreak.
+ * The countries that can be an answer.
+ *
+ * THIS GUARD IS LOAD-BEARING AND WAS ADDED 30/08/2026 with the twenty-five
+ * measured-only countries. Those carry indicators but no `choices`, so they
+ * score zero on the count, which is NOT enough on its own to keep them out of
+ * the result: rank() sorts by count and then by axis distance, so a design that
+ * matches no country in any domain leaves the whole field tied at zero and a
+ * measured-only country can win the tiebreak on distance alone and be presented
+ * as the answer. Such a design is reachable, since five options are tagged to no
+ * country at all. Filtering here rather than at each caller means every consumer
+ * of rank() gets the guarantee, and check_coverage.mjs cannot report a win for a
+ * country the page could never legitimately name.
+ */
+export function matchable(data) {
+  return (data.countries || []).filter((c) => c.matchable);
+}
+
+/**
+ * One row per matchable country, sorted by matched descending then distance
+ * ascending. The match is a COUNT. Distance is only a tiebreak.
  */
 export function rank(data, selection) {
   const mine = axisValues(data, selection);
 
-  const rows = data.countries.map((country) => {
+  const rows = matchable(data).map((country) => {
     const agreements = [];
     const divergences = [];
 

@@ -50,8 +50,12 @@ export function decode(data, hash) {
     const m = /^([A-Za-z]{2})-([0-9a-zA-Z]+)(?:-([0-9a-zA-Z]{2}))?$/.exec(raw);
     if (!m) return null;
 
+    // MATCHABLE, not merely present. A hash naming a measured-only country
+    // would restore a start with no thirteen choices behind it, so the whole
+    // hash is treated as malformed and the page opens on the visitor's own
+    // timezone instead of on a country with nothing in it.
     const start = m[1].toUpperCase();
-    if (!data.countries.some((c) => c.code === start)) return null;
+    if (!data.countries.some((c) => c.code === start && c.matchable)) return null;
 
     const digits = m[2];
     if (digits.length !== data.domains.length) return null;
@@ -87,7 +91,7 @@ export function decode(data, hash) {
 export function countryForTimezone(data, tz) {
   if (typeof tz === 'string') {
     const hit = data.timezones[tz];
-    if (hit && data.countries.some((c) => c.code === hit)) return hit;
+    if (hit && data.countries.some((c) => c.code === hit && c.matchable)) return hit;
   }
   return data.fallback;
 }

@@ -61,8 +61,20 @@ def measured(axis, codes):
     go into a median, and both are dropped here rather than counted as zero,
     which is the mistake that would quietly pull every derived value towards the
     bottom of its track.
+
+    MATCHABLE COUNTRIES ONLY, decided 30/08/2026 when twenty-five measured-only
+    countries were added. A country tag on an option is the claim that that
+    country runs that policy, and the thing that holds the claim honest is
+    test_option_country_tags_name_a_country_that_holds_that_option, which checks
+    the tag against the country's own matrix cell. A measured-only country has no
+    matrix, so its tag cannot be checked, and letting an unchecked tag pull the
+    marker would put an unverifiable claim on the page dressed as a measurement.
+    Five options are tagged to one: de_neutral IE, im_controlled IT, ju_standard
+    IE and IT, ju_decriminalised PT, fa_pronatal HU. They contribute nothing
+    until those countries are coded, at which point they start contributing and
+    the matrix check starts covering them, both automatically.
     """
-    cells = {c["code"]: c["indicators"] for c in COUNTRIES}
+    cells = {c["code"]: c["indicators"] for c in COUNTRIES if c["matchable"]}
     out = []
     for code in codes:
         cell = cells.get(code, {}).get(axis)
