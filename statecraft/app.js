@@ -14,7 +14,7 @@ import {
   TAX, TAX_DOMAIN, budgets, blockers, realisedRevenue, rateForOption, startingState,
 } from './budget.js';
 import { applyChange, setTaxRate, toggleLock, isLocked, ladder } from './cascade.js';
-import { rank } from './match.js';
+import { rank, matchable } from './match.js';
 import { renderReveal } from './reveal.js';
 import { encode, decode, countryForTimezone, detectTimezone } from './state.js';
 import { chartBase, drawChart } from './chart.js';
@@ -134,9 +134,14 @@ function liveState() {
 
 /* Painting ------------------------------------------------------------------ */
 
+// Only matchable countries can be a STARTING country. Picking a start loads
+// that country's thirteen choices as the design, so a measured-only country
+// would open the page on an empty selection with every meter reading nothing.
+// Added 30/08/2026 with the twenty-five measured-only rows; before that every
+// country in the file had a matrix and the filter was not needed.
 function paintPicker() {
   const sel = document.getElementById('startSel');
-  const sorted = data.countries.slice().sort((a, b) => a.name.localeCompare(b.name, 'en'));
+  const sorted = matchable(data).slice().sort((a, b) => a.name.localeCompare(b.name, 'en'));
   sel.innerHTML = sorted
     .map((c) => `<option value="${esc(c.code)}">${esc(c.name)}</option>`)
     .join('');
@@ -343,7 +348,7 @@ function paintMethod() {
   <p>${derived} of the ${options} options are derived that way. The remaining ${hand.length} are set by hand, either because no coded country runs them or because the countries that do have no measurement on that axis. They are: ${esc(hand.join('; '))}. Redistribution is summed from your tax, work and family choices rather than owned by one domain, so it stays hand-set throughout. Where an option is the policy of a single country, its figure is that one country's cell, and the reveal says so on the track.</p>
 
   <h3>What Is Not Here Yet</h3>
-  <p>${data.countries.length} countries are coded so far and that number will grow. A country's own indicators are read as three separate claims and never merged: a figure with a year and a source, a blank with a reason it does not apply, and an axis the country has no reading on at all.</p>
+  <p>${matchable(data).length} countries carry a full policy matrix and can be the answer. A further ${data.countries.length - matchable(data).length} are measured but not yet coded: they appear on the axes above and cannot be the country you built, because there is nothing to match against. A country's own indicators are read as three separate claims and never merged: a figure with a year and a source, a blank with a reason it does not apply, and an axis the country has no reading on at all.</p>
   <p>The page opens on a guess made from your browser's timezone, so the first thing you see is a country rather than an empty form. The starting country picker changes it.</p>`;
 }
 

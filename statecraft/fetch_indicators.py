@@ -38,7 +38,14 @@ CODES = {
 }
 
 COUNTRY_CODES = ["AU", "NZ", "US", "GB", "CA", "DE", "FR", "NL", "DK", "SE",
-                 "NO", "FI", "EE", "CH", "SG", "JP", "KR", "IL", "CL", "AE"]
+                 "NO", "FI", "EE", "CH", "SG", "JP", "KR", "IL", "CL", "AE",
+                 # The twenty-five measured-only countries added 2026-08-30.
+                 # Taiwan is deliberately in the list and is expected to return
+                 # nothing on all four: it is not a World Bank member and has no
+                 # rows in the API. That is a gap to be reported, not filled.
+                 "IE", "IT", "ES", "PT", "AT", "BE", "GR", "CZ", "PL", "SK",
+                 "SI", "HR", "LT", "LV", "IS", "LU", "HU", "UY", "TW", "SA",
+                 "QA", "KW", "MT", "CY", "PA"]
 
 # The World Bank uses GB where the matrix uses UK.
 ALIAS = {"GB": "UK"}

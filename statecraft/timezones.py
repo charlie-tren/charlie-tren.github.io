@@ -1,14 +1,22 @@
-"""IANA timezone to ISO country code, for the twenty matrix countries plus the
+"""IANA timezone to ISO country code, for the twenty MATCHABLE countries plus the
 common zones that resolve to them.
 
 This is how the page opens on the visitor's own country with no IP lookup, no
 third-party request and no API key. A timezone outside this map falls back to
 Australia, which is stated in the copy rather than hidden.
+
+ONLY MATCHABLE COUNTRIES ARE ELIGIBLE. The page opens ON a country, meaning it
+loads that country's thirteen choices as the starting design, so a measured-only
+country here would open the page on an empty selection. The measured-only rows
+carry their own `timezones` because the field is a fact about the country, and
+the filter below is what stops those zones becoming a starting point. Some of
+them are already mapped by hand to a matchable neighbour in the update block:
+Europe/Dublin resolves to the United Kingdom, which is a guess and says so.
 """
 
 from countries import COUNTRIES
 
-TIMEZONES = {tz: c["code"] for c in COUNTRIES for tz in c["timezones"]}
+TIMEZONES = {tz: c["code"] for c in COUNTRIES if c["matchable"] for tz in c["timezones"]}
 
 # Zones that are not a country's primary zone but resolve to one in the set.
 # THESE ARE APPROXIMATIONS and the page must not pretend otherwise. A visitor in

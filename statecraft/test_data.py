@@ -126,14 +126,73 @@ def test_thirteen_domains_in_a_fixed_order():
 from countries import COUNTRIES
 
 
+def matchable():
+    """The countries that can be the answer. The ONE definition of the split.
+
+    Everything downstream reads this rather than testing `choices` itself, so
+    there is a single place the rule lives and no caller has to decide whether
+    an empty dict means 'measured only' or 'someone forgot'."""
+    return [c for c in COUNTRIES if c["matchable"]]
+
+
+def measured_only():
+    return [c for c in COUNTRIES if not c["matchable"]]
+
+
+def test_matchable_agrees_with_choices():
+    """`matchable` is stored rather than derived so the page can read it without
+    inferring intent from an empty dict. Stored means it can drift, and the two
+    disagreeing is the fault that would let a country with no matrix be offered
+    as an answer. The field must also BE a bool: a truthy string would pass every
+    other check in this file and be wrong."""
+    for c in COUNTRIES:
+        m = c.get("matchable")
+        assert isinstance(m, bool), (
+            f"{c['code']} matchable is {m!r}, which is not True or False")
+        assert m == bool(c["choices"]), (
+            f"{c['code']} is matchable={m} but has {len(c['choices'])} choices; "
+            f"those are the same claim said twice and they disagree")
+    print(f"\n{len(matchable())} matchable, {len(measured_only())} measured only: "
+          f"{sorted(c['code'] for c in measured_only())}")
+
+
 def test_every_country_has_exactly_one_option_in_every_domain():
+    """THIRTEEN CELLS OR NONE, never some.
+
+    A matchable country must cover every domain exactly once, which is what the
+    match counts. A measured-only country must have NO cells at all: it is on the
+    page for its axes and is not an answer.
+
+    Half a matrix is neither and is a real fault, so it fails here rather than
+    being waved through by a weaker 'some or none'. It is the shape a
+    part-finished country would have, and it would silently score a low match
+    against every design instead of being excluded."""
     domain_ids = {d["id"] for d in DOMAINS}
     options_by_domain = {d["id"]: {o["id"] for o in d["options"]} for d in DOMAINS}
-    for c in COUNTRIES:
+    for c in matchable():
         assert set(c["choices"]) == domain_ids, (
             f"{c['code']} covers {sorted(set(c['choices']))}, needs {sorted(domain_ids)}")
         for dom, opt in c["choices"].items():
             assert opt in options_by_domain[dom], f"{c['code']}.{dom} = {opt} is not an option"
+    for c in measured_only():
+        assert c["choices"] == {}, (
+            f"{c['code']} is measured only but carries {sorted(c['choices'])}; a "
+            f"part-filled matrix is a fault, not a third kind of country")
+
+
+def test_a_measured_only_country_can_never_be_a_match():
+    """The match is a count over `choices`, so a country with none of them can
+    only ever score zero. That is NOT enough on its own: rank() sorts by count
+    and then by axis distance, so on a design that matches no country in any
+    domain the whole field ties at zero and a measured-only country can win the
+    tiebreak. The guard that stops it is in match.js and is asserted against the
+    real ranker in test_logic.mjs. What is asserted HERE is the data half: that
+    no measured-only country carries anything the count could read."""
+    for c in measured_only():
+        assert not c["choices"], f"{c['code']} would score against the matrix"
+        assert c["indicators"], (
+            f"{c['code']} has no choices and no indicators either, so it is on the "
+            f"page for nothing")
 
 
 def test_option_country_tags_name_a_country_that_holds_that_option():
@@ -141,7 +200,9 @@ def test_option_country_tags_name_a_country_that_holds_that_option():
     country is in the matrix, the matrix must agree. Tags naming countries
     outside the twenty are allowed and are how the menu proves it is not
     invented, so they are skipped rather than failed."""
-    in_matrix = {c["code"]: c["choices"] for c in COUNTRIES}
+    in_matrix = {c["code"]: c["choices"] for c in matchable()}
+    unmatched = {c["code"] for c in measured_only()}
+    outside = set()
     for d in DOMAINS:
         for o in d["options"]:
             for code in o["countries"]:
@@ -149,18 +210,34 @@ def test_option_country_tags_name_a_country_that_holds_that_option():
                     assert in_matrix[code][d["id"]] == o["id"], (
                         f"{o['id']} is tagged {code}, but the matrix has {code}.{d['id']} "
                         f"= {in_matrix[code][d['id']]}")
+                else:
+                    # A measured-only country is OUTSIDE the matrix, exactly like a
+                    # country not in the file at all: its row cannot confirm or
+                    # contradict the tag. Indexing it would have raised KeyError on
+                    # an empty dict, which is a crash rather than a finding, so it
+                    # is named here instead of silently skipped.
+                    outside.add(code)
+    print(f"\ntags outside the matrix: "
+          f"{sorted(outside & unmatched)} measured only, "
+          f"{sorted(outside - unmatched)} not in the file")
 
 
 def test_every_country_carries_a_non_tax_revenue():
     """A state's income is tax plus non-tax income, and the second term is a fact
     about the country a visitor inherits rather than a policy they choose. The
-    field must be PRESENT on all twenty, not merely present where it is
+    field must be PRESENT on all forty-five, not merely present where it is
     interesting: a missing key would read as zero, and zero is a claim.
 
     Non-negative because a negative would mean the state pays to exist, which is
-    not a thing this model can price. Nineteen of twenty are genuinely zero to
-    the nearest tenth of a point of GDP. The UAE is the case the field exists for
-    and its sourcing is on its own row."""
+    not a thing this model can price. Nineteen of the twenty matchable countries
+    are genuinely zero to the nearest tenth of a point of GDP. The UAE is the
+    case the field exists for and its sourcing is on its own row.
+
+    ALL TWENTY-FIVE MEASURED-ONLY ROWS ARE 0.0 BECAUSE THE FIGURE COULD NOT BE
+    SOURCED, not because it is believed to be nothing. Saudi Arabia, Qatar and
+    Kuwait are the UAE's case and the reasoning is written out above their rows
+    in countries.py. The field is inert for them in any event: it is inherited
+    from the STARTING country and a measured-only country can never be one."""
     for c in COUNTRIES:
         assert "nonTaxRevenue" in c, (
             f"{c['code']} has no nonTaxRevenue; a missing key would be read as "
@@ -187,16 +264,53 @@ def test_every_indicator_cell_is_sourced_and_dated():
                     f"say why, and 'no data' is a missing key instead")
 
 
+COVERAGE_FLOOR = 0.89
+
+
 def test_indicator_coverage_is_reported_not_assumed():
     """Not every cell exists, and that is allowed. What is not allowed is nobody
     knowing how many are missing. This prints the denominator and fails only
-    below the floor agreed at launch."""
+    below the floor.
+
+    THE FLOOR MOVED FROM 0.85 TO 0.89 ON 30/08/2026, WHICH IS A RISE. Adding
+    twenty-five measured-only countries was expected to pull coverage down and
+    did not. The launch twenty read 269 of 280 (96.1%) and the twenty-five read
+    301 of 350 (86.0%), for 570 of 630 (90.5%) overall. The floor sits just under
+    the real figure, so a later addition that quietly drops coverage fails here
+    rather than being absorbed by a slack threshold.
+
+    WHERE THE SIXTY MISSING CELLS ARE. Fifty-eight of the sixty are the six
+    OECD-sourced axes (tax_take, social_housing, pension_spend, family_spend,
+    redistribution, bargaining) on countries the OECD does not publish. The other
+    two are Taiwan's education_spend and health_public. By country: TW 8, then AE
+    6, SA 6, QA 6, KW 6, CY 6, SG 5, UY 5, PA 5, MT 4, HR 2, GR 1. Forty-nine of
+    the sixty are on the new measured-only rows and eleven are the launch set's
+    own long-standing gaps, which are Singapore and the UAE.
+
+    TAIWAN IS THE THINNEST ROW IN THE FILE at 6 of 14. It is in none of the World
+    Bank, WHO GHED or OECD collections, all three of which exclude it, so what it
+    has comes from the six that do cover it: Ember, V-Dem, SIPRI, UN DESA,
+    Gallagher and the World Prison Brief.
+
+    NOT ONE CELL WAS INVENTED TO HOLD THIS NUMBER. A missing key is 'no data',
+    the page omits that track, and that is the correct outcome."""
     axis_ids = [a["id"] for a in AXES]
-    total = len(COUNTRIES) * len(axis_ids)
-    have = sum(1 for c in COUNTRIES for a in axis_ids if a in c["indicators"])
-    print(f"\nindicator coverage: {have} of {total} cells "
-          f"({100 * have / total:.0f}%)")
-    assert have / total >= 0.85, (
+
+    def share(group):
+        total = len(group) * len(axis_ids)
+        have = sum(1 for c in group for a in axis_ids if a in c["indicators"])
+        return have, total
+
+    have, total = share(COUNTRIES)
+    mh, mt = share(matchable())
+    oh, ot = share(measured_only())
+    print(f"\nindicator coverage: {have} of {total} cells ({100 * have / total:.1f}%)")
+    print(f"  matchable      {mh} of {mt} ({100 * mh / mt:.1f}%)")
+    print(f"  measured only  {oh} of {ot} ({100 * oh / ot:.1f}%)")
+    thin = sorted((sum(1 for a in axis_ids if a in c["indicators"]), c["code"])
+                  for c in COUNTRIES)[:5]
+    print("  thinnest rows  " + ", ".join(f"{code} {n}/14" for n, code in thin))
+    assert have / total >= COVERAGE_FLOOR, (
         f"coverage has fallen to {have}/{total}; the reveal plots empty tracks below this")
 
 
@@ -291,10 +405,15 @@ def test_every_effective_axis_value_fits_inside_its_axis_bounds():
 from timezones import TIMEZONES, FALLBACK
 
 
-def test_every_mapped_timezone_names_a_country_in_the_matrix():
-    codes = {c["code"] for c in COUNTRIES}
+def test_every_mapped_timezone_names_a_matchable_country():
+    """The page OPENS on the country a timezone resolves to, which means loading
+    that country's thirteen choices as the starting design. A measured-only
+    country here would open the page on nothing at all, so timezones.py filters
+    the map to matchable countries and this is the check on that filter."""
+    codes = {c["code"] for c in matchable()}
     for tz, code in TIMEZONES.items():
-        assert code in codes, f"{tz} maps to {code}, which is not in the matrix"
+        assert code in codes, (
+            f"{tz} maps to {code}, which cannot be a starting country")
     assert FALLBACK in codes
 
 

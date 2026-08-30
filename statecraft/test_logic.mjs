@@ -10,13 +10,22 @@ import {
   spendOf, startingState, REFORM_POOL, TAX,
 } from './budget.js';
 import { applyChange, ladder, setLock, setTaxRate } from './cascade.js';
-import { axisValues, rank } from './match.js';
+import { axisValues, rank, matchable } from './match.js';
 import { encode, decode, countryForTimezone, detectTimezone } from './state.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const data = JSON.parse(readFileSync(join(here, 'data.json'), 'utf8'));
 
 const byCode = (code) => data.countries.find((c) => c.code === code);
+
+// THE COUNTRIES THAT CAN BE AN ANSWER. data.countries is forty-five rows and
+// only twenty of them carry a policy matrix; the other twenty-five are measured
+// only, added 30/08/2026, and have `choices: {}`. Every test below that starts
+// from a country's choices, encodes them into a URL, or asks what a country
+// matches has to run over THIS list, because the other twenty-five have nothing
+// to start from. Reading it through match.js rather than filtering here keeps
+// one definition of the split in one place.
+const MATCHABLE = matchable(data);
 const domain = (id) => data.domains.find((d) => d.id === id);
 const option = (domainId, optionId) => domain(domainId).options.find((o) => o.id === optionId);
 const one = (n) => Math.round(n * 10) / 10;
@@ -26,16 +35,77 @@ const stateOf = (code, overrides = {}) => ({ ...startingState(data, code), ...ov
 
 test('data.json has the shape the modules assume', () => {
   assert.equal(data.domains.length, 13);
-  assert.equal(data.countries.length, 20);
+  assert.equal(data.countries.length, 45);
+  assert.equal(MATCHABLE.length, 20);
+  assert.equal(data.countries.filter((c) => !c.matchable).length, 25);
   assert.equal(data.axes.length, 14);
   assert.equal(data.fallback, 'AU');
+
+  // The flag and the matrix are the same claim said twice, and the JS reads the
+  // flag. Python asserts this too; it is repeated here because it is what every
+  // guard below depends on and data.json is the artefact the page actually loads.
+  for (const c of data.countries) {
+    assert.equal(typeof c.matchable, 'boolean', `${c.code} matchable is not a boolean`);
+    assert.equal(
+      c.matchable,
+      Object.keys(c.choices).length > 0,
+      `${c.code} is matchable=${c.matchable} with ${Object.keys(c.choices).length} choices`,
+    );
+    if (c.matchable) assert.equal(Object.keys(c.choices).length, 13, `${c.code} needs 13 choices`);
+  }
+  assert.equal(data.fallback, 'AU');
+});
+
+// A MEASURED-ONLY COUNTRY IS NEVER AN ANSWER.
+//
+// The count alone does not deliver this. rank() sorts by matched descending and
+// then by distance ascending, so on a design that agrees with no country in any
+// domain the entire field ties at zero and the sort falls through to distance,
+// where a measured-only country with a close set of indicators wins. That design
+// is reachable: five options are tagged to no country at all, so a visitor who
+// picks the aspirational menu builds one. The guard is the filter in match.js
+// and this is the test that it is doing the work.
+test('rank never returns a country with no policy matrix', () => {
+  const unmatchable = new Set(data.countries.filter((c) => !c.matchable).map((c) => c.code));
+  assert.ok(unmatchable.size >= 25, 'there should be measured-only countries to exclude');
+
+  // Every matchable country's own design.
+  for (const country of MATCHABLE) {
+    const rows = rank(data, country.choices);
+    assert.equal(rows.length, MATCHABLE.length);
+    for (const row of rows) {
+      assert.ok(!unmatchable.has(row.code), `${row.code} was ranked against ${country.code}`);
+    }
+  }
+
+  // The adversarial case: a design nothing in the matrix shares, built from the
+  // untagged options wherever one exists. Without the filter this is where a
+  // measured-only country wins on the distance tiebreak.
+  const untagged = {};
+  for (const d of data.domains) {
+    const aspirational = d.options.find((o) => (o.countries || []).length === 0);
+    if (aspirational) untagged[d.id] = aspirational.id;
+  }
+  assert.ok(Object.keys(untagged).length >= 4, 'expected several untagged options');
+  const rows = rank(data, untagged);
+  assert.equal(rows.length, MATCHABLE.length);
+  for (const row of rows) {
+    assert.ok(!unmatchable.has(row.code), `${row.code} won an all-aspirational design`);
+  }
+
+  // An empty selection matches nothing anywhere, so every row ties at zero and
+  // the sort is decided entirely by distance. The winner must still be one of
+  // the twenty.
+  const empty = rank(data, {});
+  assert.equal(empty[0].matched, 0, 'an empty design should agree with nobody');
+  assert.ok(!unmatchable.has(empty[0].code), `${empty[0].code} won an empty design`);
 });
 
 // 1. Every country can afford to be itself.
 test('all twenty countries can afford to be themselves', () => {
   const financiallyOver = [];
 
-  for (const country of data.countries) {
+  for (const country of MATCHABLE) {
     const b = budgets(data, startingState(data, country.code));
     assert.equal(b.political.used, 0, `${country.code} should spend no political capital on its own status quo`);
     assert.equal(b.social.used, 0, `${country.code} should spend no social capital on its own status quo`);
@@ -74,7 +144,7 @@ test('all twenty countries can afford to be themselves', () => {
   // That also makes all three budgets say one thing: you inherit a country and
   // you pay for what you change.
   assert.deepEqual(financiallyOver, []);
-  assert.equal(data.countries.length, 20);
+  assert.equal(MATCHABLE.length, 20);
 
   // The floor only ever binds for the UAE. Nineteen countries raise more than
   // they spend, so their capacity is untouched by it, and this asserts that
@@ -110,7 +180,7 @@ test('all twenty countries can afford to be themselves', () => {
   // tax and appear in no tax-to-GDP series. Giving it a nonTaxRevenue would be
   // the tidier fix and it is not made here, because it would mean inventing a
   // figure rather than sourcing one.
-  const propped = data.countries
+  const propped = MATCHABLE
     .filter((c) => budgets(data, startingState(data, c.code)).financial.floored)
     .map((c) => c.code);
   assert.deepEqual(propped, ['SG', 'AE']);
@@ -180,7 +250,7 @@ test('the financial budget still binds at the top of the slider', () => {
   // is the correct behaviour of a petrostate that also taxes like Denmark, and
   // it is why the political pool has to be the binding constraint at the top
   // rather than the money.
-  const petro = realisedRevenue(TAX.MAX) + Math.max(...data.countries.map((c) => c.nonTaxRevenue));
+  const petro = realisedRevenue(TAX.MAX) + Math.max(...MATCHABLE.map((c) => c.nonTaxRevenue));
   assert.ok(petro > dearest, 'if this ever fails the non-tax figure has moved and '
     + 'the comment above is stale');
 });
@@ -237,7 +307,7 @@ test('the political pool binds when every domain is changed to its dearest optio
 
 // 4. A country matches itself on all thirteen domains and tops its own ranking.
 test('every country matches itself on all thirteen domains and ranks itself first', () => {
-  for (const country of data.countries) {
+  for (const country of MATCHABLE) {
     const rows = rank(data, country.choices);
     const self = rows.find((r) => r.code === country.code);
     assert.equal(self.matched, 13, `${country.code} should match itself on all 13`);
@@ -290,7 +360,7 @@ test('divergences name the countries that already do what you chose', () => {
 
 // 7. URL state round-trips.
 test('URL state round-trips for every country', () => {
-  for (const country of data.countries) {
+  for (const country of MATCHABLE) {
     const hash = encode(data, country.code, country.choices);
     assert.match(hash, /^[A-Z]{2}-[0-9a-z]{13}$/, `bad hash for ${country.code}: ${hash}`);
     const back = decode(data, hash);
@@ -566,8 +636,10 @@ test('the UAE capacity comes from non-tax revenue and is not attributed to tax',
   assert.equal(option('tax', 'tax_minimal').axis.tax_take, 16.0);
   assert.equal(axisValues(data, ae.selection).tax_take, 16.0);
 
-  // Nineteen of twenty carry nothing, so the field is not a fudge factor.
-  const others = data.countries.filter((c) => c.code !== 'AE');
+  // Nineteen of the twenty matchable countries carry nothing, so the field is not
+  // a fudge factor. The twenty-five measured-only rows are 0.0 as well, but for a
+  // different reason: the figure could not be sourced. See countries.py.
+  const others = MATCHABLE.filter((c) => c.code !== 'AE');
   assert.deepEqual([...new Set(others.map((c) => c.nonTaxRevenue))], [0]);
 
   // THE OIL SURVIVES A CHANGE OF TAX POLICY, which is the whole point of moving

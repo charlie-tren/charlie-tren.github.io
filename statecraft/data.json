@@ -8,8 +8,8 @@
       "unit": "% of GDP",
       "direction": "neither",
       "bounds": [
-        10,
-        60
+        8.5,
+        58
       ],
       "source": "OECD Revenue Statistics / IMF"
     },
@@ -20,7 +20,7 @@
       "unit": "%",
       "direction": "neither",
       "bounds": [
-        28,
+        29,
         92
       ],
       "source": "WHO Global Health Expenditure Database"
@@ -33,7 +33,7 @@
       "direction": "neither",
       "bounds": [
         1.8,
-        7.8
+        7.7
       ],
       "source": "World Bank"
     },
@@ -45,7 +45,7 @@
       "direction": "neither",
       "bounds": [
         0,
-        38
+        36.5
       ],
       "source": "OECD Affordable Housing Database"
     },
@@ -56,8 +56,8 @@
       "unit": "% of GDP",
       "direction": "neither",
       "bounds": [
-        2.5,
-        14.5
+        2,
+        17
       ],
       "source": "OECD Pensions at a Glance"
     },
@@ -69,7 +69,7 @@
       "direction": "lower",
       "bounds": [
         0,
-        600
+        740
       ],
       "source": "Ember / Our World in Data"
     },
@@ -93,7 +93,7 @@
       "direction": "lower",
       "bounds": [
         0,
-        30
+        25.5
       ],
       "source": "Gallagher, Election Indices"
     },
@@ -104,7 +104,7 @@
       "unit": "%",
       "direction": "neither",
       "bounds": [
-        0,
+        5,
         100
       ],
       "source": "OECD/AIAS ICTWSS"
@@ -117,7 +117,7 @@
       "direction": "neither",
       "bounds": [
         0,
-        10
+        9.5
       ],
       "source": "SIPRI Military Expenditure Database"
     },
@@ -129,7 +129,7 @@
       "direction": "neither",
       "bounds": [
         0,
-        90
+        82
       ],
       "source": "UN DESA International Migrant Stock"
     },
@@ -141,7 +141,7 @@
       "direction": "neither",
       "bounds": [
         0,
-        600
+        580
       ],
       "source": "World Prison Brief"
     },
@@ -153,7 +153,7 @@
       "direction": "neither",
       "bounds": [
         0.4,
-        3.6
+        4
       ],
       "source": "OECD Social Expenditure Database"
     },
@@ -165,7 +165,7 @@
       "direction": "neither",
       "bounds": [
         0,
-        0.3
+        0.27
       ],
       "source": "OECD Income Distribution Database"
     }
@@ -1741,6 +1741,7 @@
         "Australia/Darwin"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_mixed",
@@ -1836,6 +1837,7 @@
         "Pacific/Auckland"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_mixed",
@@ -1937,6 +1939,7 @@
         "Pacific/Honolulu"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_private",
@@ -2032,6 +2035,7 @@
         "Europe/London"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_continental",
         "healthcare": "hc_public",
@@ -2132,6 +2136,7 @@
         "America/St_Johns"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_mixed",
@@ -2227,6 +2232,7 @@
         "Europe/Berlin"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_continental",
         "healthcare": "hc_insurance",
@@ -2322,6 +2328,7 @@
         "Europe/Paris"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_continental",
         "healthcare": "hc_insurance",
@@ -2417,6 +2424,7 @@
         "Europe/Amsterdam"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_continental",
         "healthcare": "hc_insurance",
@@ -2512,6 +2520,7 @@
         "Europe/Copenhagen"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_nordic",
         "healthcare": "hc_mixed",
@@ -2607,6 +2616,7 @@
         "Europe/Stockholm"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_nordic",
         "healthcare": "hc_mixed",
@@ -2703,6 +2713,7 @@
         "Europe/Oslo"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_nordic",
         "healthcare": "hc_mixed",
@@ -2798,6 +2809,7 @@
         "Europe/Helsinki"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_nordic",
         "healthcare": "hc_mixed",
@@ -2893,6 +2905,7 @@
         "Europe/Tallinn"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_flat",
         "healthcare": "hc_mixed",
@@ -2988,6 +3001,7 @@
         "Europe/Zurich"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3083,6 +3097,7 @@
         "Asia/Singapore"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_savings",
@@ -3153,6 +3168,7 @@
         "Asia/Tokyo"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3248,6 +3264,7 @@
         "Asia/Seoul"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3343,6 +3360,7 @@
         "Asia/Jerusalem"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3438,6 +3456,7 @@
         "America/Santiago"
       ],
       "nonTaxRevenue": 0.0,
+      "matchable": true,
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_insurance",
@@ -3534,6 +3553,7 @@
         "Asia/Dubai"
       ],
       "nonTaxRevenue": 11.8,
+      "matchable": true,
       "choices": {
         "tax": "tax_minimal",
         "healthcare": "hc_mixed",
@@ -3589,6 +3609,1818 @@
         "incarceration": {
           "value": 104.0,
           "year": 2014,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        }
+      }
+    },
+    {
+      "code": "IE",
+      "name": "Ireland",
+      "timezones": [
+        "Europe/Dublin"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 21.7,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 76.6,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 2.9,
+          "year": 2021,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 12.7,
+          "year": 2016,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 2.9,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 256.5,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.97,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 5.77,
+          "year": 2024,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 34.0,
+          "year": 2017,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 0.2,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 23.1,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 103.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 1.3,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.197,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "IT",
+      "name": "Italy",
+      "timezones": [
+        "Europe/Rome"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 42.8,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 73.1,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.1,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 2.4,
+          "year": 2022,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 16.1,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 284.8,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.756,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 12.37,
+          "year": 2022,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 100.0,
+          "year": 2024,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 1.6,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 11,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 110.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 1.4,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.184,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "ES",
+      "name": "Spain",
+      "timezones": [
+        "Europe/Madrid",
+        "Atlantic/Canary"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 36.7,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 73.2,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.6,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 1.1,
+          "year": 2019,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; may also include other reduced-rent housing such as employer-provided dwellings"
+        },
+        "pension_spend": {
+          "value": 12.3,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 153.6,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.843,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 5.67,
+          "year": 2023,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 92.1,
+          "year": 2024,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 1.4,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 18.5,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 121.0,
+          "year": 2025,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 1.5,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.164,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "PT",
+      "name": "Portugal",
+      "timezones": [
+        "Europe/Lisbon",
+        "Atlantic/Madeira",
+        "Atlantic/Azores"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 35.1,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 61.4,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.6,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 1.1,
+          "year": 2021,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 12.9,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 127.9,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.899,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 5.46,
+          "year": 2025,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 83.3,
+          "year": 2023,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 1.5,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 10.8,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 120.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 1.3,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.184,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "AT",
+      "name": "Austria",
+      "timezones": [
+        "Europe/Vienna"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 43.4,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 76.5,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 5.3,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 23.6,
+          "year": 2019,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; main residence dwellings only"
+        },
+        "pension_spend": {
+          "value": 14.0,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 116.9,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.918,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 3.24,
+          "year": 2024,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 98.0,
+          "year": 2024,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 1.0,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 25.5,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 105.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 2.6,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.203,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "BE",
+      "name": "Belgium",
+      "timezones": [
+        "Europe/Brussels"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 42.6,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 73.7,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 6.3,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 4.2,
+          "year": 2018,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 10.7,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 149.8,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.969,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 3.83,
+          "year": 2024,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 100.0,
+          "year": 2024,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 1.3,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 20,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 113.0,
+          "year": 2025,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 2.8,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.232,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "GR",
+      "name": "Greece",
+      "timezones": [
+        "Europe/Athens"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 39.8,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 50.6,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 3.4,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "pension_spend": {
+          "value": 16.2,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 315.1,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.81,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 8.97,
+          "year": 2023,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 13.1,
+          "year": 2017,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 3.1,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 14.2,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 111.0,
+          "year": 2025,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 1.7,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.187,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "CZ",
+      "name": "Czechia",
+      "timezones": [
+        "Europe/Prague"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 34.0,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 84.3,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.3,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 3.6,
+          "year": 2021,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; centrally provided dwellings only"
+        },
+        "pension_spend": {
+          "value": 8.2,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 401.5,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.947,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 10.34,
+          "year": 2021,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 43.2,
+          "year": 2024,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 1.9,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 9.5,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 174.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 2.2,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.186,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "PL",
+      "name": "Poland",
+      "timezones": [
+        "Europe/Warsaw"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 36.6,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 77.1,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.3,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 6.6,
+          "year": 2020,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 11.2,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 588.6,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.917,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 6.46,
+          "year": 2023,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 11.6,
+          "year": 2023,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 4.2,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 4.5,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 194.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 3.3,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.185,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "SK",
+      "name": "Slovakia",
+      "timezones": [
+        "Europe/Bratislava"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 35.6,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 78.9,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.7,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 2.5,
+          "year": 2021,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 7.4,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 94.9,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.765,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 7.44,
+          "year": 2023,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 27.6,
+          "year": 2024,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 2.0,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 5.9,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 152.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 2.1,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.2,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "SI",
+      "name": "Slovenia",
+      "timezones": [
+        "Europe/Ljubljana"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 38.3,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 73.2,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 5.3,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 4.7,
+          "year": 2018,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 10.6,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 183.3,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.691,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 11.49,
+          "year": 2022,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 83.1,
+          "year": 2016,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 1.3,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 14.9,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 69.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 1.9,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.182,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "HR",
+      "name": "Croatia",
+      "timezones": [
+        "Europe/Zagreb"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 38.4,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 84.0,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.1,
+          "year": 2021,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "pension_spend": {
+          "value": 8.9,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 158.5,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.743,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 7.04,
+          "year": 2024,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "military_burden": {
+          "value": 1.8,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 13.6,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 128.0,
+          "year": 2024,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 2.0,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.149,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "LT",
+      "name": "Lithuania",
+      "timezones": [
+        "Europe/Vilnius"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 33.1,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 65.0,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.3,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 0.8,
+          "year": 2020,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; share computed against the previous year's total dwelling stock"
+        },
+        "pension_spend": {
+          "value": 6.5,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 138.4,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.917,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 13.58,
+          "year": 2024,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 29.0,
+          "year": 2023,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 3.1,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 6.1,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 154.0,
+          "year": 2025,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 2.8,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.15,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "LV",
+      "name": "Latvia",
+      "timezones": [
+        "Europe/Riga"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 34.9,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 59.5,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.3,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 1.9,
+          "year": 2016,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 7.5,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 138.8,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.932,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 10.65,
+          "year": 2022,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 25.8,
+          "year": 2022,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 3.3,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 11.8,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 188.0,
+          "year": 2025,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 2.9,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.133,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "IS",
+      "name": "Iceland",
+      "timezones": [
+        "Atlantic/Reykjavik"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 36.9,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 83.6,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 7.3,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 11.1,
+          "year": 2016,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; may also include student housing"
+        },
+        "pension_spend": {
+          "value": 2.9,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 27.8,
+          "year": 2024,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.846,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 5.31,
+          "year": 2024,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 90.0,
+          "year": 2024,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 0.0,
+          "year": 2025,
+          "source": "SIPRI via Our World in Data, military expenditure % of GDP; SIPRI records Iceland at zero for every year of the series, it has no standing armed forces"
+        },
+        "foreign_born": {
+          "value": 25.1,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 36.0,
+          "year": 2025,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 3.8,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.137,
+          "year": 2019,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "LU",
+      "name": "Luxembourg",
+      "timezones": [
+        "Europe/Luxembourg"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 41.5,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 86.9,
+          "year": 2024,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 3.7,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 1.6,
+          "year": 2011,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 8.6,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 123.4,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.957,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 5.96,
+          "year": 2023,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 57.3,
+          "year": 2022,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 1.0,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 51.2,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 110.0,
+          "year": 2025,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 3.2,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.165,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "HU",
+      "name": "Hungary",
+      "timezones": [
+        "Europe/Budapest"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 34.4,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 73.4,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 3.8,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 2.6,
+          "year": 2018,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "pension_spend": {
+          "value": 7.6,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"
+        },
+        "grid_carbon": {
+          "value": 163.0,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.493,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 11.76,
+          "year": 2022,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "bargaining": {
+          "value": 20.4,
+          "year": 2022,
+          "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"
+        },
+        "military_burden": {
+          "value": 2.2,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 7.1,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 206.0,
+          "year": 2025,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        },
+        "family_spend": {
+          "value": 2.3,
+          "year": 2021,
+          "source": "OECD SOCX, public expenditure on family benefits (cash and in kind) % of GDP"
+        },
+        "redistribution": {
+          "value": 0.143,
+          "year": 2023,
+          "source": "OECD Income Distribution Database, market Gini less disposable Gini, whole population"
+        }
+      }
+    },
+    {
+      "code": "UY",
+      "name": "Uruguay",
+      "timezones": [
+        "America/Montevideo"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 27.3,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 72.4,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.8,
+          "year": 2023,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "grid_carbon": {
+          "value": 80.4,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.931,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 2.14,
+          "year": 2024,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "military_burden": {
+          "value": 2.3,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 4.7,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 449.0,
+          "year": 2024,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        }
+      }
+    },
+    {
+      "code": "TW",
+      "name": "Taiwan",
+      "timezones": [
+        "Asia/Taipei"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "grid_carbon": {
+          "value": 633.2,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.838,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 8.19,
+          "year": 2024,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "military_burden": {
+          "value": 2.1,
+          "year": 2025,
+          "source": "SIPRI via Our World in Data, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 4.9,
+          "year": 2024,
+          "source": "UN DESA via Our World in Data, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 280.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        }
+      }
+    },
+    {
+      "code": "SA",
+      "name": "Saudi Arabia",
+      "timezones": [
+        "Asia/Riyadh"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "health_public": {
+          "value": 77.8,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.5,
+          "year": 2023,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "grid_carbon": {
+          "value": 692.0,
+          "year": 2024,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.092,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": null,
+          "year": 2025,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election; no entry",
+          "na_reason": "no national legislative election contested by party lists, so vote shares and seat shares cannot be compared"
+        },
+        "military_burden": {
+          "value": 7.3,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 40.3,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 140.0,
+          "year": 2019,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        }
+      }
+    },
+    {
+      "code": "QA",
+      "name": "Qatar",
+      "timezones": [
+        "Asia/Qatar"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "health_public": {
+          "value": 83.0,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 3.2,
+          "year": 2020,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "grid_carbon": {
+          "value": 581.5,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.055,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": null,
+          "year": 2025,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election; no entry",
+          "na_reason": "no national legislative election contested by party lists, so vote shares and seat shares cannot be compared"
+        },
+        "military_burden": {
+          "value": 6.5,
+          "year": 2022,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 76.7,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 69.0,
+          "year": 2022,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        }
+      }
+    },
+    {
+      "code": "KW",
+      "name": "Kuwait",
+      "timezones": [
+        "Asia/Kuwait"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "health_public": {
+          "value": 88.5,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 6.4,
+          "year": 2024,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "grid_carbon": {
+          "value": 635.3,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.532,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": null,
+          "year": 2025,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election; no entry",
+          "na_reason": "no national legislative election contested by party lists, so vote shares and seat shares cannot be compared"
+        },
+        "military_burden": {
+          "value": 4.8,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 67.3,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 101.0,
+          "year": 2023,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        }
+      }
+    },
+    {
+      "code": "MT",
+      "name": "Malta",
+      "timezones": [
+        "Europe/Malta"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 28.7,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 66.0,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.7,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "social_housing": {
+          "value": 5.5,
+          "year": 2011,
+          "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"
+        },
+        "grid_carbon": {
+          "value": 484.0,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.829,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 2.24,
+          "year": 2022,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "military_burden": {
+          "value": 0.5,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 37,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 120.0,
+          "year": 2025,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        }
+      }
+    },
+    {
+      "code": "CY",
+      "name": "Cyprus",
+      "timezones": [
+        "Asia/Nicosia",
+        "Asia/Famagusta"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "health_public": {
+          "value": 76.8,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 4.7,
+          "year": 2022,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "grid_carbon": {
+          "value": 489.0,
+          "year": 2025,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.812,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 6.44,
+          "year": 2021,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "military_burden": {
+          "value": 1.6,
+          "year": 2024,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 14.9,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 117.0,
+          "year": 2026,
+          "source": "World Prison Brief, prison population rate per 100,000 of national population"
+        }
+      }
+    },
+    {
+      "code": "PA",
+      "name": "Panama",
+      "timezones": [
+        "America/Panama"
+      ],
+      "nonTaxRevenue": 0.0,
+      "matchable": false,
+      "choices": {},
+      "indicators": {
+        "tax_take": {
+          "value": 11.3,
+          "year": 2024,
+          "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"
+        },
+        "health_public": {
+          "value": 51.2,
+          "year": 2023,
+          "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
+        },
+        "education_spend": {
+          "value": 2.5,
+          "year": 2023,
+          "source": "World Bank, government expenditure on education % of GDP"
+        },
+        "grid_carbon": {
+          "value": 221.2,
+          "year": 2024,
+          "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"
+        },
+        "expression": {
+          "value": 0.812,
+          "year": 2025,
+          "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"
+        },
+        "disproportionality": {
+          "value": 9.77,
+          "year": 2024,
+          "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"
+        },
+        "military_burden": {
+          "value": 1.0,
+          "year": 1999,
+          "source": "World Bank / SIPRI, military expenditure % of GDP"
+        },
+        "foreign_born": {
+          "value": 10.6,
+          "year": 2024,
+          "source": "UN DESA / World Bank, international migrant stock % of population"
+        },
+        "incarceration": {
+          "value": 522.0,
+          "year": 2026,
           "source": "World Prison Brief, prison population rate per 100,000 of national population"
         }
       }
