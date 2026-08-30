@@ -18,6 +18,13 @@ countries had no matrix to open on. They have one now, so the guesses are gone
 and each zone resolves to its own country through the comprehension above. A
 hand mapping that outlives the reason for it is worse than no mapping, because
 it keeps overriding the right answer silently.
+
+FOUR MORE WENT ON 30/08/2026 for the same reason. Europe/Prague and
+Europe/Warsaw resolved to Germany and Europe/Riga and Europe/Vilnius to Estonia,
+because Czechia, Poland, Latvia and Lithuania had no matrix. All four now do, and
+each zone resolves to its own country through the comprehension above. Bratislava,
+Ljubljana, Zagreb and Budapest never had a hand mapping and now resolve on their
+own as well, so the whole Central European and Baltic block is exact.
 """
 
 from countries import COUNTRIES
@@ -30,10 +37,6 @@ TIMEZONES = {tz: c["code"] for c in COUNTRIES if c["matchable"] for tz in c["tim
 # Do not extend this map into a claim of accuracy it cannot support, and delete
 # an entry as soon as its own country becomes matchable.
 TIMEZONES.update({
-    "Europe/Prague": "DE",
-    "Europe/Warsaw": "DE",
-    "Europe/Riga": "EE",
-    "Europe/Vilnius": "EE",
     "Asia/Hong_Kong": "SG",
     "Asia/Kuala_Lumpur": "SG",
     "Asia/Shanghai": "SG",

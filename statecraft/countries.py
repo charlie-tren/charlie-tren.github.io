@@ -1,16 +1,17 @@
-"""Forty-five countries, of which twenty-nine are matchable.
+"""Forty-five countries, of which thirty-seven are matchable.
 
 TWO KINDS OF COUNTRY LIVE IN THIS FILE and the difference is `matchable`.
 
 A MATCHABLE country has all thirteen `choices` and can be the answer the reveal
-gives. There are twenty-nine of them: the launch twenty, plus Ireland, Italy,
-Spain, Portugal, Austria, Belgium, Greece, Luxembourg and Iceland, coded on
-30/08/2026 out of the measured-only pool.
+gives. There are thirty-seven of them: the launch twenty, plus Ireland, Italy,
+Spain, Portugal, Austria, Belgium, Greece, Luxembourg and Iceland, and then
+Czechia, Poland, Slovakia, Slovenia, Croatia, Lithuania, Latvia and Hungary, all
+coded on 30/08/2026 out of the measured-only pool.
 
 A MEASURED-ONLY country has `choices == {}` and `matchable == False`. It can
 appear on an axis and it counts towards indicator coverage, but it can never be
 a nearest neighbour, because there is nothing to match against. Twenty-five were
-added on 30/08/2026 and nine of them were coded the same day, leaving sixteen.
+added on 30/08/2026 and seventeen of them were coded the same day, leaving eight.
 This is the build-out predicted below: the axes are
 automatable and went wide first, and the matrix follows one country at a time
 because every matrix cell is a human judgement with a citation behind it.
@@ -27,8 +28,8 @@ next to that country's name, so it is checked against a source before it ships.
 
 `nonTaxRevenue` is income the state has that is not tax, in % of GDP, and it is
 inherited from the starting country rather than chosen. A state's income is tax
-PLUS non-tax income, and for twenty-eight of the twenty-nine matchable countries the
-second term rounds to nothing. On the sixteen measured-only rows it is 0.0
+PLUS non-tax income, and for thirty-six of the thirty-seven matchable countries the
+second term rounds to nothing. On the eight measured-only rows it is 0.0
 because it could not be sourced, which is a different claim and is written out
 above those rows. For the UAE it is most of the budget. Total capacity is the realised
 value of the chosen tax rate plus this, floored at what the country already
@@ -38,39 +39,57 @@ spends. See budget.js.
 "does not apply" and must never be confused with a missing key, which is "no
 data". Both are handled separately in the reveal.
 
-WHERE THE MATRIX IS THIN, re-measured 2026-08-30 over all 406 pairs of the
-twenty-nine matchable countries. The measured-only rows have no matrix and cannot
+WHERE THE MATRIX IS THIN, re-measured 30/08/2026 over all 666 pairs of the
+thirty-seven matchable countries. The measured-only rows have no matrix and cannot
 appear. No pair matches on all thirteen, so no country is unreachable in the
 reveal, but the count of shared cells on the closest pairs is the margin the
 whole match turns on:
 
+    11  SI HR   retirement, justice
     11  SE NO   work, defence
     11  IT PT   education, justice
     11  BE LU   retirement, work
-    10  SE FI   work, immigration, family
-    10  NZ EE   tax, education, immigration
-    10  IT ES   healthcare, immigration
-    10  GR LU   defence, immigration, family
-    10  ES PT   healthcare, immigration, justice
-    10  ES LU / ES BE / DE BE / AU NZ
+    10  SE FI / PL LU / PL HU / NZ LV / NZ EE / NL SI / NL HR / IT HR
 
-ADDING NINE EUROPEAN COUNTRIES DID NOT MOVE THE CEILING, which stayed at eleven,
-but it added two more pairs to it. Sweden and Norway are separated by work and
-defence. Italy and Portugal are separated by education, Italian universities
-charge up to EUR 4,000 a year against Portugal's EUR 697 cap, and by justice,
-Portugal's drug decriminalisation. Belgium and Luxembourg are separated by
-retirement and work. Those six cells carry more weight than any others in this
-file and are the first to check if a pair ever reaches thirteen. Re-run the pair
-script after any cell change: a correction that looks local can quietly push a
-pair to thirteen.
+ADDING THE CENTRAL EUROPEAN AND BALTIC BLOCK DID NOT MOVE THE CEILING, which
+stayed at eleven, and added one pair to it. Slovenia and Croatia are separated by
+retirement, Croatia kept the compulsory funded second pillar it legislated in
+2002 and Slovenia's is voluntary, and by justice, 69 per 100,000 against 128.
+Those two cells carry more weight than any others in this block and are the first
+to check if the pair ever reaches thirteen. Re-run the pair script after any cell
+change: a correction that looks local can quietly push a pair to thirteen.
 
-WHY SO MUCH OF THE NEW BLOCK AGREES. Seven of the nine sit on tax_continental,
-all nine on sp_hate_limits and all nine on vo_proportional, and none of that is
-laziness. Every EU member of the set runs heavy payroll-funded social insurance,
-every one is bound by Framework Decision 2008/913/JHA to criminalise incitement
-to hatred, and every one elects its parliament proportionally. The discrimination
-therefore comes from the domains where Europe genuinely differs: retirement,
-housing, defence, immigration and family.
+WHY SO MUCH OF EUROPE AGREES. Seven of the nine western European countries added
+first sit on tax_continental, and five of the eight added second; all seventeen
+sit on sp_hate_limits; and fifteen of the seventeen on vo_proportional. None of
+that is laziness. Every EU member of the set runs heavy payroll-funded social
+insurance, every one is bound by Framework Decision 2008/913/JHA to criminalise
+incitement to hatred, and almost every one elects its parliament proportionally.
+The discrimination therefore comes from the domains where Europe genuinely
+differs: retirement, housing, defence, immigration and family. In the eight coded
+second it also comes from energy, where Slovakia runs most of its grid on
+reactors, and from voting, where Hungary and Lithuania run mixed systems whose
+majoritarian tier holds more seats than the list tier.
+
+WHERE THE MENU DOES NOT REACH THIS BLOCK, recorded because it is information
+about the menu rather than a failure of it. Four features of post-communist
+policy have no option:
+
+  a mandatory funded second pillar alongside an EARNINGS-RELATED state pension.
+  re_super pairs compulsory saving with a MEANS-TESTED pension, which is the
+  Australian model. Croatia and Latvia are coded there for the compulsory-saving
+  limb and the caveat is on their rows.
+
+  mass subsidised OWNER-OCCUPATION. Hungary puts people into ownership with
+  forgivable loans and a 3% state mortgage, and the only option with a state that
+  does that is ho_singapore, which requires the state to build the flats.
+
+  a large volunteer army inside an alliance. Poland spends 4.5% of GDP on
+  defence, the most in NATO, and de_alliance says the standing force is modest.
+
+  a mixed-member electoral system. Hungary and Lithuania are coded vo_fptp on the
+  tier that holds more seats and on measured disproportionality, which is the
+  domain's axis.
 """
 
 COUNTRIES = [
@@ -1473,8 +1492,67 @@ COUNTRIES = [
      }},
     {"code": "CZ", "name": "Czechia", "timezones": ["Europe/Prague"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # SOCIAL CONTRIBUTIONS ARE 45.5% OF CZECH TAX REVENUE, the
+                 # highest share in the OECD against an average of 25.5%, so
+                 # "funded by payroll" is more literally true here than of
+                 # Germany or France. The flat 15% income tax ENDED in 2021 and
+                 # a 23% band now applies above CZK 1,762,812, so tax_flat is
+                 # out: it wants one rate on all income. The limb this cell fits
+                 # least is "high": the take is 34.0% of GDP against 38.7 for
+                 # the four countries the option was written on.
+                 # https://www.oecd.org/en/publications/revenue-statistics-2025_3a264267-en/full-report/tax-revenue-trends-1965-2024_98c75833.html
+                 # https://www.accace.com/tax-guideline-for-the-czech-republic/
+                 # Checked 2026-08-30.
+                 "tax": "tax_continental",
+                 # Seven competing health insurance funds, compulsory
+                 # membership, one free switch a year, and none may refuse an
+                 # applicant. The public share is 84.3%, the highest of the
+                 # eight coded here.
+                 "healthcare": "hc_insurance",
+                 # Public universities charge no tuition in Czech, and 71% of
+                 # upper secondary pupils are in vocational programmes, level
+                 # with Slovenia and above the Netherlands and Austria, which
+                 # already hold this option. The apprenticeship limb of the
+                 # detail is the weak one: Czech VET is mostly school-based
+                 # technical schools rather than dual apprenticeships.
+                 # https://ec.europa.eu/eurostat/web/products-eurostat-news/-/edn-20201109-1
+                 "education": "ed_vocational",
+                 # THE ONE OF THE EIGHT WITH A REAL CASH HOUSING INSTRUMENT.
+                 # OECD PH3.1 names Czechia in the nine countries spending over
+                 # 0.5% of GDP on housing allowances, alongside Iceland,
+                 # Ireland, Norway and Sweden, which are already on this option.
+                 # The social rental stock is only 3.6%, so the state's tool is
+                 # money and not building, which is exactly what ho_subsidy
+                 # says. Greece is on ho_market because it has neither.
+                 # https://webfs.oecd.org/els-com/Affordable_Housing_Database/PH3-1-Public-spending-on-housing-allowances.pdf
+                 # Checked 2026-08-30.
+                 "housing": "ho_subsidy",
+                 # No mandatory funded pillar: the 2013 second pillar was
+                 # abolished in 2016 and the third pillar is voluntary and
+                 # state-subsidised. The state pension is formally
+                 # earnings-related, though OECD Pensions at a Glance 2025 calls
+                 # the benefit structure "very compressed" and the gap between a
+                 # low and an average earner one of the highest in the OECD, so
+                 # re_flat was the near miss. Earnings still decide the amount,
+                 # and 8.2% of GDP sits on re_earnings rather than re_flat.
+                 # https://www.oecd.org/en/publications/pensions-at-a-glance-2025-country-notes_8a53ef12-en/czechia_dd7aae9d-en.html
+                 "retirement": "re_earnings",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 "voting": "vo_proportional", "work": "wo_minimum",
+                 "defence": "de_alliance",
+                 # Five years of residence to naturalise and dual nationality
+                 # permitted since 2014, which is the Germany end of the range
+                 # rather than the Austria end.
+                 # https://www.europarl.europa.eu/RegData/etudes/BRIE/2025/769502/EPRS_BRI(2025)769502_EN.pdf
+                 "immigration": "im_open",
+                 "justice": "ju_tough",
+                 # The child allowance is means-tested and the universal piece
+                 # is the parental allowance. Places for under-threes are scarce
+                 # and dear, so fa_universal's childcare limb fails the same way
+                 # it failed for Ireland.
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 34.0, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1507,8 +1585,83 @@ COUNTRIES = [
      }},
     {"code": "PL", "name": "Poland", "timezones": ["Europe/Warsaw"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # Progressive 12%/32% income tax, and social security funds
+                 # take 37.8% of revenue from taxes and contributions, which is
+                 # the German neighbourhood. Not tax_flat: Poland has never had
+                 # a flat personal rate.
+                 # https://www.oecd.org/en/publications/revenue-statistics-2025_3a264267-en/full-report/tax-revenue-trends-1965-2024_98c75833.html
+                 "tax": "tax_continental",
+                 # One national fund, the NFZ, financed by a compulsory
+                 # earmarked health contribution rather than out of general
+                 # taxation. A single carrier is not a bar: France and Korea are
+                 # already on this option with one payer each.
+                 "healthcare": "hc_insurance",
+                 # Free full-time study at public universities and a
+                 # means-tested maintenance grant. Vocational enrolment is 58.9%
+                 # at medium level, above the EU average but ten points below
+                 # the four coded here on ed_vocational.
+                 # https://op.europa.eu/webpub/eac/education-and-training-monitor/en/country-reports/poland.html
+                 "education": "ed_free",
+                 # THE CELL THAT DISAGREES MOST WITH ITS OWN AXIS IN THIS
+                 # COUNTRY. Poland holds 6.6% of its stock as municipal social
+                 # rental, twice ho_market's derived 3.35 and the highest of the
+                 # eight coded here, and the state builds through the SIM and
+                 # TBS schemes. But ho_subsidy is the wrong shape for the same
+                 # reason: its claim is cash help INSTEAD of building, and
+                 # Poland's dodatek mieszkaniowy is small while its building
+                 # programmes are not. Coded on the larger of the two claims,
+                 # which is that housing is overwhelmingly privately owned:
+                 # owner-occupation is about 87% after the 1990s privatisation.
+                 "housing": "ho_market",
+                 # WHAT IS TRUE NOW, not what was legislated in 1999. The OFE
+                 # second pillar was stripped of its bond holdings in 2014 and
+                 # made opt-in, and PPK from 2019 is auto-enrolment with an
+                 # opt-out, so nothing here is compulsory saving. The pillar
+                 # that pays is the ZUS notional defined contribution account,
+                 # which is earnings-related, and 11.2% of GDP is the second
+                 # highest of the eight.
+                 "retirement": "re_earnings",
+                 # In the EU ETS, so emissions are priced. The grid is 588.6
+                 # g/kWh, the dirtiest in the EU and the highest value on this
+                 # option by 90 points: pricing carbon is not the same claim as
+                 # having decarbonised, which is the spread check_spread.py
+                 # already records against en_carbon_tax.
+                 "energy": "en_carbon_tax",
+                 "speech": "sp_hate_limits", "voting": "vo_proportional",
+                 # Bargaining coverage of 11.6%, the lowest of the eight and one
+                 # of the lowest in the OECD, against a statutory minimum wage.
+                 "work": "wo_minimum",
+                 # NATO, no conscription since 2009, and the cell that fits
+                 # worst in this row: Poland spends 4.5% of GDP on defence, the
+                 # highest in NATO, against this option's 1.9, and "so the
+                 # standing force is modest" is plainly false. The other four
+                 # are worse. See the note in the report: a large volunteer army
+                 # inside an alliance has no option on this menu.
+                 # https://notesfrompoland.com/2025/09/02/poland-largest-relative-defence-spender-in-nato-new-figures-confirm/
+                 "defence": "de_alliance",
+                 # Three years of permanent residence to naturalise, the
+                 # shortest of the eight, and dual nationality permitted.
+                 # https://www.europarl.europa.eu/RegData/etudes/BRIE/2025/769502/EPRS_BRI(2025)769502_EN.pdf
+                 "immigration": "im_open",
+                 # From 1 October 2023 the 15 and 25 year terms were replaced by
+                 # a single term of up to 30 years and absolute life without
+                 # parole was introduced. 194 per 100,000.
+                 # https://jdp-law.pl/en/newsletter/latest-changes-to-the-polish-criminal-code/
+                 "justice": "ju_tough",
+                 # 800+ pays PLN 800 a month for every child with no means test,
+                 # and the PIT-0 law signed on 16 October 2025 exempts parents
+                 # of two or more children from income tax altogether. Large
+                 # transfers plus tax relief for big families is two of
+                 # fa_pronatal's three limbs, and both were legislated as a
+                 # natalist programme. fa_universal fails on childcare, which
+                 # Poland does not cap. Loans forgiven per child is the limb
+                 # Hungary has and Poland does not.
+                 # https://www.gov.pl/web/family/family-800
+                 # https://www.nextbigfuture.com/2025/10/poland-has-no-income-tax-to-parents-to-2-or-more-children.html
+                 # Checked 2026-08-30.
+                 "family": "fa_pronatal"},
      "indicators": {
          "tax_take": {"value": 36.6, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1541,8 +1694,63 @@ COUNTRIES = [
      }},
     {"code": "SK", "name": "Slovakia", "timezones": ["Europe/Bratislava"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # The famous 2004 flat tax is GONE: a 25% band was added in
+                 # 2013 and the rates are 19% and 25%. Social contributions are
+                 # 42.6% of total tax revenue, third highest in the OECD behind
+                 # Czechia and Slovenia.
+                 # https://www.oecd.org/en/publications/revenue-statistics-2025_3a264267-en/full-report/tax-revenue-trends-1965-2024_98c75833.html
+                 "tax": "tax_continental",
+                 # Three competing health insurers, two of them private and for
+                 # profit, compulsory membership, no refusals.
+                 "healthcare": "hc_insurance",
+                 # Free full-time study at public universities, and 68% of upper
+                 # secondary pupils in vocational programmes, level with the
+                 # Netherlands and Austria.
+                 # https://ec.europa.eu/eurostat/web/products-eurostat-news/-/edn-20201109-1
+                 "education": "ed_vocational",
+                 # 2.5% social rental stock and about 93% owner-occupation after
+                 # the 1990s privatisation. OECD PH3.1 records that Slovak
+                 # housing allowance spending is not even reported.
+                 "housing": "ho_market",
+                 # A points-based earnings-related first pillar. The second
+                 # pillar has been automatic entry with a two-year opt-out since
+                 # 2023, which is auto-enrolment and not compulsory saving; that
+                 # is the same reading applied to Ireland's 2025 scheme above,
+                 # so this is not re_super.
+                 "retirement": "re_earnings",
+                 # NUCLEAR IS MOST OF SLOVAK POWER, which is true of only three
+                 # countries and France is the other one in this file. Five
+                 # VVER-440 reactors at Bohunice and Mochovce ran 61% of
+                 # generation in 2024 and the fleet is heading for about 70%
+                 # with Mochovce 4. The grid is 94.9 g/kWh, the cleanest of the
+                 # eight coded here by 44 points. Slovakia also runs a
+                 # deposit-return scheme, but en_deposit's first limb is a clean
+                 # grid AND that option is Germany's at 329.7, so the nuclear
+                 # claim is the specific one.
+                 # https://world-nuclear.org/information-library/country-profiles/countries-o-s/slovakia
+                 # https://balkangreenenergynews.com/slovakia-set-to-overtake-france-in-nuclear-power-share-as-it-readies-to-start-up-new-reactor/
+                 # Checked 2026-08-30.
+                 "energy": "en_nuclear",
+                 "speech": "sp_hate_limits", "voting": "vo_proportional",
+                 "work": "wo_minimum", "defence": "de_alliance",
+                 # Eight years of continuous permanent residence to naturalise.
+                 # https://www.europarl.europa.eu/RegData/etudes/BRIE/2025/769502/EPRS_BRI(2025)769502_EN.pdf
+                 "immigration": "im_controlled",
+                 # 152 per 100,000, high by west European standards, but the
+                 # February 2024 criminal code amendment cut penalties for a
+                 # list of offences, roughly halved limitation periods and
+                 # widened suspended sentences. A country that has just
+                 # legislated shorter sentences is not ju_tough, and this is the
+                 # cell that separates Slovakia from Czechia at 174.
+                 # https://www.osw.waw.pl/en/publikacje/analyses/2024-02-12/slovakia-controversial-changes-to-criminal-law-and-a-dispute
+                 "justice": "ju_standard",
+                 # The child allowance is universal, paid regardless of income,
+                 # unlike the means-tested schemes in Czechia, Slovenia and
+                 # Croatia.
+                 # https://ec.europa.eu/social/main.jsp?catId=1127&intPageId=4761&langId=en
+                 "family": "fa_universal"},
      "indicators": {
          "tax_take": {"value": 35.6, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1575,8 +1783,53 @@ COUNTRIES = [
      }},
     {"code": "SI", "name": "Slovenia", "timezones": ["Europe/Ljubljana"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # Five income tax bands running to 50%, the steepest of the
+                 # eight, and social contributions at 42.9% of total tax
+                 # revenue, second highest in the OECD. A 38.3% take.
+                 # https://www.oecd.org/en/publications/revenue-statistics-2025_3a264267-en/full-report/tax-revenue-trends-1965-2024_98c75833.html
+                 "tax": "tax_continental",
+                 # Compulsory insurance through a single carrier, the ZZZS. The
+                 # complementary insurance that covered co-payments was
+                 # abolished on 1 January 2024 and replaced by a flat COMPULSORY
+                 # health contribution, so the compulsion got stronger, not
+                 # weaker. Out-of-pocket spending is 13%, below the EU average.
+                 # https://eurohealthobservatory.who.int/publications/i/slovenia-health-system-summary-2024
+                 "healthcare": "hc_insurance",
+                 # Free full-time study, 5.3% of GDP on education, the highest
+                 # of the eight, and 71% of upper secondary pupils in vocational
+                 # programmes, the joint highest in the EU with Czechia.
+                 # https://ec.europa.eu/eurostat/web/products-eurostat-news/-/edn-20201109-1
+                 "education": "ed_vocational",
+                 "housing": "ho_market",
+                 # Earnings-related state pension at 10.6% of GDP. The second
+                 # pillar is voluntary and occupational except for hazardous
+                 # occupations, which is what separates this cell from Croatia's
+                 # and Latvia's compulsory funded accounts.
+                 "retirement": "re_earnings",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 "voting": "vo_proportional",
+                 # 83.1% bargaining coverage, the highest in central and eastern
+                 # Europe and inside the band of the countries already on this
+                 # option.
+                 "work": "wo_bargaining",
+                 # NATO, no conscription, and 1.3% of GDP, the lowest military
+                 # burden in the alliance.
+                 "defence": "de_alliance",
+                 # Ten years of residence and no dual nationality in the
+                 # standard case, which is the Austrian test applied above.
+                 # https://www.europarl.europa.eu/RegData/etudes/BRIE/2025/769502/EPRS_BRI(2025)769502_EN.pdf
+                 "immigration": "im_controlled",
+                 # 69 per 100,000, the lowest of the eight by 59 points and in
+                 # the band of Norway, Denmark and the Netherlands rather than
+                 # its neighbours. This is one of the two cells separating
+                 # Slovenia from Croatia.
+                 "justice": "ju_rehab",
+                 # The child allowance is income-tested. What Slovenia does have
+                 # is cheap near-universal childcare, but fa_universal needs
+                 # both limbs and the payment limb fails.
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 38.3, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1609,8 +1862,64 @@ COUNTRIES = [
      }},
     {"code": "HR", "name": "Croatia", "timezones": ["Europe/Zagreb"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # A 38.4% take, the highest of the eight, on a two-band income
+                 # tax whose rates municipalities set between 15% and 23% and
+                 # 25% and 34%, plus 20% employee and 16.5% employer
+                 # contributions. Not flat and not middling.
+                 # https://taxsummaries.pwc.com/croatia/individual/other-taxes
+                 "tax": "tax_continental",
+                 # Compulsory insurance through a single carrier, the HZZO, with
+                 # supplementary cover for co-payments alongside it. 84.0%
+                 # public share.
+                 "healthcare": "hc_insurance",
+                 # Free full-time study at public universities, and 69% of upper
+                 # secondary pupils in vocational programmes.
+                 # https://ec.europa.eu/eurostat/web/products-eurostat-news/-/edn-20201109-1
+                 "education": "ed_vocational",
+                 # About 91% owner-occupation and no OECD social rental figure
+                 # at all, which is the Greek pattern: the measured cell is
+                 # absent because there is essentially nothing to measure. The
+                 # state's housing instrument is subsidised purchase through
+                 # APN, not rental.
+                 "housing": "ho_market",
+                 # THE MENU HAS NO OPTION FOR AN EARNINGS-RELATED STATE PENSION
+                 # PLUS A COMPULSORY FUNDED ACCOUNT, and Croatia is one of the
+                 # two countries here that kept the mandatory second pillar it
+                 # legislated. 5% of gross wage goes into an individual account
+                 # for everyone born after 1962, and since 2021 there is a
+                 # means-tested national allowance for over-65s with no pension
+                 # entitlement. re_super is coded for the compulsory-saving limb
+                 # that no other option carries; its "means-tested pension" limb
+                 # describes the residual allowance, not the main pillar, and
+                 # 8.9% of GDP is well above the option's derived 6.4. This is
+                 # one of the two cells separating Croatia from Slovenia.
+                 # https://cms.law/en/int/expert-guides/cms-expert-guide-to-pensions/croatia
+                 # Checked 2026-08-30.
+                 "retirement": "re_super",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 "voting": "vo_proportional",
+                 # Coverage reached 60.4% of the workforce by December 2024,
+                 # up from 46.5% in 2021, on twelve sectoral agreements that
+                 # extend by law to every employee in the sector, members or
+                 # not. That is the mechanism this option names.
+                 # https://www.oecd.org/en/publications/oecd-reviews-of-labour-market-and-social-policies-croatia-2025_90b78cc3-en/full-report/making-best-use-of-croatia-s-labour-force-potential_65e5096c.html
+                 "work": "wo_bargaining",
+                 # NATO at 1.8% of GDP. Croatia legislated a two-month
+                 # compulsory basic military training in 2025 with the first
+                 # intake in 2026, which is nowhere near de_conscript's twelve
+                 # months and large standing force.
+                 "defence": "de_alliance",
+                 # Eight years of residence and renunciation of the previous
+                 # citizenship in the standard case.
+                 # https://www.europarl.europa.eu/RegData/etudes/BRIE/2025/769502/EPRS_BRI(2025)769502_EN.pdf
+                 "immigration": "im_controlled",
+                 "justice": "ju_standard",
+                 # The doplatak za djecu is explicitly means-tested: a household
+                 # over the income threshold gets nothing.
+                 # https://www.ijf.hr/upload/files/file/ENG/newsletter/118.pdf
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 38.4, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1639,8 +1948,69 @@ COUNTRIES = [
      }},
     {"code": "LT", "name": "Lithuania", "timezones": ["Europe/Vilnius"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # NOT ESTONIA'S CELL, which is the thing to check here. The
+                 # flat rate ended in 2019: income tax is 20% and 32%, and the
+                 # 2019 reform folded employer contributions into gross pay, so
+                 # the payroll wedge sits on the employee at 19.5%. A 33.1%
+                 # take, the lowest of the eight, on progressive rates.
+                 # https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en/full-report/lithuania_a4118e07.html
+                 "tax": "tax_anglo",
+                 # Compulsory health insurance financed by an earmarked
+                 # contribution and administered by the VLK, separately from the
+                 # state budget. This is the cell that separates Lithuania from
+                 # Latvia, whose service is funded out of general taxation.
+                 "healthcare": "hc_insurance",
+                 # State-funded places are awarded on exam score and carry no
+                 # tuition, and the majority of students hold one; Eurydice puts
+                 # Lithuania in the 30% to 50% fee-paying band, with Hungary.
+                 # Latvia is the one that crosses the line at 57.2%.
+                 # https://eurydice.eacea.ec.europa.eu/data-and-visuals/national-student-fees
+                 "education": "ed_free",
+                 # 0.8% social rental stock, the lowest figure in this file, and
+                 # about 89% owner-occupation.
+                 "housing": "ho_market",
+                 # The general part of the state pension is a flat amount paid
+                 # from the state budget, and the second pillar stopped being
+                 # automatic: the Seimas ended auto-enrolment from 2026 and
+                 # opened a two-year window to 31 December 2027 for participants
+                 # to withdraw what they had saved. Saving is now encouraged and
+                 # not required, which is re_flat, and 6.5% of GDP is exactly
+                 # this option's derived value.
+                 # https://socmin.lrv.lt/en/news/reform-approved-second-pillar-pension-scheme-to-become-more-attractive-and-flexible/
+                 # Checked 2026-08-30.
+                 "retirement": "re_flat",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 # A MIXED SYSTEM AND THE MENU HAS NO CELL FOR ONE. 71 of the
+                 # 141 Seimas seats are single-member constituencies decided by
+                 # two-round majority and 70 are national list PR, allocated in
+                 # parallel rather than compensating. A majority of the seats is
+                 # majoritarian, and the Gallagher index was 13.58 in 2024, the
+                 # highest of the eight and well above vo_proportional's 4.20.
+                 # Coded on the tier that holds more seats, and on
+                 # proportionality, which is what this domain's axis measures.
+                 # The detail's "most votes wins" describes a runoff loosely.
+                 "voting": "vo_fptp",
+                 # 29.0% bargaining coverage against a statutory minimum wage.
+                 "work": "wo_minimum",
+                 # NATO. Conscription was reinstated in 2015, but 3,865 of the
+                 # 25,149 eligible men were called up in 2025, about 15%, so
+                 # "everyone serves" is false and de_conscript is out. The
+                 # burden, 3.1% of GDP, is well above this option's 1.9.
+                 # https://www.baltictimes.com/conscription_list_for_2025_published_in_lithuania/
+                 "defence": "de_alliance",
+                 # Ten years of permanent residence and no dual nationality; the
+                 # 2019 referendum to allow it failed.
+                 # https://www.europarl.europa.eu/RegData/etudes/BRIE/2025/769502/EPRS_BRI(2025)769502_EN.pdf
+                 "immigration": "im_controlled",
+                 "justice": "ju_standard",
+                 # A universal child benefit since 2018, paid for every child
+                 # under 18 with no means test, EUR 129.50 a month from January
+                 # 2026 with supplements on top for large and low-income
+                 # families.
+                 # https://ec.europa.eu/social/BlobServlet?docId=20686&langId=en
+                 "family": "fa_universal"},
      "indicators": {
          "tax_take": {"value": 33.1, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1673,8 +2043,70 @@ COUNTRIES = [
      }},
     {"code": "LV", "name": "Latvia", "timezones": ["Europe/Riga"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # ALSO NOT ESTONIA'S CELL. Latvia's flat 23% ended in 2018 and
+                 # the 2025 reform left two rates, 25.5% and 33%. A 34.9% take
+                 # on progressive rates is the middle of tax_anglo.
+                 # https://www.oecd.org/en/publications/revenue-statistics-2025_b1943459-en/latvia_96bd4e8f-en.html
+                 "tax": "tax_anglo",
+                 # THE ONE OF THE EIGHT THAT IS NOT AN INSURANCE SYSTEM. The
+                 # 2017 compulsory health insurance law was postponed and then
+                 # abandoned, and the WHO observatory classifies Latvia as a
+                 # tax-funded national health service. It is coded hc_mixed
+                 # rather than hc_public for the same reason Denmark, Sweden,
+                 # Italy and Portugal are: universal public cover with a private
+                 # tier people pay to use. Out-of-pocket spending is 27% of
+                 # health spending, among the highest in the EU, and the public
+                 # share of 59.5% is the lowest of the eight.
+                 # https://eurohealthobservatory.who.int/publications/i/latvia-health-system-summary-2024
+                 # Checked 2026-08-30.
+                 "healthcare": "hc_mixed",
+                 # MOST LATVIAN STUDENTS PAY. In 2024/25, 57.2% were private
+                 # contributors paying tuition and 42.8% held a state-budget
+                 # place awarded on entrance marks, so ed_free's "no tuition at
+                 # any level" is false for the majority. Universities set the
+                 # fee on paying places and support is largely by state-
+                 # guaranteed loan. The imperfect limb is that two in five do
+                 # study free, which no ed_market country offers.
+                 # https://stat.gov.lv/en/statistics-themes/education/higher-education/press-releases/22128-topicalities-higher-education
+                 # Checked 2026-08-30.
+                 "education": "ed_market",
+                 # 1.9% social rental stock and about 82% owner-occupation.
+                 "housing": "ho_market",
+                 # The second country here that kept its compulsory funded
+                 # pillar: 6% of the 20% pension contribution goes to a
+                 # mandatory individual account, and there is a means-tested
+                 # state social security benefit under it. Same reading and same
+                 # caveat as Croatia above: the first pillar is a notional
+                 # defined contribution scheme rather than a means-tested
+                 # pension, and 7.5% of GDP is above the option's derived 6.4.
+                 # https://www.imf.org/-/media/files/publications/selected-issues-papers/2025/english/sipea2025134.pdf
+                 "retirement": "re_super",
+                 "energy": "en_carbon_tax", "speech": "sp_hate_limits",
+                 # Pure list PR for the Saeima across five districts with a 5%
+                 # threshold, unlike Lithuania's half-majoritarian Seimas.
+                 "voting": "vo_proportional",
+                 "work": "wo_minimum",
+                 # NATO at 3.3% of GDP. The State Defence Service Law of 2023
+                 # obliges every male citizen to serve eleven months, but only
+                 # 1,076 conscripts had begun service in the first two years, so
+                 # "everyone serves" is a law rather than a fact yet and
+                 # de_conscript would over-claim.
+                 # https://www.fpri.org/article/2025/06/latvias-renewed-conscription-turns-two/
+                 "defence": "de_alliance",
+                 # Five years of permanent residence and dual nationality
+                 # permitted with EU, EEA and NATO states, which is the Estonian
+                 # cell rather than the Lithuanian one.
+                 # https://www.europarl.europa.eu/RegData/etudes/BRIE/2025/769502/EPRS_BRI(2025)769502_EN.pdf
+                 "immigration": "im_open",
+                 # 188 per 100,000, second highest of the eight.
+                 "justice": "ju_tough",
+                 # The family state benefit is paid for every child with no
+                 # means test and rises steeply with the number of children:
+                 # EUR 25 a month for one, EUR 100 each for four or more.
+                 # https://eng.lsm.lv/article/society/society/state-family-benefit-to-increase-from-next-year-in-latvia.a403442/
+                 "family": "fa_universal"},
      "indicators": {
          "tax_take": {"value": 34.9, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -1901,8 +2333,104 @@ COUNTRIES = [
      }},
     {"code": "HU", "name": "Hungary", "timezones": ["Europe/Budapest"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # THE ONLY GENUINELY FLAT RATE OF THE EIGHT. Personal income
+                 # tax is 15% on all income and the law carries it into 2026.
+                 # Estonia's cell is not copied across: Czechia, Slovakia,
+                 # Lithuania and Latvia all abolished their flat rates between
+                 # 2013 and 2025, and Poland, Slovenia and Croatia never had
+                 # one. The exemptions Hungary layers on top run the other way
+                 # from progressivity, exempting mothers of four or more
+                 # children entirely.
+                 # https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en/full-report/hungary_11ca4ba3.html
+                 # Checked 2026-08-30.
+                 "tax": "tax_flat",
+                 # Compulsory health insurance financed by an earmarked
+                 # contribution, administered by the NEAK.
+                 "healthcare": "hc_insurance",
+                 # State-funded places carry no tuition and hold the majority of
+                 # students; Eurydice puts Hungary in the 30% to 50% fee-paying
+                 # band with Lithuania. Education spending is 3.8% of GDP, the
+                 # lowest of the eight, against this option's derived 5.9: free
+                 # and underfunded are different claims and the axis measures
+                 # the second, which is the reading already applied to Greece.
+                 # https://eurydice.eacea.ec.europa.eu/data-and-visuals/national-student-fees
+                 "education": "ed_free",
+                 # 2.6% social rental stock and about 91% owner-occupation. THE
+                 # MENU HAS NO CELL FOR WHAT HUNGARY ACTUALLY DOES, which is
+                 # large-scale subsidised owner-occupation through CSOK, the
+                 # forgivable family loans and the 3% Otthon Start mortgage.
+                 # ho_singapore is the only option with a state that puts people
+                 # into ownership, and it requires the state to build the flats,
+                 # which Hungary does not. Coded on the true half: the stock is
+                 # privately owned and there is almost no social rental sector.
+                 "housing": "ho_market",
+                 # The mandatory private second pillar was effectively
+                 # nationalised in 2010 and 2011, when all but a fraction of
+                 # members were moved back into the state scheme. What is left
+                 # is a single earnings-related state pension at 7.6% of GDP.
+                 "retirement": "re_earnings",
+                 "energy": "en_carbon_tax",
+                 # THE CELL IN THIS FILE MOST AT ODDS WITH ITS OWN AXIS, and it
+                 # is recorded rather than smoothed over. Section 332 of the
+                 # Criminal Code makes incitement to violence or hatred against
+                 # a national, ethnic, racial or religious group, or a group
+                 # defined by disability or sexual orientation, an offence
+                 # carrying up to three years, which is exactly what this option
+                 # claims. Hungary measures 0.493 on V-Dem freedom of expression
+                 # and alternative sources of information, the lowest of any
+                 # country on this option by 0.20 and nearer Singapore's 0.40
+                 # than to Slovenia's 0.691. The axis is low because of media
+                 # ownership and state advertising, which is the "alternative
+                 # sources of information" half of what V-Dem measures, and not
+                 # because criticism is prosecuted: sp_restricted's detail is
+                 # false here and sp_order describes a standing public-order
+                 # speech regime Hungary does not have. Same shape as the
+                 # Japanese caveat in policies.py, and the first cell to revisit
+                 # if a sixth speech option is ever added.
+                 # https://hatecrime.osce.org/hate-crime-legislation-hungary
+                 # Checked 2026-08-30.
+                 "speech": "sp_hate_limits",
+                 # MIXED-MEMBER MAJORITARIAN, and the menu has no cell for one.
+                 # 106 of the 199 seats are single-member constituencies decided
+                 # by plurality in one round, the 93 list seats are allocated in
+                 # parallel rather than compensating, and losing and surplus
+                 # constituency votes are added to the winner's list total. In
+                 # 2022 that turned 54% of the vote into 135 of 199 seats, and
+                 # the Gallagher index reads 11.76. Coded on the tier that holds
+                 # more seats and on proportionality, which is the domain's
+                 # axis; vo_proportional's "seats match the national vote share"
+                 # is the more clearly false claim.
+                 # https://commonslibrary.parliament.uk/research-briefings/cbp-9519/
+                 # Checked 2026-08-30.
+                 "voting": "vo_fptp",
+                 # 20.4% bargaining coverage against a statutory minimum wage.
+                 "work": "wo_minimum", "defence": "de_alliance",
+                 # Eight years of residence, and the 2023 Guest Worker Act caps
+                 # third-country workers at three years with no family
+                 # reunification and no route to settlement. The liberal limb of
+                 # Hungarian citizenship law is simplified naturalisation for
+                 # ethnic Hungarians abroad, which is descent, not intake.
+                 # https://www.europarl.europa.eu/RegData/etudes/BRIE/2025/769502/EPRS_BRI(2025)769502_EN.pdf
+                 "immigration": "im_controlled",
+                 # 206 per 100,000, the highest of the eight, with life
+                 # imprisonment without parole and a three-strikes rule making
+                 # it mandatory for repeat violent offenders.
+                 # https://helsinki.hu/en/submission-to-the-ombudsman-on-the-three-strikes-rule/
+                 "justice": "ju_tough",
+                 # THE fa_pronatal TAG IN policies.py IS CORRECT AND SURVIVES.
+                 # Large transfers, the baby-expecting loan forgiven at three
+                 # children, and lifetime income tax exemption for mothers of
+                 # four or more, extended to mothers of two under forty from
+                 # 2026. All three of the option's limbs hold, which is true of
+                 # no other country in this file. The measured family_spend of
+                 # 2.3% of GDP is below the option's 2.6 because OECD SOCX
+                 # counts cash and in-kind benefits and most of Hungary's
+                 # programme is delivered as tax relief.
+                 # https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en/full-report/hungary_11ca4ba3.html
+                 # Checked 2026-08-30.
+                 "family": "fa_pronatal"},
      "indicators": {
          "tax_take": {"value": 34.4, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
