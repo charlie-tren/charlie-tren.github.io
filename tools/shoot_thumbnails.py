@@ -210,6 +210,14 @@ ANCHOR = {
     # #stripPanel: "Distributions" draws density curves now, not the strip of dots
     # it did when this file was first written.
     "shortfall": {"selector": "#quadPanel", "context_above": 0.10},
+    # The top of the page is a wordmark, a country picker and three meters. The
+    # product is the choosing: option cards with a policy, who already does it,
+    # and what it costs. The first shot, 30/08/2026, reached only the "Tax and
+    # Redistribution" heading before the frame ran out, which is the same
+    # masthead-and-dropdowns card this ANCHOR table exists to prevent.
+    # Framed on the first domain with enough context above to keep the meters in,
+    # since the meters are what make the options read as choices with a price.
+    "statecraft": {"selector": "#dom_tax", "context_above": 0.34},
 }
 
 VIEW = {"width": 1280, "height": 800}
