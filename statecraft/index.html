@@ -70,7 +70,9 @@
        cost is at the top of the page. -->
   <section class="meters" id="meters" aria-label="What you have left to spend">
     <div class="meter" id="m-financial">
-      <span class="m-name">Budget</span>
+      <!-- The unit lives in the name, not in the figure. As "24.7 of 33.8% of
+           GDP" the number wrapped at 390px and left "of GDP" alone on a line. -->
+      <span class="m-name">Budget, % of GDP</span>
       <span class="m-fig" id="f-financial"></span>
       <span class="m-track"><span class="m-fill" id="b-financial"></span></span>
     </div>

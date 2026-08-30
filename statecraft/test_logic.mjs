@@ -96,10 +96,24 @@ test('all twenty countries can afford to be themselves', () => {
   //
   // A THIRD would be worth looking at, because the next closest is Israel at 3.3
   // points of headroom and nothing else is inside 4.
+  // THE SET CHANGED when starting rates moved from the option's hand-set number
+  // to each country's own measured tax take, and both moves are explicable
+  // rather than drift.
+  //
+  // France came OFF the floor: it measures 46.1 against the 43.0 its option
+  // carried, so it now raises more than the model spends and pays for itself.
+  //
+  // Singapore went ON: it taxes 12.1% of GDP, the lowest measured figure in the
+  // set by a wide margin, while the model prices its choices at 19.5. That is
+  // the same shape as the UAE's oil rather than a fault. Singapore funds
+  // healthcare and housing largely out of compulsory CPF savings, which are not
+  // tax and appear in no tax-to-GDP series. Giving it a nonTaxRevenue would be
+  // the tidier fix and it is not made here, because it would mean inventing a
+  // figure rather than sourcing one.
   const propped = data.countries
     .filter((c) => budgets(data, startingState(data, c.code)).financial.floored)
     .map((c) => c.code);
-  assert.deepEqual(propped, ['FR', 'AE']);
+  assert.deepEqual(propped, ['SG', 'AE']);
 
   const ae = budgets(data, startingState(data, 'AE'));
   assert.equal(ae.financial.capacity, 32.0, 'floored at what the UAE already spends');
@@ -424,13 +438,21 @@ test('the domain just moved is never cut by its own cascade', () => {
   const start = startingState(data, 'AU');
 
   // Work to a universal basic income is the single dearest move on the board:
-  // 1.8 to 9.0, which is 7.2 of GDP against 9.1 of headroom.
+  // 1.8 to 9.0, which is 7.2 of GDP against Australia's 4.8 of headroom. It does
+  // not fit, so it pays for itself out of everything else, and work itself must
+  // survive its own cascade.
+  //
+  // This used to fit with room to spare, on 9.1 of headroom, because every
+  // country tagged to `tax_anglo` started at that option's hand-set 34 rather
+  // than at its own measured take. Australia measures 29.5. The old headroom is
+  // why the cascade fired on only 3.7% of moves and the mechanic was invisible.
   const first = applyChange(data, start, 'work', 'wo_ubi');
-  assert.equal(first.state.selection.work, 'wo_ubi');
-  assert.deepEqual(first.cuts, [], 'that one still fits, so nothing has paid for it yet');
+  assert.equal(first.state.selection.work, 'wo_ubi', 'the moved domain must stick');
+  assert.ok(first.cuts.length > 0, 'and something else must have paid for it');
+  assert.equal(cutOn(first, 'work'), null, 'the moved domain must not be cut');
 
-  // Now the rate comes down underneath it and the cascade has to find real money.
-  const r = setTaxRate(data, first.state, 30);
+  // Now the rate comes down underneath it and the cascade has to find more.
+  const r = setTaxRate(data, first.state, 26);
   assert.ok(r.cuts.length > 0, 'the rate cut should have forced a cascade');
   assert.equal(cutOn(r, 'tax'), null, 'the tax slider must not cut itself');
 

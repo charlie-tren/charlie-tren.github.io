@@ -147,8 +147,8 @@ function paintKey() {
   document.getElementById('chartKey').innerHTML = `
     <span class="ck"><i class="ck-sw ck-you" aria-hidden="true"></i>Your design</span>
     <span class="ck"><i class="ck-sw ck-curve" aria-hidden="true"></i>What your tax funds</span>
-    <span class="ck"><i class="ck-sw ck-band" aria-hidden="true"></i>More than that</span>
-    <span class="ck ck-ramp"><span class="ck-n">Already yours:</span>
+    <span class="ck"><i class="ck-sw ck-band" aria-hidden="true"></i>More than it funds</span>
+    <span class="ck ck-ramp"><span class="ck-n">Policies you share:</span>
       <i class="ck-sw ch-s0" aria-hidden="true"></i><span class="ck-n">0 to 4</span>
       <i class="ck-sw ch-s1" aria-hidden="true"></i><span class="ck-n">5 to 7</span>
       <i class="ck-sw ch-s2" aria-hidden="true"></i><span class="ck-n">8 to 11</span>
@@ -474,7 +474,7 @@ function render(change) {
   const startChoices = baseline();
   const cutIds = new Set((change && change.cuts ? change.cuts : []).map((c) => c.domain));
 
-  paintMeter('financial', b.financial, `${one(b.financial.used)} of ${one(b.financial.capacity)}% of GDP`);
+  paintMeter('financial', b.financial, `${one(b.financial.used)} of ${one(b.financial.capacity)}`);
   paintMeter('political', b.political, `${b.political.used} of ${b.political.capacity}`);
   paintMeter('social', b.social, `${b.social.used} of ${b.social.capacity}`);
 
