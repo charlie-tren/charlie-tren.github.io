@@ -1,0 +1,453 @@
+/* Statecraft.
+ *
+ * House rule, learned the hard way: every custom property is declared in all
+ * FOUR places below. An undefined custom property does not fall back, it
+ * inherits, and an inherited colour once shipped a 1.6:1 contrast button that
+ * nobody noticed for two days. If you add a var, add it four times. */
+
+:root {
+  --font-title: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bg: #fbfbfa;
+  --panel: #ffffff;
+  --raised: #f4f5f6;
+  --ink: #1a1c1f;
+  --soft: #5a6068;
+  --faint: #767d86;
+  --rule: #e2e5e9;
+  --track: #eef0f2;
+  --accent: #2f6fb2;
+  --on-accent: #ffffff;
+  --over: #9c5539;
+  --agree: #4f7d5e;
+}
+
+:root[data-theme="light"] {
+  --font-title: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bg: #fbfbfa;
+  --panel: #ffffff;
+  --raised: #f4f5f6;
+  --ink: #1a1c1f;
+  --soft: #5a6068;
+  --faint: #767d86;
+  --rule: #e2e5e9;
+  --track: #eef0f2;
+  --accent: #2f6fb2;
+  --on-accent: #ffffff;
+  --over: #9c5539;
+  --agree: #4f7d5e;
+}
+
+:root[data-theme="dark"] {
+  --font-title: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bg: #0f1319;
+  --panel: #171c24;
+  --raised: #1d232c;
+  --ink: #e6e9ee;
+  --soft: #8a94a3;
+  --faint: #5d6675;
+  --rule: #262d38;
+  --track: #222933;
+  --accent: #82a8ca;
+  --on-accent: #0f1319;
+  --over: #c98a68;
+  --agree: #7fae8d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --font-title: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --bg: #0f1319;
+    --panel: #171c24;
+    --raised: #1d232c;
+    --ink: #e6e9ee;
+    --soft: #8a94a3;
+    --faint: #5d6675;
+    --rule: #262d38;
+    --track: #222933;
+    --accent: #82a8ca;
+    --on-accent: #0f1319;
+    --over: #c98a68;
+    --agree: #7fae8d;
+  }
+}
+
+* { box-sizing: border-box; }
+
+/* No overflow-x:hidden on html or body: it turns the root into a scroll
+   container and silently kills position:sticky on the meters. The page is
+   kept off a sideways scroll by min-width:0 on every flex and grid child
+   instead, and that is measured at 390px. */
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1.0625rem/1.6 var(--font-body);
+}
+
+.wrap {
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-title);
+  font-weight: 400;
+  color: var(--ink);
+}
+
+a { color: var(--accent); }
+
+/* Header ------------------------------------------------------------------ */
+
+header.wrap { padding-top: 1rem; }
+
+.topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--soft);
+  font: 400 0.85rem/1 var(--font-body);
+  cursor: pointer;
+}
+
+.toggle:hover { color: var(--ink); border-color: var(--faint); }
+
+.toggle .dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--soft);
+}
+
+/* Hard right at every width. space-between is not enough: a right-aligned
+   element is only right of what shares its LINE, so the moment this header
+   wraps on a phone it would snap back to the left. */
+.home {
+  margin-left: auto;
+  color: var(--soft);
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.home:hover { color: var(--ink); }
+
+/* The arrow is muted like its label. An accent-coloured glyph in a grey line
+   is the brightest thing on the page and it points away from it. */
+.home .back { color: var(--faint); }
+
+h1 {
+  margin: 1.4rem 0 0.35rem;
+  font-size: clamp(2rem, 6vw, 2.7rem);
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  margin: 0 0 1.4rem;
+  max-width: 34rem;
+  color: var(--soft);
+  font-size: 1.05rem;
+}
+
+/* Picker ------------------------------------------------------------------ */
+
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.6rem;
+  background: var(--panel);
+}
+
+.pick-lab {
+  color: var(--soft);
+  font-size: 0.9rem;
+}
+
+#startSel {
+  flex: 1 1 10rem;
+  min-width: 0;
+  max-width: 18rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.4rem;
+  background: var(--raised);
+  color: var(--ink);
+  font: 400 0.95rem/1.3 var(--font-body);
+}
+
+.ghost {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--soft);
+  font: 400 0.85rem/1.3 var(--font-body);
+  cursor: pointer;
+}
+
+.ghost:hover { color: var(--ink); border-color: var(--faint); }
+
+/* Meters ------------------------------------------------------------------ */
+
+.meters {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem 0.9rem;
+  margin: 0.9rem 0 1.6rem;
+  padding: 0.75rem 1rem 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.6rem;
+  background: var(--panel);
+}
+
+/* Column flex with the bar pushed to the bottom, so the three bars stay on
+   one line even when a figure wraps to two. */
+.meter {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.m-name {
+  display: block;
+  color: var(--soft);
+  font-size: 0.78rem;
+}
+
+.m-fig {
+  display: block;
+  margin: 0.1rem 0 0.35rem;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.m-track {
+  display: block;
+  margin-top: auto;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.m-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.meter.over .m-name,
+.meter.over .m-fig { color: var(--over); }
+.meter.over .m-fill { background: var(--over); }
+
+/* Outside the sticky bar on purpose: it is read once, and pinning it would
+   cost two lines of screen for the whole scroll. */
+.m-note {
+  margin: -1.1rem 0 1.6rem;
+  color: var(--faint);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+/* Domains ----------------------------------------------------------------- */
+
+.domain {
+  margin: 0 0 1.6rem;
+  padding: 0 0 0 0.9rem;
+  border-left: 3px solid var(--rule);
+}
+
+.domain.changed { border-left-color: var(--accent); }
+
+.d-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.6rem;
+  margin: 0 0 0.7rem;
+}
+
+.d-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.chip {
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.opts {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.opt {
+  display: block;
+  position: relative;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.5rem;
+  background: var(--panel);
+  cursor: pointer;
+}
+
+.opt:hover { border-color: var(--faint); }
+
+.opt input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.o-body { display: block; }
+
+.o-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.5rem;
+}
+
+.o-label {
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+
+.o-start {
+  color: var(--agree);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.o-detail {
+  display: block;
+  margin: 0.15rem 0 0.3rem;
+  color: var(--soft);
+  font-size: 0.9rem;
+}
+
+.o-where {
+  display: block;
+  color: var(--faint);
+  font-size: 0.82rem;
+}
+
+.o-cost {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.9rem;
+  margin-top: 0.35rem;
+  color: var(--faint);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.opt.on {
+  border-color: var(--accent);
+  background: var(--raised);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.opt input:focus-visible + .o-body {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 0.3rem;
+}
+
+/* Finish ------------------------------------------------------------------ */
+
+.finish { margin: 0 0 2.5rem; }
+
+.primary {
+  padding: 0.65rem 1.1rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 400 1rem/1.3 var(--font-body);
+  cursor: pointer;
+}
+
+.primary[disabled] {
+  border-color: var(--rule);
+  background: var(--track);
+  color: var(--faint);
+  cursor: not-allowed;
+}
+
+.blocked {
+  margin: 0.5rem 0 0;
+  min-height: 1.2rem;
+  color: var(--over);
+  font-size: 0.85rem;
+}
+
+/* Any pane that scrolls keeps its bar hidden and stays swipeable. */
+.scroller {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroller::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+@media (max-width: 34rem) {
+  body { font-size: 1rem; }
+  .wrap { padding: 0 1rem; }
+
+  /* Once the header wraps, the back-link needs telling again. */
+  .home { align-self: flex-end; }
+
+  /* On a phone the label and the button pair up and the select takes the
+     whole width, rather than the button sitting alone on a row of its own. */
+  .picker { row-gap: 0.6rem; }
+  .pick-lab { order: 1; }
+  .ghost { order: 2; margin-left: auto; }
+  #startSel { order: 3; flex: 1 1 100%; max-width: none; }
+
+  .meters {
+    gap: 0.4rem 0.6rem;
+    padding: 0.6rem 0.75rem 0.7rem;
+  }
+  .m-name { font-size: 0.7rem; }
+  .m-fig { font-size: 0.8rem; }
+  .m-note { font-size: 0.74rem; }
+  .d-head h2 { font-size: 1.2rem; }
+}

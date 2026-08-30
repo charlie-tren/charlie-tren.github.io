@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Statecraft</title>
+
+<!-- The meta description and the visible lede below are ONE line, kept
+     identical word for word. Google has ignored this site's description tag
+     before and built its own snippet from the page, so the wanted sentence
+     lives in both places. Change one, change the other. -->
+<meta name="description" content="Design a country one policy at a time, pay for every choice, and find out which real country you built.">
+
+<meta property="og:title" content="Statecraft">
+<meta property="og:description" content="Design a country one policy at a time, and find out which real one you built.">
+<meta property="og:image" content="https://charlietrenorden.com/statecraft/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
+</head>
+<body>
+
+<header class="wrap">
+  <!-- Toggle first, back-link last, matching the rest of the estate. The
+       back-link is pushed right by margin-left:auto rather than by
+       space-between, because once this line wraps on a phone there is nothing
+       left on the line to be right of. -->
+  <div class="topline">
+    <button class="toggle" id="themeBtn" type="button" aria-label="Switch between light and dark theme"><span class="dot" aria-hidden="true"></span><span id="themeLbl">Dark</span></button>
+    <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
+  </div>
+  <h1>Statecraft</h1>
+  <p class="lede">Design a country one policy at a time, pay for every choice, and find out which real country you built.</p>
+</header>
+
+<main class="wrap">
+
+  <section class="picker" aria-label="Starting country">
+    <label class="pick-lab" for="startSel">Start from</label>
+    <select id="startSel"></select>
+    <button class="ghost" id="resetBtn" type="button">Reset to this country</button>
+  </section>
+
+  <!-- Sticky, because the whole point of a choice is what it costs and the
+       cost is at the top of the page. -->
+  <section class="meters" id="meters" aria-label="What you have left to spend">
+    <div class="meter" id="m-financial">
+      <span class="m-name">Budget</span>
+      <span class="m-fig" id="f-financial"></span>
+      <span class="m-track"><span class="m-fill" id="b-financial"></span></span>
+    </div>
+    <div class="meter" id="m-political">
+      <span class="m-name">Political capital</span>
+      <span class="m-fig" id="f-political"></span>
+      <span class="m-track"><span class="m-fill" id="b-political"></span></span>
+    </div>
+    <div class="meter" id="m-social">
+      <span class="m-name">Public patience</span>
+      <span class="m-fig" id="f-social"></span>
+      <span class="m-track"><span class="m-fill" id="b-social"></span></span>
+    </div>
+  </section>
+
+  <p class="m-note">Tax sets the budget and every other policy spends it. Political capital and public patience are only charged on the policies you change: keeping the one your starting country already has is free.</p>
+
+  <div id="domains"></div>
+
+  <section class="finish" aria-label="Reveal">
+    <button class="primary" id="revealBtn" type="button">Show me which country this is</button>
+    <p class="blocked" id="blockedNote" role="status"></p>
+  </section>
+
+  <section id="result" hidden></section>
+
+  <section id="method"></section>
+
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
