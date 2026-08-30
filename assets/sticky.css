@@ -1,0 +1,112 @@
+/* Sticky Situations. Layered on top of room.css rather than added to it: that
+   file is the shared shell for four live pages, and this game needs enough new
+   rules that folding them in would put a lot of unused CSS on all of them.
+
+   Every colour here is a token from room.css. Nothing defines its own palette,
+   so the light and dark themes come for free and cannot drift from the estate. */
+
+.lede-s { color: var(--soft); font: 400 14.5px/1.55 ui-sans-serif, system-ui, sans-serif;
+          margin: 0 0 1.4rem; }
+
+.joinrow { display: flex; gap: .6rem; }
+.joinrow input { flex: 1; min-width: 0; padding: .7rem .85rem; border-radius: 8px;
+                 border: 1px solid var(--rule); background: var(--raised); color: var(--ink);
+                 font: 600 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+                 letter-spacing: .18em; }
+.joinrow input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+#progress { color: var(--faint); font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; }
+
+/* ---------------------------------------------------------------- the seats --
+   Who is in the room, what they have scored, and whether the round is waiting on
+   them. A tick is the whole signal: it says "done", and its absence says "not
+   yet", which is the only thing anybody needs while a round is open. */
+.seats { list-style: none; margin: 1.4rem 0 0; padding: 0;
+         display: flex; flex-wrap: wrap; gap: .5rem .8rem; }
+.seat { display: inline-flex; align-items: baseline; gap: .45rem;
+        border: 1px solid var(--rule); border-radius: 999px; padding: .3rem .75rem;
+        font: 400 13.5px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
+.seat .nm { color: var(--ink); }
+.seat .sc { font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+            color: var(--accent); }
+.seat .tick { color: var(--accent); }
+/* A watcher is in the room but not in the game: they arrived after the deal, so
+   there is no hand to give them without taking cards off somebody. */
+.seat.watching { opacity: .55; }
+.seat.watching .sc { display: none; }
+
+.waiting { color: var(--soft); font: 400 15px/1.5 ui-sans-serif, system-ui, sans-serif;
+           margin: 1.6rem 0 0; }
+
+/* --------------------------------------------------------------- the round -- */
+.modifier { display: inline-block; margin: 1.8rem 0 0;
+            border: 1px solid var(--accent); border-radius: 999px;
+            padding: .3rem .8rem; color: var(--accent);
+            font: 600 11.5px/1 ui-sans-serif, system-ui, sans-serif;
+            letter-spacing: .14em; text-transform: uppercase; }
+
+#situation { margin: 1.1rem 0 0; }
+.criteria { color: var(--soft); font: 400 15px/1.55 ui-sans-serif, system-ui, sans-serif;
+            margin: .9rem 0 0; max-width: 46ch; }
+
+.sect { font: 600 11.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .16em;
+        text-transform: uppercase; color: var(--faint); margin: 2.2rem 0 .9rem; }
+
+/* Two columns on a phone would make a ten-card hand five rows of clipped text.
+   auto-fill with a floor lets the browser take as many as the line will hold and
+   keeps every card wide enough for its longest line. */
+.cards { display: grid; gap: .55rem;
+         grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); }
+
+.card { appearance: none; -webkit-appearance: none; text-align: left; cursor: pointer;
+        border: 1px solid var(--rule); border-radius: 10px; background: var(--raised);
+        color: var(--ink); padding: .8rem .9rem; min-height: 3.4rem;
+        font: 400 15.5px/1.35 ui-sans-serif, system-ui, sans-serif;
+        transition: border-color .18s, transform .18s, background .18s; }
+.card:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-1px); }
+.card:disabled { cursor: default; }
+
+/* Your own card on the table. Not tappable, and said so in words rather than
+   only by being dimmer, because dim alone reads as broken. */
+.card.mine { border-style: dashed; opacity: .75; }
+.card .who { display: block; margin-top: .5rem;
+             font: 600 11.5px/1 ui-sans-serif, system-ui, sans-serif;
+             letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+.card.mine .who { color: var(--accent); }
+
+/* After the reveal. The count is the result, so it gets the accent and the
+   winner gets the border - one card that reads as the answer. */
+.card .votes { display: block; margin-top: .5rem;
+               font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+               color: var(--soft); }
+.card.won { border-color: var(--accent); }
+.card.won .votes { color: var(--accent); }
+
+/* The card you have played, or the one you have voted for. */
+.card.chosen { border-color: var(--accent); background: var(--grid); }
+
+.hand .card.spent { opacity: .35; }
+
+/* Armed to swap. The hand looks different from the hand you play out of,
+   because tapping a card now sends it back instead of putting it on the table
+   and there is no undo. */
+.card.swapping { border-style: dashed; border-color: var(--soft); }
+.card.swapping:hover:not(:disabled) { border-color: var(--accent); }
+
+.handhead { display: flex; align-items: baseline; justify-content: space-between;
+            gap: 1rem; flex-wrap: wrap; }
+.handhead .sect { margin-bottom: .9rem; }
+.btn.small { padding: .38rem .7rem; font-size: 13px; }
+
+#tally { margin: 1.4rem 0 0; }
+#handNote { margin: .8rem 0 0; }
+
+/* ------------------------------------------------------------ final scores -- */
+.simlist .simrow { grid-template-columns: minmax(0, 10rem) 1fr auto; }
+.simrow .simname { color: var(--ink); }
+
+@media (max-width: 560px) {
+  .cards { grid-template-columns: 1fr; }
+  .criteria { font-size: 14.5px; }
+  .seats { gap: .45rem .5rem; }
+}
