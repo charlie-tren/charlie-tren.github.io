@@ -476,7 +476,7 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 /* Domains ----------------------------------------------------------------- */
 
 .domain {
-  margin: 0 0 1.35rem;
+  margin: 0 0 2.4rem;
   padding: 0 0 0 0.9rem;
   border-left: 3px solid var(--rule);
 }
@@ -487,7 +487,7 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 /* The tax slider sets the budget every other slider spends, so it is the one
    control on the page that gets a panel of its own. */
 .domain.tax {
-  margin-bottom: 1.8rem;
+  margin-bottom: 2.8rem;
   padding: 0.85rem 1rem 1rem;
   border: 1px solid var(--rule);
   border-left: 3px solid var(--accent);
@@ -522,16 +522,37 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 
 /* Pushed hard right so the head is one line at every width: name on the left,
    the hold on the right, and the Changed pill between them when there is one. */
+/* A padlock, not the word "Protect", which read as a verb nobody asked for.
+   Square and icon-only, so the button gets its name from aria-label. 34px is
+   above the 24px minimum target size and it sits on the heading's line. */
 .lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
   margin-left: auto;
-  padding: 0.22rem 0.6rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
   border: 1px solid var(--rule);
   border-radius: 999px;
   background: transparent;
   color: var(--soft);
-  font: 400 0.76rem/1.3 var(--font-body);
-  white-space: nowrap;
   cursor: pointer;
+}
+
+.lock .lk { width: 1rem; height: 1rem; }
+.lock .lk-body { fill: currentColor; }
+.lock .lk-shackle { stroke: currentColor; }
+
+/* The shackle lifts rather than the icon being swapped, so locking reads as one
+   object moving. transform-box keeps the origin on the drawn shape. */
+.lock .lk-shackle {
+  transition: d 160ms cubic-bezier(.3,.7,.4,1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lock .lk-shackle { transition: none; }
 }
 
 .lock:hover { color: var(--ink); border-color: var(--faint); }
@@ -1260,4 +1281,47 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   .dv-pair { grid-template-columns: minmax(0, 1fr); gap: 0.7rem; }
 
   .ax-key { gap: 0.1rem 0.8rem; }
+}
+
+/* Two columns on a wide screen ---------------------------------------------
+ *
+ * The fingerprint is the thing you are editing, so on a desktop it comes out of
+ * the flow and rides alongside the sliders instead of scrolling away above
+ * them. Below this width it stays where it was, at the top, because a 26rem
+ * rail and a slider column do not both fit.
+ *
+ * The column is placed EXPLICITLY rather than by source order: the chart is
+ * first in the markup so that on a phone, and to a screen reader, it is still
+ * the opening image. Everything else is pinned to column one and flows down it.
+ *
+ * `align-items: start` matters. Grid items stretch by default, which makes the
+ * chart's grid area the full height of the sliders column and then `sticky` has
+ * nothing to stick within, so it silently does nothing. */
+@media (min-width: 1180px) {
+  main.wrap {
+    max-width: 76rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 26rem;
+    column-gap: 2.75rem;
+    align-items: start;
+  }
+
+  main.wrap > * { grid-column: 1; min-width: 0; }
+
+  /* `main.wrap > .chart`, not `.chart`. The rule above is an element plus a
+     class plus a child combinator and outscores a bare class, so written as
+     `.chart` this was silently overridden and the chart stayed in column one,
+     sticky and in the wrong place. Read the computed value, do not assume the
+     rule applied. */
+  main.wrap > .chart {
+    grid-column: 2;
+    grid-row: 1 / span 99;
+    position: sticky;
+    top: 1.25rem;
+    margin: 0;
+  }
+
+  /* The meters stay pinned at the top of their own column. Their sticky offset
+     has to clear nothing here, since the chart is in the other column. */
+  .ch-host { height: 300px; }
 }

@@ -20,7 +20,9 @@ import { encode, decode, countryForTimezone, detectTimezone } from './state.js';
 import { chartBase, drawChart } from './chart.js';
 
 const THEME_KEY = 'sc-theme';
-const RATE_STEP = 0.5;
+// 0.1, not 0.5. A 43 point range in half-point steps is 86 stops and the thumb
+// visibly stairs on a slow drag. The tax figure is shown to one decimal anyway.
+const RATE_STEP = 0.1;
 
 /* Theme -------------------------------------------------------------------
  * With nothing stored the page follows the system, so an explicit choice is
@@ -91,6 +93,11 @@ let data = null;
 let base = null;           // chartBase(data), fixed for the session
 let state = null;          // {start, taxRate, selection, locked}
 let previewRate = null;    // the tax slider mid-drag, before the cascade runs
+// The slider currently under a finger. render() writes every slider's value back
+// from state, which on a continuous drag would yank the thumb to the nearest
+// stop on every frame and undo the whole point of the fine step. The one being
+// dragged is left alone until it is released.
+let draggingId = null;
 let touched = false;       // has the visitor actually changed anything yet
 let revealed = false;      // has the visitor asked for the result at least once
 let noteTimer = 0;
@@ -175,7 +182,10 @@ function paintDomains() {
     const rungs = isTax ? [] : ladder(data, domain.id);
     const rangeAttrs = isTax
       ? `min="${TAX.MIN}" max="${TAX.MAX}" step="${RATE_STEP}"`
-      : `min="0" max="${Math.max(0, rungs.length - 1)}" step="1"`;
+      // A fine step, not one per option. With step="1" a five-option slider has
+      // five thumb positions and the drag is a stair; the policy still snaps to
+      // the nearest stop, but the thumb follows the finger and lands on release.
+      : `min="0" max="${Math.max(0, rungs.length - 1)}" step="0.01"`;
     const ends = isTax
       ? [`Taxes least, ${TAX.MIN}%`, `Taxes most, ${TAX.MAX}%`]
       : ['Spends least', 'Spends most'];
@@ -197,7 +207,12 @@ function paintDomains() {
         <h2 id="h_${esc(domain.id)}">${esc(domain.name)}</h2>
         <span class="chip" id="chip_${esc(domain.id)}" hidden>Changed</span>
         <button class="lock" type="button" id="lock_${esc(domain.id)}"
-                data-lock="${esc(domain.id)}" aria-pressed="false"></button>
+                data-lock="${esc(domain.id)}" aria-pressed="false">
+          <svg class="lk" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <rect class="lk-body" x="3" y="7" width="10" height="7" rx="1.6"/>
+            <path class="lk-shackle" fill="none" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
       <div class="d-slide">
         <span class="d-rail" aria-hidden="true"></span>
@@ -226,17 +241,30 @@ function paintDomains() {
       render();
       return;
     }
+    // The thumb is continuous, the policy is not. Round to the nearest stop and
+    // only commit when that CHANGES, or a drag across one option fires a cascade
+    // on every frame.
     const rungs = ladder(data, id);
-    const option = rungs[Number(input.value)];
-    if (option) commit(applyChange(data, state, id, option.id));
+    const option = rungs[Math.round(Number(input.value))];
+    draggingId = id;
+    if (option && state.selection[id] !== option.id) {
+      commit(applyChange(data, state, id, option.id));
+    }
   });
 
   host.addEventListener('change', (ev) => {
     const input = ev.target;
-    if (!input || !input.dataset || input.dataset.range !== TAX_DOMAIN) return;
-    const rate = Number(input.value);
-    previewRate = null;
-    commit(setTaxRate(data, state, rate));
+    if (!input || !input.dataset || !input.dataset.range) return;
+    const id = input.dataset.range;
+    if (id === TAX_DOMAIN) {
+      previewRate = null;
+      commit(setTaxRate(data, state, Number(input.value)));
+      return;
+    }
+    // Snap on release, so the thumb never rests between two stops it is not on.
+    draggingId = null;
+    input.value = String(Math.round(Number(input.value)));
+    render();
   });
 
   host.addEventListener('click', (ev) => {
@@ -318,38 +346,31 @@ function paintMethod() {
   const derived = options - hand.length;
 
   document.getElementById('method').innerHTML = `
-  <h2>How Statecraft Works</h2>
+  <h2>Method</h2>
 
-  <h3>What the Match Counts</h3>
-  <p>The match is a count. One point for each of the ${data.domains.length} domains where your choice is the policy that country actually has, and no point otherwise. Nothing is weighted, nothing is normalised, and a domain you might think matters more than another does not score more than another. Where two countries tie on the count, the one closer to your design on the measured axes is listed first.</p>
+  <p>The match is a count. One point for each of the ${data.domains.length} domains where your choice is the policy that country actually has. Nothing is weighted and nothing is normalised. A tie is broken by whichever country is closer on the measured axes.</p>
 
-  <h3>What the Three Budgets Are</h3>
-  <p>The Budget is real. Tax raises a share of GDP and every other policy spends one, and both figures are in the same unit an economist would use. Political capital and public patience are points, because there is no honest unit for institutional capital or for social friction, and inventing one would dress a judgement up as a measurement. Both are charged only on the domains you change from your starting country: no country spends political capital to keep the policy it already has, and a cut the budget forced on you is still a reform somebody has to pass.</p>
-  <p>The costs below are judgements. Publishing them is the point, because a reader who thinks mandatory military service should cost more political capital than the 12 points charged here can see the exact number to argue with.</p>
+  <p>The Budget is in percentage points of GDP, which is a real unit. Political capital and public patience are points, because there is no honest unit for either, and both are charged only on the domains you change. Tax is a headline take: above ${TAX.KINK} per cent each further point raises less than the last, so ${TAX.MAX} realises ${one(realisedRevenue(TAX.MAX))}.</p>
 
-  <h3>What a Point of Tax Actually Raises</h3>
-  <p>The tax slider is a headline take: total tax revenue as a share of GDP. What the state collects is less than that, and increasingly less, because people work less, avoid more and move money. Below ${TAX.KINK} the two are the same. Above it, each point of headline take gives up ${TAX.LEAK} of a point for every point it is above ${TAX.KINK}, squared, so ${TAX.MAX} raises ${one(realisedRevenue(TAX.MAX))} rather than ${TAX.MAX}. The curve never turns over inside the slider, so pushing the rate up never lowers the budget.</p>
-  <p>Your capacity is what that rate realises, plus any non-tax revenue your starting country has, plus a fixed top-up if that country already spends more than it raises. The top-up is measured once, at the country you started from, and does not move when you drag the rate.</p>
+  <p>Your own figure on each axis is the median of the countries that run that policy. ${derived} of ${options} options are set that way; the other ${hand.length} have no coded country to read, so they are judgements. So are all the costs. Both are published below to be argued with.</p>
+
+  <p>${matchable(data).length} countries can be the answer. ${data.countries.length - matchable(data).length} more are measured but not yet coded, so they appear on the axes and cannot be your match. The set is high income and Europe-heavy, because those are the countries where these ${data.domains.length} are choices rather than constraints.</p>
 
   <details class="mdet">
     <summary>Every option and what it costs</summary>
-    <p class="mnote">The Budget column is what an option spends, in % of GDP. The six tax regimes carry a headline rate instead, and the slider runs between them. All ${options} options.</p>
+    <p class="mnote">Budget is what an option spends, in % of GDP. The ${data.domains.find((d) => d.id === 'tax').options.length} tax regimes carry a headline rate instead.</p>
     <div class="scroller">${costTable()}</div>
   </details>
 
   <details class="mdet">
-    <summary>The ${data.axes.length} axes, their units and their sources</summary>
-    <p class="mnote">Track runs is the span the reveal plots between, set wide enough to hold every coded country.</p>
+    <summary>The ${data.axes.length} axes and their sources</summary>
     <div class="scroller">${axisTable()}</div>
   </details>
 
-  <h3>The Source of Your Own Figures</h3>
-  <p>Every option carries a figure on its domain's axis, and that figure is what the reveal plots as your design. Where countries in this set run the policy, the figure is the median of their measured values. Median rather than mean, so a single classification artefact cannot drag the marker: the WHO counts compulsory Swiss health cover as private insurance, which puts Switzerland at 33 per cent public where the rest of its option sits between 48 and 85.</p>
-  <p>${derived} of the ${options} options are derived that way. The remaining ${hand.length} are set by hand, either because no coded country runs them or because the countries that do have no measurement on that axis. They are: ${esc(hand.join('; '))}. Redistribution is summed from your tax, work and family choices rather than owned by one domain, so it stays hand-set throughout. Where an option is the policy of a single country, its figure is that one country's cell, and the reveal says so on the track.</p>
-
-  <h3>What Is Not Here Yet</h3>
-  <p>${matchable(data).length} countries carry a full policy matrix and can be the answer. A further ${data.countries.length - matchable(data).length} are measured but not yet coded: they appear on the axes above and cannot be the country you built, because there is nothing to match against. A country's own indicators are read as three separate claims and never merged: a figure with a year and a source, a blank with a reason it does not apply, and an axis the country has no reading on at all.</p>
-  <p>The page opens on a guess made from your browser's timezone, so the first thing you see is a country rather than an empty form. The starting country picker changes it.</p>`;
+  <details class="mdet">
+    <summary>The ${hand.length} figures with no country behind them</summary>
+    <p class="mnote">${esc(hand.join('; '))}. Redistribution is summed from the tax, work and family choices rather than owned by one domain, so it is hand-set throughout.</p>
+  </details>`;
 }
 
 function paintMeter(key, b, text) {
@@ -507,7 +528,15 @@ function render(change) {
     document.getElementById(`chip_${id}`).hidden = !changed.has(id);
 
     const lock = document.getElementById(`lock_${id}`);
-    lock.textContent = locked ? 'Protected' : 'Protect';
+    // Shut: the shackle sits on the body. Open: it lifts and hinges right.
+    lock.querySelector('.lk-shackle').setAttribute('d', locked
+      ? 'M5.4 7V5.1a2.6 2.6 0 0 1 5.2 0V7'
+      : 'M5.4 7V5.1a2.6 2.6 0 0 1 5.2 0');
+    // The button has no text, so it needs a name of its own. It says what the
+    // control is FOR, not what the click does.
+    lock.setAttribute('aria-label', locked
+      ? `${domain.name} is locked and cannot be cut to pay for another policy`
+      : `Lock ${domain.name} so it cannot be cut to pay for another policy`);
     lock.setAttribute('aria-pressed', locked ? 'true' : 'false');
     lock.title = locked
       ? 'This policy is held where it is and the budget will cut something else'
@@ -550,7 +579,7 @@ function render(change) {
     const rungs = ladder(data, id);
     const index = Math.max(0, rungs.findIndex((o) => o.id === live.selection[id]));
     const option = rungs[index];
-    if (Number(input.value) !== index) {
+    if (id !== draggingId && Number(input.value) !== index) {
       if (cutIds.has(id)) tweenRange(input, index); else input.value = String(index);
     }
     input.setAttribute('aria-valuetext', `${option ? option.label : ''}, ${one(option ? option.financial : 0)} per cent of GDP, step ${index + 1} of ${rungs.length}`);
