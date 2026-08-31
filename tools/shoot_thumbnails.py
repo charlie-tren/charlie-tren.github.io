@@ -224,7 +224,8 @@ ANCHOR = {
     # settings screen rather than as a ranking of thirty-four countries. Framed
     # on the chart, with enough above it to keep the title and a row of the
     # controls in, so the card still shows a website with a chart in it.
-    "absentee": {"selector": "#rank-panel", "context_above": 0.18},
+    # 0.18 landed mid-hint and left an orphan "HELP." across the top of the card.
+    "absentee": {"selector": "#rank-panel", "context_above": 0.10},
     # The top of the page is the hero and a scatter that is currently just a sorted
     # curve. The cards, with real company names and per-flag scores, are the product.
     #
