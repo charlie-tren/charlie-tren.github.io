@@ -70,7 +70,18 @@ jobs:
             if git push; then exit 0; fi
             echo "push attempt $attempt lost a race - replaying onto main"
             git fetch origin main
-            git reset --soft origin/main
+            # --mixed, NOT --soft. `reset --soft` moves HEAD and leaves the INDEX
+            # holding this run's entire checked-out tree, so the replay commit
+            # rewrites every tracked file back to how it stood when the job
+            # started - silently REVERTING anything anyone pushed in between.
+            # That is not hypothetical: on 26/08/2026 the thumbnail workflow did
+            # exactly this and undid an estate-wide analytics change across seven
+            # files plus a card description, inside a commit titled "Refresh card
+            # thumbnails". That copy was fixed the same day and THIS one was
+            # missed, which is why it is worth saying twice.
+            # --mixed resets the index to origin/main and leaves the working tree
+            # alone, so the `git add` below stages only this job's own output.
+            git reset --mixed origin/main
             git add ghostwriters
             git diff --cached --quiet && exit 0
             git commit -m "ghostwriters: $(date -u +%Y-%m-%d)"
