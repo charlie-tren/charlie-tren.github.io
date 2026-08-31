@@ -25,7 +25,6 @@
   <p class="standfirst">
     What a property abroad returns once your own country has taxed the rent.
   </p>
-  <p class="detail-line">Thirty-four countries</p>
 </header>
 
 <main class="wrap">
@@ -70,7 +69,7 @@
     <div class="legend">
       <span><i style="background:var(--over)"></i>Beats the index fund</span>
       <span><i style="background:var(--under)"></i>Loses to it</span>
-      <span><i class="rule-mark"></i>The index fund, taxed the same way</span>
+      <span><i class="rule-mark"></i>The index fund</span>
     </div>
     <figure class="chart">
       <svg id="rank" role="img" aria-label="Ten-year net return for each country, ranked, against the index fund benchmark"></svg>
@@ -83,43 +82,35 @@
       <h2 id="picked-name"></h2>
       <span class="verdict" id="picked-verdict"></span>
     </div>
-    <p class="sub" id="picked-blurb"></p>
 
-    <h3>Where Ten Years of Rent Goes</h3>
-    <div class="legend" id="split-legend"></div>
+    <h3>Ten Years From Now</h3>
     <figure class="chart">
-      <svg id="split" role="img" aria-label="Ten years of rental income split between what is kept and what each government takes"></svg>
-      <div class="readout" id="split-readout" hidden></div>
+      <svg id="compare" role="img" aria-label="The same money after ten years: the property untaxed, the property after tax, and an index fund"></svg>
+      <div class="readout" id="compare-readout" hidden></div>
     </figure>
 
-    <h3>What the Currency Has to Do</h3>
+    <h3>How Far the Currency Can Fall</h3>
     <p class="sub" id="fx-blurb"></p>
     <figure class="chart">
-      <svg id="fx" role="img" aria-label="Net return against the amount the local currency falls over ten years"></svg>
+      <svg id="fx" role="img" aria-label="How far the local currency can fall before the property loses to the index fund"></svg>
       <div class="readout" id="fx-readout" hidden></div>
     </figure>
 
     <dl class="facts" id="facts"></dl>
-    <p class="profile" id="profile"></p>
   </section>
 
   <section class="panel notes">
-    <h2>Notes on the Data</h2>
+    <h2>Notes</h2>
     <ul>
       <li id="note-tax"></li>
-      <li>The rent figure is net of running costs and local property taxes, so holding costs are not deducted a second time.</li>
-      <li>House price growth is one number applied to every country. The source workbook carried a per-country growth estimate for all thirty-four; twenty-three of those were guesses with nothing behind them, so none of them are used here. Growth is yours to set.</li>
-      <li>Prices are a median dwelling, converted to Australian dollars. They are indicative rather than a quote on any particular property.</li>
-      <li>The purchase is all cash. No Australian lender takes foreign real property as security, and foreign lenders rarely write mortgages for non-resident foreigners, so the leverage that makes domestic property investment work is not on offer.</li>
       <li id="note-review"></li>
+      <li>Growth is one number you set, applied to every country. The source workbook had a per-country estimate; most of it was guesswork, so none of it is used.</li>
+      <li>All cash. No Australian lender takes foreign property as security, so the leverage that makes property work at home is not on offer here.</li>
       <li>General information, not advice.</li>
     </ul>
 
     <h3>Sources</h3>
-    <table class="src">
-      <thead><tr><th>Measure</th><th>Source</th><th>Caveat</th></tr></thead>
-      <tbody id="sources"></tbody>
-    </table>
+    <table class="src"><tbody id="sources"></tbody></table>
   </section>
 
 </main>

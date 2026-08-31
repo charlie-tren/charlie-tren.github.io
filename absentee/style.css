@@ -15,9 +15,10 @@
   /* The ten-year rent split. Kept money is the accent; the two taxes are one
      hue at two strengths, because they are the same kind of thing taken by two
      governments rather than two unrelated categories. */
-  --kept: #2f6fb2;
-  --tax-there: #c98a3f;
-  --tax-home: #8a4a22;
+  /* The untaxed bar is a ghost of the after-tax one: same family, no weight,
+     so it reads as "what it would have been" rather than as a third result. */
+  --ghost: #cdd4dc;
+  --bench-bar: #8b939c;
   --max: 960px;
   /* The site's own serif stack. No webfont: nothing to request and nothing to
      swap in late. Title at 400, section headings at 600. */
@@ -211,7 +212,7 @@ footer a { color: var(--ink-faint); }
     /* Lifted off the dark ground. The terracotta and the mid-grey both sink
        into the panel at their light-mode values. */
     --over: #6ea8e0; --under: #e08a6f; --bench: #9aa2ac;
-    --kept: #6ea8e0; --tax-there: #e0b160; --tax-home: #c0764a;
+    --ghost: #343a43; --bench-bar: #7c848e;
   }
   .readout { background: rgba(26,29,34,.97); }
 }
