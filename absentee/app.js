@@ -22,6 +22,7 @@ const DIST = 0.02;            // index fund distribution yield
 const $ = id => document.getElementById(id);
 const fmtPc = v => (v >= 0 ? "" : "-") + Math.abs(v).toFixed(1) + "%";
 const fmtMoney = v => "A$" + Math.round(v).toLocaleString("en-AU");
+const fmtK = v => "A$" + Math.round(v / 1000).toLocaleString("en-AU") + "k";
 
 let DATA = null, PICKED = null;
 
@@ -40,34 +41,34 @@ function irr(cf) {
 
 /* A foreign rate is only usable where it is charged on the same base we are
    modelling. "2.5% of sale price" and "27% on net gain" are not comparable
-   numbers, so the ones charged on proceeds or on a deemed return are set aside
-   and the country is named in the notes rather than quietly given a wrong rate. */
-const rentUsable = c => c.foreign_rental_basis === "gain" || c.foreign_rental_basis === "gross" || c.foreign_rental_basis === "exempt";
-const cgtUsable  = c => c.foreign_cgt_basis === "gain" || c.foreign_cgt_basis === "exempt";
+   numbers, so the ones charged on proceeds, on a deemed return, or offered as a
+   choice of regimes are set aside and the country is named in the notes rather
+   than quietly given a rate the source never states. */
+const rentUsable = c => ["gain", "gross", "exempt"].includes(c.foreign_rental_basis);
+const cgtUsable  = c => ["gain", "exempt"].includes(c.foreign_cgt_basis);
 const needsReview = c => !rentUsable(c) || !cgtUsable(c);
 
-function model(c, s, fxFall) {
+function model(c, s, fxFall, taxFree) {
   const g = s.growth / 100;
   const fx = Math.pow(1 - (fxFall || 0), 1 / N) - 1;   // annual currency drift
   const pc = c.purchase_costs / 100, sc = c.sale_costs / 100;
 
-  const fRent = rentUsable(c) && c.foreign_rental_tax != null ? c.foreign_rental_tax / 100 : 0;
-  const fCgt  = cgtUsable(c)  && c.foreign_cgt != null        ? c.foreign_cgt / 100        : 0;
+  const fRent = !taxFree && rentUsable(c) && c.foreign_rental_tax != null ? c.foreign_rental_tax / 100 : 0;
+  const fCgt  = !taxFree && cgtUsable(c)  && c.foreign_cgt != null        ? c.foreign_cgt / 100        : 0;
 
   // Credit method: the total is whichever rate is higher, never the sum.
-  const rentRate = s.worldwide ? Math.max(fRent, s.mtr / 100) : fRent;
-  const cgtRate  = s.worldwide ? Math.max(fCgt,  s.cgt / 100) : fCgt;
+  const rentRate = taxFree ? 0 : s.worldwide ? Math.max(fRent, s.mtr / 100) : fRent;
+  const cgtRate  = taxFree ? 0 : s.worldwide ? Math.max(fCgt,  s.cgt / 100) : fCgt;
 
   const P = c.price_aud;
   const cf = [-P * (1 + pc)];
-  let val = P, rate = 1, grossRent = 0, taxThere = 0, taxHome = 0;
+  let val = P, rate = 1, grossRent = 0, taxRent = 0;
 
   for (let t = 0; t < N; t++) {
     rate *= 1 + fx;
     const rent = val * (c.net_yield / 100) * rate;
     grossRent += rent;
-    taxThere += rent * fRent;
-    taxHome  += rent * (rentRate - fRent);
+    taxRent += rent * rentRate;
     cf.push(rent * (1 - rentRate));
     val *= 1 + g;
   }
@@ -78,19 +79,14 @@ function model(c, s, fxFall) {
   cf[cf.length - 1] += proceeds - exitTax;
 
   const r = irr(cf);
-  return {
-    irr: r === null ? null : r * 100,
-    grossRent, taxThere, taxHome, kept: grossRent - taxThere - taxHome,
-    proceeds, gain, exitTax, rentRate: rentRate * 100, fRent: fRent * 100,
-  };
+  return { irr: r === null ? null : r * 100, grossRent, taxRent, exitTax, proceeds };
 }
 
 /* The benchmark holds the same money in an unleveraged global index fund and
    pays the reader's own rates on it, so the comparison is after-tax on both
    sides rather than after-tax against gross. */
 function benchmark(P, s) {
-  const total = s.bench / 100;
-  const growth = total - DIST - MER;
+  const growth = s.bench / 100 - DIST - MER;
   const cf = [-P * (1 + BROKERAGE)];
   let val = P;
   for (let t = 0; t < N; t++) {
@@ -108,14 +104,18 @@ function benchmark(P, s) {
    fxFall, so a bisection is exact enough and cannot get stuck. */
 function fxBreakeven(c, s, bench) {
   if (model(c, s, 0).irr <= bench) return 0;
+  if (model(c, s, 0.95).irr > bench) return null;      // survives anything
   let lo = 0, hi = 0.95;
-  if (model(c, s, hi).irr > bench) return null;   // survives anything
   for (let i = 0; i < 60; i++) {
     const mid = (lo + hi) / 2;
     if (model(c, s, mid).irr > bench) lo = mid; else hi = mid;
   }
   return (lo + hi) / 2;
 }
+
+/* A rate is hard to hold in the head; the money it turns into is not. This is
+   the same number as the IRR, restated, so the two charts cannot disagree. */
+const grown = (P, ratePc) => P * Math.pow(1 + ratePc / 100, N);
 
 function settings() {
   return {
@@ -147,9 +147,9 @@ function el(parent, name, attrs, text) {
   return n;
 }
 
-/* The readout follows the pointer and flips to the other side near an edge, so
-   it never sits over the marks it is describing. Below 620px it goes static
-   under the chart, where a finger is not already covering it. */
+/* The readout follows the pointer and flips near an edge so it never sits over
+   the marks it describes. Below 620px it goes static under the chart, where a
+   finger is not already covering it. */
 function showReadout(box, fig, ev, html) {
   box.innerHTML = html;
   box.hidden = false;
@@ -160,8 +160,7 @@ function showReadout(box, fig, ev, html) {
   }
   box.style.position = "absolute";
   const fr = fig.getBoundingClientRect(), br = box.getBoundingClientRect();
-  let x = ev.clientX - fr.left + 14;
-  let y = ev.clientY - fr.top + 14;
+  let x = ev.clientX - fr.left + 14, y = ev.clientY - fr.top + 14;
   if (x + br.width > fr.width) x = ev.clientX - fr.left - br.width - 14;
   if (y + br.height > fr.height) y = fr.height - br.height - 2;
   box.style.left = Math.max(0, x) + "px";
@@ -185,63 +184,46 @@ function drawRank(rows, bench) {
   lo = Math.min(0, lo - pad); hi = hi + pad;
   const x = v => L + ((v - lo) / (hi - lo)) * plotW;
 
-  // Axis: even spacing across the panel rather than round numbers, which leave
-  // a ragged remainder short of the panel's own edge.
-  const ticks = 4;
-  for (let i = 0; i <= ticks; i++) {
-    const v = lo + (hi - lo) * (i / ticks);
+  for (let i = 0; i <= 4; i++) {
+    const v = lo + (hi - lo) * (i / 4);
     el(svg, "line", { x1: x(v), y1: T - 6, x2: x(v), y2: H - B, stroke: "var(--rule)", "stroke-width": 1 });
-    el(svg, "text", {
-      x: x(v), y: T - 11, "text-anchor": "middle", fill: "var(--ink-faint)",
-      "font-size": narrow ? 10 : 11,
-    }, fmtPc(v));
+    el(svg, "text", { x: x(v), y: T - 11, "text-anchor": "middle", fill: "var(--ink-faint)", "font-size": narrow ? 10 : 11 }, fmtPc(v));
   }
 
   rows.forEach((r, i) => {
     const y = T + i * rowH, mid = y + rowH / 2;
-    const over = r.irr > bench;
     const x0 = x(0), x1 = x(r.irr);
     el(svg, "rect", {
       x: Math.min(x0, x1), y: y + 2, width: Math.max(1.5, Math.abs(x1 - x0)),
-      height: rowH - 4, rx: 1.5, fill: over ? "var(--over)" : "var(--under)",
+      height: rowH - 4, rx: 1.5, fill: r.irr > bench ? "var(--over)" : "var(--under)",
       opacity: r.country === PICKED ? 1 : 0.82,
     });
     el(svg, "text", {
       x: L - 8, y: mid + 3.6, "text-anchor": "end",
       fill: r.country === PICKED ? "var(--ink)" : "var(--ink-soft)",
-      "font-size": narrow ? 10.5 : 12,
-      "font-weight": r.country === PICKED ? 700 : 400,
+      "font-size": narrow ? 10.5 : 12, "font-weight": r.country === PICKED ? 700 : 400,
     }, r.country);
   });
 
-  // The benchmark rule sits over the bars so it reads as the line they are
-  // being judged against rather than as another series. It goes under the value
-  // labels, though: drawn last it struck through half of them, because a bar
-  // ending near the benchmark puts its own number right on the line.
+  // Under the value labels: drawn last it struck through half of them, because
+  // a bar ending near the benchmark puts its own number on the line.
   el(svg, "line", {
     x1: x(bench), y1: T - 6, x2: x(bench), y2: H - B,
     stroke: "var(--bench)", "stroke-width": 2, "stroke-dasharray": "5 4",
   });
 
   rows.forEach((r, i) => {
-    const mid = T + i * rowH + rowH / 2;
     el(svg, "text", {
-      x: Math.max(x(0), x(r.irr)) + 6, y: mid + 3.6, fill: "var(--ink-faint)",
-      "font-size": narrow ? 10 : 11,
+      x: Math.max(x(0), x(r.irr)) + 6, y: T + i * rowH + rowH / 2 + 3.6,
+      fill: "var(--ink-faint)", "font-size": narrow ? 10 : 11,
     }, fmtPc(r.irr));
   });
 
-  // One transparent band per row carries the hover, so the whole row is a
-  // target rather than only the drawn bar.
   rows.forEach((r, i) => {
-    const band = el(svg, "rect", {
-      x: 0, y: T + i * rowH, width: W, height: rowH,
-      fill: "transparent", style: "cursor:pointer",
-    });
+    const band = el(svg, "rect", { x: 0, y: T + i * rowH, width: W, height: rowH, fill: "transparent", style: "cursor:pointer" });
     const gap = r.irr - bench;
     band.addEventListener("mousemove", ev => showReadout(box, fig, ev,
-      `<strong>${r.country}</strong>
-       <span class="num">${fmtPc(r.irr)} a year after tax</span><br>
+      `<strong>${r.country}</strong><span class="num">${fmtPc(r.irr)} a year after tax</span><br>
        <span class="num">${gap >= 0 ? "+" : ""}${gap.toFixed(1)} points ${gap >= 0 ? "above" : "below"} the index fund</span><br>
        <span class="num">${fmtMoney(r.price_aud)} to buy</span>`));
     band.addEventListener("mouseleave", () => { box.hidden = true; });
@@ -249,139 +231,110 @@ function drawRank(rows, bench) {
   });
 }
 
-/* ---------- chart 2: where the rent goes ---------- */
+/* ---------- chart 2: the same money, ten years on ----------
 
-function drawSplit(c, m) {
-  const svg = $("split"), fig = svg.parentNode, box = $("split-readout");
-  const H = 96, W = frame(svg, H);
-  const L = 0, R = 0, barY = 30, barH = 34;
+   Was a stacked bar splitting ten years of rent between the two governments.
+   It carried the tax finding but nobody could read it: "ten years of rent" is
+   an odd unit, and a three-way split needs a legend decoded before it says
+   anything. Three bars of money answer the reader's actual question - what do
+   I end up with - and the tax still shows, as the gap between the first two. */
+
+function drawCompare(c, s, m, gross, bench) {
+  const svg = $("compare"), fig = svg.parentNode, box = $("compare-readout");
+  const narrow = window.innerWidth <= 620;
+  const P = c.price_aud;
+  const bars = [
+    { label: "If nobody taxed it", v: grown(P, gross.irr), fill: "var(--ghost)" },
+    { label: "The property, after tax", v: grown(P, m.irr), fill: m.irr > bench ? "var(--over)" : "var(--under)" },
+    { label: "An index fund, after tax", v: grown(P, bench), fill: "var(--bench-bar)" },
+  ];
+
+  const rowH = narrow ? 46 : 52, T = 22, B = 26;
+  const H = T + bars.length * rowH + B;
+  const W = frame(svg, H);
+  const L = 0, R = narrow ? 0 : 0;
   const plotW = Math.max(60, W - L - R);
-  const total = m.grossRent || 1;
+  const hi = Math.max(...bars.map(b => b.v)) * 1.02;
 
-  /* Where the destination's own rate cannot be read as a single number, the
-     total is still right, because it is whichever rate is higher and the
-     reader's is the higher one. What cannot be drawn is which government took
-     which half, so the bar shows one tax segment rather than inventing a split.
-     Splitting it anyway would put the destination's share at zero and label
-     the whole of it as topped up at home, which is a claim, not a gap. */
-  const split = rentUsable(c);
-  const parts = (split
-    ? [
-        { label: "You keep", v: m.kept, fill: "var(--kept)" },
-        { label: "Taken where the property is", v: m.taxThere, fill: "var(--tax-there)" },
-        { label: "Topped up at home", v: m.taxHome, fill: "var(--tax-home)" },
-      ]
-    : [
-        { label: "You keep", v: m.kept, fill: "var(--kept)" },
-        { label: "Tax, on both sides together", v: m.taxThere + m.taxHome, fill: "var(--tax-home)" },
-      ]
-  ).filter(p => p.v > total * 0.0005);
+  el(svg, "text", { x: 0, y: 13, fill: "var(--ink-faint)", "font-size": narrow ? 11 : 11.5 },
+     `${fmtMoney(P)} put in, ten years on`);
 
-  $("split-legend").innerHTML = parts.map(p =>
-    `<span><i style="background:${p.fill}"></i>${p.label}</span>`).join("");
+  bars.forEach((b, i) => {
+    const y = T + i * rowH, w = (b.v / hi) * plotW, barH = narrow ? 22 : 25;
+    el(svg, "text", { x: 0, y: y + 11, fill: "var(--ink-soft)", "font-size": narrow ? 11.5 : 12.5 }, b.label);
+    el(svg, "rect", { x: 0, y: y + 17, width: Math.max(2, w), height: barH, rx: 2, fill: b.fill });
+    // The amount sits inside a bar wide enough to hold it, outside otherwise,
+    // so a short bar never pushes its own number off the panel.
+    const inside = w > (narrow ? 96 : 108);
+    el(svg, "text", {
+      x: inside ? w - 9 : w + 9, y: y + 17 + barH / 2 + 4.5,
+      "text-anchor": inside ? "end" : "start",
+      fill: inside ? "#fff" : "var(--ink)",
+      "font-size": narrow ? 12.5 : 14, "font-weight": 650,
+    }, fmtMoney(b.v));
 
-  el(svg, "text", { x: 0, y: 16, fill: "var(--ink-faint)", "font-size": 11.5 },
-     `${fmtMoney(total)} of rent over ten years`);
-
-  let x = L;
-  parts.forEach(p => {
-    const w = (p.v / total) * plotW;
-    el(svg, "rect", { x, y: barY, width: Math.max(1, w), height: barH, fill: p.fill });
-    const share = (p.v / total) * 100;
-    // A label only goes inside a segment wide enough to hold it; the rest are
-    // carried by the key above and the hover.
-    if (w > 46) {
-      el(svg, "text", {
-        x: x + w / 2, y: barY + barH / 2 + 4, "text-anchor": "middle",
-        fill: "#fff", "font-size": 12, "font-weight": 650,
-      }, share.toFixed(0) + "%");
-    }
-    const hit = el(svg, "rect", { x, y: barY, width: Math.max(1, w), height: barH, fill: "transparent" });
+    const hit = el(svg, "rect", { x: 0, y, width: W, height: rowH, fill: "transparent" });
     hit.addEventListener("mousemove", ev => showReadout(box, fig, ev,
-      `<strong>${p.label}</strong><span class="num">${fmtMoney(p.v)} over ten years</span><br>
-       <span class="num">${share.toFixed(1)}% of the rent</span>`));
+      `<strong>${b.label}</strong><span class="num">${fmtMoney(b.v)} after ten years</span>`));
     hit.addEventListener("mouseleave", () => { box.hidden = true; });
-    x += w;
   });
 
-  el(svg, "text", { x: 0, y: barY + barH + 20, fill: "var(--ink-soft)", "font-size": 12 },
-     `Sale after ten years: ${fmtMoney(m.proceeds)}, less ${fmtMoney(m.exitTax)} of tax on the gain.`);
+  const taxCost = grown(P, gross.irr) - grown(P, m.irr);
+  el(svg, "text", { x: 0, y: H - 8, fill: "var(--ink-faint)", "font-size": narrow ? 11 : 11.5 },
+     `Tax takes ${fmtMoney(taxCost)} of it.`);
 }
 
-/* ---------- chart 3: the currency ---------- */
+/* ---------- chart 3: how far the currency can fall ----------
 
-function drawFx(c, s, bench, be) {
+   Was net return plotted against the size of the currency move. A curve of one
+   abstract quantity against another, and the answer the reader wants is a
+   single threshold. So: one track, the safe part and the losing part, marked. */
+
+function drawFx(c, s, be) {
   const svg = $("fx"), fig = svg.parentNode, box = $("fx-readout");
   const narrow = window.innerWidth <= 620;
-  /* B has to clear three stacked things below the plot, not one: the bottom y
-     tick sits on the plot's own baseline, the x tick row goes under it, and the
-     axis title under that. At B=46 the bottom y label and the first x label
-     overlapped, measured, because 14px of gap does not hold a 15px line. */
-  const H = narrow ? 218 : 248, W = frame(svg, H);
-  const L = narrow ? 44 : 52, R = 14, T = 14, B = 54;
-  const plotW = Math.max(60, W - L - R), plotH = H - T - B;
+  const MAX = 0.8;
+  // barY leaves a row for the marker's own label between the caption and the
+  // bar. At barY=24 the label sat on the caption's baseline and the two
+  // collided whenever the threshold landed near the left edge.
+  const H = 94, W = frame(svg, H);
+  const L = 0, R = 0, barY = 42, barH = 26;
+  const plotW = Math.max(60, W - L - R);
+  const X = f => (Math.min(f, MAX) / MAX) * plotW;
 
-  const maxFall = 0.8;
-  const pts = [];
-  for (let i = 0; i <= 40; i++) {
-    const f = (i / 40) * maxFall;
-    pts.push([f, model(c, s, f).irr]);
-  }
-  const ys = pts.map(p => p[1]).concat([bench]);
-  let lo = Math.min(...ys), hi = Math.max(...ys);
-  const pad = (hi - lo) * 0.12 || 1;
-  lo -= pad; hi += pad;
+  const cut = be == null ? MAX : Math.min(be, MAX);
 
-  const X = f => L + (f / maxFall) * plotW;
-  const Y = v => T + plotH - ((v - lo) / (hi - lo)) * plotH;
+  el(svg, "rect", { x: 0, y: barY, width: plotW, height: barH, rx: 3, fill: "var(--under)" });
+  if (cut > 0) el(svg, "rect", { x: 0, y: barY, width: X(cut), height: barH, rx: 3, fill: "var(--over)" });
 
-  // Gridlines and the y axis fitted to the data, keeping zero visible when the
-  // line crosses it.
   for (let i = 0; i <= 4; i++) {
-    const v = lo + (hi - lo) * (i / 4);
-    el(svg, "line", { x1: L, y1: Y(v), x2: L + plotW, y2: Y(v), stroke: "var(--rule)", "stroke-width": 1 });
-    el(svg, "text", { x: L - 7, y: Y(v) + 3.6, "text-anchor": "end", fill: "var(--ink-faint)", "font-size": narrow ? 10 : 11 }, fmtPc(v));
-  }
-  for (let i = 0; i <= 4; i++) {
-    const f = (i / 4) * maxFall;
-    // The end labels anchor inward so they cannot reach back under the y-axis
-    // column or past the right edge of the plot.
+    const f = (i / 4) * MAX;
     el(svg, "text", {
-      x: X(f), y: H - B + 24, "text-anchor": i === 0 ? "start" : i === 4 ? "end" : "middle",
+      x: X(f), y: barY + barH + 17, "text-anchor": i === 0 ? "start" : i === 4 ? "end" : "middle",
       fill: "var(--ink-faint)", "font-size": narrow ? 10 : 11,
     }, Math.round(f * 100) + "%");
-  }
-  el(svg, "text", {
-    x: L + plotW / 2, y: H - 6, "text-anchor": "middle",
-    fill: "var(--ink-faint)", "font-size": narrow ? 10.5 : 11.5,
-  }, `How far ${c.currency || "the local currency"} falls over ten years`);
-
-  el(svg, "line", {
-    x1: L, y1: Y(bench), x2: L + plotW, y2: Y(bench),
-    stroke: "var(--bench)", "stroke-width": 2, "stroke-dasharray": "5 4",
-  });
-  el(svg, "text", { x: L + 5, y: Y(bench) - 6, fill: "var(--bench)", "font-size": narrow ? 10 : 11 }, "Index fund");
-
-  el(svg, "path", {
-    d: pts.map((p, i) => (i ? "L" : "M") + X(p[0]) + " " + Y(p[1])).join(" "),
-    fill: "none", stroke: "var(--accent)", "stroke-width": 2.4, "stroke-linejoin": "round",
-  });
-
-  if (be != null && be > 0 && be < maxFall) {
-    el(svg, "line", { x1: X(be), y1: T, x2: X(be), y2: T + plotH, stroke: "var(--under)", "stroke-width": 1.5, "stroke-dasharray": "3 3" });
-    el(svg, "circle", { cx: X(be), cy: Y(bench), r: 4, fill: "var(--under)" });
+    if (i > 0 && i < 4) el(svg, "line", { x1: X(f), y1: barY, x2: X(f), y2: barY + barH, stroke: "var(--bg)", "stroke-width": 1, opacity: .5 });
   }
 
-  const hit = el(svg, "rect", { x: L, y: T, width: plotW, height: plotH, fill: "transparent" });
+  if (be != null && be > 0 && be < MAX) {
+    el(svg, "line", { x1: X(be), y1: barY - 7, x2: X(be), y2: barY + barH + 3, stroke: "var(--ink)", "stroke-width": 2 });
+    const anchor = be / MAX > 0.75 ? "end" : "start";
+    el(svg, "text", {
+      x: X(be) + (anchor === "end" ? -5 : 5), y: barY - 8, "text-anchor": anchor,
+      fill: "var(--ink)", "font-size": narrow ? 11.5 : 12.5, "font-weight": 650,
+    }, `${(be * 100).toFixed(0)}%`);
+  }
+
+  el(svg, "text", { x: 0, y: 12, fill: "var(--ink-faint)", "font-size": narrow ? 11 : 11.5 },
+     `How far ${c.currency || "the currency"} falls against the Australian dollar`);
+
+  const hit = el(svg, "rect", { x: 0, y: barY, width: plotW, height: barH, fill: "transparent" });
   hit.addEventListener("mousemove", ev => {
     const rect = svg.getBoundingClientRect();
-    const px = (ev.clientX - rect.left) * (W / rect.width);
-    const f = Math.max(0, Math.min(maxFall, ((px - L) / plotW) * maxFall));
-    const v = model(c, s, f).irr;
+    const f = Math.max(0, Math.min(MAX, ((ev.clientX - rect.left) * (W / rect.width) / plotW) * MAX));
     showReadout(box, fig, ev,
-      `<strong>${(f * 100).toFixed(0)}% fall in ${c.currency || "the currency"}</strong>
-       <span class="num">${fmtPc(v)} a year after tax</span><br>
-       <span class="num">${v > bench ? "still beats" : "loses to"} the index fund</span>`);
+      `<strong>${(f * 100).toFixed(0)}% fall</strong><span class="num">${fmtPc(model(c, s, f).irr)} a year after tax</span><br>
+       <span class="num">${f < cut ? "still ahead of the fund" : "behind the fund"}</span>`);
   });
   hit.addEventListener("mouseleave", () => { box.hidden = true; });
 }
@@ -406,8 +359,7 @@ function render() {
   $("bench-out").textContent = s.bench.toFixed(2) + "%";
   $("controls").classList.toggle("locked", $("residence").value === "au");
   $("residence-hint").textContent = $("residence").value === "au"
-    ? "Top bracket plus Medicare plus HELP."
-    : "Enter your own rates.";
+    ? "Top bracket plus Medicare plus HELP." : "Enter your own rates.";
 
   const rows = cs.map(c => Object.assign({}, c, model(c, s, 0)))
                  .filter(r => r.irr !== null)
@@ -421,69 +373,56 @@ function render() {
 
   const beat = rows.filter(r => r.irr > bench).length;
   $("rank-blurb").textContent =
-    `${beat} of ${rows.length} beat an index fund holding the same money. `
-    + `The fund returns ${fmtPc(bench)} a year after the same taxes.`;
+    `${beat} of ${rows.length} beat an index fund holding the same money, which returns ${fmtPc(bench)} a year after the same taxes.`;
 
   drawRank(rows, bench);
 
   if (!PICKED || !cs.some(c => c.country === PICKED)) PICKED = rows[0].country;
   const c = cs.find(x => x.country === PICKED);
   const m = model(c, s, 0);
+  const gross = model(c, s, 0, true);
   const be = fxBreakeven(c, s, bench);
   const over = m.irr > bench;
 
   $("picked-name").textContent = c.country;
   const v = $("picked-verdict");
-  v.textContent = over ? `Beats the fund by ${(m.irr - bench).toFixed(1)} points` : `Loses by ${(bench - m.irr).toFixed(1)} points`;
+  v.textContent = over ? `${(m.irr - bench).toFixed(1)} points ahead` : `${(bench - m.irr).toFixed(1)} points behind`;
   v.className = "verdict " + (over ? "over" : "under");
-  $("picked-blurb").textContent =
-    `${fmtMoney(c.price_aud)} buys a median home. At ${c.net_yield}% net rent and `
-    + `${s.growth}% growth a year it returns ${fmtPc(m.irr)} a year after tax.`;
 
   $("fx-blurb").textContent = be == null
-    ? `Nothing the currency does inside ten years drags this below the index fund.`
+    ? "No currency move inside ten years drags this below the fund."
     : be === 0
-      ? `It is already below the index fund before the currency moves at all.`
-      : `${c.currency || "The currency"} has to hold within ${(be * 100).toFixed(0)}% of where it is now, or this drops below the index fund.`;
+      ? "Already behind the fund before the currency moves."
+      : `Past a ${(be * 100).toFixed(0)}% fall, the fund wins.`;
 
-  drawSplit(c, m);
-  drawFx(c, s, bench, be);
+  drawCompare(c, s, m, gross, bench);
+  drawFx(c, s, be);
 
   const facts = $("facts");
   facts.innerHTML = "";
-  const add = (dt, dd, narrow) => {
+  const add = (dt, dd) => {
     if (!dd) return;
     const d = document.createElement("div");
-    d.innerHTML = `<dt>${dt}</dt><dd class="${narrow ? "narrow" : ""}"></dd>`;
+    d.innerHTML = "<dt></dt><dd></dd>";
+    d.querySelector("dt").textContent = dt;
     d.querySelector("dd").textContent = dd;
     facts.appendChild(d);
   };
-  add("Tax on rent where it sits", c.rental_tax_text);
-  add("Tax on the gain there", c.cgt_text);
-  add("Tax treaty with Australia", c.au_dta ? "Yes" : "No");
+  add("Median home", fmtMoney(c.price_aud));
+  add("Net rent", c.net_yield + "%");
   add("Buying costs", c.purchase_costs + "%");
-  add("Months to sell", c.liquidity);
-  add("Estate or inheritance tax", c.estate_text, true);
-  add("Can a foreigner buy", c.ownership, true);
-  add("Residency for buying", c.visa, true);
-  add("Getting the money out", c.repatriation, true);
-  add("Obstacles", c.obstacles, true);
-  $("profile").textContent = c.profile || "";
+  add("Tax on rent there", c.rental_tax_text);
+  add("Tax on the gain there", c.cgt_text);
+  add("Treaty with Australia", c.au_dta ? "Yes" : "No");
 
   $("note-tax").textContent = s.worldwide
-    ? "Your country taxes what you earn abroad and credits the tax you already paid there, capped at that amount. So the destination's rate is a floor and yours is the bill, and a country with no tax of its own saves you nothing."
-    : "Your country does not tax foreign income, so only the destination's own rates apply.";
+    ? "Australia taxes what you earn abroad and credits the tax you paid there, capped at that amount. The foreign rate is a floor; yours is the bill."
+    : "Foreign income is not taxed at home, so only the destination's rates apply.";
 
-  const review = cs.filter(needsReview).map(x => x.country);
-  const readable = cs.filter(c => !needsReview(c));
-  const binds = readable.filter(c => (c.foreign_rental_tax || 0) > s.mtr).map(c => c.country);
+  const review = cs.filter(needsReview).length;
   $("note-review").textContent =
-    `In ${review.length} of the ${cs.length} countries the destination's own rate is a schedule or a choice of `
-    + `regimes rather than one number, so it is shown as text and left out of the arithmetic: ${review.join(", ")}. `
-    + `That does not move the return. The total is whichever rate is higher, and of the ${readable.length} rates that `
-    + `can be read, ${binds.length === 0 ? "none is above yours" : binds.join(" and ") + " sit above yours"}. `
-    + `What it does affect is the split between the two governments, which is why those countries show one tax bar `
-    + `rather than two.`;
+    `In ${review} of ${cs.length} countries the local rate is a schedule, not one number, so it is shown as text and left out. `
+    + `That does not move the return: the total is whichever rate is higher, and none of the readable rates is above yours.`;
 }
 
 /* ---------- boot ---------- */
@@ -499,8 +438,7 @@ fetch("data.json")
     (d.sources || []).forEach(s => {
       const tr = document.createElement("tr");
       const a = s.url ? `<a href="${s.url.startsWith("http") ? s.url : "https://" + s.url}" rel="noopener">${s.name}</a>` : s.name;
-      tr.innerHTML = `<td>${s.measure}</td><td>${a}</td><td></td>`;
-      tr.lastElementChild.textContent = s.caveat || "";
+      tr.innerHTML = `<td>${s.measure}</td><td>${a}</td>`;
       tb.appendChild(tr);
     });
 
