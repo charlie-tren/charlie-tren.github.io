@@ -69,7 +69,16 @@
 .waiting { color: var(--soft); font: 400 15px/1.5 ui-sans-serif, system-ui, sans-serif;
            margin: 1.6rem 0 0; }
 
-/* --------------------------------------------------------------- the round -- */
+/* --------------------------------------------------------------- the round --
+   The instruction. Players missed the reverse round entirely when it was one
+   small pill, so the normal round states its rule plainly and the reverse round
+   is unmissable. */
+.ask { font: 600 12.5px/1.5 ui-sans-serif, system-ui, sans-serif;
+       letter-spacing: .1em; text-transform: uppercase; color: var(--faint);
+       margin: 1.8rem 0 0; }
+.ask.reverse { color: var(--on-accent); background: var(--accent);
+               display: inline-block; padding: .5rem .85rem; border-radius: 8px;
+               letter-spacing: .08em; }
 .modifier { display: inline-block; margin: 1.8rem 0 0;
             border: 1px solid var(--accent); border-radius: 999px;
             padding: .3rem .8rem; color: var(--accent);
