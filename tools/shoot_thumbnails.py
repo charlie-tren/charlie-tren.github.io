@@ -242,10 +242,17 @@ ANCHOR = {
     # Framed on the first domain with enough context above to keep the meters in,
     # since the meters are what make the options read as choices with a price.
     # Re-aimed 30/08/2026 at the chart, which is now the best thing on the page:
-    # twenty countries plotted, the visitor's design marked among them, and the
-    # revenue curve with the unaffordable region shaded. Enough context above to
-    # keep the wordmark, since a card should read as a website.
-    "statecraft": {"selector": ".chart", "context_above": 0.18},
+    # NO ANCHOR FOR STATECRAFT. It had one aimed at .chart, from when the chart
+    # was a full-width opener. On 31/08/2026 the chart moved into a 26rem sticky
+    # rail beside the sliders, and framing on it produced a card that was the
+    # top-left corner of a radar and nothing else. The top of the page is now
+    # the right frame on its own: wordmark, country picker, the fingerprint in
+    # the rail and the first two policies, which is the whole product.
+    #
+    # The lesson is not about this site: an ANCHOR names an element and says
+    # nothing about how big that element is, so a layout change can turn a good
+    # frame into a crop with no test failing. Look at the card after any layout
+    # change on an anchored site.
 }
 
 VIEW = {"width": 1280, "height": 800}
