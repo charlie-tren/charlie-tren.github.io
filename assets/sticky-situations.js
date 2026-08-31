@@ -1,4 +1,4 @@
-/* Sticky Situations.
+/* Worst Case Scenario.
 
    One room per 4-digit code, held by a Cloudflare Durable Object. The client is
    deliberately thin: it never decides the phase, the situation, whose turn it is
@@ -74,7 +74,7 @@
 
     ws.onopen = function () {
       tries = 0;
-      send({ t: "join", name: myName, token: token });
+      send({ t: "join", name: myName, token: token, icon: myIcon });
       /* The room answers "ping" from the runtime itself, so this keeps the
          socket warm without waking the Durable Object or costing anything. A
          round spends most of its life silent while people argue. */
@@ -124,53 +124,130 @@
 
   /* ------------------------------------------------------------- rendering -- */
 
-  function seatRow(q, phase) {
-    /* "Watching" only means something once a game exists. Before it starts
-       nobody is playing yet, so marking the whole lobby as watchers reads as if
-       the room is broken. */
-    var watching = !q.playing && phase !== "lobby";
-    /* Tapping somebody the round is stuck on pokes them. A whole chip is a big
-       target, which is what you want on a phone when you are trying to hurry a
-       friend along. */
-    var li = document.createElement(q.waiting ? "button" : "li");
-    if (q.waiting) {
-      li.type = "button";
-      li.title = "Poke " + q.name;
-      li.addEventListener("click", function () { send({ t: "poke", id: q.id }); });
+  /* The leaderboard. Sorted by blame once a game is running, and it ANIMATES
+     when the order changes, because watching somebody overtake is the point of
+     having it on screen at all.
+
+     FLIP: measure where every row is, rebuild the list, measure again, then jump
+     each row back to where it was and let a transition carry it to where it now
+     belongs. Rebuilding without this makes positions teleport, which reads as a
+     glitch rather than as a change. */
+  function renderBoard(s) {
+    var list = el("blist");
+    var playing = s.phase !== "lobby";
+
+    var before = {};
+    var kids = list.children;
+    for (var i = 0; i < kids.length; i++) {
+      before[kids[i].getAttribute("data-id")] = kids[i].getBoundingClientRect().top;
     }
-    li.className = "seat" + (watching ? " watching" : "") +
-      (q.waiting ? " stalling" : "") + (q.here === false ? " away" : "");
-    var nm = document.createElement("span");
-    nm.className = "nm";
-    nm.textContent = q.name;
-    li.appendChild(nm);
-    if (q.bot) {
-      var tag = document.createElement("span");
-      tag.className = "bottag";
-      tag.textContent = "bot";
-      li.appendChild(tag);
+
+    /* Fewest blame first. In the lobby there is nothing to rank, so seat order
+       stands and the list does not jump about while people are still arriving. */
+    var rows = s.players.slice();
+    if (playing) {
+      rows.sort(function (a, b) {
+        if (a.playing !== b.playing) return a.playing ? -1 : 1;
+        return a.score - b.score;
+      });
     }
-    if (!watching) {
-      var sc = document.createElement("span");
-      sc.className = "sc";
-      sc.textContent = q.score;
-      /* A score of zero before anybody has played is noise, not information. */
-      if (phase !== "lobby") li.appendChild(sc);
-      /* A tick means "this player has done the thing the round is waiting for".
-         Nothing is shown in a phase that is not waiting on anybody. */
-      var done = phase === "playing" ? q.played : phase === "voting" ? q.voted : false;
+
+    el("boardHead").textContent = playing ? "Blame" : "In The Room";
+    el("blnote").textContent = playing ? "Fewest wins" : "";
+
+    list.textContent = "";
+    rows.forEach(function (q, idx) {
+      var stalling = !!q.waiting;
+      var li = document.createElement("li");
+      li.className = "blrow" + (q.id === s.you.id ? " me" : "") +
+        (q.playing === false && playing ? " watching" : "") +
+        (q.here === false ? " away" : "") + (stalling ? " stalling" : "");
+      li.setAttribute("data-id", q.id);
+
+      var pos = document.createElement("span");
+      pos.className = "blpos";
+      pos.textContent = playing && q.playing ? (idx + 1) : "";
+
+      var ic = document.createElement("span");
+      ic.className = "blicon";
+      ic.textContent = q.icon || "";
+
+      var nm = document.createElement("span");
+      nm.className = "blname";
+      nm.textContent = q.name;
+      if (q.bot) {
+        var tag = document.createElement("span");
+        tag.className = "bottag";
+        tag.textContent = "bot";
+        nm.appendChild(document.createTextNode(" "));
+        nm.appendChild(tag);
+      }
+
+      var right = document.createElement("span");
+      right.className = "blright";
+      if (playing && q.playing) {
+        right.textContent = q.score;
+      } else if (playing) {
+        right.textContent = "watching";
+        right.className += " blwatch";
+      }
+
+      /* The tick says this player has done what the round is waiting for. */
+      var done = s.phase === "playing" ? q.played : s.phase === "voting" ? q.voted : false;
       if (done) {
         var tick = document.createElement("span");
         tick.className = "tick";
-        tick.textContent = "✓";
-        li.appendChild(tick);
+        tick.textContent = "\u2713";
+        nm.appendChild(document.createTextNode(" "));
+        nm.appendChild(tick);
       }
-    } else {
-      var w = document.createElement("span");
-      w.textContent = "watching";
-      li.appendChild(w);
+
+      li.appendChild(pos); li.appendChild(ic); li.appendChild(nm); li.appendChild(right);
+
+      /* Whoever the round is stuck on is a poke target, and the whole row is the
+         hit area because on a phone you are hurrying a friend with one thumb. */
+      if (stalling) {
+        li.setAttribute("role", "button");
+        li.setAttribute("tabindex", "0");
+        li.title = "Poke " + q.name;
+        var poke = function () { send({ t: "poke", id: q.id }); };
+        li.addEventListener("click", poke);
+        li.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); poke(); }
+        });
+      }
+      list.appendChild(li);
+    });
+
+    /* Second measurement, then send everybody back and let them travel. */
+    var moved = [];
+    var now = list.children;
+    for (var j = 0; j < now.length; j++) {
+      var row = now[j];
+      var was = before[row.getAttribute("data-id")];
+      if (was === undefined) continue;
+      var dy = was - row.getBoundingClientRect().top;
+      if (!dy) continue;
+      row.style.transform = "translateY(" + dy + "px)";
+      row.style.transition = "none";
+      /* Up the board is good here: less blame. */
+      row.classList.add(dy > 0 ? "rose" : "fell");
+      moved.push(row);
     }
-    return li;
+    if (moved.length) {
+      requestAnimationFrame(function () {
+        moved.forEach(function (row) {
+          row.style.transition = "transform .5s cubic-bezier(.22,1,.36,1)";
+          row.style.transform = "";
+        });
+        setTimeout(function () {
+          moved.forEach(function (row) {
+            row.style.transition = "";
+            row.classList.remove("rose", "fell");
+          });
+        }, 900);
+      });
+    }
   }
 
   function cardBtn(text, opts) {
@@ -210,21 +287,7 @@
     /* Hidden once the game is over: the Final Scores list below is the same
        scoreboard, and printing it twice makes the reader check whether the two
        disagree. */
-    var seats = el("seats");
-    seats.hidden = s.phase === "finished";
-    seats.textContent = "";
-    if (!seats.hidden) {
-      s.players.forEach(function (q) {
-        var row = seatRow(q, s.phase);
-        if (row.tagName === "BUTTON") {
-          var li = document.createElement("li");
-          li.appendChild(row);
-          seats.appendChild(li);
-        } else {
-          seats.appendChild(row);
-        }
-      });
-    }
+    renderBoard(s);
 
     /* Somebody poked you. Animate on the counter changing rather than on a
        message, so a poke sent while this tab was asleep still lands when it
@@ -622,6 +685,42 @@
     if (saved) el("name").value = saved;
   } catch (x) {}
 
+  /* The badge picker. The room sends the list it validates against, so the two
+     cannot drift; before a socket exists there is nothing to ask, so the lobby
+     paints a copy and the room corrects it on join if it disagrees. */
+  var LOBBY_ICONS = ["\u{1F436}", "\u{1F431}", "\u{1F438}", "\u{1F419}", "\u{1F984}", "\u{1F996}",
+                     "\u{1F41D}", "\u{1F99E}", "\u{1F335}", "\u{1F344}", "\u{1F355}", "\u{1F368}",
+                     "\u{1F680}", "\u{1F3B8}", "\u{1F3B3}", "\u{1F52D}"];
+  var myIcon = 0;
+  try {
+    var savedIcon = Number(localStorage.getItem("sticky-icon"));
+    if (Number.isInteger(savedIcon) && savedIcon >= 0 && savedIcon < LOBBY_ICONS.length) {
+      myIcon = savedIcon;
+    } else {
+      myIcon = Math.floor(Math.random() * LOBBY_ICONS.length);
+    }
+  } catch (x) {}
+
+  function paintPicks() {
+    var box = el("picks");
+    box.textContent = "";
+    LOBBY_ICONS.forEach(function (ch, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "pick" + (i === myIcon ? " on" : "");
+      b.textContent = ch;
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", i === myIcon ? "true" : "false");
+      b.addEventListener("click", function () {
+        myIcon = i;
+        try { localStorage.setItem("sticky-icon", String(i)); } catch (x) {}
+        paintPicks();
+      });
+      box.appendChild(b);
+    });
+  }
+  paintPicks();
+
   /* theme toggle - shares localStorage with the hub */
   var root = document.documentElement;
   var btn = el("themeBtn"), lbl = el("themeLbl");
@@ -644,10 +743,10 @@
      No socket is opened and no room is created. */
   if (new URLSearchParams(location.search).get("demo") === "1") {
     var them = [
-      { id: "p1", name: "Charlie", score: 7, playing: true, played: true, voted: true },
-      { id: "p2", name: "Bo", score: 9, playing: true, played: true, voted: true },
-      { id: "p3", name: "Cal", score: 6, playing: true, played: true, voted: true },
-      { id: "p4", name: "Di", score: 8, playing: true, played: true, voted: true },
+      { id: "p1", name: "Charlie", icon: "\u{1F436}", score: 7, playing: true, played: true, voted: true },
+      { id: "p2", name: "Bo", icon: "\u{1F419}", score: 9, playing: true, played: true, voted: true },
+      { id: "p3", name: "Cal", icon: "\u{1F344}", score: 6, playing: true, played: true, voted: true },
+      { id: "p4", name: "Di", icon: "\u{1F680}", score: 8, playing: true, played: true, voted: true },
     ];
     show("room");
     el("code").textContent = "1478";
