@@ -84,6 +84,14 @@
       <!-- The theme picker. Everybody sees it; only the host can change it. -->
       <h3 class="sect">The Game</h3>
       <div class="themes" id="themes"></div>
+      <!-- Bots. Also how you try the game on your own: one person and two
+           bots is a legal table. -->
+      <div class="botrow" id="botRow" hidden>
+        <span class="botlbl" id="botLbl">Bots</span>
+        <button class="btn ghost small" id="botLess" type="button" aria-label="Fewer bots">&minus;</button>
+        <span class="botn" id="botN">0</span>
+        <button class="btn ghost small" id="botMore" type="button" aria-label="More bots">+</button>
+      </div>
       <p class="waiting" id="waiting"></p>
       <div class="hostrow" id="startRow" hidden>
         <button class="btn" id="beginBtn" type="button">Start the game</button>
@@ -135,12 +143,21 @@
         <button class="btn ghost" id="carryBtn" type="button">Carry on without them</button>
       </div>
       <p class="tally" id="tally"></p>
+
+      <!-- Watching, because you arrived after the deal. The cards come from the
+           ones nobody was dealt, so this costs the table nothing. -->
+      <div class="hostrow" id="joinRow" hidden>
+        <button class="btn" id="joinInBtn" type="button">Deal me in</button>
+      </div>
     </div>
 
     <div id="over" hidden>
       <h2 class="reshead">Final Blame</h2>
       <p class="lede-s">Fewest wins.</p>
       <ol class="simlist" id="final"></ol>
+      <div class="hostrow" id="againRow" hidden>
+        <button class="btn" id="againBtn" type="button">Play again</button>
+      </div>
     </div>
   </section>
 </div>

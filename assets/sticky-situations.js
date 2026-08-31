@@ -144,6 +144,12 @@
     nm.className = "nm";
     nm.textContent = q.name;
     li.appendChild(nm);
+    if (q.bot) {
+      var tag = document.createElement("span");
+      tag.className = "bottag";
+      tag.textContent = "bot";
+      li.appendChild(tag);
+    }
     if (!watching) {
       var sc = document.createElement("span");
       sc.className = "sc";
@@ -266,13 +272,24 @@
       b.addEventListener("click", function () { send({ t: "deck", deck: m.slug }); });
       box.appendChild(b);
     });
+    el("botRow").hidden = !s.you.admin;
+    el("botN").textContent = s.bots || 0;
+    el("botLess").disabled = (s.bots || 0) <= 0;
+    el("botMore").disabled = (s.bots || 0) >= (s.maxBots || 5);
+    el("botLbl").textContent = (s.bots || 0) === 1 ? "Bot" : "Bots";
+
     el("startRow").hidden = !s.you.admin;
     el("beginBtn").disabled = !enough;
+    /* Bots count towards the three, which is what makes a solo game possible,
+       so the line says so rather than sending you off to find two friends. */
+    var short = 3 - s.players.length;
+    var need = s.you.admin
+      ? "Three players needed. Add " + short + (short === 1 ? " bot" : " bots") +
+        ", or send the code round."
+      : "Three players needed. Send the code round.";
     el("waiting").textContent = s.you.admin
-      ? (enough ? "Everyone in? Start when you are ready."
-                : "Three players needed. Send the code round.")
-      : (enough ? "Waiting for " + hostName(s) + " to start."
-                : "Three players needed. Send the code round.");
+      ? (enough ? "Everyone in? Start when you are ready." : need)
+      : (enough ? "Waiting for " + hostName(s) + " to start." : need);
   }
 
   function hostName(s) {
@@ -400,6 +417,10 @@
         : "Carry on without " + s.waiting.length + " players";
     }
 
+    /* Offered only when the room can actually do it: there has to be a seat
+       free and enough undealt cards for the rounds that are left. */
+    el("joinRow").hidden = !(you.playing === false && s.canJoin);
+
     note(roundNote(s));
   }
 
@@ -474,6 +495,7 @@
 
   function renderFinal(s) {
     note("");
+    el("againRow").hidden = !s.you.admin;
     var list = el("final");
     list.textContent = "";
     /* Ascending: this is golf, and the fewest blame wins. */
@@ -575,6 +597,14 @@
     if (last) render(last);
   });
   el("carryBtn").addEventListener("click", function () { send({ t: "carryon" }); });
+  el("botMore").addEventListener("click", function () {
+    send({ t: "bots", count: ((last && last.bots) || 0) + 1 });
+  });
+  el("botLess").addEventListener("click", function () {
+    send({ t: "bots", count: ((last && last.bots) || 0) - 1 });
+  });
+  el("joinInBtn").addEventListener("click", function () { send({ t: "joinin" }); });
+  el("againBtn").addEventListener("click", function () { send({ t: "restart" }); });
   el("beginBtn").addEventListener("click", function () { send({ t: "start" }); });
   el("advanceBtn").addEventListener("click", function () { send({ t: "advance" }); });
 
@@ -626,7 +656,7 @@
       theme: "Plus One",
       premise: "You have been invited somewhere and you are allowed to bring one person.",
       situationLabel: "Event",
-      deck: "plus-one", menu: null,
+      deck: "plus-one", menu: null, bots: 0, maxBots: 5, canJoin: false,
       situation: "You are at the opening night of your friend's one-man show. It runs two hours and there are eleven seats.",
       modifier: null,
       players: them,
