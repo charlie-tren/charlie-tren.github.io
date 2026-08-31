@@ -2,4 +2,4 @@
 # committed; the spreadsheet behind it is not, because this repo is public and
 # publishing it is his call rather than the build script's.
 source/
-icons.html
+icons*.html
