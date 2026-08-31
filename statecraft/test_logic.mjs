@@ -247,28 +247,36 @@ test('all forty-five countries can afford to be themselves', () => {
   // each one needs is written down beside it. Two shapes, and only one of them
   // is about the countries:
   //
-  //   THE THREE GULF STATES ARE THE UAE'S CASE WITHOUT THE UAE'S FIX, and they
-  //   need the three largest top-ups in the file by a distance: Kuwait 24.0
-  //   points of GDP, Qatar 19.0 and Saudi Arabia 13.5. None of the three
-  //   carries a measured tax_take, so the slider starts at tax_minimal's 16.0,
-  //   and their nonTaxRevenue is 0.0 while the UAE's is 11.8. It is 0.0 because
-  //   it could not be sourced on the same basis as the axis, not because it is
-  //   believed to be zero, and the reasoning is written out above their rows in
-  //   countries.py. The IMF puts their 2024 general government revenue at 74.2,
-  //   26.7 and 27.1% of GDP respectively, which is what actually pays for the
-  //   free universities and the pensions the model is pricing. SOURCING THOSE
-  //   THREE NUMBERS ON THE RIGHT BASIS WOULD RETIRE MOST OF THIS BLOCK, and
-  //   until someone does, the floor is carrying an oil economy exactly as it
-  //   was built to.
+  //   THE THREE GULF STATES WERE THE UAE'S CASE WITHOUT THE UAE'S FIX, and
+  //   they needed the three largest top-ups in the file by a distance: Kuwait
+  //   24.0 points of GDP, Qatar 19.0 and Saudi Arabia 13.5. Their oil was
+  //   being carried by the top-up because their nonTaxRevenue was 0.0 while the
+  //   UAE's was 11.8, which said the wrong thing: a top-up means a country
+  //   spends more than the model says it raises, and for a petrostate the true
+  //   statement is that it raises more, from something that is not tax.
   //
-  //   SEARCHED AGAIN 31/08/2026 AND THEY STAY OPEN. The three top-ups above are
-  //   unchanged for that reason. IMF WoRLD, whose tax-plus-contributions total
-  //   reproduces the OECD figure to a tenth on five countries that have both,
-  //   publishes no social contributions line for any of the three, so the total
-  //   cannot be formed from it. UNU-WIDER's GRD reads Cyprus at 28.2% of GDP
-  //   for 2023 against the 36.0 the OECD basis gives, nearly eight points out
-  //   where the answer is known, and has no Qatar observation after 2008. The
-  //   full working is above the Gulf rows in countries.py.
+  //   THAT IS CLOSED AS OF 31/08/2026. All three now carry a sourced
+  //   nonTaxRevenue on the UAE's construct, general government total revenue
+  //   less the 16.0 they start on, from the same IMF indicator and year that
+  //   reproduces the UAE's 27.8. Saudi Arabia 11.1, Qatar 10.7, Kuwait 58.2,
+  //   with the sources and the Kuwait caveat above the Saudi Arabia row in
+  //   countries.py. The top-ups fall accordingly and are asserted below.
+  //
+  //   KUWAIT COMES OFF THIS LIST ENTIRELY. Its general government revenue of
+  //   74.2% of GDP exceeds what the model prices its own choices at, 40.1, so
+  //   there is nothing left for the floor to do and it starts with about 34
+  //   points spare. That is the sourced figure rather than a tuned one, and
+  //   roughly thirty of those points are IMF-estimated sovereign fund
+  //   investment income that Kuwait's own budget never sees. See the row.
+  //
+  //   WHAT IS STILL OPEN FOR THE THREE IS THE tax_take CELL, not this column.
+  //   IMF WoRLD, whose tax-plus-contributions total reproduces the OECD figure
+  //   to a tenth on five countries that have both, publishes no social
+  //   contributions line for any of the three, so the total cannot be formed
+  //   from it. UNU-WIDER's GRD reads Cyprus at 28.2% of GDP for 2023 against
+  //   the 36.0 the OECD basis gives, nearly eight points out where the answer
+  //   is known, and has no Qatar observation after 2008. So all three still
+  //   start on tax_minimal's 16.0, which is also the number subtracted above.
   //
   //   PANAMA, URUGUAY AND MALTA are the Singapore shape: a real measured tax
   //   take that is genuinely low. Panama needs 10.5 points on a measured take of
@@ -298,7 +306,27 @@ test('all forty-five countries can afford to be themselves', () => {
   // A country with no measured take inherits its option's number, and whether
   // that flatters or punishes it is pure luck of which option it sits on. Three
   // rows are still in that position and they are the Gulf three above.
-  assert.deepEqual(propped, ['SG', 'AE', 'IE', 'ES', 'UY', 'TW', 'SA', 'QA', 'KW', 'MT', 'PA']);
+  assert.deepEqual(propped, ['SG', 'AE', 'IE', 'ES', 'UY', 'TW', 'SA', 'QA', 'MT', 'PA']);
+
+  // THE GULF FOUR, PINNED. The three sourced nonTaxRevenue figures land here
+  // and nowhere else a test can see them, so the top-up each one leaves behind
+  // is asserted rather than described. The UAE is the control: it did not move
+  // when the other three were sourced, and if it ever does, the construct has
+  // been changed under it.
+  for (const [code, nonTax, topUp, capacity] of [
+    ['AE', 11.8, 4.2, 32.0],
+    ['SA', 11.1, 2.4, 29.5],
+    ['QA', 10.7, 8.3, 35.0],
+    ['KW', 58.2, 0.0, 74.2],
+  ]) {
+    const f = budgets(data, startingState(data, code)).financial;
+    assert.equal(f.nonTaxRevenue, nonTax, `${code} nonTaxRevenue`);
+    assert.equal(f.topUp, topUp, `${code} top-up`);
+    assert.equal(f.capacity, capacity, `${code} capacity`);
+  }
+  // Kuwait is the one that funds itself: its revenue exceeds its own modelled
+  // spend, so the floor is inert there and it is the only Gulf row off the list.
+  assert.equal(budgets(data, startingState(data, 'KW')).financial.floored, false);
 
   const ae = budgets(data, startingState(data, 'AE'));
   assert.equal(ae.financial.capacity, 32.0, 'floored at what the UAE already spends');
@@ -751,13 +779,19 @@ test('the UAE capacity comes from non-tax revenue and is not attributed to tax',
   assert.equal(option('tax', 'tax_minimal').axis.tax_take, 16.0);
   assert.equal(axisValues(data, ae.selection).tax_take, 16.0);
 
-  // Forty-four of the forty-five carry nothing, so the field is not a fudge
-  // factor. Saudi Arabia, Qatar and Kuwait are 0.0 for a DIFFERENT reason, and
-  // it survived them becoming matchable on 31/08/2026: the figure could not be
-  // sourced on the same basis as the tax_take axis, and inventing one would
-  // have been worse. That is why all three sit on the floor. See countries.py.
-  const others = MATCHABLE.filter((c) => c.code !== 'AE');
+  // FORTY-ONE OF THE FORTY-FIVE CARRY NOTHING, so the field is not a fudge
+  // factor. The four that carry it are the four Gulf monarchies, and each is
+  // general government total revenue less the 16.0 the country starts on, on
+  // one indicator and one year. Saudi Arabia, Qatar and Kuwait were 0.0 until
+  // 31/08/2026 because the figure had not been sourced; it has been now, and
+  // this asserts that the exception list has not grown past those four.
+  const gulf = new Set(['AE', 'SA', 'QA', 'KW']);
+  const others = MATCHABLE.filter((c) => !gulf.has(c.code));
   assert.deepEqual([...new Set(others.map((c) => c.nonTaxRevenue))], [0]);
+  assert.deepEqual(
+    MATCHABLE.filter((c) => c.nonTaxRevenue).map((c) => [c.code, c.nonTaxRevenue]),
+    [['AE', 11.8], ['SA', 11.1], ['QA', 10.7], ['KW', 58.2]],
+  );
 
   // THE OIL SURVIVES A CHANGE OF TAX POLICY, which is the whole point of moving
   // it off the tax option. A visitor who taxes the UAE like Denmark keeps it.
