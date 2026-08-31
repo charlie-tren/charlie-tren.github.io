@@ -240,13 +240,39 @@
 
   function renderLobby(s) {
     var enough = s.players.length >= 3;
+
+    /* The theme picker. Shown to everybody so the room can see the choice being
+       made, but only the host's taps do anything - a control that silently
+       ignores you is worse than one that is plainly not yours. */
+    var box = el("themes");
+    box.textContent = "";
+    (s.menu || []).forEach(function (m) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "theme" + (m.slug === s.deck ? " on" : "");
+      b.disabled = !s.you.admin;
+      var t = document.createElement("span");
+      t.className = "tname";
+      t.textContent = m.theme;
+      var d = document.createElement("span");
+      d.className = "tdesc";
+      d.textContent = m.premise;
+      var n = document.createElement("span");
+      n.className = "trounds";
+      /* Said up front, because a 30-card deck gives a much shorter game than
+         Plus One and finding that out afterwards would be a nasty surprise. */
+      n.textContent = m.rounds + " rounds";
+      b.appendChild(t); b.appendChild(d); b.appendChild(n);
+      b.addEventListener("click", function () { send({ t: "deck", deck: m.slug }); });
+      box.appendChild(b);
+    });
     el("startRow").hidden = !s.you.admin;
     el("beginBtn").disabled = !enough;
     el("waiting").textContent = s.you.admin
       ? (enough ? "Everyone in? Start when you are ready."
-                : "Sticky Situations needs three players. Send the code round.")
+                : "Three players needed. Send the code round.")
       : (enough ? "Waiting for " + hostName(s) + " to start."
-                : "Sticky Situations needs three players. Send the code round.");
+                : "Three players needed. Send the code round.");
   }
 
   function hostName(s) {
@@ -271,6 +297,10 @@
     if (s.modifier === "double") {
       el("modifier").textContent = "Double blame this round";
     }
+    /* The premise sits above the prompt so a player knows what game they are
+       in before they read what varies this round. */
+    el("premise").textContent = s.premise || "";
+    el("sitlabel").textContent = s.situationLabel || "";
     el("situation").textContent = s.situation || "";
 
     /* What you played. Shown from the moment you play until the round scores,
@@ -355,7 +385,14 @@
        phone closes the socket, and guessing there once scored a round without
        somebody's vote. The host decides, and only once there is somebody to
        decide about. */
-    var stuck = (s.waiting || []).length > 0;
+    /* Only once the round is genuinely half-done. Offered the moment a round
+       opened, "Carry on without 3 players" invited the host to skip everybody
+       before anybody had a chance to play, which is not waiting, it is just the
+       start of a round. */
+    var acted = s.players.filter(function (q) {
+      return q.playing && (s.phase === "voting" ? q.voted : q.played);
+    }).length;
+    var stuck = acted > 0 && (s.waiting || []).length > 0;
     el("carryrow").hidden = !(you.admin && stuck);
     if (you.admin && stuck) {
       el("carryBtn").textContent = s.waiting.length === 1
@@ -370,7 +407,7 @@
     var you = s.you;
     if (!you.playing) return "You joined after the deal, so you are watching this game out.";
     if (s.phase === "playing") {
-      return s.waiting && s.waiting.length
+      return anyoneActed(s) && s.waiting && s.waiting.length
         ? waitLine(s, "to play") : "";
     }
     if (s.phase === "discussing") {
@@ -379,7 +416,8 @@
     }
     if (s.phase === "voting") {
       if (!you.voted) return "You cannot vote for your own card.";
-      return s.waiting && s.waiting.length ? waitLine(s, "to vote") : "";
+      return anyoneActed(s) && s.waiting && s.waiting.length
+        ? waitLine(s, "to vote") : "";
     }
     if (s.phase === "scored" && s.last) {
       var gained = s.last.gained[you.id];
@@ -393,6 +431,14 @@
       return bits.join(" ");
     }
     return "";
+  }
+
+  /* Nobody has done anything yet is not the same as waiting on somebody. At the
+     top of a round everybody is outstanding, and saying so is noise. */
+  function anyoneActed(s) {
+    return s.players.some(function (q) {
+      return q.playing && (s.phase === "voting" ? q.voted : q.played);
+    });
   }
 
   /* Names them, rather than counting them. "Waiting on Bo" tells you who to
@@ -578,6 +624,9 @@
     render({
       t: "state", serial: 1, phase: "scored", round: 4, rounds: 10,
       theme: "Plus One",
+      premise: "You have been invited somewhere and you are allowed to bring one person.",
+      situationLabel: "Event",
+      deck: "plus-one", menu: null,
       situation: "You are at the opening night of your friend's one-man show. It runs two hours and there are eleven seats.",
       modifier: null,
       players: them,
