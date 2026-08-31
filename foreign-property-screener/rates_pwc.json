@@ -1,0 +1,103 @@
+{
+  "_comment": "Non-resident tax rates read off PwC Worldwide Tax Summaries, 31/08/2026, and merged over the workbook's figures by build_data.py. The rate recorded is the one that applies to THIS page's case: an individual non-resident who holds a residential property for ten years and then sells. That is not the headline rate. Several countries exempt the gain entirely once a property has been held five years, which the workbook's rates missed completely.",
+  "_basis": "rent: net | gross | deemed | schedule | exempt. cgt: gain | proceeds | deemed | schedule | exempt | none. Only net/gross/exempt (rent) and gain/exempt/none (cgt) are used in the arithmetic; the rest are shown as text.",
+  "_not_fetched": ["Montenegro", "Serbia", "North Macedonia", "Mauritius", "Morocco", "Egypt", "Colombia", "Brazil", "Bahrain", "Oman"],
+  "_not_fetched_reason": "The model takes whichever rate is higher, yours or the destination's. Against an Australian 47% on rent and 23.5% on the gain, none of these ten has a workbook rate high enough to bind, so verifying them cannot change a single number on the page. They keep the workbook figure and stay marked unverified.",
+
+  "Georgia": {
+    "rent": {"rate": 5.0, "basis": "net", "note": "5% PIT on residential rental income, net of related deductions", "quote": "Personal income tax (PIT) at 5% is applicable to the rental income derived by an individual as a result of renting out residential space"},
+    "cgt": {"rate": 5.0, "basis": "gain", "note": "5% on the profit", "quote": "The profit received from sale of a vehicle and an apartment (house) with attached land plot is subject to tax at a 5% rate."}
+  },
+  "Portugal": {
+    "rent": {"rate": 25.0, "basis": "gross", "note": "25% on residential rentals", "quote": "In general, rental income from residential rentals is taxed at 25%."},
+    "cgt": {"rate": null, "basis": "schedule", "note": "50% of the gain taxed at marginal rates 12.5-48%", "quote": "This income is taxed at the marginal rates varying between 12.50% and 48%"}
+  },
+  "Albania": {
+    "rent": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"},
+    "cgt": {"rate": 15.0, "basis": "gain", "note": "15% on the realised gain", "quote": "The transfer of ownership of real estate, either land or buildings, is subject to 15% tax on the capital gain realised from the sale transaction."}
+  },
+  "Belgium": {
+    "rent": {"rate": null, "basis": "deemed", "note": "taxed on notional/cadastral rental income, not actual rent", "quote": "Properties rented out are taxed on the notional rental income or on the net rental income received"},
+    "cgt": {"rate": 0.0, "basis": "exempt", "note": "buildings held over five years are exempt; 16.5% applies only inside five years", "quote": "the capital gain will be taxed at 16.5% ... [for non-primary residences sold within 5 years]"}
+  },
+  "Croatia": {
+    "rent": {"rate": 12.0, "basis": "net", "note": "12% after a 30% lump-sum expense deduction", "quote": "The tax base ... can be decreased by 30% for expenditures (lump-sum deduction) ... The tax rate is 12%"},
+    "cgt": {"rate": 24.0, "basis": "gain", "note": "24%, no long-hold exemption stated on PwC", "quote": "The tax rate is 24%, and no personal allowance is allowed"}
+  },
+  "Ireland": {
+    "rent": {"rate": null, "basis": "schedule", "note": "net rental profit at the individual's marginal rate", "quote": "Net profit arising from a rental property is taxed at an individual's marginal rate of tax."},
+    "cgt": {"rate": 33.0, "basis": "gain", "note": "33% CGT", "quote": "The current rate of CGT is 33%."}
+  },
+  "Spain": {
+    "rent": {"rate": 24.0, "basis": "gross", "note": "24% on gross for non-EU residents, who cannot deduct costs", "quote": "WHT is levied on rent payments received by non-residents ... at the flat rate of 24%"},
+    "cgt": {"rate": 19.0, "basis": "gain", "note": "19% for non-residents without a permanent establishment", "quote": "Capital gains obtained in Spain by non-residents without a PE are taxed at a rate of 19%"}
+  },
+  "United Kingdom": {
+    "rent": {"rate": null, "basis": "schedule", "note": "non-resident landlord scheme, net profits at income tax rates"},
+    "cgt": {"rate": 24.0, "basis": "gain", "note": "24% for non-residents on UK residential property", "quote": "Gains in respect of all UK property ... disposed of by non-UK residents are subject to UK CGT at the standard rate of CGT, currently 24%."}
+  },
+  "United States": {
+    "rent": {"rate": null, "basis": "schedule", "note": "a genuine choice: 30% on gross, or elect net basis at graduated rates", "quote": "a non-resident alien can elect to report real property rental income net of expenses, subject to tax at graduated rates."},
+    "cgt": {"rate": null, "basis": "schedule", "note": "FIRPTA withholding on gross proceeds, actual tax at graduated capital gains rates"}
+  },
+  "Japan": {
+    "rent": {"rate": 20.42, "basis": "gross", "note": "20.42% on gross rental income", "quote": "a non-resident's income from Japan-source interest, dividends, rental income, and royalties is generally subject to tax at a rate of 20.42%"},
+    "cgt": {"rate": 20.315, "basis": "gain", "note": "long-term rate, property held over five years", "quote": "Gains on property that had been held for over five years ... are taxed separately from other sources of income at a flat rate of 20.315%"}
+  },
+  "Netherlands": {
+    "rent": {"rate": null, "basis": "deemed", "note": "Box 3: actual rent is not taxed at all, a deemed return is taxed at 36%", "quote": "The actual rental income received is thus not taxable"},
+    "cgt": {"rate": 0.0, "basis": "none", "note": "no separate capital gains tax on the sale; the asset sits in Box 3"}
+  },
+  "Greece": {
+    "rent": {"rate": null, "basis": "schedule", "note": "progressive scale, not stated on the income-determination page"},
+    "cgt": {"rate": null, "basis": "schedule", "note": "capital gains on immovable property suspended until 31 December 2026, so a sale ten years out is unknowable", "quote": "the taxation of capital gains on the transfer of immovable property has been suspended until 31 December 2026"}
+  },
+  "Italy (South)": {
+    "rent": {"rate": null, "basis": "schedule", "note": "cedolare secca availability to non-residents not stated on PwC"},
+    "cgt": {"rate": 0.0, "basis": "exempt", "note": "exempt where the property has been owned more than five years", "quote": "sale of real estate owned for more than five years"}
+  },
+  "Poland": {
+    "rent": {"rate": null, "basis": "schedule", "note": "lump-sum rates not stated for non-residents on PwC"},
+    "cgt": {"rate": 0.0, "basis": "exempt", "note": "exempt if sold more than five years after the year of purchase", "quote": "sale of real property shall not be taxed if the sale is made after the lapse of five years after the end of the tax year when the property in question was purchased"}
+  },
+  "Philippines": {
+    "rent": {"rate": 25.0, "basis": "gross", "note": "25% final tax for a non-resident alien not engaged in trade or business", "quote": "non-resident aliens are taxed on Philippine-source investment income ... at the rate of ... 25%"},
+    "cgt": {"rate": 6.0, "basis": "proceeds", "note": "6% of the higher of gross selling price or fair market value, not of the gain", "quote": "6% of the higher of the gross sales price or fair market value of real property sold"}
+  },
+  "Malaysia": {
+    "rent": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC's individual pages"},
+    "cgt": {"rate": 10.0, "basis": "gain", "note": "RPGT for a non-citizen disposing after more than five years", "quote": "Exceeding 5 years: 10%"}
+  },
+  "Costa Rica": {
+    "rent": {"rate": 15.0, "basis": "net", "note": "15% with a predetermined 15% deduction for expenses", "quote": "subject to a 15% tax rate, with a predetermined 15% of deductible expenses"},
+    "cgt": {"rate": 2.5, "basis": "proceeds", "note": "2.5% withheld on the sale by the buyer, charged on the price not the gain", "quote": "The sale of assets owned by non-residents should be subject to a 2.5% tax, which should be withheld by the buyer"}
+  },
+  "Panama": {
+    "rent": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"},
+    "cgt": {"rate": 10.0, "basis": "gain", "note": "assessed at 10% of the gain, with a 3% advance on the price credited against it", "quote": "the tax will be assessed at 10% of the gain and the 3% of the advanced payment will be credited"}
+  },
+  "United Arab Emirates": {
+    "rent": {"rate": 0.0, "basis": "exempt", "note": "no personal income tax", "quote": "There is currently no personal income tax in the United Arab Emirates."},
+    "cgt": {"rate": 0.0, "basis": "exempt", "note": "no personal income tax"}
+  },
+  "Turkey": {
+    "rent": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"},
+    "cgt": {"rate": null, "basis": "schedule", "note": "real property gains not covered on PwC's income-determination page"}
+  },
+  "Hungary": {
+    "rent": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"},
+    "cgt": {"rate": null, "basis": "schedule", "note": "property-specific rules and holding-period reduction not stated on PwC"}
+  },
+  "Mexico": {
+    "rent": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"},
+    "cgt": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"}
+  },
+  "Thailand": {
+    "rent": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"},
+    "cgt": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"}
+  },
+  "Dominican Republic": {
+    "rent": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"},
+    "cgt": {"rate": null, "basis": "schedule", "note": "not stated for non-residents on PwC"}
+  }
+}

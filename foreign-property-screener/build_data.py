@@ -103,8 +103,16 @@ prof = {clean(r[0]): clean(r[1]) for r in wb["Country Profiles"].iter_rows(min_r
 KEEP = {
     "country", "price_aud", "currency", "net_yield", "purchase_costs", "sale_costs",
     "foreign_rental_tax", "foreign_rental_basis", "foreign_cgt", "foreign_cgt_basis",
-    "rental_tax_text", "cgt_text", "au_dta",
+    "rental_tax_text", "cgt_text", "au_dta", "verified", "rate_note",
 }
+
+# PwC Worldwide Tax Summaries, read by hand on 31/08/2026 and merged over the
+# workbook. The workbook's tax columns were unsourced and several were wrong in
+# ways that changed the ranking: it had Georgia at 20% on rent where PwC says 5%
+# for residential lets, and it charged exit tax in Belgium, Italy and Poland,
+# all three of which exempt a gain once the property has been held five years.
+# This page models a TEN-year hold, so the long-hold rate is the right one.
+PWC = json.loads((Path(__file__).parent / "rates_pwc.json").read_text(encoding="utf-8"))
 
 rows, skipped = [], []
 for r in comp.iter_rows(min_row=3, values_only=True):
@@ -121,6 +129,11 @@ for r in comp.iter_rows(min_row=3, values_only=True):
     if net_yield is None or purch is None or sale is None:
         skipped.append(name)
         continue
+    pwc = PWC.get(name)
+    if pwc:
+        rent_rate, rent_basis = pwc["rent"]["rate"], pwc["rent"]["basis"]
+        cgt_rate, cgt_basis = pwc["cgt"]["rate"], pwc["cgt"]["basis"]
+
     row = {
         "country": name,
         "price_aud": r[C_PRICE_AUD],
@@ -144,6 +157,8 @@ for r in comp.iter_rows(min_row=3, values_only=True):
         "wht_rent_text": clean(r[C_WHT]),
         "estate_text": clean(r[C_ESTATE]),
         "au_dta": yes_no(r[C_DTA]),
+        "verified": bool(pwc),
+        "rate_note": (pwc["cgt"].get("note") if pwc else ""),
         "au_dta_text": clean(r[C_DTA]),
         "ownership": clean(r[C_OWNERSHIP]),
         "visa": clean(r[C_VISA]),

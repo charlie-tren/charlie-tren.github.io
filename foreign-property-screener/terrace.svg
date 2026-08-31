@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- A terrace of three: the same house in three countries, which is what the
+       page compares. The houses do NOT touch. An earlier draft overlapped them
+       and at 16px, where one unit is half a pixel, the three merged into a
+       single blob. The 2-unit gaps are a pixel of dark at tab size, which is
+       the least that reads as a gap, and the middle house takes the height so
+       the silhouette has a shape rather than a flat top. -->
+  <rect width="32" height="32" rx="6" fill="#1a1c1f"/>
+  <path d="M2.5 17 L6.25 12 L10 17 L10 27 L2.5 27 Z" fill="#7d858f"/>
+  <path d="M12 15 L16 9 L20 15 L20 27 L12 27 Z" fill="#2f6fb2"/>
+  <path d="M22 17 L25.75 12 L29.5 17 L29.5 27 L22 27 Z" fill="#b4553f"/>
+</svg>

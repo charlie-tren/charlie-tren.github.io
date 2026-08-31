@@ -7,13 +7,15 @@
    "net_yield": 3.5,
    "purchase_costs": 4.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 15.0,
-   "foreign_rental_basis": "gain",
+   "foreign_rental_tax": null,
+   "foreign_rental_basis": "schedule",
    "foreign_cgt": 15.0,
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "15%",
    "cgt_text": "15%",
-   "au_dta": false
+   "au_dta": false,
+   "verified": true,
+   "rate_note": "15% on the realised gain"
   },
   {
    "country": "Bahrain",
@@ -28,7 +30,9 @@
    "foreign_cgt_basis": "exempt",
    "rental_tax_text": "0% (no personal income tax)",
    "cgt_text": "0% (no personal income/CGT)",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Belgium",
@@ -37,13 +41,15 @@
    "net_yield": 3.5,
    "purchase_costs": 13.5,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 37.5,
+   "foreign_rental_tax": null,
    "foreign_rental_basis": "deemed",
-   "foreign_cgt": null,
-   "foreign_cgt_basis": "alternatives",
+   "foreign_cgt": 0.0,
+   "foreign_cgt_basis": "exempt",
    "rental_tax_text": "25-50% progressive (on cadastral income basis)",
    "cgt_text": "16.5% (within 5 yrs buildings) / 33% (within 5 yrs land); exempt after",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "buildings held over five years are exempt; 16.5% applies only inside five years"
   },
   {
    "country": "Brazil",
@@ -58,7 +64,9 @@
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "15% (via Carne-Leao) or 25% WHT",
    "cgt_text": "15-22.5% progressive",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Colombia",
@@ -73,7 +81,9 @@
    "foreign_cgt_basis": "alternatives",
    "rental_tax_text": "35% WHT",
    "cgt_text": "15% (long-term) / 35% (short-term <2 yrs)",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Costa Rica",
@@ -83,12 +93,14 @@
    "purchase_costs": 5.0,
    "sale_costs": 3.0,
    "foreign_rental_tax": 15.0,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": null,
-   "foreign_cgt_basis": "alternatives",
+   "foreign_rental_basis": "net",
+   "foreign_cgt": 2.5,
+   "foreign_cgt_basis": "proceeds",
    "rental_tax_text": "15% flat",
    "cgt_text": "Generally exempt (15% if habitual seller; 2.5% WHT on non-resident sales)",
-   "au_dta": false
+   "au_dta": false,
+   "verified": true,
+   "rate_note": "2.5% withheld on the sale by the buyer, charged on the price not the gain"
   },
   {
    "country": "Croatia",
@@ -97,13 +109,15 @@
    "net_yield": 2.5,
    "purchase_costs": 6.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 13.5,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": 20.0,
+   "foreign_rental_tax": 12.0,
+   "foreign_rental_basis": "net",
+   "foreign_cgt": 24.0,
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "~7-20% (depends on structure)",
    "cgt_text": "20% (exempt after 2 yrs)",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "24%, no long-hold exemption stated on PwC"
   },
   {
    "country": "Dominican Republic",
@@ -112,13 +126,15 @@
    "net_yield": 5.0,
    "purchase_costs": 6.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 27.0,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": 27.0,
-   "foreign_cgt_basis": "gain",
+   "foreign_rental_tax": null,
+   "foreign_rental_basis": "schedule",
+   "foreign_cgt": null,
+   "foreign_cgt_basis": "schedule",
    "rental_tax_text": "27%",
    "cgt_text": "27% on net gain",
-   "au_dta": false
+   "au_dta": false,
+   "verified": true,
+   "rate_note": "not stated for non-residents on PwC"
   },
   {
    "country": "Egypt",
@@ -133,7 +149,9 @@
    "foreign_cgt_basis": "proceeds",
    "rental_tax_text": "Progressive 0-25%",
    "cgt_text": "2.5% of sale price",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Georgia",
@@ -142,13 +160,15 @@
    "net_yield": 5.5,
    "purchase_costs": 3.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 20.0,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": 20.0,
+   "foreign_rental_tax": 5.0,
+   "foreign_rental_basis": "net",
+   "foreign_cgt": 5.0,
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "20% flat",
    "cgt_text": "20% (exempt if held >2 yrs)",
-   "au_dta": false
+   "au_dta": false,
+   "verified": true,
+   "rate_note": "5% on the profit"
   },
   {
    "country": "Greece",
@@ -157,13 +177,15 @@
    "net_yield": 2.5,
    "purchase_costs": 10.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 30.0,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": 0.0,
-   "foreign_cgt_basis": "exempt",
+   "foreign_rental_tax": null,
+   "foreign_rental_basis": "schedule",
+   "foreign_cgt": null,
+   "foreign_cgt_basis": "schedule",
    "rental_tax_text": "15-45% progressive",
    "cgt_text": "Exempt (suspended until Dec 2026 at least)",
-   "au_dta": false
+   "au_dta": false,
+   "verified": true,
+   "rate_note": "capital gains on immovable property suspended until 31 December 2026, so a sale ten years out is unknowable"
   },
   {
    "country": "Hungary",
@@ -172,13 +194,15 @@
    "net_yield": 2.5,
    "purchase_costs": 8.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 15.0,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": 15.0,
-   "foreign_cgt_basis": "gain",
+   "foreign_rental_tax": null,
+   "foreign_rental_basis": "schedule",
+   "foreign_cgt": null,
+   "foreign_cgt_basis": "schedule",
    "rental_tax_text": "15% flat",
    "cgt_text": "15% (exempt after 5 yrs)",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "property-specific rules and holding-period reduction not stated on PwC"
   },
   {
    "country": "Ireland",
@@ -188,12 +212,14 @@
    "purchase_costs": 5.0,
    "sale_costs": 3.0,
    "foreign_rental_tax": null,
-   "foreign_rental_basis": "alternatives",
+   "foreign_rental_basis": "schedule",
    "foreign_cgt": 33.0,
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "20% WHT; marginal rate up to 52% inc. USC",
    "cgt_text": "33%",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "33% CGT"
   },
   {
    "country": "Italy (South)",
@@ -203,12 +229,14 @@
    "purchase_costs": 10.0,
    "sale_costs": 3.0,
    "foreign_rental_tax": null,
-   "foreign_rental_basis": "alternatives",
-   "foreign_cgt": null,
-   "foreign_cgt_basis": "alternatives",
+   "foreign_rental_basis": "schedule",
+   "foreign_cgt": 0.0,
+   "foreign_cgt_basis": "exempt",
    "rental_tax_text": "21% cedolare secca (flat) or 23-43% progressive",
    "cgt_text": "26% flat (or progressive 23-43%; exempt after 5 yrs)",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "exempt where the property has been owned more than five years"
   },
   {
    "country": "Japan",
@@ -217,13 +245,15 @@
    "net_yield": 2.0,
    "purchase_costs": 7.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 25.0,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": null,
-   "foreign_cgt_basis": "alternatives",
+   "foreign_rental_tax": 20.42,
+   "foreign_rental_basis": "gross",
+   "foreign_cgt": 20.315,
+   "foreign_cgt_basis": "gain",
    "rental_tax_text": "5-45% progressive (20.42% WHT at source)",
    "cgt_text": "30.63% (short-term <=5 yrs) / 15.315% (long-term >5 yrs)",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "long-term rate, property held over five years"
   },
   {
    "country": "Malaysia",
@@ -232,13 +262,15 @@
    "net_yield": 3.5,
    "purchase_costs": 6.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 30.0,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": 30.0,
+   "foreign_rental_tax": null,
+   "foreign_rental_basis": "schedule",
+   "foreign_cgt": 10.0,
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "30% flat",
    "cgt_text": "RPGT: 30% (yr 1-3), 20% (yr 4), 15% (yr 5), 10% (yr 6+)",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "RPGT for a non-citizen disposing after more than five years"
   },
   {
    "country": "Mauritius",
@@ -253,7 +285,9 @@
    "foreign_cgt_basis": "exempt",
    "rental_tax_text": "15% flat",
    "cgt_text": "0% (no CGT)",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Mexico",
@@ -262,13 +296,15 @@
    "net_yield": 5.0,
    "purchase_costs": 6.5,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 21.0,
-   "foreign_rental_basis": "gross",
+   "foreign_rental_tax": null,
+   "foreign_rental_basis": "schedule",
    "foreign_cgt": null,
-   "foreign_cgt_basis": "alternatives",
+   "foreign_cgt_basis": "schedule",
    "rental_tax_text": "21% WHT on gross",
    "cgt_text": "25% of gross or 35% of net gain",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "not stated for non-residents on PwC"
   },
   {
    "country": "Montenegro",
@@ -283,7 +319,9 @@
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "15%",
    "cgt_text": "15%",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Morocco",
@@ -298,7 +336,9 @@
    "foreign_cgt_basis": "alternatives",
    "rental_tax_text": "Progressive 10-38%",
    "cgt_text": "20% (or 3% of sale price, whichever is higher)",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Netherlands",
@@ -308,12 +348,14 @@
    "purchase_costs": 7.0,
    "sale_costs": 3.0,
    "foreign_rental_tax": null,
-   "foreign_rental_basis": "alternatives",
-   "foreign_cgt": 2.0,
-   "foreign_cgt_basis": "deemed",
+   "foreign_rental_basis": "deemed",
+   "foreign_cgt": 0.0,
+   "foreign_cgt_basis": "none",
    "rental_tax_text": "Box 3 deemed return (not actual income; ~36% on deemed ~5.5% return)",
    "cgt_text": "Box 3 deemed return taxation (~2% effective on property value)",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "no separate capital gains tax on the sale; the asset sits in Box 3"
   },
   {
    "country": "North Macedonia",
@@ -328,7 +370,9 @@
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "10%",
    "cgt_text": "10%",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Oman",
@@ -343,7 +387,9 @@
    "foreign_cgt_basis": "exempt",
    "rental_tax_text": "0% (no personal income tax currently)",
    "cgt_text": "0% (no personal income/CGT currently; PIT from 2028)",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Panama",
@@ -352,13 +398,15 @@
    "net_yield": 6.0,
    "purchase_costs": 5.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 12.5,
-   "foreign_rental_basis": "gain",
+   "foreign_rental_tax": null,
+   "foreign_rental_basis": "schedule",
    "foreign_cgt": 10.0,
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "Progressive 0-25% (territorial system; only Panama-source income taxed)",
    "cgt_text": "10% flat on gain",
-   "au_dta": false
+   "au_dta": false,
+   "verified": true,
+   "rate_note": "assessed at 10% of the gain, with a 3% advance on the price credited against it"
   },
   {
    "country": "Philippines",
@@ -368,12 +416,14 @@
    "purchase_costs": 6.5,
    "sale_costs": 3.0,
    "foreign_rental_tax": 25.0,
-   "foreign_rental_basis": "gain",
+   "foreign_rental_basis": "gross",
    "foreign_cgt": 6.0,
    "foreign_cgt_basis": "proceeds",
    "rental_tax_text": "25% flat",
    "cgt_text": "6% of gross selling price or FMV",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "6% of the higher of gross selling price or fair market value, not of the gain"
   },
   {
    "country": "Poland",
@@ -383,12 +433,14 @@
    "purchase_costs": 6.5,
    "sale_costs": 3.0,
    "foreign_rental_tax": null,
-   "foreign_rental_basis": "alternatives",
-   "foreign_cgt": 19.0,
-   "foreign_cgt_basis": "gain",
+   "foreign_rental_basis": "schedule",
+   "foreign_cgt": 0.0,
+   "foreign_cgt_basis": "exempt",
    "rental_tax_text": "8.5% (up to PLN 100K) / 12.5% (above PLN 100K) lump-sum",
    "cgt_text": "19% flat",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "exempt if sold more than five years after the year of purchase"
   },
   {
    "country": "Portugal",
@@ -398,12 +450,14 @@
    "purchase_costs": 8.5,
    "sale_costs": 3.0,
    "foreign_rental_tax": 25.0,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": 28.0,
-   "foreign_cgt_basis": "gain",
+   "foreign_rental_basis": "gross",
+   "foreign_cgt": null,
+   "foreign_cgt_basis": "schedule",
    "rental_tax_text": "25% flat",
    "cgt_text": "28% flat on gain",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "50% of the gain taxed at marginal rates 12.5-48%"
   },
   {
    "country": "Serbia",
@@ -418,7 +472,9 @@
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "~15% effective (20% with 25% deduction)",
    "cgt_text": "15%",
-   "au_dta": false
+   "au_dta": false,
+   "verified": false,
+   "rate_note": ""
   },
   {
    "country": "Spain",
@@ -433,7 +489,9 @@
    "foreign_cgt_basis": "gain",
    "rental_tax_text": "24% flat on gross (EU residents: 19% on net)",
    "cgt_text": "19% flat",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "19% for non-residents without a permanent establishment"
   },
   {
    "country": "Thailand",
@@ -442,13 +500,15 @@
    "net_yield": 2.5,
    "purchase_costs": 7.0,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 20.0,
-   "foreign_rental_basis": "gain",
+   "foreign_rental_tax": null,
+   "foreign_rental_basis": "schedule",
    "foreign_cgt": null,
-   "foreign_cgt_basis": "alternatives",
+   "foreign_cgt_basis": "schedule",
    "rental_tax_text": "5-35% progressive",
    "cgt_text": "Specific business tax (3.3%) or stamp duty (0.5%); income tax 5-35% on gain portion",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "not stated for non-residents on PwC"
   },
   {
    "country": "Turkey",
@@ -457,13 +517,15 @@
    "net_yield": 5.5,
    "purchase_costs": 8.5,
    "sale_costs": 3.0,
-   "foreign_rental_tax": 27.5,
-   "foreign_rental_basis": "gain",
-   "foreign_cgt": 27.5,
-   "foreign_cgt_basis": "gain",
+   "foreign_rental_tax": null,
+   "foreign_rental_basis": "schedule",
+   "foreign_cgt": null,
+   "foreign_cgt_basis": "schedule",
    "rental_tax_text": "15-40% progressive",
    "cgt_text": "15-40% progressive (exempt after 5 yrs)",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "real property gains not covered on PwC's income-determination page"
   },
   {
    "country": "United Arab Emirates",
@@ -478,7 +540,9 @@
    "foreign_cgt_basis": "exempt",
    "rental_tax_text": "0% (no personal income tax)",
    "cgt_text": "0% (no personal income/CGT)",
-   "au_dta": false
+   "au_dta": false,
+   "verified": true,
+   "rate_note": "no personal income tax"
   },
   {
    "country": "United Kingdom",
@@ -488,12 +552,14 @@
    "purchase_costs": 7.5,
    "sale_costs": 3.0,
    "foreign_rental_tax": null,
-   "foreign_rental_basis": "alternatives",
-   "foreign_cgt": null,
-   "foreign_cgt_basis": "alternatives",
+   "foreign_rental_basis": "schedule",
+   "foreign_cgt": 24.0,
+   "foreign_cgt_basis": "gain",
    "rental_tax_text": "20% basic / 40% higher / 45% additional (after personal allowance)",
    "cgt_text": "18% (basic rate) / 24% (higher rate)",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "24% for non-residents on UK residential property"
   },
   {
    "country": "United States",
@@ -503,12 +569,14 @@
    "purchase_costs": 4.5,
    "sale_costs": 3.0,
    "foreign_rental_tax": null,
-   "foreign_rental_basis": "alternatives",
+   "foreign_rental_basis": "schedule",
    "foreign_cgt": null,
-   "foreign_cgt_basis": "alternatives",
+   "foreign_cgt_basis": "schedule",
    "rental_tax_text": "30% WHT on gross OR elect net basis (10-37% graduated rates)",
    "cgt_text": "FIRPTA: 15% WHT on gross; actual tax 0-20% + 3.8% NIIT on net gain",
-   "au_dta": true
+   "au_dta": true,
+   "verified": true,
+   "rate_note": "FIRPTA withholding on gross proceeds, actual tax at graduated capital gains rates"
   }
  ],
  "sources": [

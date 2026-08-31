@@ -1,4 +1,5 @@
-/* Absentee. What a property abroad returns after your own country taxes it.
+/* Foreign Property Screener. What a property abroad returns after your own
+   country taxes it.
 
    The arithmetic, in one place:
 
@@ -44,8 +45,8 @@ function irr(cf) {
    numbers, so the ones charged on proceeds, on a deemed return, or offered as a
    choice of regimes are set aside and the country is named in the notes rather
    than quietly given a rate the source never states. */
-const rentUsable = c => ["gain", "gross", "exempt"].includes(c.foreign_rental_basis);
-const cgtUsable  = c => ["gain", "exempt"].includes(c.foreign_cgt_basis);
+const rentUsable = c => ["gain", "gross", "net", "exempt"].includes(c.foreign_rental_basis);
+const cgtUsable  = c => ["gain", "exempt", "none"].includes(c.foreign_cgt_basis);
 const needsReview = c => !rentUsable(c) || !cgtUsable(c);
 
 function model(c, s, fxFall, taxFree) {
@@ -427,15 +428,19 @@ function render() {
   add("Tax on rent there", c.rental_tax_text);
   add("Tax on the gain there", c.cgt_text);
   add("Treaty with Australia", c.au_dta ? "Yes" : "No");
+  add("Rates checked against", c.verified ? "PwC, for a ten-year hold" : "the source workbook only");
+  add("On the ten-year hold", c.rate_note);
 
   $("note-tax").textContent = s.worldwide
     ? "Australia taxes what you earn abroad and credits the tax you paid there, capped at that amount. The foreign rate is a floor; yours is the bill."
     : "Foreign income is not taxed at home, so only the destination's rates apply.";
 
+  const verified = cs.filter(c => c.verified).length;
   const review = cs.filter(needsReview).length;
   $("note-review").textContent =
-    `In ${review} of ${cs.length} countries the local rate is a schedule, not one number, so it is shown as text and left out. `
-    + `That does not move the return: the total is whichever rate is higher, and none of the readable rates is above yours.`;
+    `Destination tax rates are read off PwC's country guides for ${verified} of the ${cs.length} countries, taking the rate for a ten-year hold. `
+    + `Several countries stop taxing the gain once a property has been held five years, which the headline rate hides. `
+    + `In ${review} the local rate is a schedule or a choice of regimes rather than one number, so it is shown as text and left out of the arithmetic.`;
 }
 
 /* ---------- boot ---------- */
