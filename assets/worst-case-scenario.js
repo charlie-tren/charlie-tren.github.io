@@ -92,6 +92,9 @@
       var s;
       try { s = JSON.parse(e.data); } catch (x) { return; }
       if (s.t === "state") render(s);
+      /* The room refusing something, aimed at one person. Shown where the round
+         talks, and cleared by the next state, so it cannot linger. */
+      else if (s.t === "nope" && s.text) note(s.text);
     };
 
     ws.onclose = function () {
@@ -155,7 +158,7 @@
       });
     }
 
-    el("boardHead").textContent = playing ? "Blame" : "In The Room";
+    el("boardHead").textContent = playing ? "The Room" : "In The Room";
     el("blnote").textContent = playing ? "Fewest wins" : "";
 
     list.textContent = "";
@@ -378,7 +381,7 @@
 
     el("modifier").hidden = !s.modifier || s.modifier === "reverse";
     if (s.modifier === "double") {
-      el("modifier").textContent = "Double blame this round";
+      el("modifier").textContent = "Everything counts double this round";
     }
     /* The premise sits above the prompt so a player knows what game they are
        in before they read what varies this round. */
@@ -509,9 +512,12 @@
     if (s.phase === "scored" && s.last) {
       var gained = s.last.gained[you.id];
       var bits = [];
-      /* Blame is bad, so taking none is the good outcome and says so. */
-      if (gained === 0) bits.push("No blame. Nobody picked yours.");
-      else if (gained !== undefined) bits.push("You take " + gained + " blame.");
+      /* No unit word. The number sits under a column headed by nothing but
+         "Fewest wins", which is the only thing a player has to know, and naming
+         it was two people's first complaint about the game. */
+      if (gained === 0) bits.push("Nobody picked yours.");
+      else if (gained === 1) bits.push("You picked up 1.");
+      else if (gained !== undefined) bits.push("You picked up " + gained + ".");
       if (s.last.sweep) {
         bits.push(ownerName(s, s.last.sweep) + " was picked by the whole room.");
       }
