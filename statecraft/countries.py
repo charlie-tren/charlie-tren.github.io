@@ -38,10 +38,12 @@ next to that country's name, so it is checked against a source before it ships.
 
 `nonTaxRevenue` is income the state has that is not tax, in % of GDP, and it is
 inherited from the starting country rather than chosen. A state's income is tax
-PLUS non-tax income, and for thirty-six of the thirty-seven matchable countries the
-second term rounds to nothing. On the eight measured-only rows it is 0.0
-because it could not be sourced, which is a different claim and is written out
-above those rows. For the UAE it is most of the budget. Total capacity is the realised
+PLUS non-tax income, and for forty-one of the forty-five countries the second
+term rounds to nothing. The four that carry it are the Gulf monarchies, where
+hydrocarbon and investment income is most or all of the budget: the UAE on 11.8,
+Saudi Arabia 11.1, Qatar 10.7 and Kuwait 58.2, each of them general government
+total revenue less the tax take the country starts on, sourced and worked
+through in the block above the Saudi Arabia row. Total capacity is the realised
 value of the chosen tax rate plus this, floored at what the country already
 spends. See budget.js.
 
@@ -995,23 +997,17 @@ COUNTRIES = [
     # that test_every_country_has_exactly_one_option_in_every_domain will fail
     # on rather than quietly accept.
     #
-    # nonTaxRevenue is 0.0 on all twenty-five, INCLUDING Saudi Arabia, Qatar and
-    # Kuwait, which is the UAE's case and where a real figure would be worth
-    # having. It is 0.0 because it could not be sourced, not because it is
-    # believed to be zero. The IMF Fiscal Monitor gives general government
-    # revenue for 2024 (Saudi Arabia 27.1, Qatar 26.7, Kuwait 74.2, and the UAE
-    # at 27.8, which reproduces the figure on the UAE's own row), but no source
-    # consulted gives a tax take for the three on the same basis as the tax_take
-    # axis: the OECD Global Revenue Statistics database does not cover them. The
-    # only available subtraction, IMF revenue less the UNU-WIDER GRD tax series,
-    # puts the UAE at 7.8 against the 11.8 on its row, so the two bases disagree
-    # by four points of GDP on the one country where the answer is known. A
-    # number built that way would look right and be wrong, so the field is 0.0
-    # and the gap is stated here. It is also inert for these rows: nonTaxRevenue
-    # is inherited from the STARTING country, and a measured-only country can
-    # never be one.
+    # nonTaxRevenue is 0.0 on the rows below, which is a claim that the second
+    # term rounds to nothing for them and not a gap.
     #
-    # THE THREE ALSO HAVE NO tax_take, AND 31/08/2026 IS THE SECOND SEARCH FOR
+    # SAUDI ARABIA, QATAR AND KUWAIT USED TO BE NAMED HERE AS THE ROWS WHERE A
+    # REAL FIGURE WOULD BE WORTH HAVING, and as of 31/08/2026 they have one.
+    # They are matchable rows further down the file and the working is in the
+    # block above the Saudi Arabia row, not here. What stays true for them, and
+    # is why the next paragraph is kept, is that none of the three has a
+    # measured tax_take, so all three still start on tax_minimal's 16.0.
+    #
+    # THE GULF THREE HAVE NO tax_take, AND 31/08/2026 IS THE SECOND SEARCH FOR
     # ONE. Taiwan and Cyprus were both closed that day and the Gulf three were
     # not, so the reason they stayed open is written down rather than left as an
     # absence. What was tried:
@@ -1044,6 +1040,9 @@ COUNTRIES = [
     # So the three keep falling back to tax_minimal's 16.0, which is documented
     # rather than right. Filling the cell from any of the above would put a
     # number on a different basis into a column the reveal plots on one axis.
+    # That 16.0 is now load-bearing in a second place: it is the figure
+    # subtracted from each of the three general government revenue totals to
+    # give their nonTaxRevenue, exactly as 16.0 was subtracted for the UAE.
     # ----------------------------------------------------------------------
     {"code": "IE", "name": "Ireland", "timezones": ["Europe/Dublin"],
      "nonTaxRevenue": 0.0,
@@ -2862,7 +2861,65 @@ COUNTRIES = [
                        "source": "World Prison Brief, prison population rate per 100,000 of national population"}
      }},
     {"code": "SA", "name": "Saudi Arabia", "timezones": ["Asia/Riyadh"],
-     "nonTaxRevenue": 0.0,
+     # ----------------------------------------------------------------------
+     # THE GULF THREE GET A SOURCED nonTaxRevenue, 31/08/2026. Until today all
+     # three sat at 0.0 while running on hydrocarbons exactly as the UAE does,
+     # and the consequence was that their oil was being carried by the top-up
+     # instead: Kuwait 24.0 points of GDP, Qatar 19.0 and Saudi Arabia 13.5, the
+     # three largest in the file. A top-up says "this country spends more than
+     # the model says it raises". For a petrostate the true statement is that it
+     # raises more, from something that is not tax.
+     #
+     # THE CONSTRUCT IS THE UAE'S, TO THE INDICATOR AND THE YEAR. General
+     # government total revenue as a percent of GDP, less the tax take the
+     # country starts on. Source is IMF DataMapper indicator `rev`, "Government
+     # revenue, percent of GDP", dataset FPP, the Public Finances in Modern
+     # History Database, December 2025 vintage, 2024 observation. That is the
+     # series behind the UAE's own row, and it returns 27.825 for ARE in 2024,
+     # which is the 27.8 already written there. Read via
+     # https://www.imf.org/external/datamapper/api/v1/rev/SAU/QAT/KWT/ARE
+     # Cross-checked against a second and independent IMF dataset, DataMapper
+     # GGR_G01_GDP_PT, "Revenue", Fiscal Monitor (April 2026), which gives 2024
+     # figures of ARE 27.83, SAU 26.77, QAT 26.74 and KWT 74.04. The two vintages
+     # agree to within a third of a point on every one of the four.
+     #
+     # THE SUBTRACTION USES EACH COUNTRY'S ACTUAL STARTING RATE, which is what
+     # startingRate() in budget.js returns: a country's measured tax_take where
+     # it has one, otherwise its tax option's rate. None of the four Gulf rows
+     # carries a tax_take, so all four start on tax_minimal's 16.0 and all four
+     # subtract 16.0. There is no mixing of bases here.
+     #
+     #   Saudi Arabia   27.1 less 16.0 = 11.1
+     #   Qatar          26.7 less 16.0 = 10.7
+     #   Kuwait         74.2 less 16.0 = 58.2
+     #   UAE            27.8 less 16.0 = 11.8   (unchanged, the control)
+     #
+     # KUWAIT'S 74.2 IS REAL AND IT IS NOT THE SAME THING AS THE OTHER THREE.
+     # It is the same indicator on the same general government basis, so it
+     # belongs in this column, but what sits inside it does not match. The IMF's
+     # 2025 Article IV mission statement for Kuwait, read 31/08/2026, puts the
+     # deficit of the BUDGETARY CENTRAL GOVERNMENT at 2.2% of GDP in FY2024/25
+     # and the surplus at the GENERAL GOVERNMENT level at 27.7% of GDP in the
+     # same year, "also reflecting higher estimated SWF investment income". The
+     # roughly thirty points of GDP between those two numbers is investment
+     # income of the Kuwait Investment Authority, and the same statement asks
+     # that "the coverage of the fiscal accounts statistics should be expanded
+     # to the general government level", which is to say Kuwait does not publish
+     # general government accounts and the IMF is estimating them.
+     # https://www.imf.org/en/news/articles/2025/12/18/cs-kuwait-staff-concluding-statement-of-the-2025-article-iv-mission
+     #
+     # So Kuwait's non-tax income is an order of magnitude larger than the other
+     # three because the KIA is an order of magnitude larger relative to GDP,
+     # and because Kuwait's fiscal accounts book its returns where the UAE's do
+     # not book ADIA's. THE VISIBLE CONSEQUENCE IN THE APP is that Kuwait comes
+     # off the propped list with about 34 points of GDP spare, so a visitor who
+     # starts there can afford every option on the menu and the tax slider stops
+     # biting. That is the sourced figure and not a fault to tune away, but it
+     # is the one number in this column worth revisiting if the reveal starts
+     # feeling slack, and the honest alternative is a different construct for
+     # all four rows rather than a hand-cut Kuwait.
+     # ----------------------------------------------------------------------
+     "nonTaxRevenue": 11.1,
      "matchable": True,
      # ----------------------------------------------------------------------
      # THE THREE GULF ROWS, CODED 31/08/2026 AGAINST THE UAE RATHER THAN FROM
@@ -2994,7 +3051,9 @@ COUNTRIES = [
                        "source": "World Prison Brief, prison population rate per 100,000 of national population"}
      }},
     {"code": "QA", "name": "Qatar", "timezones": ["Asia/Qatar"],
-     "nonTaxRevenue": 0.0,
+     # 26.7 general government revenue less the 16.0 it starts on. Source and
+     # working are in the block above the Saudi Arabia row.
+     "nonTaxRevenue": 10.7,
      "matchable": True,
      "choices": {
                  # No personal income tax and, alone among the four, still no
@@ -3095,7 +3154,13 @@ COUNTRIES = [
                        "source": "World Prison Brief, prison population rate per 100,000 of national population"}
      }},
     {"code": "KW", "name": "Kuwait", "timezones": ["Asia/Kuwait"],
-     "nonTaxRevenue": 0.0,
+     # 74.2 general government revenue less the 16.0 it starts on. THE LARGEST
+     # FIGURE IN THIS COLUMN BY A DISTANCE, and roughly thirty of those points
+     # are IMF-estimated Kuwait Investment Authority income that the budgetary
+     # central government, which runs a deficit, never sees. Source, the Article
+     # IV that says so, and what it does to Kuwait's budget in the app are all
+     # in the block above the Saudi Arabia row.
+     "nonTaxRevenue": 58.2,
      "matchable": True,
      # KUWAIT IS THE ONE THAT IS NOT A COPY. It differs from the UAE on seven of
      # thirteen and from Saudi Arabia on seven, which is what a Gulf state with

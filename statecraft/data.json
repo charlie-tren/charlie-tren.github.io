@@ -5371,7 +5371,7 @@
       "timezones": [
         "Asia/Riyadh"
       ],
-      "nonTaxRevenue": 0.0,
+      "nonTaxRevenue": 11.1,
       "matchable": true,
       "choices": {
         "tax": "tax_minimal",
@@ -5438,7 +5438,7 @@
       "timezones": [
         "Asia/Qatar"
       ],
-      "nonTaxRevenue": 0.0,
+      "nonTaxRevenue": 10.7,
       "matchable": true,
       "choices": {
         "tax": "tax_minimal",
@@ -5505,7 +5505,7 @@
       "timezones": [
         "Asia/Kuwait"
       ],
-      "nonTaxRevenue": 0.0,
+      "nonTaxRevenue": 58.2,
       "matchable": true,
       "choices": {
         "tax": "tax_minimal",
