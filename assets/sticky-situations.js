@@ -20,7 +20,7 @@
   var el = function (id) { return document.getElementById(id); };
   var ws = null, room = null, myName = null, token = null;
   var beat = null, retry = null, tries = 0, paused = false;
-  var last = null, serial = null, picked = null, swapping = false;
+  var last = null, serial = null, picked = null, swapping = false, pokeSeen = null;
 
   /* Identity that survives the socket. A phone that locks its screen, a tab left
      in the background, a train going into a tunnel: all of them kill the
@@ -129,8 +129,17 @@
        nobody is playing yet, so marking the whole lobby as watchers reads as if
        the room is broken. */
     var watching = !q.playing && phase !== "lobby";
-    var li = document.createElement("li");
-    li.className = "seat" + (watching ? " watching" : "");
+    /* Tapping somebody the round is stuck on pokes them. A whole chip is a big
+       target, which is what you want on a phone when you are trying to hurry a
+       friend along. */
+    var li = document.createElement(q.waiting ? "button" : "li");
+    if (q.waiting) {
+      li.type = "button";
+      li.title = "Poke " + q.name;
+      li.addEventListener("click", function () { send({ t: "poke", id: q.id }); });
+    }
+    li.className = "seat" + (watching ? " watching" : "") +
+      (q.waiting ? " stalling" : "") + (q.here === false ? " away" : "");
     var nm = document.createElement("span");
     nm.className = "nm";
     nm.textContent = q.name;
@@ -199,7 +208,25 @@
     seats.hidden = s.phase === "finished";
     seats.textContent = "";
     if (!seats.hidden) {
-      s.players.forEach(function (q) { seats.appendChild(seatRow(q, s.phase)); });
+      s.players.forEach(function (q) {
+        var row = seatRow(q, s.phase);
+        if (row.tagName === "BUTTON") {
+          var li = document.createElement("li");
+          li.appendChild(row);
+          seats.appendChild(li);
+        } else {
+          seats.appendChild(row);
+        }
+      });
+    }
+
+    /* Somebody poked you. Animate on the counter changing rather than on a
+       message, so a poke sent while this tab was asleep still lands when it
+       wakes rather than being lost. */
+    if (pokeSeen === null) pokeSeen = s.poked || 0;
+    else if ((s.poked || 0) > pokeSeen) {
+      pokeSeen = s.poked;
+      nudge();
     }
 
     el("preGame").hidden = s.phase !== "lobby";
@@ -311,6 +338,18 @@
         : s.round >= s.rounds ? "See the final scores" : "Next round";
     }
 
+    /* The room never decides on its own that an absent player has gone: a locked
+       phone closes the socket, and guessing there once scored a round without
+       somebody's vote. The host decides, and only once there is somebody to
+       decide about. */
+    var stuck = (s.waiting || []).length > 0;
+    el("carryrow").hidden = !(you.admin && stuck);
+    if (you.admin && stuck) {
+      el("carryBtn").textContent = s.waiting.length === 1
+        ? "Carry on without " + s.waiting[0]
+        : "Carry on without " + s.waiting.length + " players";
+    }
+
     note(roundNote(s));
   }
 
@@ -318,8 +357,8 @@
     var you = s.you;
     if (!you.playing) return "You joined after the deal, so you are watching this game out.";
     if (s.phase === "playing") {
-      var waiting = s.players.filter(function (q) { return q.playing && !q.played; }).length;
-      return waiting ? waiting + " still to play." : "";
+      return s.waiting && s.waiting.length
+        ? waitLine(s, "to play") : "";
     }
     if (s.phase === "discussing") {
       return you.admin ? "Talk it out, then open the vote."
@@ -327,8 +366,7 @@
     }
     if (s.phase === "voting") {
       if (!you.voted) return "You cannot vote for your own card.";
-      var left = s.players.filter(function (q) { return q.playing && !q.voted; }).length;
-      return left ? left + " still to vote." : "";
+      return s.waiting && s.waiting.length ? waitLine(s, "to vote") : "";
     }
     if (s.phase === "scored" && s.last) {
       var gained = s.last.gained[you.id];
@@ -345,6 +383,28 @@
       return bits.join(" ");
     }
     return "";
+  }
+
+  /* Names them, rather than counting them. "Waiting on Bo" tells you who to
+     chase; "1 still to vote" tells you nothing you can act on. */
+  function waitLine(s, what) {
+    var w = s.waiting;
+    var who = w.length === 1 ? w[0]
+      : w.length === 2 ? w[0] + " and " + w[1]
+      : w.slice(0, -1).join(", ") + " and " + w[w.length - 1];
+    return "Waiting on " + who + " " + what + ". Tap a name to poke them.";
+  }
+
+  /* Being poked. Deliberately physical: a shake, and a buzz on a phone, because
+     the whole point is that you are not looking at the screen. */
+  function nudge() {
+    var page = document.querySelector(".page");
+    if (!page) return;
+    page.classList.remove("poked");
+    void page.offsetWidth;                    /* restart the animation */
+    page.classList.add("poked");
+    setTimeout(function () { page.classList.remove("poked"); }, 900);
+    try { if (navigator.vibrate) navigator.vibrate([90, 60, 90]); } catch (x) {}
   }
 
   function ownerName(s, id) {
@@ -455,6 +515,7 @@
     swapping = !swapping;
     if (last) render(last);
   });
+  el("carryBtn").addEventListener("click", function () { send({ t: "carryon" }); });
   el("beginBtn").addEventListener("click", function () { send({ t: "start" }); });
   el("advanceBtn").addEventListener("click", function () { send({ t: "advance" }); });
 

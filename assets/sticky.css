@@ -35,6 +35,37 @@
 .seat.watching { opacity: .55; }
 .seat.watching .sc { display: none; }
 
+/* Somebody the round is stuck on. A button, not a label: tapping it pokes them,
+   and the whole chip is the target because on a phone you are trying to hurry a
+   friend along with one thumb. */
+.seat.stalling { cursor: pointer; border-color: var(--accent); background: transparent;
+                 font: 400 13.5px/1 ui-sans-serif, system-ui, sans-serif;
+                 animation: seatpulse 2.2s ease-in-out infinite; }
+.seat.stalling:hover { background: var(--grid); }
+/* Nobody is behind this seat right now. They are still in the game and still
+   being waited for, so they stay on screen rather than vanishing. */
+.seat.away .nm { opacity: .6; }
+.seat.away::after { content: "away"; color: var(--faint);
+                    font: 400 11.5px/1 ui-sans-serif, system-ui, sans-serif; }
+@keyframes seatpulse {
+  0%, 100% { border-color: var(--rule); }
+  50%      { border-color: var(--accent); }
+}
+
+/* Being poked. The point is that you are NOT looking at the screen, so it moves
+   and the phone buzzes. */
+.page.poked { animation: pokeshake .5s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes pokeshake {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-7px, 0, 0); }
+  40%, 60% { transform: translate3d(7px, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seat.stalling { animation: none; border-color: var(--accent); }
+  .page.poked { animation: none; outline: 2px solid var(--accent); outline-offset: -2px; }
+}
+
 .waiting { color: var(--soft); font: 400 15px/1.5 ui-sans-serif, system-ui, sans-serif;
            margin: 1.6rem 0 0; }
 
