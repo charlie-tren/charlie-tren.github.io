@@ -177,8 +177,11 @@ function paintKey(startCode, gaps, differs) {
 function paintDomains() {
   const host = document.getElementById('domains');
 
-  host.innerHTML = data.domains.map((domain) => {
+  host.innerHTML = data.domains.map((domain, i) => {
     const isTax = domain.id === TAX_DOMAIN;
+    // Only the first section spells the padlock out. Thirteen copies of the
+    // word would be noise; none at all and nobody finds the feature.
+    const first = i === 0;
     const rungs = isTax ? [] : ladder(data, domain.id);
     const rangeAttrs = isTax
       ? `min="${TAX.MIN}" max="${TAX.MAX}" step="${RATE_STEP}"`
@@ -206,12 +209,12 @@ function paintDomains() {
       <div class="d-head">
         <h2 id="h_${esc(domain.id)}">${esc(domain.name)}</h2>
         <span class="chip" id="chip_${esc(domain.id)}" hidden>Changed</span>
-        ${isTax ? '' : `<button class="lock" type="button" id="lock_${esc(domain.id)}"
+        ${`<button class="lock${first ? ' lock-first' : ''}" type="button" id="lock_${esc(domain.id)}"
                 data-lock="${esc(domain.id)}" aria-pressed="false">
           <svg class="lk" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
             <rect class="lk-body" x="3" y="7" width="10" height="7" rx="1.6"/>
             <path class="lk-shackle" fill="none" stroke-width="1.7" stroke-linecap="round"/>
-          </svg>
+          </svg>${first ? '<span class="lk-hint">Lock</span>' : ''}
         </button>`}
       </div>
       <div class="d-slide">
@@ -644,13 +647,14 @@ function render(change) {
  * wraps to two lines on a phone and a hard-coded padding would let the bar sit
  * over the last paragraph of the method section. */
 
+// The reveal is in the flow now rather than pinned to the window, so the body
+// no longer reserves room for it and the cascade note has nothing to clear.
+// Kept as a no-op call site would be worse than deleting it: the call is gone
+// from boot() too.
 function syncFinishSpace() {
-  const bar = document.querySelector('.finish');
-  if (!bar) return;
-  const h = bar.offsetHeight;
-  document.body.style.paddingBottom = h ? `${h + 16}px` : '';
+  document.body.style.paddingBottom = '';
   const note = document.getElementById('cascade');
-  if (note) note.style.bottom = `${h + 8}px`;
+  if (note) note.style.bottom = '';
 }
 
 /* Boot ---------------------------------------------------------------------- */

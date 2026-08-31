@@ -20,14 +20,23 @@
   --on-accent: #ffffff;
   --over: #9c3a2c;
   --agree: #1f5c3d;
-  --them: #8c3a62;
+  --them: #5f5a52;
+  --dom-tax: #1f8452;
+  --dom-healthcare: #b030cf;
+  --dom-education: #6f7a1d;
+  --dom-housing: #2a7ab4;
+  --dom-retirement: #cf305b;
+  --dom-energy: #1f8623;
+  --dom-speech: #6730cf;
+  --dom-voting: #956d23;
+  --dom-work: #1f827e;
+  --dom-defence: #cc30a2;
+  --dom-immigration: #49821f;
+  --dom-justice: #3043cf;
+  --dom-family: #c84c2f;
   --band: #ede4dc;
   --held: #8a6714;
   --held-bg: #f0e9d8;
-  --fam-money: #1a5537;
-  --fam-people: #1b4771;
-  --fam-place: #855512;
-  --fam-power: #524673;
 }
 
 :root[data-theme="light"] {
@@ -45,14 +54,23 @@
   --on-accent: #ffffff;
   --over: #9c3a2c;
   --agree: #1f5c3d;
-  --them: #8c3a62;
+  --them: #5f5a52;
+  --dom-tax: #1f8452;
+  --dom-healthcare: #b030cf;
+  --dom-education: #6f7a1d;
+  --dom-housing: #2a7ab4;
+  --dom-retirement: #cf305b;
+  --dom-energy: #1f8623;
+  --dom-speech: #6730cf;
+  --dom-voting: #956d23;
+  --dom-work: #1f827e;
+  --dom-defence: #cc30a2;
+  --dom-immigration: #49821f;
+  --dom-justice: #3043cf;
+  --dom-family: #c84c2f;
   --band: #ede4dc;
   --held: #8a6714;
   --held-bg: #f0e9d8;
-  --fam-money: #1a5537;
-  --fam-people: #1b4771;
-  --fam-place: #855512;
-  --fam-power: #524673;
 }
 
 :root[data-theme="dark"] {
@@ -70,14 +88,23 @@
   --on-accent: #14171a;
   --over: #dc8b76;
   --agree: #63bf8f;
-  --them: #e18ab2;
+  --them: #a9a49a;
+  --dom-tax: #39c680;
+  --dom-healthcare: #bc63d2;
+  --dom-education: #b5c639;
+  --dom-housing: #3d8dc7;
+  --dom-retirement: #d26381;
+  --dom-energy: #39c63f;
+  --dom-speech: #9775d7;
+  --dom-voting: #c69539;
+  --dom-work: #39c6c0;
+  --dom-defence: #d05db1;
+  --dom-immigration: #75c639;
+  --dom-justice: #7580d7;
+  --dom-family: #cd6b53;
   --band: #241d1f;
   --held: #cfad63;
   --held-bg: #241f14;
-  --fam-money: #63bf8f;
-  --fam-people: #82b4ea;
-  --fam-place: #d9a75f;
-  --fam-power: #a89ce0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -96,14 +123,23 @@
     --on-accent: #14171a;
     --over: #dc8b76;
     --agree: #63bf8f;
-    --them: #e18ab2;
+    --them: #a9a49a;
+  --dom-tax: #39c680;
+  --dom-healthcare: #bc63d2;
+  --dom-education: #b5c639;
+  --dom-housing: #3d8dc7;
+  --dom-retirement: #d26381;
+  --dom-energy: #39c63f;
+  --dom-speech: #9775d7;
+  --dom-voting: #c69539;
+  --dom-work: #39c6c0;
+  --dom-defence: #d05db1;
+  --dom-immigration: #75c639;
+  --dom-justice: #7580d7;
+  --dom-family: #cd6b53;
     --band: #241d1f;
     --held: #cfad63;
     --held-bg: #241f14;
-    --fam-money: #63bf8f;
-    --fam-people: #82b4ea;
-    --fam-place: #d9a75f;
-    --fam-power: #a89ce0;
   }
 }
 
@@ -732,8 +768,11 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   font-variant-numeric: tabular-nums;
 }
 
+/* Muted, not accent-coloured. "Where you started" is an annotation, not
+   something to click, and the accent is reserved for interactive things. It was
+   also a fourth colour inside a section that is meant to wear exactly one. */
 .d-home {
-  color: var(--agree);
+  color: var(--faint);
   font-size: 0.72rem;
   white-space: nowrap;
 }
@@ -873,16 +912,15 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
  * app.js sets body padding-bottom to this bar's measured height, so the end of
  * the page still clears it when the blocked note wraps to a second line. */
 
+/* IN THE FLOW, NOT PINNED. It was a fixed bar across the foot of the window,
+   which is a banner: it sat over the page at every scroll position, needed the
+   body to reserve space for it, and pushed the cascade note up to clear it. It
+   now sits where it belongs, after the last policy, which is also the moment
+   the visitor has finished deciding. */
 .finish {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 20;
-  margin: 0;
-  border-top: 1px solid var(--rule);
-  background: var(--panel);
-  box-shadow: 0 -6px 16px -10px rgba(0, 0, 0, 0.45);
+  margin: 2.6rem 0 0;
+  padding: 1.4rem 0 0;
+  border-top: 2px solid var(--rule);
 }
 
 .finish-in {
@@ -1363,61 +1401,107 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 
 /* Civic ---------------------------------------------------------------------
  *
- * Chosen from a sheet of six rendered on this page. The brief was that the site
- * should not look like the rest of the estate, so this deliberately breaks two
- * house defaults: it is sans throughout rather than serif-led, and it is square
- * rather than rounded. Both are the point of the change, not an oversight.
- *
- * Municipal-poster: flat blocks, no radii, a rule under every heading, one
- * family at two weights.
+ * Chosen from a sheet of six rendered on this page. It deliberately breaks two
+ * house defaults, and both are the point: sans throughout rather than
+ * serif-led, and square rather than rounded. The brief was that Statecraft
+ * should not look like the rest of the estate.
  */
 
 h1, h2, h3 { font-weight: 600; letter-spacing: -0.018em; }
 h1 { font-weight: 700; letter-spacing: -0.028em; }
 
-/* Square, everywhere. Listed rather than set with a wildcard so that the two
-   things that stay round are visible: the theme pill and the padlock, both of
-   which are controls rather than surfaces. */
 .chart, .picker, .meters, .meter, .domain.tax, .mdet, .cascade,
 .primary, .ghost, select, .scroller, .card, #result .card {
   border-radius: 0 !important;
 }
 
-/* A heading sits on a rule. This is what carries the section break that the
-   colour alone was not doing. */
+/* ONE COLOUR PER SECTION -----------------------------------------------------
+ *
+ * Thirteen hues, one per domain, generated rather than picked: spaced evenly
+ * round the wheel, then each one's lightness solved until it clears 4.6:1
+ * against its own panel in its own theme. Checked pairwise in CIE Lab
+ * afterwards, because even hue spacing is not even PERCEPTUAL spacing. Closest
+ * pair is dE 12.4 in light and 15.3 in dark, which is about where two swatches
+ * stop being confusable. The generator is scratch/hues.py.
+ *
+ * Each domain sets --dom once and everything inside it reads that: the heading,
+ * the left edge, the slider thumb and the changed chip. Previously the heading
+ * was one colour and the thumb another, so a single section wore three.
+ */
+.domain[data-domain="tax"] { --dom: var(--dom-tax); }
+.domain[data-domain="healthcare"] { --dom: var(--dom-healthcare); }
+.domain[data-domain="education"] { --dom: var(--dom-education); }
+.domain[data-domain="housing"] { --dom: var(--dom-housing); }
+.domain[data-domain="retirement"] { --dom: var(--dom-retirement); }
+.domain[data-domain="energy"] { --dom: var(--dom-energy); }
+.domain[data-domain="speech"] { --dom: var(--dom-speech); }
+.domain[data-domain="voting"] { --dom: var(--dom-voting); }
+.domain[data-domain="work"] { --dom: var(--dom-work); }
+.domain[data-domain="defence"] { --dom: var(--dom-defence); }
+.domain[data-domain="immigration"] { --dom: var(--dom-immigration); }
+.domain[data-domain="justice"] { --dom: var(--dom-justice); }
+.domain[data-domain="family"] { --dom: var(--dom-family); }
+
+.domain { border-left-width: 5px; padding-left: 1.05rem; border-left-color: var(--dom); }
 .domain > .d-head h2 {
+  color: var(--dom);
   padding-bottom: 0.34rem;
   border-bottom: 2px solid var(--rule);
 }
+.domain .rng::-webkit-slider-thumb { background: var(--dom); }
+.domain .rng::-moz-range-thumb { background: var(--dom); }
+.domain .chip { border-color: var(--dom); color: var(--dom); }
 
-/* THE FOUR FAMILIES. Thirteen unrelated hues is a paint chart, so the domains
-   are grouped: money is what you raise and pay out, people is what the state
-   does for them, place is the physical country, power is who decides. The hue
-   is the domain's left edge and its heading, and nothing else, so it delineates
-   without colouring text a reader has to interpret. */
-.domain[data-domain="tax"], .domain[data-domain="retirement"],
-.domain[data-domain="work"] { border-left-color: var(--fam-money); }
-.domain[data-domain="tax"] .d-head h2, .domain[data-domain="retirement"] .d-head h2,
-.domain[data-domain="work"] .d-head h2 { color: var(--fam-money); }
+/* Changed and locked NO LONGER RECOLOUR THE EDGE. A section is one colour, and
+   its own hue is how you find it; what has been altered is said by the chip and
+   what is held is said by the padlock, which are labels rather than a second
+   colour system competing with the first. Locked still dims the whole block, so
+   it reads as out of play without changing its identity. */
+.domain.locked { opacity: 0.72; }
+.domain.locked .rng::-webkit-slider-thumb { background: var(--held); }
+.domain.locked .rng::-moz-range-thumb { background: var(--held); }
 
-.domain[data-domain="healthcare"], .domain[data-domain="education"],
-.domain[data-domain="family"], .domain[data-domain="immigration"] { border-left-color: var(--fam-people); }
-.domain[data-domain="healthcare"] .d-head h2, .domain[data-domain="education"] .d-head h2,
-.domain[data-domain="family"] .d-head h2, .domain[data-domain="immigration"] .d-head h2 { color: var(--fam-people); }
+/* The first section's padlock says what it is. Icon-only everywhere else, so
+   the word appears once rather than thirteen times, which is the difference
+   between an affordance and noise. */
+.lock-first {
+  width: auto;
+  gap: 0.4rem;
+  padding: 0 0.7rem 0 0.55rem;
+}
 
-.domain[data-domain="housing"], .domain[data-domain="energy"] { border-left-color: var(--fam-place); }
-.domain[data-domain="housing"] .d-head h2,
-.domain[data-domain="energy"] .d-head h2 { color: var(--fam-place); }
+.lk-hint {
+  font-size: 0.76rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
 
-.domain[data-domain="speech"], .domain[data-domain="voting"],
-.domain[data-domain="justice"], .domain[data-domain="defence"] { border-left-color: var(--fam-power); }
-.domain[data-domain="speech"] .d-head h2, .domain[data-domain="voting"] .d-head h2,
-.domain[data-domain="justice"] .d-head h2, .domain[data-domain="defence"] .d-head h2 { color: var(--fam-power); }
+/* The method section is four separate things and read as one wall. Each
+   disclosure is now a block with its own edge, and the summary is the heading
+   rather than a line of body text with a triangle on it. */
+.method > p { max-width: 42em; }
 
-/* A heavier edge than the 3px the domains carried, because it is now the main
-   thing telling one section from the next. `.changed` and `.locked` still
-   override the colour, and they must keep winning: what you have altered
-   matters more than which family it belongs to. */
-.domain { border-left-width: 5px; padding-left: 1.05rem; }
-.domain.changed { border-left-color: var(--accent) !important; }
-.domain.locked { border-left-color: var(--held) !important; }
+.mdet {
+  margin: 0.7rem 0 0;
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rule);
+  background: var(--panel);
+}
+
+.mdet > summary {
+  padding: 0.7rem 0.9rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.mdet[open] > summary { border-bottom: 1px solid var(--rule); }
+.mdet > *:not(summary) { padding: 0 0.9rem 0.9rem; }
+.mdet .scroller { padding-top: 0.7rem; }
+
+/* The reveal sits in the content column, and the button is sized to its label
+   rather than to the window. Full width across the page is what made it read as
+   a bar even after it came out of position:fixed. */
+main.wrap > .finish { grid-column: 1; }
+.finish-in { justify-content: flex-start; }
+.finish .primary { flex: 0 0 auto; }
