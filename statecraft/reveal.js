@@ -204,9 +204,11 @@ function axisRow(data, axis, mine, country, selection) {
  * @param {object} data       parsed data.json
  * @param {Array}  ranked     rank(data, selection) from match.js
  * @param {object} selection  domain id -> option id
+ * @param {object} [pos]      domain id -> continuous slider position, so the
+ *                            axis rows read where the thumbs actually are
  * @returns {string} HTML for #result
  */
-export function renderReveal(data, ranked, selection) {
+export function renderReveal(data, ranked, selection, pos) {
   if (!ranked || !ranked.length) {
     return '<p class="rv-empty">No country is coded yet, so there is nothing to match against.</p>';
   }
@@ -219,7 +221,7 @@ export function renderReveal(data, ranked, selection) {
   // Borrowed from match.js rather than recomputed here. Redistribution is
   // summed across three domains and a second implementation of that rule would
   // eventually disagree with the one the ranking was built from.
-  const mine = axisValues(data, selection);
+  const mine = axisValues(data, selection, pos);
 
   const runner = ranked[1];
   const runnerLine = runner

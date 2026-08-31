@@ -8,6 +8,7 @@ import { dirname, join } from 'node:path';
 import {
   budgets, blockers, capacityOf, optionForRate, rateForOption, realisedRevenue,
   spendOf, startingState, REFORM_POOL, TAX,
+  clampPos, financialAt, posFromSelection, posOfOption, positionsOf, valuesAt,
 } from './budget.js';
 import { applyChange, ladder, setLock, setTaxRate } from './cascade.js';
 import { axisValues, rank, matchable } from './match.js';
@@ -930,4 +931,387 @@ test('cascaded cuts are charged, and a cut back to the starting option is free',
     "a cut back to the country's own option must be charged nothing",
   );
   assert.equal(shove.budgets.changedCount, 1);
+});
+
+/* Continuous slider positions ----------------------------------------------
+ *
+ * Added 01/09/2026 with the change that made the twelve categorical sliders
+ * continuous. The complaint was precise: with healthcare the slider is gradual
+ * but the budget and the radar jump dramatically at certain thresholds. Test 22
+ * below is the one that says whether that is fixed, and it is written as a
+ * number rather than as an impression.
+ */
+
+const LADDERED = data.domains.filter((d) => ladder(data, d.id).length);
+
+// 18. THE OLD ANSWERS DID NOT MOVE. Every option, in every domain, priced at
+// its own integer position, must come back at exactly its own cost. This is the
+// check that the interpolation is a new path through the same numbers and not a
+// new set of numbers.
+test('at an integer position every cost is exactly that option cost', () => {
+  let checked = 0;
+  for (const d of LADDERED) {
+    const rungs = ladder(data, d.id);
+    rungs.forEach((option, i) => {
+      const v = valuesAt(data, d.id, i);
+      assert.equal(v.optionId, option.id, `${d.id} position ${i} should be ${option.id}`);
+      assert.equal(v.financial, option.financial || 0, `${d.id} ${option.id} financial`);
+      assert.equal(v.political, option.political || 0, `${d.id} ${option.id} political`);
+      assert.equal(v.social, option.social || 0, `${d.id} ${option.id} social`);
+      for (const [axisId, value] of Object.entries(option.axis || {})) {
+        if (value === null) {
+          assert.equal(v.axis[axisId], undefined, `${d.id} ${option.id} ${axisId} must stay absent`);
+        } else {
+          assert.equal(v.axis[axisId], value, `${d.id} ${option.id} ${axisId}`);
+        }
+      }
+      checked += 1;
+    });
+  }
+  const taxOptions = data.domains.find((d) => d.id === 'tax').options.length;
+  assert.equal(checked, 69 - taxOptions, 'every option on a ladder was priced');
+
+  // And the same thing one level up: a whole design priced at its positions is
+  // the same number as the same design priced at its options.
+  for (const country of MATCHABLE) {
+    const start = startingState(data, country.code);
+    assert.equal(
+      spendOf(data, start.selection, start.pos),
+      spendOf(data, start.selection),
+      `${country.code} costs the same either way`,
+    );
+  }
+});
+
+// 19. Halfway is halfway, in all three currencies.
+test('halfway between two options costs the mean of the two', () => {
+  for (const d of LADDERED) {
+    const rungs = ladder(data, d.id);
+    for (let i = 0; i + 1 < rungs.length; i += 1) {
+      const lo = rungs[i];
+      const hi = rungs[i + 1];
+      const mid = valuesAt(data, d.id, i + 0.5);
+      const near = (a, b, what) => assert.ok(
+        Math.abs(a - b) < 1e-9,
+        `${d.id} ${lo.id} to ${hi.id} ${what}: got ${a}, expected ${b}`,
+      );
+      near(mid.financial, ((lo.financial || 0) + (hi.financial || 0)) / 2, 'financial');
+      near(mid.political, ((lo.political || 0) + (hi.political || 0)) / 2, 'political');
+      near(mid.social, ((lo.social || 0) + (hi.social || 0)) / 2, 'social');
+
+      // And every axis both sides carry a number for.
+      for (const axisId of Object.keys(lo.axis || {})) {
+        const a = lo.axis[axisId];
+        const b = (hi.axis || {})[axisId];
+        if (typeof a !== 'number' || typeof b !== 'number') continue;
+        near(mid.axis[axisId], (a + b) / 2, axisId);
+      }
+    }
+  }
+
+  // The worked example from the brief: part way from compulsory medical savings
+  // towards mandatory insurance costs part way between the two, and is neither.
+  const savings = option('healthcare', 'hc_savings');
+  const insurance = option('healthcare', 'hc_insurance');
+  const from = posOfOption(data, 'healthcare', 'hc_savings');
+  const to = posOfOption(data, 'healthcare', 'hc_insurance');
+  assert.equal(to - from, 2, 'this example runs across two rungs');
+  const sixty = valuesAt(data, 'healthcare', from + 0.6 * (to - from));
+  assert.ok(sixty.financial > savings.financial && sixty.financial < insurance.financial,
+    `${sixty.financial} should sit between ${savings.financial} and ${insurance.financial}`);
+});
+
+// 20. The identity snaps, and everything that names a policy agrees on which.
+test('the option is the nearer one either side of a midpoint, and the label agrees', () => {
+  const au = startingState(data, 'AU');
+
+  for (const d of LADDERED) {
+    const rungs = ladder(data, d.id);
+    for (let i = 0; i + 1 < rungs.length; i += 1) {
+      const below = valuesAt(data, d.id, i + 0.49);
+      const above = valuesAt(data, d.id, i + 0.51);
+      assert.equal(below.optionId, rungs[i].id, `${d.id} ${i + 0.49} should still be ${rungs[i].id}`);
+      assert.equal(above.optionId, rungs[i + 1].id, `${d.id} ${i + 0.51} should be ${rungs[i + 1].id}`);
+      assert.equal(below.option.label, rungs[i].label);
+      assert.equal(above.option.label, rungs[i + 1].label);
+
+      // What applyChange records, which is what the page shows and the URL
+      // carries, is the same option.
+      const moved = applyChange(data, au, d.id, i + 0.51);
+      assert.equal(moved.moved.to, rungs[i + 1].id, `${d.id} moved.to`);
+      assert.equal(moved.state.selection[d.id], rungs[i + 1].id, `${d.id} selection`);
+    }
+  }
+
+  // And rank() matches on it. A design sitting just past the midpoint agrees
+  // with the countries that run the DEARER option, not the cheaper one.
+  const rungs = ladder(data, 'healthcare');
+  const i = rungs.findIndex((o) => o.id === 'hc_insurance');
+  const justBelow = applyChange(data, au, 'healthcare', i + 0.49).state;
+  const justAbove = applyChange(data, au, 'healthcare', i + 0.51).state;
+  assert.equal(justBelow.selection.healthcare, 'hc_insurance');
+  assert.equal(justAbove.selection.healthcare, rungs[i + 1].id);
+  const agreesOn = (state, code) => rank(data, state.selection)
+    .find((r) => r.code === code).agreements.some((a) => a.domain === 'healthcare');
+  const dearerCountry = (rungs[i + 1].countries || [])[0];
+  assert.ok(dearerCountry, 'the dearer option is somewhere');
+  assert.equal(agreesOn(justAbove, dearerCountry), true,
+    'past the midpoint you are matched on the dearer option');
+  assert.equal(agreesOn(justBelow, dearerCountry), false,
+    'and before it you are not');
+});
+
+// 21. Nothing about positions may stop a country being itself. The
+// forty-five-country check again, run through the position path this time,
+// since startingState now carries positions and budgets() prices them.
+test('every country can still afford to be itself at its own positions', () => {
+  for (const country of MATCHABLE) {
+    const start = startingState(data, country.code);
+    const b = budgets(data, start);
+    assert.equal(b.political.used, 0, `${country.code} political`);
+    assert.equal(b.social.used, 0, `${country.code} social`);
+    assert.equal(b.financial.over, false, `${country.code} financial`);
+
+    // Every position is exactly an integer, so a country sits ON its options.
+    for (const d of LADDERED) {
+      const p = start.pos[d.id];
+      assert.equal(p, Math.round(p), `${country.code} ${d.id} should be on a rung, got ${p}`);
+      assert.equal(ladder(data, d.id)[p].id, country.choices[d.id], `${country.code} ${d.id}`);
+    }
+    assert.deepEqual(positionsOf(data, start), posFromSelection(data, country.choices));
+  }
+  assert.equal(MATCHABLE.length, 45);
+});
+
+// 22. THE COMPLAINT, AS A NUMBER.
+//
+// Dragging one slider from one end to the other, in the hundredths the thumb
+// actually steps in, the budget must move in one direction only and no single
+// step may exceed STEP_THRESHOLD points of GDP.
+//
+// The measurement is taken with no cascade, which is not a simplification: mid
+// drag the page holds the position as a preview and cuts nothing until the
+// visitor lets go, so this IS what the meter does under a finger.
+//
+// WHAT THE NUMBERS WERE. Before this change the same drag moved in whole
+// options, so the largest step was the largest gap between two adjacent rungs:
+//
+//     healthcare        4.5 points, from hc_savings to hc_mixed
+//     work              6.8 points, the worst of the twelve
+//
+// After it the largest step is a hundredth of that gap, because the thumb steps
+// in hundredths of a rung:
+//
+//     healthcare        0.045
+//     work              0.068
+//
+// The threshold is 0.07, which is the worst domain figure with a little air. It
+// is deliberately tight enough that reverting any part of the interpolation
+// fails this test rather than merely looking worse.
+const STEP_THRESHOLD = 0.07;
+
+test('the budget moves monotonically and in small steps across a whole slider', () => {
+  const start = startingState(data, 'AU');
+  let worst = { domain: null, step: 0 };
+  const byDomain = new Map();
+
+  for (const d of LADDERED) {
+    const rungs = ladder(data, d.id);
+    let previous = null;
+    let direction = 0;
+    let largest = 0;
+
+    for (let n = 0; n <= (rungs.length - 1) * 100; n += 1) {
+      const p = n / 100;
+      const at = {
+        ...start,
+        selection: { ...start.selection, [d.id]: valuesAt(data, d.id, p).optionId },
+        pos: { ...start.pos, [d.id]: p },
+      };
+      const used = budgets(data, at).financial.exact.used;
+      if (previous !== null) {
+        const step = used - previous;
+        if (Math.abs(step) > 1e-12) {
+          const sign = step > 0 ? 1 : -1;
+          if (direction === 0) direction = sign;
+          assert.equal(sign, direction,
+            `${d.id} turned round at position ${p}: the budget must not fall while the slider rises`);
+        }
+        largest = Math.max(largest, Math.abs(step));
+      }
+      previous = used;
+    }
+
+    byDomain.set(d.id, largest);
+    if (largest > worst.step) worst = { domain: d.id, step: largest };
+    assert.ok(largest <= STEP_THRESHOLD + 1e-9,
+      `${d.id} jumps ${largest.toFixed(3)} points in one step of the thumb, over the ${STEP_THRESHOLD} allowed`);
+  }
+
+  // The two figures the complaint is judged on, asserted so they cannot drift
+  // back up quietly.
+  assert.ok(Math.abs(byDomain.get('healthcare') - 0.045) < 1e-6,
+    `healthcare largest step ${byDomain.get('healthcare')}`);
+  assert.equal(worst.domain, 'work');
+  assert.ok(Math.abs(worst.step - 0.068) < 1e-6, `work largest step ${worst.step}`);
+
+  // And the size of the jump that was there before: the largest gap between two
+  // adjacent rungs, which is what a snapped slider moved by.
+  const gapOf = (id) => {
+    const rungs = ladder(data, id);
+    let gap = 0;
+    for (let i = 1; i < rungs.length; i += 1) {
+      gap = Math.max(gap, Math.abs((rungs[i].financial || 0) - (rungs[i - 1].financial || 0)));
+    }
+    return gap;
+  };
+  assert.ok(Math.abs(gapOf('healthcare') - 4.5) < 1e-9);
+  assert.ok(Math.abs(gapOf('work') - 6.8) < 1e-9);
+  // A hundred to one, which is the whole change stated in one line.
+  assert.ok(Math.abs(gapOf('work') / 100 - worst.step) < 1e-9);
+});
+
+// 23. A CUT IS A DECISION, NOT A DRIFT. The visitor thumb is continuous and the
+// cascade is not: it steps whole rungs and it lands on whole rungs.
+test('a cut from the cascade lands on an integer position', () => {
+  const au = startingState(data, 'AU');
+  const start = applyChange(data, au, 'housing', 'ho_singapore').state;
+
+  // Housing is put part way up its own ladder, so the cut starts from a
+  // fractional position, and retirement is then shoved to its dearest option to
+  // force one.
+  const rungs = ladder(data, 'housing');
+  const top = rungs.length - 1;
+  const drifted = applyChange(data, lockAllExcept(start, 'housing', 'retirement'), 'housing', top - 0.4);
+  assert.ok(Math.abs(drifted.state.pos.housing - (top - 0.4)) < 1e-9, 'the thumb stayed where it was put');
+
+  const shove = applyChange(data, drifted.state, 'retirement', 're_generous');
+  const cut = cutOn(shove, 'housing');
+  assert.ok(cut, 'housing should have paid for it');
+  const landed = shove.state.pos.housing;
+  assert.equal(landed, Math.round(landed), `a cut landed on ${landed}, which is not a rung`);
+  assert.equal(ladder(data, 'housing')[landed].id, shove.state.selection.housing);
+  assert.ok(landed < top - 0.4, 'and it landed below where it started');
+
+  // What the cut reports it saved is measured from where the domain stood, not
+  // from the rung above it.
+  const expected = financialAt(data, 'housing', top - 0.4) - financialAt(data, 'housing', landed);
+  assert.ok(Math.abs(cut.saved - Math.round(expected * 10) / 10) < 1e-9,
+    `saved ${cut.saved}, expected ${expected}`);
+});
+
+// 24. The URL carries the position, and an old link still means what it meant.
+test('the URL round-trips a fractional position and old hashes still decode', () => {
+  const au = byCode('AU');
+  const start = startingState(data, 'AU');
+
+  // A fractional position on two domains at once, and a rate.
+  const pos = { ...start.pos, healthcare: start.pos.healthcare + 0.37, defence: 0.5 };
+  const selection = {
+    ...start.selection,
+    healthcare: ladder(data, 'healthcare')[Math.round(pos.healthcare)].id,
+    defence: ladder(data, 'defence')[Math.round(0.5)].id,
+  };
+  const hash = encode(data, 'AU', selection, 31.5, pos);
+  assert.match(hash, /^AU-[0-9a-z]{13}-p[0-9a-z]{6}-[0-9a-z]{2}$/, hash);
+
+  const back = decode(data, hash);
+  assert.ok(back, `${hash} should decode`);
+  assert.equal(back.start, 'AU');
+  assert.deepEqual(back.selection, selection);
+  assert.equal(back.taxRate, 31.5);
+  for (const d of LADDERED) {
+    assert.ok(Math.abs(back.pos[d.id] - pos[d.id]) < 1e-9,
+      `${d.id}: ${back.pos[d.id]} should be ${pos[d.id]}`);
+  }
+
+  // A design whose thumbs are all on their rungs writes exactly the hash it
+  // wrote before positions existed. Nothing anybody has already shared has
+  // changed shape.
+  assert.equal(encode(data, 'AU', au.choices, undefined, start.pos), encode(data, 'AU', au.choices));
+
+  // AN OLD HASH, with no position field at all, restores EXACT positions. That
+  // is what its author meant: before this change there was nowhere between two
+  // options to be.
+  for (const country of MATCHABLE) {
+    const old = encode(data, country.code, country.choices);
+    assert.match(old, /^[A-Z]{2}-[0-9a-z]{13}$/, old);
+    const restored = decode(data, old);
+    assert.ok(restored, `${old} should decode`);
+    assert.deepEqual(restored.selection, country.choices);
+    assert.deepEqual(restored.pos, posFromSelection(data, country.choices),
+      `${country.code} should restore on its own rungs`);
+    for (const d of LADDERED) {
+      assert.equal(restored.pos[d.id], Math.round(restored.pos[d.id]));
+    }
+  }
+  // Including the older form with a rate on the end and no positions.
+  const withRate = decode(data, `${encode(data, 'AU', au.choices)}-1w`);
+  assert.ok(withRate);
+  assert.deepEqual(withRate.pos, posFromSelection(data, au.choices));
+  assert.equal(withRate.taxRate, parseInt('1w', 36) / 2);
+
+  // Malformed position fields decode to null rather than throwing, same as
+  // everything else in the hash.
+  const stem = encode(data, 'AU', au.choices);
+  for (const bad of [
+    `${stem}-p`,          // empty field
+    `${stem}-p12`,        // not a whole triplet
+    `${stem}-p1234`,      // nor is this
+    `${stem}-pz50`,       // no such domain
+    `${stem}-p02z`,       // offset out of range
+    `${stem}-p150p150`,   // the same domain twice
+    `${stem}-p150-p150`,  // two position fields
+  ]) {
+    assert.equal(decode(data, bad), null, `${bad} should decode to null`);
+  }
+});
+
+// 25. THE NULL AXIS DOES NOT INTERPOLATE, and vo_none is the only option in the
+// file that has one.
+test('a null axis is taken from the nearer option and never averaged', () => {
+  const rungs = ladder(data, 'voting');
+  assert.equal(rungs[0].id, 'vo_none', 'vo_none is the bottom rung');
+  assert.equal(rungs[0].axis.disproportionality, null);
+  const neighbour = rungs[1];
+  assert.equal(typeof neighbour.axis.disproportionality, 'number');
+
+  // Below the midpoint the nearest option is the null one, so there is no
+  // reading. A state with no elections does not have a small disproportionality,
+  // it does not have one at all.
+  const low = valuesAt(data, 'voting', 0.4);
+  assert.equal(low.optionId, 'vo_none');
+  assert.equal(low.axis.disproportionality, undefined, 'must not be a number');
+
+  // Above it the nearest option has a reading, and it is that option OWN value
+  // rather than a fraction of it. Six tenths of the way up must not read as six
+  // tenths of the neighbour number: that would be an interpolation from a null,
+  // which is a measurement nobody made.
+  const high = valuesAt(data, 'voting', 0.6);
+  assert.equal(high.optionId, neighbour.id);
+  assert.equal(high.axis.disproportionality, neighbour.axis.disproportionality);
+  assert.notEqual(high.axis.disproportionality, 0.6 * neighbour.axis.disproportionality);
+
+  // And it reaches the axis values the chart and the reveal are drawn from,
+  // where an absent key and a null both mean the same thing: does not apply.
+  const ae = byCode('AE');
+  assert.equal(ae.choices.voting, 'vo_none');
+  const pos = posFromSelection(data, ae.choices);
+  assert.equal(axisValues(data, ae.choices, { ...pos, voting: 0.4 }).disproportionality, null);
+  assert.equal(
+    axisValues(data, { ...ae.choices, voting: neighbour.id }, { ...pos, voting: 0.6 }).disproportionality,
+    neighbour.axis.disproportionality,
+  );
+
+  // Every other axis in the file has a number on both sides of every boundary,
+  // so this rule fires in exactly one place and the test knows where.
+  const nulls = [];
+  for (const d of data.domains) {
+    for (const o of d.options || []) {
+      for (const [axisId, value] of Object.entries(o.axis || {})) {
+        if (value === null) nulls.push(`${d.id}.${o.id}.${axisId}`);
+      }
+    }
+  }
+  assert.deepEqual(nulls, ['voting.vo_none.disproportionality']);
 });

@@ -163,14 +163,211 @@ export function startingState(data, code) {
     start: country.code,
     taxRate: startingRate(data, country),
     selection: { ...country.choices },
+    pos: posFromSelection(data, country.choices),
     locked: [],
   };
 }
 
-/** What a set of choices costs in % of GDP. The tax domain carries no spend. */
-export function spendOf(data, selection) {
+/* Continuous positions ------------------------------------------------------
+ *
+ * THE SLIDER IS A POSITION, NOT AN INDEX. `pos[domainId]` is a real number from
+ * 0 to rungs-1 along that domain's ladder, and it is part of the state.
+ *
+ * Added 01/09/2026. The thumb had been continuous since the first build and
+ * everything downstream read the SNAPPED option, so the money and the shape
+ * jumped the moment the thumb crossed a boundary while the thumb itself glided.
+ * Healthcare was the case that made it obvious: its five options cost 2.5, 7.0,
+ * 7.5, 8.5 and 9.0 per cent of GDP, so one crossing moved the budget 4.5 points
+ * for a hair of thumb travel. A control whose output stairs while its input
+ * glides reads as broken, and the owner read it that way.
+ *
+ * WHAT INTERPOLATES AND WHAT DOES NOT, because the split is the whole design:
+ *
+ *   THE NUMBERS INTERPOLATE. financial, political, social and every axis value
+ *   are read linearly between floor(pos) and ceil(pos). Sixty per cent of the
+ *   way from compulsory medical savings to mandatory insurance costs sixty per
+ *   cent of the way between the two, and plots there. You are part way between
+ *   two systems and you pay part way.
+ *
+ *   THE IDENTITY SNAPS. The option is rungs[Math.round(pos)], ties going up,
+ *   and that is what the label says, what rank() matches on and what the URL
+ *   carries. There is no such country as sixty per cent of mandatory insurance,
+ *   so the reveal cannot be asked to name one.
+ *
+ *   A NULL AXIS DOES NOT INTERPOLATE. Only vo_none does this, whose
+ *   disproportionality is null because a state with no elections has no
+ *   disproportionality, not because it has none of it. Averaging a real number
+ *   with "does not apply" would invent a reading. The rule is: if both sides
+ *   are numbers, interpolate; otherwise take the NEAREST option's value, which
+ *   is null exactly when the nearest option is the null one. So the axis blinks
+ *   in and out at the same boundary the label does, which is the boundary where
+ *   the visitor stops having elections.
+ *
+ * The tax domain has no ladder and no position. Its slider was already
+ * continuous in the rate and is untouched.
+ */
+
+const lerp = (a, b, t) => a + (b - a) * t;
+
+/** A finite number, or null. Missing and null are the same thing here. */
+function numberOrNull(map, key) {
+  const v = map ? map[key] : undefined;
+  return typeof v === 'number' && Number.isFinite(v) ? v : null;
+}
+
+/**
+ * A domain's options, cheapest to dearest by financial cost. This is the order
+ * the slider runs in, the order a position is measured along, and the order the
+ * cascade steps down.
+ *
+ * The sort is stable, so two options at the same cost keep their data.json
+ * order rather than swapping about between engines.
+ */
+export function ladder(data, domainId) {
+  const domain = (data.domains || []).find((d) => d.id === domainId);
+  if (!domain || domain.id === TAX_DOMAIN) return [];
+  return (domain.options || []).slice().sort((a, b) => (a.financial || 0) - (b.financial || 0));
+}
+
+/** Where an option sits on its own ladder. 0 for anything not on one. */
+export function posOfOption(data, domainId, optionId) {
+  const i = ladder(data, domainId).findIndex((o) => o.id === optionId);
+  return i < 0 ? 0 : i;
+}
+
+/** A position held inside its own ladder, and never NaN. */
+export function clampPos(data, domainId, p) {
+  const rungs = ladder(data, domainId);
+  if (!rungs.length) return 0;
+  const n = Number(p);
+  if (!Number.isFinite(n)) return 0;
+  return Math.min(rungs.length - 1, Math.max(0, n));
+}
+
+/** The integer positions a selection implies. Tax has no ladder and is absent. */
+export function posFromSelection(data, selection) {
+  const out = {};
+  for (const domain of data.domains || []) {
+    if (domain.id === TAX_DOMAIN) continue;
+    out[domain.id] = posOfOption(data, domain.id, (selection || {})[domain.id]);
+  }
+  return out;
+}
+
+/**
+ * Every domain's position for a state: what the state carries where it carries
+ * one, and the integer its selection implies where it does not.
+ *
+ * A state built before positions existed, or one written by hand in a test, is
+ * therefore read as sitting exactly on its options, which is what it meant.
+ *
+ * THE SELECTION IS THE ARBITER WHERE THE TWO DISAGREE. A position whose nearest
+ * rung is not the option the state names describes a different design from the
+ * one the state names, and there is no way to tell which half is the mistake.
+ * Taking the selection means the obvious edit still does the obvious thing:
+ * `{...state, selection: {...state.selection, housing: 'ho_singapore'}}` moves
+ * housing to Singapore rather than pricing it at wherever the old thumb was.
+ * applyChange writes both together, so this only fires on a hand-built state.
+ */
+export function positionsOf(data, state) {
+  const held = (state || {}).pos || {};
+  const selection = (state || {}).selection || {};
+  const out = {};
+  for (const domain of data.domains || []) {
+    if (domain.id === TAX_DOMAIN) continue;
+    const rungs = ladder(data, domain.id);
+    const named = posOfOption(data, domain.id, selection[domain.id]);
+    const p = held[domain.id];
+    if (!Number.isFinite(Number(p))) {
+      out[domain.id] = named;
+      continue;
+    }
+    const clamped = clampPos(data, domain.id, p);
+    const lands = rungs.length ? rungs[Math.round(clamped)] : null;
+    out[domain.id] = lands && lands.id === selection[domain.id] ? clamped : named;
+  }
+  return out;
+}
+
+/**
+ * What a domain reads at a position: the interpolated costs and axis values,
+ * and the option the position IS.
+ *
+ * @returns {null} for a domain with no ladder, which is tax and nothing else.
+ */
+export function valuesAt(data, domainId, p) {
+  const rungs = ladder(data, domainId);
+  if (!rungs.length) return null;
+
+  const pos = clampPos(data, domainId, p);
+  const lo = rungs[Math.floor(pos)];
+  const hi = rungs[Math.ceil(pos)];
+  const t = pos - Math.floor(pos);
+  // Ties go up, so a thumb exactly on a boundary reads as the dearer option.
+  // Any fixed rule does; this one is Math.round's and needs no second thought.
+  const option = rungs[Math.round(pos)];
+
+  const axis = {};
+  const keys = new Set([...Object.keys(lo.axis || {}), ...Object.keys(hi.axis || {})]);
+  for (const key of keys) {
+    const a = numberOrNull(lo.axis, key);
+    const b = numberOrNull(hi.axis, key);
+    if (a !== null && b !== null) {
+      axis[key] = lerp(a, b, t);
+      continue;
+    }
+    // One side does not apply. Take the nearest option's reading, and where
+    // that is the null one leave the key out: an absent key is how a whole
+    // option already says "does not apply", and axisValues treats the two the
+    // same, so the summed axis keeps behaving as it does today.
+    const near = numberOrNull(option.axis, key);
+    if (near !== null) axis[key] = near;
+  }
+
+  return {
+    pos,
+    t,
+    lo,
+    hi,
+    option,
+    optionId: option.id,
+    financial: lerp(lo.financial || 0, hi.financial || 0, t),
+    political: lerp(lo.political || 0, hi.political || 0, t),
+    social: lerp(lo.social || 0, hi.social || 0, t),
+    axis,
+  };
+}
+
+/** The interpolated financial cost of one domain at one position. */
+export function financialAt(data, domainId, p) {
+  const v = valuesAt(data, domainId, p);
+  return v ? v.financial : 0;
+}
+
+/** The option a position IS: rungs[round(pos)]. */
+export function optionAt(data, domainId, p) {
+  const v = valuesAt(data, domainId, p);
+  return v ? v.option : null;
+}
+
+/**
+ * What a set of choices costs in % of GDP. The tax domain carries no spend.
+ *
+ * `pos` is optional. A domain with a position is priced at that position; one
+ * without is priced at its option, which is the same number when the position
+ * is the option's own integer.
+ */
+export function spendOf(data, selection, pos) {
   let total = 0;
   for (const domain of data.domains) {
+    const p = pos ? pos[domain.id] : undefined;
+    if (Number.isFinite(Number(p))) {
+      const v = valuesAt(data, domain.id, p);
+      if (v) {
+        total += v.financial;
+        continue;
+      }
+    }
     const o = (domain.options || []).find((x) => x.id === (selection || {})[domain.id]);
     if (o && typeof o.financial === 'number') total += o.financial;
   }
@@ -243,6 +440,7 @@ export function budgets(data, state) {
   const country = countryOf(data, state.start);
   const base = country ? country.choices : {};
   const selection = state.selection || {};
+  const pos = positionsOf(data, state);
 
   let spend = 0;
   let political = 0;
@@ -253,12 +451,25 @@ export function budgets(data, state) {
     const chosen = (domain.options || []).find((o) => o.id === selection[domain.id]);
     if (!chosen) continue;
 
-    if (typeof chosen.financial === 'number') spend += chosen.financial;
+    // The position where there is one, the option where there is not. Tax has
+    // no ladder, so it always falls through to its option, which carries no
+    // financial cost and its own political and social.
+    const v = valuesAt(data, domain.id, pos[domain.id]);
+    const financial = v ? v.financial : (typeof chosen.financial === 'number' ? chosen.financial : 0);
+    spend += financial;
 
+    // WHAT COUNTS AS CHANGED IS THE IDENTITY, NOT THE POSITION, and that is
+    // deliberate. The cost model charges you the price of the option you moved
+    // TO rather than a difference, so leaving your own system is an inherently
+    // discrete decision and there is one step in the political and social
+    // meters wherever that rule is put. Putting it at the identity boundary
+    // means a domain drifting inside its own option is still free, which is
+    // what "a country spends nothing on its own status quo" says, and every
+    // other part of the drag is continuous because the interpolated cost is.
     if (base[domain.id] !== undefined && base[domain.id] !== chosen.id) {
       changed.push({ domain: domain.id, domainName: domain.name, from: base[domain.id], to: chosen.id });
-      political += chosen.political || 0;
-      social += chosen.social || 0;
+      political += v ? v.political : (chosen.political || 0);
+      social += v ? v.social : (chosen.social || 0);
     }
   }
 

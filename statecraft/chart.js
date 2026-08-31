@@ -98,7 +98,7 @@ const clampRate = (r) => Math.min(TAX.MAX, Math.max(TAX.MIN, Number(r)));
  * @returns {{you: Array<number|null>, them: Array<number|null>, gaps: string[]}}
  */
 export function fingerprint(data, base, view) {
-  const mine = axisValues(data, view.selection);
+  const mine = axisValues(data, view.selection, view.pos);
   const country = data.countries.find((c) => c.code === view.startCode) || null;
   const theirs = country ? axisValues(data, country.choices) : {};
   const theirRate = country ? clampRate(startingRate(data, country)) : TAX.MIN;
@@ -315,7 +315,7 @@ function chooseTier(host, base, w, h) {
  * @param {HTMLElement} host  the element the svg is drawn into
  * @param {object} data       parsed data.json
  * @param {object} base       chartBase(data)
- * @param {object} view       {startCode, selection, rate}
+ * @param {object} view       {startCode, selection, pos, rate}
  * @returns {{gaps: string[]}} the domains with no reading on one side or both
  */
 export function drawChart(host, data, base, view) {
