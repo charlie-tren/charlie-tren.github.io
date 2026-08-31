@@ -1,5 +1,8 @@
 /* Worst Case Scenario.
 
+   Storage keys still say "sticky": renaming them would log everybody out of a
+   room they are currently sitting in, for nothing a player can see.
+
    One room per 4-digit code, held by a Cloudflare Durable Object. The client is
    deliberately thin: it never decides the phase, the situation, whose turn it is
    or who the host is, because two browsers would disagree. It sends "I played
@@ -13,7 +16,7 @@
 (function () {
   var API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
     ? "http://127.0.0.1:8787"
-    : "https://sticky.charlietrenorden.com";
+    : "https://wcs.charlietrenorden.com";
   var WS = API.replace(/^http/, "ws");
 
   var CODE_RE = /^[0-9]{4}$/;
