@@ -392,8 +392,24 @@ def framed(page, slug, raw, scale=SCALE):
     return crop_16x10(im, x0, y0, x1 - x0, view["height"] - y0, scale)
 
 
-def changed_enough(new, dest):
-    """False if the new shot is visually the same as what is already committed."""
+def changed_enough(new, dest, force=False):
+    """False if the new shot is visually the same as what is already committed.
+
+    `force` bypasses the guard, and it exists because THE GUARD CANNOT SEE A
+    COLOUR-ONLY CHANGE. On 31/08/2026 Statecraft's entire palette was
+    regenerated, every hue on the page replaced, and this scored the difference
+    at 1.36 against a MIN_DIFF of 2.0 and kept the old card. The layout was
+    identical, so nearly every pixel was unchanged and the new colours lived in
+    thin borders and small text. The card then advertised a design the site no
+    longer had, and only an eyeball caught it, which is how the Substack card
+    went stale for ten days.
+
+    Lowering MIN_DIFF globally would put the weekly sweep back to committing
+    noise, which is the thing it exists to stop, so the override is scoped to
+    intent instead. See main().
+    """
+    if force:
+        return True, None
     if not dest.exists():
         return True, None
     old = Image.open(dest).convert("RGB")
@@ -405,6 +421,7 @@ def changed_enough(new, dest):
 
 def main():
     skipped = []
+    force = False
     arg = (sys.argv[1] if len(sys.argv) > 1 else "weekly").lower()
     if arg == "daily":
         slugs = DAILY
@@ -412,6 +429,12 @@ def main():
         slugs = list(SITES)
     elif arg in SITES:
         slugs = [arg]
+        # NAMING ONE SITE IS A DELIBERATE ACT, so it overrides the churn guard.
+        # That guard exists to stop the weekly sweep committing noise across
+        # twenty pages nobody touched. Someone asking for one specific card has
+        # a reason, and the likeliest reason is a change too small in pixels for
+        # the guard to see, which is exactly the case that produced it.
+        force = True
     else:
         sys.exit(f"unknown target {arg!r} - use daily, weekly, or one of: "
                  + ", ".join(SITES))
@@ -495,7 +518,7 @@ def main():
                                Image.LANCZOS)
 
             dest = OUT / f"{slug}.webp"
-            ok, diff = changed_enough(im, dest)
+            ok, diff = changed_enough(im, dest, force)
             if not ok:
                 print(f"{slug:<18} unchanged (diff {diff:.2f} < {MIN_DIFF})")
                 continue
