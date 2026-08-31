@@ -1,0 +1,4 @@
+# The source workbook is Charlie's own research file. The built data.json is
+# committed; the spreadsheet behind it is not, because this repo is public and
+# publishing it is his call rather than the build script's.
+source/

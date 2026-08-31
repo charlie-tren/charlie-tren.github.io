@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absentee</title>
+<meta name="description" content="What a property abroad returns once your own country has taxed the rent. Thirty-four countries against an index fund.">
+<link rel="canonical" href="https://charlietrenorden.com/absentee/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Charlie Trenorden">
+<meta property="og:title" content="What a property abroad returns after your own country taxes the rent.">
+<meta property="og:description" content="Thirty-four countries, costed after tax, against an index fund holding the same money.">
+<meta property="og:url" content="https://charlietrenorden.com/absentee/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="key.svg" type="image/svg+xml">
+<script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
+</head>
+<body>
+<header class="wrap">
+  <nav class="topnav">
+    <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
+  </nav>
+  <h1>Absentee</h1>
+  <p class="standfirst">
+    What a property abroad returns once your own country has taxed the rent.
+  </p>
+  <p class="detail-line">Thirty-four countries</p>
+</header>
+
+<main class="wrap">
+
+  <section class="controls" id="controls" aria-label="Your tax position and assumptions">
+    <div class="control">
+      <label for="residence">Where you pay tax</label>
+      <select id="residence">
+        <option value="au" selected>Australia</option>
+        <option value="custom">Somewhere else</option>
+      </select>
+      <span class="hint" id="residence-hint"></span>
+    </div>
+    <div class="control lockable">
+      <label for="mtr">Your top rate on rental income</label>
+      <div class="row"><input type="range" id="mtr" min="0" max="60" step="0.5" value="47"><output id="mtr-out"></output></div>
+    </div>
+    <div class="control lockable">
+      <label for="cgt">Your rate on the capital gain</label>
+      <div class="row"><input type="range" id="cgt" min="0" max="50" step="0.5" value="23.5"><output id="cgt-out"></output></div>
+    </div>
+    <div class="control lockable">
+      <label for="scope">Income earned abroad</label>
+      <select id="scope">
+        <option value="worldwide" selected>Taxed at home as well</option>
+        <option value="territorial">Not taxed at home</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="growth">House price growth a year</label>
+      <div class="row"><input type="range" id="growth" min="0" max="10" step="0.25" value="3"><output id="growth-out"></output></div>
+    </div>
+    <div class="control">
+      <label for="bench">What an index fund returns</label>
+      <div class="row"><input type="range" id="bench" min="0" max="12" step="0.25" value="7.5"><output id="bench-out"></output></div>
+    </div>
+  </section>
+
+  <section class="panel" id="rank-panel">
+    <h2>Net Return by Country</h2>
+    <p class="sub" id="rank-blurb"></p>
+    <div class="legend">
+      <span><i style="background:var(--over)"></i>Beats the index fund</span>
+      <span><i style="background:var(--under)"></i>Loses to it</span>
+      <span><i class="rule-mark"></i>The index fund, taxed the same way</span>
+    </div>
+    <figure class="chart">
+      <svg id="rank" role="img" aria-label="Ten-year net return for each country, ranked, against the index fund benchmark"></svg>
+      <div class="readout" id="rank-readout" hidden></div>
+    </figure>
+  </section>
+
+  <section class="panel" id="picked">
+    <div class="picked-head">
+      <h2 id="picked-name"></h2>
+      <span class="verdict" id="picked-verdict"></span>
+    </div>
+    <p class="sub" id="picked-blurb"></p>
+
+    <h3>Where Ten Years of Rent Goes</h3>
+    <div class="legend" id="split-legend"></div>
+    <figure class="chart">
+      <svg id="split" role="img" aria-label="Ten years of rental income split between what is kept and what each government takes"></svg>
+      <div class="readout" id="split-readout" hidden></div>
+    </figure>
+
+    <h3>What the Currency Has to Do</h3>
+    <p class="sub" id="fx-blurb"></p>
+    <figure class="chart">
+      <svg id="fx" role="img" aria-label="Net return against the amount the local currency falls over ten years"></svg>
+      <div class="readout" id="fx-readout" hidden></div>
+    </figure>
+
+    <dl class="facts" id="facts"></dl>
+    <p class="profile" id="profile"></p>
+  </section>
+
+  <section class="panel notes">
+    <h2>Notes on the Data</h2>
+    <ul>
+      <li id="note-tax"></li>
+      <li>The rent figure is net of running costs and local property taxes, so holding costs are not deducted a second time.</li>
+      <li>House price growth is one number applied to every country. The source workbook carried a per-country growth estimate for all thirty-four; twenty-three of those were guesses with nothing behind them, so none of them are used here. Growth is yours to set.</li>
+      <li>Prices are a median dwelling, converted to Australian dollars. They are indicative rather than a quote on any particular property.</li>
+      <li>The purchase is all cash. No Australian lender takes foreign real property as security, and foreign lenders rarely write mortgages for non-resident foreigners, so the leverage that makes domestic property investment work is not on offer.</li>
+      <li id="note-review"></li>
+      <li>General information, not advice.</li>
+    </ul>
+
+    <h3>Sources</h3>
+    <table class="src">
+      <thead><tr><th>Measure</th><th>Source</th><th>Caveat</th></tr></thead>
+      <tbody id="sources"></tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <a href="https://charlietrenorden.com/">charlietrenorden.com</a>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

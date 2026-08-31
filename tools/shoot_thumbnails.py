@@ -50,6 +50,7 @@ SITES = {
     "photocopy": "https://charlietrenorden.com/photocopy/",
     "consensus-drift": "https://charlietrenorden.com/consensus-drift/",
     "lindy-effect": "https://charlietrenorden.com/lindy-effect/",
+    "absentee": "https://charlietrenorden.com/absentee/",
     "crowdwise": "https://crowdwise.charlietrenorden.com/",
     "dcf-studio": "https://dcf.charlietrenorden.com/GOOGL",
     # a country page, not the picker - the landing page is three pills and a
@@ -104,6 +105,10 @@ READY = {
     # have waited 30s, skipped, and failed the run. A range input is the thing
     # that only exists once the data has arrived.
     "statecraft": "#domains input[type=range]",
+    # Absentee ranks thirty-four countries from data.json after load, so without
+    # this the shot lands on an empty panel. A bar is the first thing that only
+    # exists once the data has arrived.
+    "absentee": "#rank rect",
 }
 READY_TIMEOUT = 30000
 
