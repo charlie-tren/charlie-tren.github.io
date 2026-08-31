@@ -442,6 +442,20 @@ def main():
                     continue
             page.wait_for_timeout(2500)             # client-drawn charts
 
+            # WEBFONTS, before the READY selector rather than after: a shot taken
+            # while a Google font is still in flight renders the whole card in
+            # the fallback stack, which is a silent visual defect of exactly the
+            # kind READY exists to prevent. document.fonts.ready resolves once
+            # every face the page asked for has loaded or failed, so this costs
+            # nothing on the sites that use no webfont. Wrapped because a hung
+            # font request must not take the whole run down: a card in the
+            # fallback face still beats no card at all.
+            try:
+                page.wait_for_function("() => document.fonts.status === 'loaded'",
+                                       timeout=8000)
+            except Exception:                       # noqa: BLE001
+                print(f"{slug:<18} webfonts had not settled in 8s; shooting anyway")
+
             if slug in READY:
                 try:
                     page.wait_for_selector(READY[slug], timeout=READY_TIMEOUT)
