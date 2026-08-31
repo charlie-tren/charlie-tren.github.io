@@ -6,88 +6,104 @@
  * nobody noticed for two days. If you add a var, add it four times. */
 
 :root {
-  --font-title: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
-  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --bg: #fbfbfa;
+  --font-title: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bg: #f2f1ec;
   --panel: #ffffff;
-  --raised: #f4f5f6;
-  --ink: #1a1c1f;
-  --soft: #5a6068;
-  --faint: #767d86;
-  --rule: #e2e5e9;
-  --track: #eef0f2;
-  --accent: #2f6fb2;
+  --raised: #e7e6df;
+  --ink: #161a17;
+  --soft: #4f564f;
+  --faint: #757d74;
+  --rule: #cbccc2;
+  --track: #dedfd6;
+  --accent: #1a5537;
   --on-accent: #ffffff;
-  --over: #9c5539;
-  --agree: #4f7d5e;
-  --them: #7d5f96;
-  --band: #f6ece6;
-  --held: #7a6a4e;
-  --held-bg: #f4efe4;
+  --over: #9c3a2c;
+  --agree: #1f5c3d;
+  --them: #8c3a62;
+  --band: #ede4dc;
+  --held: #8a6714;
+  --held-bg: #f0e9d8;
+  --fam-money: #1a5537;
+  --fam-people: #1b4771;
+  --fam-place: #855512;
+  --fam-power: #524673;
 }
 
 :root[data-theme="light"] {
-  --font-title: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
-  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --bg: #fbfbfa;
+  --font-title: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bg: #f2f1ec;
   --panel: #ffffff;
-  --raised: #f4f5f6;
-  --ink: #1a1c1f;
-  --soft: #5a6068;
-  --faint: #767d86;
-  --rule: #e2e5e9;
-  --track: #eef0f2;
-  --accent: #2f6fb2;
+  --raised: #e7e6df;
+  --ink: #161a17;
+  --soft: #4f564f;
+  --faint: #757d74;
+  --rule: #cbccc2;
+  --track: #dedfd6;
+  --accent: #1a5537;
   --on-accent: #ffffff;
-  --over: #9c5539;
-  --agree: #4f7d5e;
-  --them: #7d5f96;
-  --band: #f6ece6;
-  --held: #7a6a4e;
-  --held-bg: #f4efe4;
+  --over: #9c3a2c;
+  --agree: #1f5c3d;
+  --them: #8c3a62;
+  --band: #ede4dc;
+  --held: #8a6714;
+  --held-bg: #f0e9d8;
+  --fam-money: #1a5537;
+  --fam-people: #1b4771;
+  --fam-place: #855512;
+  --fam-power: #524673;
 }
 
 :root[data-theme="dark"] {
-  --font-title: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
-  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --bg: #0f1319;
-  --panel: #171c24;
-  --raised: #1d232c;
-  --ink: #e6e9ee;
-  --soft: #8a94a3;
-  --faint: #5d6675;
-  --rule: #262d38;
-  --track: #222933;
-  --accent: #82a8ca;
-  --on-accent: #0f1319;
-  --over: #c98a68;
-  --agree: #7fae8d;
-  --them: #b79ad2;
-  --band: #241d18;
-  --held: #c2a86f;
-  --held-bg: #241f16;
+  --font-title: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bg: #14171a;
+  --panel: #1b1f22;
+  --raised: #22272b;
+  --ink: #e9eae4;
+  --soft: #99a29a;
+  --faint: #6d766e;
+  --rule: #2c3236;
+  --track: #262c30;
+  --accent: #63bf8f;
+  --on-accent: #14171a;
+  --over: #dc8b76;
+  --agree: #63bf8f;
+  --them: #e18ab2;
+  --band: #241d1f;
+  --held: #cfad63;
+  --held-bg: #241f14;
+  --fam-money: #63bf8f;
+  --fam-people: #82b4ea;
+  --fam-place: #d9a75f;
+  --fam-power: #a89ce0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --font-title: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
-    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --bg: #0f1319;
-    --panel: #171c24;
-    --raised: #1d232c;
-    --ink: #e6e9ee;
-    --soft: #8a94a3;
-    --faint: #5d6675;
-    --rule: #262d38;
-    --track: #222933;
-    --accent: #82a8ca;
-    --on-accent: #0f1319;
-    --over: #c98a68;
-    --agree: #7fae8d;
-    --them: #b79ad2;
-    --band: #241d18;
-    --held: #c2a86f;
-    --held-bg: #241f16;
+    --font-title: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-body: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --bg: #14171a;
+    --panel: #1b1f22;
+    --raised: #22272b;
+    --ink: #e9eae4;
+    --soft: #99a29a;
+    --faint: #6d766e;
+    --rule: #2c3236;
+    --track: #262c30;
+    --accent: #63bf8f;
+    --on-accent: #14171a;
+    --over: #dc8b76;
+    --agree: #63bf8f;
+    --them: #e18ab2;
+    --band: #241d1f;
+    --held: #cfad63;
+    --held-bg: #241f14;
+    --fam-money: #63bf8f;
+    --fam-people: #82b4ea;
+    --fam-place: #d9a75f;
+    --fam-power: #a89ce0;
   }
 }
 
@@ -336,10 +352,15 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 .meter.over .m-fig { color: var(--over); }
 .meter.over .m-fill { background: var(--over); }
 
-/* Outside the sticky bar on purpose: it is read once, and pinning it would
-   cost two lines of screen for the whole scroll. */
+/* Read once, so it is not pinned: pinning would cost two lines of screen for
+   the whole scroll.
+
+   The -1.1rem top margin was there to pull it tight under the meters when they
+   sat directly above it. The meters moved into the rail with the chart, so it
+   now follows the country picker instead and that negative margin dragged it up
+   THROUGH the picker's own border. Zero, and the gap comes from the picker. */
 .m-note {
-  margin: -1.1rem 0 1.6rem;
+  margin: 0.55rem 0 1.6rem;
   color: var(--faint);
   font-size: 0.78rem;
   line-height: 1.45;
@@ -1339,3 +1360,64 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
      has to clear nothing here, since the chart is in the other column. */
   .ch-host { height: 300px; }
 }
+
+/* Civic ---------------------------------------------------------------------
+ *
+ * Chosen from a sheet of six rendered on this page. The brief was that the site
+ * should not look like the rest of the estate, so this deliberately breaks two
+ * house defaults: it is sans throughout rather than serif-led, and it is square
+ * rather than rounded. Both are the point of the change, not an oversight.
+ *
+ * Municipal-poster: flat blocks, no radii, a rule under every heading, one
+ * family at two weights.
+ */
+
+h1, h2, h3 { font-weight: 600; letter-spacing: -0.018em; }
+h1 { font-weight: 700; letter-spacing: -0.028em; }
+
+/* Square, everywhere. Listed rather than set with a wildcard so that the two
+   things that stay round are visible: the theme pill and the padlock, both of
+   which are controls rather than surfaces. */
+.chart, .picker, .meters, .meter, .domain.tax, .mdet, .cascade,
+.primary, .ghost, select, .scroller, .card, #result .card {
+  border-radius: 0 !important;
+}
+
+/* A heading sits on a rule. This is what carries the section break that the
+   colour alone was not doing. */
+.domain > .d-head h2 {
+  padding-bottom: 0.34rem;
+  border-bottom: 2px solid var(--rule);
+}
+
+/* THE FOUR FAMILIES. Thirteen unrelated hues is a paint chart, so the domains
+   are grouped: money is what you raise and pay out, people is what the state
+   does for them, place is the physical country, power is who decides. The hue
+   is the domain's left edge and its heading, and nothing else, so it delineates
+   without colouring text a reader has to interpret. */
+.domain[data-domain="tax"], .domain[data-domain="retirement"],
+.domain[data-domain="work"] { border-left-color: var(--fam-money); }
+.domain[data-domain="tax"] .d-head h2, .domain[data-domain="retirement"] .d-head h2,
+.domain[data-domain="work"] .d-head h2 { color: var(--fam-money); }
+
+.domain[data-domain="healthcare"], .domain[data-domain="education"],
+.domain[data-domain="family"], .domain[data-domain="immigration"] { border-left-color: var(--fam-people); }
+.domain[data-domain="healthcare"] .d-head h2, .domain[data-domain="education"] .d-head h2,
+.domain[data-domain="family"] .d-head h2, .domain[data-domain="immigration"] .d-head h2 { color: var(--fam-people); }
+
+.domain[data-domain="housing"], .domain[data-domain="energy"] { border-left-color: var(--fam-place); }
+.domain[data-domain="housing"] .d-head h2,
+.domain[data-domain="energy"] .d-head h2 { color: var(--fam-place); }
+
+.domain[data-domain="speech"], .domain[data-domain="voting"],
+.domain[data-domain="justice"], .domain[data-domain="defence"] { border-left-color: var(--fam-power); }
+.domain[data-domain="speech"] .d-head h2, .domain[data-domain="voting"] .d-head h2,
+.domain[data-domain="justice"] .d-head h2, .domain[data-domain="defence"] .d-head h2 { color: var(--fam-power); }
+
+/* A heavier edge than the 3px the domains carried, because it is now the main
+   thing telling one section from the next. `.changed` and `.locked` still
+   override the colour, and they must keep winning: what you have altered
+   matters more than which family it belongs to. */
+.domain { border-left-width: 5px; padding-left: 1.05rem; }
+.domain.changed { border-left-color: var(--accent) !important; }
+.domain.locked { border-left-color: var(--held) !important; }
