@@ -129,6 +129,57 @@ test('rank never returns a country with no policy matrix', () => {
   assert.ok(!unmatchable.has(empty[0].code), `${empty[0].code} won an empty design`);
 });
 
+// KUWAIT'S BUDGET NEVER BINDS, AND THAT IS THE DATA BEING RIGHT.
+//
+// Its nonTaxRevenue is 58.2, from an IMF general government revenue figure of
+// 74.2% of GDP against a modelled spend of 40.1. Most of that gap is Kuwait
+// Investment Authority income, which the IMF imputes into general government
+// because Kuwait does not publish accounts at that level. The UAE's own 27.8
+// comes from the same indicator and the same call, so the column is consistent;
+// the two states simply book sovereign fund returns differently.
+//
+// The consequence is that a visitor starting in Kuwait can buy the whole menu,
+// and dragging tax to the floor still leaves them about 30 points spare. The
+// financial constraint does nothing there. Political capital and public patience
+// still bind, so the page works, but the tax slider is inert for that one start.
+//
+// This is asserted rather than left as a comment because nothing else fails on
+// it: a country with unlimited money passes every other check in this file. The
+// test exists so that if a later data change gives a SECOND country that much
+// headroom, someone finds out from a red test rather than from the page feeling
+// slack. If Kuwait itself is ever re-sourced onto a budgetary-central-government
+// basis, this is the test that should be updated in the same commit.
+test('Kuwait is the one country whose budget never binds, and only Kuwait', () => {
+  const spare = (code, rate) => {
+    const base = startingState(data, code);
+    const at = rate === undefined ? base : setTaxRate(data, base, rate).state;
+    const f = budgets(data, at).financial;
+    return f.capacity - f.used;
+  };
+
+  const loose = MATCHABLE
+    .map((c) => ({ code: c.code, spare: spare(c.code) }))
+    .filter((r) => r.spare > 20)
+    .map((r) => r.code);
+  assert.deepEqual(loose, ['KW'],
+    `expected Kuwait alone to have more than 20 points of spare budget, got ${loose.join(', ')}`);
+
+  // Even emptied to the bottom of the slider it cannot be made to run short.
+  assert.ok(spare('KW', TAX.MIN) > 20,
+    'Kuwait at the floor of the tax slider should still have money to spare');
+
+  // Every other country CAN be pushed into deficit by the tax slider, which is
+  // what makes the control mean something for the other forty-four.
+  const alsoImmune = MATCHABLE
+    .filter((c) => c.code !== 'KW' && spare(c.code, TAX.MIN) > 5)
+    .map((c) => c.code);
+  assert.deepEqual(alsoImmune, [],
+    `these cannot be pushed into deficit either: ${alsoImmune.join(', ')}`);
+
+  // And the political pool still binds there, so Kuwait is not unconstrained.
+  assert.equal(budgets(data, startingState(data, 'KW')).political.capacity, REFORM_POOL);
+});
+
 // 1. Every country can afford to be itself.
 test('all forty-five countries can afford to be themselves', () => {
   const financiallyOver = [];
