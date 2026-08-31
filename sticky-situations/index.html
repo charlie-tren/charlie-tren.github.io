@@ -114,6 +114,12 @@
       <div class="hostrow" id="hostrow" hidden>
         <button class="btn" id="advanceBtn" type="button">Open the vote</button>
       </div>
+      <!-- Only when the round is genuinely stuck on somebody. Never on screen at
+           the same time as the button above: that one lives in discussing and
+           scored, this one in playing and voting. -->
+      <div class="hostrow" id="carryrow" hidden>
+        <button class="btn ghost" id="carryBtn" type="button">Carry on without them</button>
+      </div>
       <p class="tally" id="tally"></p>
     </div>
 
