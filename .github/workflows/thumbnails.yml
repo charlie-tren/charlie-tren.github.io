@@ -38,9 +38,18 @@ on:
     # What this DOES mean: when the scheduler itself is down, every cron here
     # fails together and nothing recovers the day. Cards go stale until someone
     # dispatches by hand. That gap is real and is not solved by more crons.
-    - cron: "05 21 * * *"      # 21:05 UTC / 07:05 AEST - daily, the three that change
-    - cron: "30 21 * * *"      # 21:30 UTC / 07:30 AEST - catch-up that he can actually
-                               # see, after Photocopy's 21:05 backup has landed
+    # MOVED EARLIER 31/08/2026. The "16-22 minutes" measured above no longer holds:
+    # across four repos on 31/08 every scheduled workflow on this estate was being
+    # created 2h05-2h50 after its cron, against 16-31 min through to 26/08. Not
+    # queue or quota - a job starts 3s after its run is created, so the whole delay
+    # is GitHub deciding when to create it. These two were landing 23:24, 23:38 and
+    # 01:24 UTC, which is 09:24 to 11:24 in Sydney: hours after he had looked, and
+    # exactly why he reported The Aftertimes' card as outdated when the file on the
+    # server was current. The Aftertimes and Photocopy ladders were pulled back the
+    # same day; these follow them, and still clear both at the worst slippage seen.
+    - cron: "20 18 * * *"      # 18:20 UTC - daily, the three that change. Lands by 21:10.
+    - cron: "20 19 * * *"      # 19:20 UTC - catch-up, lands by 21:50, ahead of the
+                               # 21:55 read and after Photocopy's 18:40 third rung.
     - cron: "23 23 * * *"      # 23:23 UTC / 09:23 AEST - third line, after the fact
     - cron: "43 21 * * 1"      # Mondays - all nine, in case a site was redesigned
   # Fired by the heartbeat Worker (site-stats/heartbeat) at 21:40 UTC - AFTER its
