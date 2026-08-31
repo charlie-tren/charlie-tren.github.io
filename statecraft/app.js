@@ -348,17 +348,12 @@ function paintMethod() {
   document.getElementById('method').innerHTML = `
   <h2>Method</h2>
 
-  <p>The match is a count. One point for each of the ${data.domains.length} domains where your choice is the policy that country actually has. Nothing is weighted and nothing is normalised. A tie is broken by whichever country is closer on the measured axes.</p>
+  <p>The match is a count: one point per domain where your choice is the policy that country actually has. The Budget is in points of GDP. Political capital and public patience are not, because there is no honest unit for either.</p>
 
-  <p>The Budget is in percentage points of GDP, which is a real unit. Political capital and public patience are points, because there is no honest unit for either, and both are charged only on the domains you change. Tax is a headline take: above ${TAX.KINK} per cent each further point raises less than the last, so ${TAX.MAX} realises ${one(realisedRevenue(TAX.MAX))}.</p>
-
-  <p>Your own figure on each axis is the median of the countries that run that policy. ${derived} of ${options} options are set that way; the other ${hand.length} have no coded country to read, so they are judgements. So are all the costs. Both are published below to be argued with.</p>
-
-  <p>${matchable(data).length} countries can be the answer. ${data.countries.length - matchable(data).length} more are measured but not yet coded, so they appear on the axes and cannot be your match. The set is high income and Europe-heavy, because those are the countries where these ${data.domains.length} are choices rather than constraints.</p>
+  <p>${derived} of ${options} option figures are the median of the countries that run that policy. The other ${hand.length}, and every cost, are judgements. They are all here to be argued with.</p>
 
   <details class="mdet">
     <summary>Every option and what it costs</summary>
-    <p class="mnote">Budget is what an option spends, in % of GDP. The ${data.domains.find((d) => d.id === 'tax').options.length} tax regimes carry a headline rate instead.</p>
     <div class="scroller">${costTable()}</div>
   </details>
 
@@ -370,6 +365,11 @@ function paintMethod() {
   <details class="mdet">
     <summary>The ${hand.length} figures with no country behind them</summary>
     <p class="mnote">${esc(hand.join('; '))}. Redistribution is summed from the tax, work and family choices rather than owned by one domain, so it is hand-set throughout.</p>
+  </details>
+
+  <details class="mdet">
+    <summary>What is and is not in the ${matchable(data).length} countries</summary>
+    <p class="mnote">All ${matchable(data).length} can be the answer. The set is high income and Europe-heavy, because those are the countries where these ${data.domains.length} are choices rather than constraints. Above ${TAX.KINK} per cent each further point of tax raises less than the last, so ${TAX.MAX} realises ${one(realisedRevenue(TAX.MAX))}.</p>
   </details>`;
 }
 
