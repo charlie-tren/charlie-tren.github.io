@@ -71,7 +71,7 @@ SITES = {
     # which shows none of the game - the same fault the chronoscape entry above
     # exists to avoid. The demo renders a worked round through the page's own
     # render path, so the card cannot show something the game does not do.
-    "sticky-situations": "https://charlietrenorden.com/sticky-situations/?demo=1",
+    "worst-case-scenario": "https://charlietrenorden.com/worst-case-scenario/?demo=1",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -199,7 +199,7 @@ SCHEME = {
     "cfa-companion": "dark",
     "beyond-small-talk": "dark",
     # Same family as Beyond Small Talk: a room you open on a phone in a dark pub.
-    "sticky-situations": "dark",
+    "worst-case-scenario": "dark",
     "woop-woop": "dark",
     "pendulum": "dark",
     # Both verified 19/08/2026 to key off prefers-color-scheme with no stored choice:

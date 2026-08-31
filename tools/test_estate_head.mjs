@@ -19,6 +19,7 @@ const SITES = {
   "Beyond Small Talk": "https://charlietrenorden.com/beyond-small-talk/",
   "Split the Room":    "https://charlietrenorden.com/split-the-room/",
   "Spectrum":          "https://charlietrenorden.com/spectrum/",
+  "Worst Case Scenario": "https://charlietrenorden.com/worst-case-scenario/",
   "Lexicon":           "https://charlietrenorden.com/lexicon/",
   "Photocopy":         "https://charlietrenorden.com/photocopy/",
   "Woop Woop":         "https://charlietrenorden.com/woop-woop/",
