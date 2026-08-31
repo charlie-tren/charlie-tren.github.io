@@ -98,6 +98,14 @@ comp = wb["Comparison"]
 scen = {clean(r[S_NAME]): r for r in wb["AUD Return Scenarios"].iter_rows(min_row=2, values_only=True) if r[S_NAME]}
 prof = {clean(r[0]): clean(r[1]) for r in wb["Country Profiles"].iter_rows(min_row=2, values_only=True) if r[0]}
 
+# The thirteen fields app.js reads. Anything else in the workbook stays in the
+# workbook.
+KEEP = {
+    "country", "price_aud", "currency", "net_yield", "purchase_costs", "sale_costs",
+    "foreign_rental_tax", "foreign_rental_basis", "foreign_cgt", "foreign_cgt_basis",
+    "rental_tax_text", "cgt_text", "au_dta",
+}
+
 rows, skipped = [], []
 for r in comp.iter_rows(min_row=3, values_only=True):
     name = clean(r[C_NAME])
@@ -113,7 +121,7 @@ for r in comp.iter_rows(min_row=3, values_only=True):
     if net_yield is None or purch is None or sale is None:
         skipped.append(name)
         continue
-    rows.append({
+    row = {
         "country": name,
         "price_aud": r[C_PRICE_AUD],
         "price_local": clean(r[C_PRICE_LOC]),
@@ -146,11 +154,26 @@ for r in comp.iter_rows(min_row=3, values_only=True):
         "liquidity": clean(r[C_LIQ]),
         "obstacles": clean(r[C_OBSTACLES]),
         "profile": prof.get(name, ""),
-    })
+    }
+    rows.append({k: v for k, v in row.items() if k in KEEP})
+
+# Only the sources behind something the page actually shows. The workbook
+# cites eighteen, for columns like property rights, corruption score and
+# sovereign rating that this page does not display. Listing all eighteen
+# advertises a provenance the page does not have, and one of them was
+# "Expected 10yr Growth: author estimates" for a column deliberately removed.
+USED = {
+    "Price-to-Income, Gross Rental Yields",
+    "Price per sqm (city centre)",
+    "Converted Price (AUD)",
+    "Non-Resident Tax Rates (CGT, Rental, WHT)",
+    "Australia Double Tax Agreements",
+    "Purchase/Holding Costs",
+}
 
 sources = []
 for r in wb["Sources"].iter_rows(min_row=2, values_only=True):
-    if not r[0]:
+    if not r[0] or clean(r[0]) not in USED:
         continue
     sources.append({
         "measure": clean(r[0]),

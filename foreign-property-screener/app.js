@@ -451,7 +451,11 @@ fetch("data.json")
     (d.sources || []).forEach(s => {
       const tr = document.createElement("tr");
       const a = s.url ? `<a href="${s.url.startsWith("http") ? s.url : "https://" + s.url}" rel="noopener">${s.name}</a>` : s.name;
-      tr.innerHTML = `<td>${s.measure}</td><td>${a}</td>`;
+      // The caveat column is the point of this table, not decoration: the yield
+      // and price rows are user-contributed data, and a reader deciding whether
+      // to trust a number needs that next to the number's source.
+      tr.innerHTML = `<td>${s.measure}</td><td>${a}</td><td></td>`;
+      tr.lastElementChild.textContent = s.caveat || "";
       tb.appendChild(tr);
     });
 
