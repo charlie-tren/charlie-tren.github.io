@@ -12,8 +12,9 @@
 
 import {
   TAX, TAX_DOMAIN, budgets, blockers, realisedRevenue, rateForOption, startingState,
+  ladder, positionsOf, valuesAt, posFromSelection,
 } from './budget.js';
-import { applyChange, setTaxRate, toggleLock, isLocked, ladder } from './cascade.js';
+import { applyChange, setTaxRate, toggleLock, isLocked } from './cascade.js';
 import { rank, matchable } from './match.js';
 import { renderReveal } from './reveal.js';
 import { encode, decode, countryForTimezone, detectTimezone } from './state.js';
@@ -91,8 +92,13 @@ const one = (n) => Number(n).toFixed(1);
 
 let data = null;
 let base = null;           // chartBase(data), fixed for the session
-let state = null;          // {start, taxRate, selection, locked}
+let state = null;          // {start, taxRate, selection, pos, locked}
 let previewRate = null;    // the tax slider mid-drag, before the cascade runs
+// The same idea for the twelve categorical sliders, which are continuous too as
+// of 01/09/2026: mid-drag the position is a preview, so the budget, the meters
+// and the fingerprint follow the thumb, and nothing is cut until the visitor
+// lets go. Cutting on every frame would empty the country on the way past.
+let previewPos = null;     // {id, value} or null
 // The slider currently under a finger. render() writes every slider's value back
 // from state, which on a continuous drag would yank the thumb to the nearest
 // stop on every frame and undo the whole point of the fine step. The one being
@@ -136,7 +142,21 @@ function whereLine(codes) {
 
 /** The state the meters, the chart and the reveal are drawn from. */
 function liveState() {
-  return previewRate === null ? state : { ...state, taxRate: previewRate };
+  let live = state;
+  if (previewRate !== null) live = { ...live, taxRate: previewRate };
+  if (previewPos) {
+    const held = valuesAt(data, previewPos.id, previewPos.value);
+    if (held) {
+      live = {
+        ...live,
+        pos: { ...positionsOf(data, live), [previewPos.id]: held.pos },
+        // The identity follows the thumb too, so the label, the chip and the
+        // reveal all say the same thing the meters are pricing.
+        selection: { ...live.selection, [previewPos.id]: held.optionId },
+      };
+    }
+  }
+  return live;
 }
 
 /* Painting ------------------------------------------------------------------ */
@@ -244,15 +264,14 @@ function paintDomains() {
       render();
       return;
     }
-    // The thumb is continuous, the policy is not. Round to the nearest stop and
-    // only commit when that CHANGES, or a drag across one option fires a cascade
-    // on every frame.
-    const rungs = ladder(data, id);
-    const option = rungs[Math.round(Number(input.value))];
+    // The thumb is continuous and so is what it costs. Mid-drag the position is
+    // a preview: the money and the shape move with the finger, and the cascade
+    // waits for the release. The label still snaps, because there is no such
+    // country as two thirds of a health system.
     draggingId = id;
-    if (option && state.selection[id] !== option.id) {
-      commit(applyChange(data, state, id, option.id));
-    }
+    previewPos = { id, value: Number(input.value) };
+    touched = true;
+    render();
   });
 
   host.addEventListener('change', (ev) => {
@@ -264,10 +283,12 @@ function paintDomains() {
       commit(setTaxRate(data, state, Number(input.value)));
       return;
     }
-    // Snap on release, so the thumb never rests between two stops it is not on.
+    // The thumb rests where it was left. It is not snapped back to a rung any
+    // more: the position between two options is a real setting with a real
+    // price, and pulling the thumb off it on release would take that back.
     draggingId = null;
-    input.value = String(Math.round(Number(input.value)));
-    render();
+    previewPos = null;
+    commit(applyChange(data, state, id, Number(input.value)));
   });
 
   host.addEventListener('click', (ev) => {
@@ -393,6 +414,7 @@ function paintChart() {
   const info = drawChart(host, data, base, {
     startCode: live.start,
     selection: live.selection,
+    pos: positionsOf(data, live),
     rate: b.financial.taxRate,
   });
   // The key names the starting country, so it is rewritten whenever the chart
@@ -509,6 +531,7 @@ function flash(section) {
 
 function render(change) {
   const live = liveState();
+  const livePos = positionsOf(data, live);
   const b = budgets(data, live);
   const startChoices = baseline();
   const cutIds = new Set((change && change.cuts ? change.cuts : []).map((c) => c.domain));
@@ -583,18 +606,28 @@ function render(change) {
     }
 
     const rungs = ladder(data, id);
-    const index = Math.max(0, rungs.findIndex((o) => o.id === live.selection[id]));
-    const option = rungs[index];
+    const here = valuesAt(data, id, livePos[id]);
+    const option = here ? here.option : rungs[0];
+    const index = here ? here.pos : 0;
     if (id !== draggingId && Number(input.value) !== index) {
       if (cutIds.has(id)) tweenRange(input, index); else input.value = String(index);
     }
-    input.setAttribute('aria-valuetext', `${option ? option.label : ''}, ${one(option ? option.financial : 0)} per cent of GDP, step ${index + 1} of ${rungs.length}`);
+    // WHAT THE SLIDER SAYS AT A POSITION BETWEEN TWO OPTIONS. The label is the
+    // nearer of the two, because that is the policy and the thing the reveal
+    // will match on. The costs are the interpolated ones, because that is what
+    // the meters have just charged, and a line saying 7.5 above a budget that
+    // moved by 8.2 would be the page lying about its own arithmetic.
+    const between = here && here.lo.id !== here.hi.id
+      ? ` Part way to ${here.option.id === here.lo.id ? here.hi.label : here.lo.label}.`
+      : '';
+    const rung = Math.round(index);
+    input.setAttribute('aria-valuetext', `${option ? option.label : ''}, ${one(here ? here.financial : 0)} per cent of GDP, step ${rung + 1} of ${rungs.length}`);
 
     document.getElementById(`val_${id}`).innerHTML = `
       <span class="d-opt">${esc(option ? option.label : '')}</span>
-      <span class="d-cost">${esc(one(option ? option.financial : 0))}% of GDP, political capital ${esc(option ? option.political : 0)}, public patience ${esc(option ? option.social : 0)}</span>
+      <span class="d-cost">${esc(one(here ? here.financial : 0))}% of GDP, political capital ${esc(Math.round(here ? here.political : 0))}, public patience ${esc(Math.round(here ? here.social : 0))}</span>
       ${startChoices[id] === live.selection[id] ? '<span class="d-home">Where you started</span>' : ''}`;
-    document.getElementById(`det_${id}`).textContent = option ? option.detail : '';
+    document.getElementById(`det_${id}`).textContent = option ? `${option.detail}${between}` : '';
     document.getElementById(`who_${id}`).textContent = option ? whereLine(option.countries) : '';
 
     const cutLine = document.getElementById(`cut_${id}`);
@@ -623,7 +656,7 @@ function render(change) {
   // to stop the panel telling them something that is no longer true.
   const result = document.getElementById('result');
   if (revealed && !stuck.length) {
-    result.innerHTML = renderReveal(data, rank(data, live.selection), live.selection);
+    result.innerHTML = renderReveal(data, rank(data, live.selection), live.selection, livePos);
     result.hidden = false;
   } else {
     result.hidden = true;
@@ -635,7 +668,7 @@ function render(change) {
   // never written. The hash appears the moment the visitor changes something,
   // and it carries the rate, which the option index no longer implies.
   if (touched) {
-    history.replaceState(null, '', `#${encode(data, state.start, state.selection, state.taxRate)}`);
+    history.replaceState(null, '', `#${encode(data, state.start, state.selection, state.taxRate, state.pos)}`);
   }
 }
 
@@ -707,7 +740,11 @@ async function boot() {
   const shared = decode(data, location.hash);
   if (shared) {
     state = startingState(data, shared.start);
-    state = { ...state, selection: { ...shared.selection } };
+    state = {
+      ...state,
+      selection: { ...shared.selection },
+      pos: { ...posFromSelection(data, shared.selection), ...shared.pos },
+    };
     state.taxRate = shared.taxRate === null
       ? rateForOption(data, shared.selection[TAX_DOMAIN])
       : shared.taxRate;

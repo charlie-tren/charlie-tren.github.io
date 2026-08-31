@@ -17,8 +17,11 @@
 //      spend, so the big programmes give up the most. Targets are fixed once,
 //      off the overspend as it stands, and then met by whole steps.
 //   4. A domain gives way by STEPPING DOWN ITS OWN LADDER, one option at a time,
-//      cheapest-to-dearest by financial cost. You cannot have 40% of mandatory
-//      insurance, so nothing here is continuous except the tax rate.
+//      cheapest-to-dearest by financial cost, and it LANDS ON A WHOLE RUNG. The
+//      visitor's own thumb is continuous as of 01/09/2026 and a cut is not: a
+//      drag is a drift and a cut is a decision, so the cascade closes a hospital
+//      rather than shaving three per cent off one. The position it starts from
+//      may be fractional, and what the cut saves is measured from there.
 //   5. If the overspend cannot be covered, that is REPORTED and the loop stops.
 //      `ok` is false and `shortfall` says by how much. It never spins.
 //
@@ -39,12 +42,22 @@ import {
   TAX_DOMAIN,
   budgets,
   capacityOf,
+  clampPos,
   clampRate,
+  financialAt,
+  ladder,
   optionForRate,
+  posOfOption,
+  positionsOf,
   rateForOption,
   spendOf,
   taxStops,
 } from './budget.js';
+
+// The ladder moved to budget.js, because a position is measured along it and
+// budget.js is what prices a position. It is still exported from here: this is
+// where callers have always imported it from and there is one definition.
+export { ladder } from './budget.js';
 
 const EPS = 1e-9;
 const round1 = (n) => Math.round(n * 10) / 10;
@@ -67,19 +80,6 @@ export function toggleLock(state, domainId) {
   return setLock(state, domainId, !isLocked(state, domainId));
 }
 
-/**
- * A domain's options, cheapest to dearest by financial cost. This is the order
- * the slider runs in, and the order the cascade steps down.
- *
- * The sort is stable, so two options at the same cost keep their data.json
- * order rather than swapping about between engines.
- */
-export function ladder(data, domainId) {
-  const domain = data.domains.find((d) => d.id === domainId);
-  if (!domain || domain.id === TAX_DOMAIN) return [];
-  return (domain.options || []).slice().sort((a, b) => (a.financial || 0) - (b.financial || 0));
-}
-
 /** The nearest STRICTLY cheaper option below `optionId`, or null at the bottom. */
 function cheaperThan(rungs, optionId) {
   const i = rungs.findIndex((o) => o.id === optionId);
@@ -94,12 +94,6 @@ function cheaperThan(rungs, optionId) {
   return null;
 }
 
-function financialOf(data, domainId, optionId) {
-  const domain = data.domains.find((d) => d.id === domainId);
-  const o = domain ? (domain.options || []).find((x) => x.id === optionId) : null;
-  return o && typeof o.financial === 'number' ? o.financial : 0;
-}
-
 function nameOf(data, domainId) {
   const domain = data.domains.find((d) => d.id === domainId);
   return domain ? domain.name : domainId;
@@ -111,14 +105,16 @@ function nameOf(data, domainId) {
  */
 function cascade(data, state, movedDomain) {
   const selection = { ...state.selection };
+  const pos = positionsOf(data, state);
   const before = { ...selection };
+  const beforePos = { ...pos };
   const order = orderOf(data);
 
   // Capacity does not depend on anything the cascade can change, so it is read
   // once. Only spend moves.
   const capacity = capacityOf(data, state).capacity;
-  let over = spendOf(data, selection) - capacity;
-  if (over <= EPS) return { selection, cuts: [], shortfall: 0 };
+  let over = spendOf(data, selection, pos) - capacity;
+  if (over <= EPS) return { selection, pos, cuts: [], shortfall: 0 };
 
   const eligible = data.domains
     .map((d) => d.id)
@@ -131,12 +127,15 @@ function cascade(data, state, movedDomain) {
   // spending at the moment the overspend appears, and over the domains that can
   // actually move. Recomputing them every step would let a domain that has
   // already paid be asked again on the same basis as one that has not.
+  // Priced at each domain's POSITION, not at its option, so a domain sitting
+  // part way up its ladder is asked for its share of what it is actually
+  // spending.
   const movable = eligible.filter(canStep);
-  const totalSpend = movable.reduce((sum, id) => sum + financialOf(data, id, selection[id]), 0);
+  const totalSpend = movable.reduce((sum, id) => sum + financialAt(data, id, pos[id]), 0);
   const target = new Map(movable.map((id) => [
     id,
     totalSpend > EPS
-      ? over * (financialOf(data, id, selection[id]) / totalSpend)
+      ? over * (financialAt(data, id, pos[id]) / totalSpend)
       : over / movable.length,
   ]));
   const given = new Map(movable.map((id) => [id, 0]));
@@ -154,15 +153,18 @@ function cascade(data, state, movedDomain) {
     open.sort((a, b) => {
       const deficit = (target.get(b) - given.get(b)) - (target.get(a) - given.get(a));
       if (Math.abs(deficit) > EPS) return deficit;
-      const spend = financialOf(data, b, selection[b]) - financialOf(data, a, selection[a]);
+      const spend = financialAt(data, b, pos[b]) - financialAt(data, a, pos[a]);
       if (Math.abs(spend) > EPS) return spend;
       return order.indexOf(a) - order.indexOf(b);
     });
 
     const id = open[0];
     const next = cheaperThan(rungs.get(id), selection[id]);
-    const saved = financialOf(data, id, selection[id]) - next.financial;
+    // Rule 4. The saving is measured from where the domain actually sits, which
+    // may be part way up a rung, and it lands ON the rung below.
+    const saved = financialAt(data, id, pos[id]) - (next.financial || 0);
     selection[id] = next.id;
+    pos[id] = rungs.get(id).indexOf(next);
     given.set(id, given.get(id) + saved);
     steps.set(id, steps.get(id) + 1);
     over -= saved;
@@ -176,10 +178,12 @@ function cascade(data, state, movedDomain) {
       from: before[id],
       to: selection[id],
       steps: steps.get(id) || 0,
-      saved: round1(financialOf(data, id, before[id]) - financialOf(data, id, selection[id])),
+      // From where it stood to where it landed, so a domain cut from part way
+      // up a rung reports what the visitor's budget actually got back.
+      saved: round1(financialAt(data, id, beforePos[id]) - financialAt(data, id, pos[id])),
     }));
 
-  return { selection, cuts, shortfall: over > EPS ? over : 0 };
+  return { selection, pos, cuts, shortfall: over > EPS ? over : 0 };
 }
 
 function result(data, state, extra) {
@@ -202,7 +206,9 @@ function result(data, state, extra) {
  * @param {{start: string, taxRate: number, selection: object, locked: string[]}} state
  * @param {string} domainId  the domain the visitor moved
  * @param {string|number} optionId
- *        For the twelve categorical domains, the option id to move to.
+ *        For the twelve categorical domains, EITHER a position (a number, 0 to
+ *        rungs-1, which is what the slider gives you) or an option id, which is
+ *        the same as that option's own integer position.
  *        For 'tax', either a rate (a number, 12 to 55, which is what the slider
  *        gives you) or the id of one of the six stops, which snaps the rate to
  *        that stop's headline take.
@@ -221,7 +227,12 @@ export function applyChange(data, state, domainId, optionId) {
   if (!domain) return result(data, state, { ok: false, reason: 'unknown-domain' });
   if (isLocked(state, domainId)) return result(data, state, { ok: false, reason: 'locked' });
 
-  const next = { ...state, selection: { ...state.selection }, locked: [...(state.locked || [])] };
+  const next = {
+    ...state,
+    selection: { ...state.selection },
+    pos: positionsOf(data, state),
+    locked: [...(state.locked || [])],
+  };
   let moved;
 
   if (domainId === TAX_DOMAIN) {
@@ -245,19 +256,36 @@ export function applyChange(data, state, domainId, optionId) {
       toRate: rate,
     };
   } else {
-    const option = (domain.options || []).find((o) => o.id === optionId);
-    if (!option) return result(data, state, { ok: false, reason: 'unknown-option' });
+    const rungs = ladder(data, domainId);
+    if (!rungs.length) return result(data, state, { ok: false, reason: 'unknown-option' });
+
+    let position;
+    if (typeof optionId === 'number' && Number.isFinite(optionId)) {
+      // A position off the slider. It is held inside the ladder rather than
+      // refused, because a thumb cannot leave its own track.
+      position = clampPos(data, domainId, optionId);
+    } else {
+      const option = (domain.options || []).find((o) => o.id === optionId);
+      if (!option) return result(data, state, { ok: false, reason: 'unknown-option' });
+      position = posOfOption(data, domainId, optionId);
+    }
+    const landed = rungs[Math.round(position)];
+
     moved = {
       domain: domainId,
       domainName: domain.name,
       from: state.selection[domainId],
-      to: optionId,
+      to: landed.id,
+      fromPos: positionsOf(data, state)[domainId],
+      toPos: position,
     };
-    next.selection[domainId] = optionId;
+    next.selection[domainId] = landed.id;
+    next.pos[domainId] = position;
   }
 
-  const { selection, cuts, shortfall } = cascade(data, next, domainId);
+  const { selection, pos, cuts, shortfall } = cascade(data, next, domainId);
   next.selection = selection;
+  next.pos = pos;
 
   return {
     ok: shortfall === 0,

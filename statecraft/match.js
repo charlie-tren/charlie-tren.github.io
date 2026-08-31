@@ -1,5 +1,7 @@
 // Statecraft matching. No DOM access: this module is pure so it can be tested in node.
 
+import { valuesAt } from './budget.js';
+
 // redistribution is contributed to by several domains and must be summed.
 // Every other axis is set directly by its own domain's option.
 const SUMMED_AXES = new Set(['redistribution']);
@@ -8,8 +10,16 @@ const SUMMED_AXES = new Set(['redistribution']);
  * The visitor's value on every axis.
  * An axis nothing sets, or one set to null, comes back null. That means
  * "does not apply" and must never be treated as zero.
+ *
+ * `pos` is optional and is the continuous slider position per domain. Where a
+ * domain has one, its axis contributions are read between the two options the
+ * position sits between, so the fingerprint moves with the thumb rather than
+ * snapping at the boundary. Where it does not, the option's own values are
+ * used, which is the same thing at an integer position. THE MATCHING IS STILL
+ * DONE ON THE SELECTION: rank() below compares option ids and nothing here
+ * changes that.
  */
-export function axisValues(data, selection) {
+export function axisValues(data, selection, pos) {
   const out = {};
   for (const axis of data.axes) out[axis.id] = null;
 
@@ -17,7 +27,11 @@ export function axisValues(data, selection) {
     const chosen = (domain.options || []).find((o) => o.id === selection[domain.id]);
     if (!chosen || !chosen.axis) continue;
 
-    for (const [axisId, value] of Object.entries(chosen.axis)) {
+    const p = pos ? pos[domain.id] : undefined;
+    const tween = Number.isFinite(Number(p)) ? valuesAt(data, domain.id, p) : null;
+    const source = tween ? tween.axis : chosen.axis;
+
+    for (const [axisId, value] of Object.entries(source)) {
       if (value === null || value === undefined) continue;
       if (SUMMED_AXES.has(axisId)) {
         out[axisId] = (out[axisId] === null ? 0 : out[axisId]) + value;
