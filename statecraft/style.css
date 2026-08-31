@@ -356,7 +356,7 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
  * blue carries one and --them carries the other. */
 
 .chart {
-  margin: 0 0 1.2rem;
+  margin: 0 0 1rem;
   padding: 0.9rem 1rem 1rem;
   border: 1px solid var(--rule);
   border-radius: 0.6rem;
@@ -1082,15 +1082,21 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
    on several axes the two values land within a pixel of each other, and one flat
    dot over another reads as a single marker. So both keep the same
    panel-coloured halo, which separates them on overlap without making one of
-   them a different object. Accent for your design, muted for the country,
-   matching the key below and the layout this panel was designed from. */
+   them a different object.
+
+   TWO HUES, NOT A HUE AND A GREY. This was accent against --soft, which is blue
+   against grey, and at 0.7rem on a pale track the pair read as one colour with
+   two weights. It also disagreed with the fingerprint at the top of the page,
+   which already uses --them for the other country. One colour system now: blue
+   is always your design and --them is always the country you are being compared
+   with, wherever it appears. */
 .ax-you {
   background: var(--accent);
   box-shadow: 0 0 0 1.5px var(--panel);
 }
 
 .ax-them {
-  background: var(--soft);
+  background: var(--them);
   box-shadow: 0 0 0 1.5px var(--panel);
 }
 
@@ -1132,7 +1138,7 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 /* The key uses the same two shades as the markers, for the same reason. */
 .ax-sw-you { background: var(--accent); }
 
-.ax-sw-them { background: var(--soft); }
+.ax-sw-them { background: var(--them); }
 
 .ax-prov {
   margin: 0.15rem 0 0;
@@ -1308,17 +1314,25 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 
   main.wrap > * { grid-column: 1; min-width: 0; }
 
-  /* `main.wrap > .chart`, not `.chart`. The rule above is an element plus a
-     class plus a child combinator and outscores a bare class, so written as
-     `.chart` this was silently overridden and the chart stayed in column one,
-     sticky and in the wrong place. Read the computed value, do not assume the
-     rule applied. */
-  main.wrap > .chart {
+  /* `main.wrap > .rail`, not `.rail`. The rule above is an element plus a class
+     plus a child combinator and outscores a bare class, so written as `.rail`
+     this is silently overridden and the rail stays in column one, sticky and in
+     the wrong place. Read the computed value, do not assume the rule applied. */
+  main.wrap > .rail {
     grid-column: 2;
     grid-row: 1 / span 99;
     position: sticky;
     top: 1.25rem;
-    margin: 0;
+  }
+
+  /* Inside the rail the meters are no longer their own sticky element: they
+     ride with the chart. Left sticky as well they would have detached from it
+     and pinned separately, which is two things claiming the same corner. */
+  .rail .meters {
+    position: static;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-top: 0.9rem;
   }
 
   /* The meters stay pinned at the top of their own column. Their sticky offset

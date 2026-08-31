@@ -55,6 +55,12 @@
        visitor's outline off the one underneath. The comparison is the STARTING
        country, never the nearest match: that answer belongs to the reveal
        button at the foot of the page. -->
+  <!-- The chart and the meters are ONE element, because on a desktop they
+       ride together in the rail beside the sliders: the fingerprint is what
+       you are shaping and the three budgets are what it costs, so splitting
+       them would put half the feedback out of sight. On a phone the rail
+       collapses and this is simply the top of the page. -->
+  <aside class="rail" id="rail">
   <section class="chart" aria-labelledby="chartH">
     <h2 id="chartH">Your Country's Fingerprint</h2>
     <div class="ch-host" id="chartHost"></div>
@@ -63,15 +69,6 @@
        naming two would point at something not on screen. -->
   <p class="ch-cap" id="chartCap"></p>
   </section>
-
-  <section class="picker" aria-label="Starting country">
-    <label class="pick-lab" for="startSel">Start from</label>
-    <select id="startSel"></select>
-    <button class="ghost" id="resetBtn" type="button">Reset to this country</button>
-  </section>
-
-  <!-- Sticky, because the whole point of a choice is what it costs and the
-       cost is at the top of the page. -->
   <section class="meters" id="meters" aria-label="What you have left to spend">
     <div class="meter" id="m-financial">
       <!-- The unit lives in the name, not in the figure. As "24.7 of 33.8% of
@@ -91,12 +88,18 @@
       <span class="m-track"><span class="m-fill" id="b-social"></span></span>
     </div>
   </section>
+  </aside>
+
+  <section class="picker" aria-label="Starting country">
+    <label class="pick-lab" for="startSel">Start from</label>
+    <select id="startSel"></select>
+    <button class="ghost" id="resetBtn" type="button">Reset to this country</button>
+  </section>
 
   <p class="m-note">Tax sets the budget and every other policy spends it. Political capital and public patience are only charged on the policies you change: keeping the one your starting country already has is free.</p>
 
-  <!-- What paid for the last move. Sits directly under the pinned meters so a
-       cut in a domain the visitor cannot see is still announced, and each cut
-       is a button that takes them to it. -->
+  <!-- What paid for the last move. A cut in a domain the visitor cannot see is
+       still announced, and each cut is a button that takes them to it. -->
   <div class="cascade" id="cascade" role="status" aria-live="polite" hidden></div>
 
   <div id="domains"></div>
