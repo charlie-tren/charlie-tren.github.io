@@ -265,7 +265,12 @@
         : "Points are doubled this round";
     }
     el("situation").textContent = s.situation || "";
-    el("criteria").textContent = s.criteria || "";
+
+    /* What you played. Shown from the moment you play until the round scores,
+       after which the table names it as yours anyway. */
+    var mine = you.playedText && s.phase !== "scored";
+    el("yours").hidden = !mine;
+    if (mine) el("yours").textContent = "You played: " + you.playedText;
 
     /* Your hand, while there is still something to do with it. */
     var showHand = s.phase === "playing" && you.playing;
@@ -565,13 +570,12 @@
     render({
       t: "state", serial: 1, phase: "scored", round: 4, rounds: 10,
       theme: "Plus One",
-      criteria: "The winning guest is the one who makes the night go best for you. They do not have to enjoy it.",
       situation: "You are at the opening night of your friend's one-man show. It runs two hours and there are eleven seats.",
       modifier: null,
       players: them,
       you: {
         id: "p1", name: "Charlie", admin: true, playing: true,
-        hand: [], handCards: [], played: true, voted: true,
+        hand: [], handCards: [], played: true, voted: true, playedText: null,
         redrawUsed: false, mySlot: 1,
       },
       table: [
