@@ -165,7 +165,7 @@ function paintKey(startCode, gaps, differs) {
     ? `<span class="ck"><i class="ck-sw ck-gap" aria-hidden="true"></i>Break in the outline: ${esc((gaps || []).join(' and '))} has no reading here</span>`
     : '';
   const themEntry = differs
-    ? `<span class="ck"><i class="ck-sw ck-them" aria-hidden="true"></i>${esc(countryName(startCode))}, where you started</span>`
+    ? `<span class="ck"><i class="ck-sw ck-them" aria-hidden="true"></i>${esc(countryName(startCode))}</span>`
     : '';
   document.getElementById('chartKey').innerHTML = `
     <span class="ck"><i class="ck-sw ck-you" aria-hidden="true"></i>Your design</span>
@@ -206,13 +206,13 @@ function paintDomains() {
       <div class="d-head">
         <h2 id="h_${esc(domain.id)}">${esc(domain.name)}</h2>
         <span class="chip" id="chip_${esc(domain.id)}" hidden>Changed</span>
-        <button class="lock" type="button" id="lock_${esc(domain.id)}"
+        ${isTax ? '' : `<button class="lock" type="button" id="lock_${esc(domain.id)}"
                 data-lock="${esc(domain.id)}" aria-pressed="false">
           <svg class="lk" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
             <rect class="lk-body" x="3" y="7" width="10" height="7" rx="1.6"/>
             <path class="lk-shackle" fill="none" stroke-width="1.7" stroke-linecap="round"/>
           </svg>
-        </button>
+        </button>`}
       </div>
       <div class="d-slide">
         <span class="d-rail" aria-hidden="true"></span>
@@ -400,7 +400,7 @@ function paintChart() {
   // States what is on screen. Until something moves that is simply the starting
   // country, and saying so is more use than describing the chart.
   document.getElementById('chartCap').textContent = differs
-    ? `The dashed outline is ${countryName(live.start)}, where you began.`
+    ? ''
     : `This is ${countryName(live.start)}, until you change something.`;
 }
 
@@ -527,7 +527,10 @@ function render(change) {
     section.classList.toggle('locked', locked);
     document.getElementById(`chip_${id}`).hidden = !changed.has(id);
 
+    // The tax domain has no lock: the cascade never cuts tax, so locking it would
+    // only stop the visitor dragging their own control.
     const lock = document.getElementById(`lock_${id}`);
+    if (lock) {
     // Shut: the shackle sits on the body. Open: it lifts and hinges right.
     lock.querySelector('.lk-shackle').setAttribute('d', locked
       ? 'M5.4 7V5.1a2.6 2.6 0 0 1 5.2 0V7'
@@ -537,10 +540,11 @@ function render(change) {
     lock.setAttribute('aria-label', locked
       ? `${domain.name} is locked and cannot be cut to pay for another policy`
       : `Lock ${domain.name} so it cannot be cut to pay for another policy`);
-    lock.setAttribute('aria-pressed', locked ? 'true' : 'false');
-    lock.title = locked
-      ? 'This policy is held where it is and the budget will cut something else'
-      : 'Hold this policy where it is when the budget has to find money';
+      lock.setAttribute('aria-pressed', locked ? 'true' : 'false');
+      lock.title = locked
+        ? 'This policy is held where it is and the budget will cut something else'
+        : 'Hold this policy where it is when the budget has to find money';
+    }
     input.disabled = locked;
 
     // The tick the starting country sits on, so the slider says where you began.
