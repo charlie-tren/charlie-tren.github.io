@@ -50,7 +50,7 @@ SITES = {
     "photocopy": "https://charlietrenorden.com/photocopy/",
     "consensus-drift": "https://charlietrenorden.com/consensus-drift/",
     "lindy-effect": "https://charlietrenorden.com/lindy-effect/",
-    "absentee": "https://charlietrenorden.com/absentee/",
+    "foreign-property-screener": "https://charlietrenorden.com/foreign-property-screener/",
     "crowdwise": "https://crowdwise.charlietrenorden.com/",
     "dcf-studio": "https://dcf.charlietrenorden.com/GOOGL",
     # a country page, not the picker - the landing page is three pills and a
@@ -108,7 +108,7 @@ READY = {
     # Absentee ranks thirty-four countries from data.json after load, so without
     # this the shot lands on an empty panel. A bar is the first thing that only
     # exists once the data has arrived.
-    "absentee": "#rank rect",
+    "foreign-property-screener": "#rank rect",
 }
 READY_TIMEOUT = 30000
 
@@ -225,7 +225,7 @@ ANCHOR = {
     # on the chart, with enough above it to keep the title and a row of the
     # controls in, so the card still shows a website with a chart in it.
     # 0.18 landed mid-hint and left an orphan "HELP." across the top of the card.
-    "absentee": {"selector": "#rank-panel", "context_above": 0.10},
+    "foreign-property-screener": {"selector": "#rank-panel", "context_above": 0.10},
     # The top of the page is the hero and a scatter that is currently just a sorted
     # curve. The cards, with real company names and per-flag scores, are the product.
     #

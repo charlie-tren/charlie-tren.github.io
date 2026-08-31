@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Absentee favicons, round 2</title>
+<style>
+ body{margin:0;padding:26px 30px;background:#fbfbfa;color:#1a1c1f;
+      font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+ h1{font:600 17px/1.2 Georgia,serif;margin:0 0 4px}
+ p.note{margin:0 0 20px;color:#767d86;font-size:12.5px}
+ .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 18px}
+ .cell{border:1px solid #e2e5e9;border-radius:8px;padding:12px;background:#fff}
+ .sizes{display:flex;align-items:flex-end;gap:12px;margin-bottom:8px}
+ .sizes .s64{width:64px;height:64px}.sizes .s32{width:32px;height:32px}.sizes .s16{width:16px;height:16px}
+ .tab{display:flex;align-items:center;gap:6px;background:#eceff2;border-radius:6px 6px 0 0;
+      padding:5px 9px;font-size:11.5px;color:#5a6068;margin-top:9px}
+ .tab svg{width:16px;height:16px;flex:none}
+ .lbl{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#767d86;margin-bottom:9px}
+ .num{font-weight:700;color:#1a1c1f}
+</style></head><body>
+<h1>Absentee favicons, round 2: the house and roof family</h1>
+<p class="note">Built out from 2 and 3. Number 3 lost its dashes because at 16px a 1.5px dash is a smudge, so the "something is missing" idea is carried by a cut corner or a gap in the wall instead. Solid fills over outlines throughout, for the same reason.</p>
+<div class="grid" id="g"></div>
+<script>
+const BLUE="#2f6fb2", RUST="#b4553f", SAND="#c98a3f", INK="#1a1c1f", PAPER="#fbfbfa", GREY="#5a6068";
+/* Every mark sits on a 32-unit grid. At 16px one unit is half a pixel, so
+   nothing thinner than about 2.8 units survives and no gap under 3 units reads
+   as a gap. Both were measured against round 1, where the dashed house and the
+   percent sign turned to mush. */
+const icons = [
+ ["13. House, corner taken", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M16 5 L27 14 L27 27 L5 27 L5 14 Z" fill="${BLUE}"/>
+   <path d="M16 5 L27 14 L27 27 L16 27 Z" fill="${RUST}"/>`],
+
+ ["14. House, taxed band", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M16 5 L27 14 L27 27 L5 27 L5 14 Z" fill="${BLUE}"/>
+   <path d="M5 22 L27 22 L27 27 L5 27 Z" fill="${RUST}"/>`],
+
+ ["15. Roof only", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M4 20 L16 8 L28 20" fill="none" stroke="${BLUE}" stroke-width="4.4"
+         stroke-linejoin="round" stroke-linecap="round"/>
+   <path d="M9 25 L23 25" stroke="${SAND}" stroke-width="3.4" stroke-linecap="round"/>`],
+
+ ["16. House, split", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M16 5 L27 14 L27 27 L16 27 Z" fill="${RUST}"/>
+   <path d="M16 5 L5 14 L5 27 L16 27 Z" fill="${BLUE}"/>`],
+
+ ["17. House, solid", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M16 5 L27 14 L27 27 L5 27 L5 14 Z" fill="${BLUE}"/>
+   <rect x="13" y="18" width="6" height="9" fill="${INK}"/>`],
+
+ ["18. Roof over a block", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M4 15 L16 5 L28 15 Z" fill="${BLUE}"/>
+   <rect x="8" y="18" width="16" height="9" rx="1.5" fill="${RUST}"/>`],
+
+ ["19. House, wall missing", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M16 5 L27 14 L27 27 L5 27 L5 14 Z" fill="${BLUE}"/>
+   <rect x="19" y="16" width="8" height="11" fill="${INK}"/>`],
+
+ ["20. Near roof, far roof", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M3 16 L10 10 L17 16 Z" fill="${GREY}"/>
+   <path d="M12 27 L22 17 L30 27 Z" fill="${BLUE}"/>`],
+
+ ["21. House, inverted", `<rect width="32" height="32" rx="6" fill="${BLUE}"/>
+   <path d="M16 6 L26 15 L26 26 L6 26 L6 15 Z" fill="${PAPER}"/>
+   <rect x="13" y="18" width="6" height="8" fill="${BLUE}"/>`],
+
+ ["22. Roof, wedge cut", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M4 24 L16 8 L28 24 L21 24 L16 17 L11 24 Z" fill="${BLUE}"/>`],
+
+ ["23. House on a hill", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M16 4 L26 12 L26 21 L6 21 L6 12 Z" fill="${BLUE}"/>
+   <path d="M2 27 q7 -5 14 0 t14 0" fill="none" stroke="${SAND}" stroke-width="3.2" stroke-linecap="round"/>`],
+
+ ["24. Two thirds house", `<rect width="32" height="32" rx="6" fill="${INK}"/>
+   <path d="M16 5 L27 14 L27 27 L5 27 L5 14 Z" fill="${RUST}"/>
+   <path d="M16 5 L5 14 L5 27 L20 27 Z" fill="${BLUE}"/>`],
+];
+const g = document.getElementById('g');
+icons.forEach(([name, body]) => {
+  const svg = s => `<svg class="s${s}" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+  const d = document.createElement('div');
+  d.className = 'cell';
+  d.innerHTML = `<div class="lbl"><span class="num">${name.split('.')[0]}</span>.${name.split('.').slice(1).join('.')}</div>
+    <div class="sizes">${svg(64)}${svg(32)}${svg(16)}</div>
+    <div class="tab">${svg(16)}<span>Absentee</span></div>`;
+  g.appendChild(d);
+});
+</script></body></html>
