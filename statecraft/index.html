@@ -116,17 +116,18 @@
 
   <section id="method"></section>
 
-</main>
-
-<!-- Pinned to the viewport, and outside main, because it is out of the
-     document flow. The page reserves its measured height at the bottom in
-     app.js, so it never covers the end of the method section. -->
-<section class="finish" aria-label="Reveal">
+  <!-- Inside main now, and in the flow. It used to be a fixed bar across the
+       foot of the window, which is a banner: over the page at every scroll
+       position, needing the body to reserve space for it. It sits after the
+       last policy instead, which is when the visitor has finished deciding. -->
+  <section class="finish" aria-label="Reveal">
   <div class="finish-in">
     <button class="primary" id="revealBtn" type="button">Show me which country this is</button>
     <p class="blocked" id="blockedNote" role="status"></p>
   </div>
-</section>
+  </section>
+
+</main>
 
 <script type="module" src="app.js"></script>
 </body>
