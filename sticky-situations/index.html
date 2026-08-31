@@ -81,6 +81,9 @@
          everybody else is told what is being waited for rather than shown a
          button that would be refused. -->
     <div id="preGame">
+      <!-- The theme picker. Everybody sees it; only the host can change it. -->
+      <h3 class="sect">The Game</h3>
+      <div class="themes" id="themes"></div>
       <p class="waiting" id="waiting"></p>
       <div class="hostrow" id="startRow" hidden>
         <button class="btn" id="beginBtn" type="button">Start the game</button>
@@ -91,8 +94,11 @@
       <!-- What the room is being asked for. The single most important line on
            the screen: it decides whether you wanted to play your worst card or
            your best one, and it is the thing players missed. -->
+      <!-- The premise: what game this is, before the prompt that varies. -->
+      <p class="premise" id="premise"></p>
       <p class="ask" id="ask"></p>
       <p class="modifier" id="modifier" hidden></p>
+      <p class="sitlabel" id="sitlabel"></p>
       <p class="statement" id="situation"></p>
 
       <!-- What you played, kept on screen. The card leaves your hand when you
