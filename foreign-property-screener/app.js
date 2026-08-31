@@ -184,10 +184,17 @@ function drawRank(rows, bench) {
   lo = Math.min(0, lo - pad); hi = hi + pad;
   const x = v => L + ((v - lo) / (hi - lo)) * plotW;
 
-  for (let i = 0; i <= 4; i++) {
-    const v = lo + (hi - lo) * (i / 4);
+  // Five ticks across 390px put "-0.4%" and "1.2%" edge to edge with no gap
+  // between them. Three is what the width holds.
+  const ticks = narrow ? 3 : 4;
+  for (let i = 0; i <= ticks; i++) {
+    const v = lo + (hi - lo) * (i / ticks);
     el(svg, "line", { x1: x(v), y1: T - 6, x2: x(v), y2: H - B, stroke: "var(--rule)", "stroke-width": 1 });
-    el(svg, "text", { x: x(v), y: T - 11, "text-anchor": "middle", fill: "var(--ink-faint)", "font-size": narrow ? 10 : 11 }, fmtPc(v));
+    el(svg, "text", {
+      x: x(v), y: T - 11,
+      "text-anchor": i === 0 ? "start" : i === ticks ? "end" : "middle",
+      fill: "var(--ink-faint)", "font-size": narrow ? 10 : 11,
+    }, fmtPc(v));
   }
 
   rows.forEach((r, i) => {
@@ -213,9 +220,15 @@ function drawRank(rows, bench) {
   });
 
   rows.forEach((r, i) => {
+    // Drawing the label over the benchmark rule is not enough: the dashes show
+    // through the gaps between the glyphs and the number reads as struck
+    // through. paint-order puts a panel-coloured stroke behind the fill, which
+    // knocks a hole in the rule the exact shape of the text.
     el(svg, "text", {
       x: Math.max(x(0), x(r.irr)) + 6, y: T + i * rowH + rowH / 2 + 3.6,
       fill: "var(--ink-faint)", "font-size": narrow ? 10 : 11,
+      "paint-order": "stroke", stroke: "var(--panel)", "stroke-width": 3.5,
+      "stroke-linejoin": "round",
     }, fmtPc(r.irr));
   });
 
