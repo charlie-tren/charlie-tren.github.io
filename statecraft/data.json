@@ -5328,6 +5328,11 @@
         "family": "fa_universal"
       },
       "indicators": {
+        "tax_take": {
+          "value": 20.3,
+          "year": 2024,
+          "source": "Ministry of Finance (Taiwan), tax burden ratio including social security contributions, % of GDP (table 3-18); not an OECD compilation"
+        },
         "grid_carbon": {
           "value": 633.2,
           "year": 2025,
@@ -5662,6 +5667,11 @@
         "family": "fa_targeted"
       },
       "indicators": {
+        "tax_take": {
+          "value": 36.1,
+          "year": 2024,
+          "source": "Eurostat gov_10a_taxag, total receipts from taxes and compulsory social contributions net of amounts unlikely to be collected, general government (S13), % of GDP"
+        },
         "health_public": {
           "value": 76.8,
           "year": 2023,

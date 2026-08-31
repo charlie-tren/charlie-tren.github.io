@@ -261,20 +261,44 @@ test('all forty-five countries can afford to be themselves', () => {
   //   until someone does, the floor is carrying an oil economy exactly as it
   //   was built to.
   //
+  //   SEARCHED AGAIN 31/08/2026 AND THEY STAY OPEN. The three top-ups above are
+  //   unchanged for that reason. IMF WoRLD, whose tax-plus-contributions total
+  //   reproduces the OECD figure to a tenth on five countries that have both,
+  //   publishes no social contributions line for any of the three, so the total
+  //   cannot be formed from it. UNU-WIDER's GRD reads Cyprus at 28.2% of GDP
+  //   for 2023 against the 36.0 the OECD basis gives, nearly eight points out
+  //   where the answer is known, and has no Qatar observation after 2008. The
+  //   full working is above the Gulf rows in countries.py.
+  //
   //   PANAMA, URUGUAY AND MALTA are the Singapore shape: a real measured tax
   //   take that is genuinely low. Panama needs 10.5 points on a measured take of
   //   11.3% of GDP, THE LOWEST IN THE FILE, with roughly half the labour force
   //   informal and outside it. Uruguay needs 2.3 on 27.3 and Malta 4.1 on 28.7,
   //   both of which run deficits, and both are smaller top-ups than Ireland's.
   //
-  // TAIWAN AND CYPRUS ARE NOT ON THE LIST and the reason is worth knowing,
-  // because it is an artefact rather than a virtue: neither carries a measured
-  // tax_take either, so both start at tax_anglo's 34.0, which is roughly two
-  // and a half times Taiwan's real take of about 13% of GDP. THE FLOOR IS THE
-  // HONEST MECHANISM AND THE MISSING INDICATOR IS THE PROBLEM. A country with
-  // no measured take inherits its option's number, and whether that flatters or
-  // punishes it is pure luck of which option it sits on.
-  assert.deepEqual(propped, ['SG', 'AE', 'IE', 'ES', 'UY', 'SA', 'QA', 'KW', 'MT', 'PA']);
+  // TAIWAN IS ON THE LIST AS OF 31/08/2026 AND IT WAS NOT BEFORE, which is the
+  // measurement arriving rather than anything changing in Taiwan. Both it and
+  // Cyprus used to start at tax_anglo's 34.0 for want of a measured take, and
+  // the note that stood here said so and called it luck of the option. Both now
+  // carry a cell.
+  //
+  //   TAIWAN measures 20.3% of GDP against the 34.0 it inherited, so its
+  //   starting rate falls 13.7 points and it needs an 11.9-point top-up where it
+  //   needed none. That is not a new problem, it is the old one becoming
+  //   visible: the model prices Taiwan's own choices at 32.2 and Taiwan does not
+  //   raise 32.2. Conscription and the single-payer NHI are both cheap in a way
+  //   the menu cannot price, and its 20.3 is itself an upper bound. See the
+  //   cell.
+  //
+  //   CYPRUS measures 36.1 against the same 34.0, so it moves the other way,
+  //   gains 2.1 points of capacity and stays off the list with 6.1 points of
+  //   headroom.
+  //
+  // THE FLOOR IS THE HONEST MECHANISM AND THE MISSING INDICATOR IS THE PROBLEM.
+  // A country with no measured take inherits its option's number, and whether
+  // that flatters or punishes it is pure luck of which option it sits on. Three
+  // rows are still in that position and they are the Gulf three above.
+  assert.deepEqual(propped, ['SG', 'AE', 'IE', 'ES', 'UY', 'TW', 'SA', 'QA', 'KW', 'MT', 'PA']);
 
   const ae = budgets(data, startingState(data, 'AE'));
   assert.equal(ae.financial.capacity, 32.0, 'floored at what the UAE already spends');

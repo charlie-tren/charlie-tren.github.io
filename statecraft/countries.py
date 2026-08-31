@@ -1010,6 +1010,40 @@ COUNTRIES = [
     # and the gap is stated here. It is also inert for these rows: nonTaxRevenue
     # is inherited from the STARTING country, and a measured-only country can
     # never be one.
+    #
+    # THE THREE ALSO HAVE NO tax_take, AND 31/08/2026 IS THE SECOND SEARCH FOR
+    # ONE. Taiwan and Cyprus were both closed that day and the Gulf three were
+    # not, so the reason they stayed open is written down rather than left as an
+    # absence. What was tried:
+    #
+    #   IMF WoRLD is the right instrument and it is incomplete for them. Its
+    #   tax-plus-social-contributions total reproduces the OECD figure almost
+    #   exactly where both exist: Ireland 21.9 against 22.0, Malta 30.4 against
+    #   30.6, Slovenia 37.2 against 37.1, the United States 25.0 against 25.0,
+    #   Japan 31.4 against 31.4, all for 2019. For Saudi Arabia, Qatar and
+    #   Kuwait it publishes the tax line (7.2, 5.7 and 1.8% of GDP for 2020) and
+    #   NO social contributions line at all, so the total cannot be formed. All
+    #   three run compulsory schemes that collect real money (GOSI, the General
+    #   Retirement and Social Insurance Authority, PIFSS), so the tax line alone
+    #   is a partial total short by an unpublished amount. Every free mirror of
+    #   WoRLD also stops at 2020 against 2024 elsewhere in this column.
+    #
+    #   UNU-WIDER's GRD is the usual fallback and it fails the same test the
+    #   nonTaxRevenue subtraction failed. Its Cyprus reads 28.2% of GDP for
+    #   2023 against the 36.0 Eurostat publishes on the OECD's basis for the
+    #   same country and year, so it is nearly EIGHT points out where the answer
+    #   is known, twice the four-point disagreement recorded above. It also has
+    #   no Qatar observation after 2008.
+    #
+    #   And all three record oil as one revenue block, so the split the axis
+    #   needs, tax on production and profits against a state company's property
+    #   income, is not published by anyone. The OECD counts Norway's petroleum
+    #   tax; whether any of Saudi Arabia's oil revenue belongs in this column is
+    #   a question the sources do not answer.
+    #
+    # So the three keep falling back to tax_minimal's 16.0, which is documented
+    # rather than right. Filling the cell from any of the above would put a
+    # number on a different basis into a column the reveal plots on one axis.
     # ----------------------------------------------------------------------
     {"code": "IE", "name": "Ireland", "timezones": ["Europe/Dublin"],
      "nonTaxRevenue": 0.0,
@@ -2689,12 +2723,15 @@ COUNTRIES = [
      # inferred from Japan and Korea. Where the East Asian precedent decided a
      # cell, the comment says so.
      "choices": {
-                 # Taiwan's tax burden is about 13 to 14% of GDP, less than half
-                 # this option's 34.0 and the lowest of any developed economy
-                 # here. The rates are genuinely progressive, 5% to 40%, so the
-                 # shape is right and the level is not, and there is no measured
-                 # tax_take cell to print the disagreement. No option describes a
-                 # progressive income tax collecting under 20%.
+                 # Taiwan's own headline tax burden is 14.6% of GDP, but that
+                 # figure EXCLUDES social security contributions and the axis
+                 # includes them, so the measured cell below is 20.3 rather than
+                 # 14.6. Either way it is far under this option's 34.0 and the
+                 # lowest measured take of any developed economy here. The rates
+                 # are genuinely progressive, 5% to 40%, so the shape is right
+                 # and the level is not, and the cell now prints the
+                 # disagreement. No option describes a progressive income tax
+                 # collecting around 20%.
                  "tax": "tax_anglo",
                  # SINGLE-PAYER NATIONAL HEALTH INSURANCE, AND NO OPTION SAYS SO.
                  # NHI since 1995 is compulsory, premium-financed, nobody may be
@@ -2790,6 +2827,27 @@ COUNTRIES = [
                  # https://basicincome.org/news/2026/06/taiwan-is-moving-toward-a-child-basic-income-it-should-not-stop-half-way/
                  "family": "fa_universal"},
      "indicators": {
+         # THE ONE CELL IN THIS COLUMN THAT IS NOT THE OECD'S OWN NUMBER, and
+         # the basis is stated because it has to be. Taiwan is in no OECD
+         # collection, so this is its Ministry of Finance's figure. The MOF
+         # publishes two ratios: 賦稅負擔率, tax revenue alone, 14.6% of GDP in
+         # 2024, which is the 13 to 14% widely quoted and is NOT this axis
+         # because it leaves out social security contributions; and the same
+         # ratio with contributions added, 20.3%, contributions being 5.6% of
+         # GDP. The MOF prints 20.3 against Korea 25.3, the United States 25.6
+         # and Japan 33.7 on a chart it sources to OECD Revenue Statistics 2025,
+         # so the comparison is the MOF's own rather than one made here.
+         # WHERE IT MAY STILL OVERSTATE: the MOF's contributions total includes
+         # the funded individual-account schemes (labour pension new and old
+         # systems, the military and civil service retirement fund, the private
+         # school fund), about 27% of the contributions total or 1.5 points of
+         # GDP, and the OECD would not normally count those as taxes. So read
+         # 20.3 as an upper bound with roughly 18.8 underneath it. Both are far
+         # nearer the truth than the 34.0 this row inherited from tax_anglo
+         # before the cell existed.
+         # https://service.mof.gov.tw/public/data/statistic/bulletin/115/114年稅收徵起情形分析.pdf
+         "tax_take": {"value": 20.3, "year": 2024,
+                       "source": "Ministry of Finance (Taiwan), tax burden ratio including social security contributions, % of GDP (table 3-18); not an OECD compilation"},
          "grid_carbon": {"value": 633.2, "year": 2025,
                        "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"},
          "expression": {"value": 0.838, "year": 2025,
@@ -3303,8 +3361,9 @@ COUNTRIES = [
                  # Progressive to 35% with a large exempt band, low social
                  # contributions and heavy reliance on consumption and corporate
                  # tax, so tax_anglo rather than tax_continental: Cyprus is not
-                 # funded by a payroll wedge. There is no measured tax_take cell
-                 # on this row, so the 37.6 is not plotted anywhere.
+                 # funded by a payroll wedge. The measured tax_take cell below
+                 # reads 36.1 rather than this 37.6, and the gap is basis rather
+                 # than revision. See the cell.
                  # https://cyprus-mail.com/2025/11/04/cyprus-tax-to-gdp-ratio-ticked-up-in-2024
                  "tax": "tax_anglo",
                  # GESY since 2019 is a single-payer contributory scheme: the
@@ -3381,6 +3440,18 @@ COUNTRIES = [
                  # https://www.estatefy.com/cyprus/child-benefit-in-cyprus-everything-you-need-to-know
                  "family": "fa_targeted"},
      "indicators": {
+         # 36.1, NOT the 37.6 the headlines carried. Eurostat publishes three
+         # totals and only one of them is the OECD's basis. 37.6 is taxes and
+         # net social contributions for general government PLUS the EU
+         # institutions and INCLUDING imputed contributions; 37.4 is the same
+         # thing for general government alone; 36.1 excludes imputed and
+         # voluntary contributions, which is what the OECD counts. Checked
+         # against the fifteen EU countries that have both an OECD cell in this
+         # file and a Eurostat one for 2024: the compulsory measure reproduces
+         # the OECD figure to within 0.2 on eleven of them and 0.8 at worst,
+         # while the including-imputed measure runs 0.5 to 1.9 above it.
+         "tax_take": {"value": 36.1, "year": 2024,
+                       "source": "Eurostat gov_10a_taxag, total receipts from taxes and compulsory social contributions net of amounts unlikely to be collected, general government (S13), % of GDP"},
          "health_public": {"value": 76.8, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
          "education_spend": {"value": 4.7, "year": 2022,
