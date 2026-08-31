@@ -219,6 +219,12 @@ SCHEME = {
 # chart on its own.
 ANCHOR = {
     "consensus-drift": {"selector": "svg", "context_above": 0.30},
+    # The top of the page is a wordmark and six sliders. Shot unanchored on
+    # 31/08/2026 the card was 590px of controls and three bars, which reads as a
+    # settings screen rather than as a ranking of thirty-four countries. Framed
+    # on the chart, with enough above it to keep the title and a row of the
+    # controls in, so the card still shows a website with a chart in it.
+    "absentee": {"selector": "#rank-panel", "context_above": 0.18},
     # The top of the page is the hero and a scatter that is currently just a sorted
     # curve. The cards, with real company names and per-flag scores, are the product.
     #
