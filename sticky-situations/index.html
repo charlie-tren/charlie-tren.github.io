@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sticky Situations</title>
-<meta name="description" content="Everyone plays a card. Nobody knows whose is whose until the room has voted.">
+<title>Worst Case Scenario</title>
+<meta name="description" content="Everybody plays their worst card. The room picks the best of a bad lot. Fewest points wins.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Sticky Situations">
-<meta property="og:description" content="Everyone plays a card. Nobody knows whose is whose until the room has voted.">
+<meta property="og:title" content="Worst Case Scenario">
+<meta property="og:description" content="Everybody plays their worst card. The room picks the best of a bad lot. Fewest points wins.">
 <meta property="og:url" content="https://charlietrenorden.com/sticky-situations/">
 <meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -38,10 +38,16 @@
 
   <section class="lobby" id="lobby">
     <h2 id="lobbyTitle">Create a room</h2>
-    <p class="lede-s" id="lobbyLede">Everyone plays a card. Nobody knows whose is whose until the room has voted.</p>
+    <p class="lede-s" id="lobbyLede">Everybody plays their worst card. The room picks the best of a bad lot. Fewest points wins.</p>
 
     <label class="field"><span>Your name</span>
       <input id="name" type="text" maxlength="24" autocomplete="given-name" placeholder="Charlie"></label>
+
+    <!-- Your badge. It is how people find you on the leaderboard while it is
+         moving, which a name in 13px type does not do at a glance. -->
+    <div class="field"><span>Your badge</span>
+      <div class="picks" id="picks" role="radiogroup" aria-label="Choose your badge"></div>
+    </div>
 
     <!-- Arriving from an invite link, only one of these two makes sense, so the
          other is hidden rather than offered and ignored. -->
@@ -73,9 +79,8 @@
       <span id="progress"></span>
     </div>
 
-    <!-- Everyone, always. Names and scores are not secret, and a scoreboard
-         nobody can see is not a scoreboard. -->
-    <ol class="seats" id="seats"></ol>
+    <div class="roomgrid">
+    <div class="roommain">
 
     <!-- Before the game starts. The host is the only one who can begin, so
          everybody else is told what is being waited for rather than shown a
@@ -150,6 +155,19 @@
         <button class="btn" id="joinInBtn" type="button">Deal me in</button>
       </div>
     </div>
+
+    </div><!-- /roommain -->
+
+    <!-- Everyone, always, sorted by blame, and it MOVES when somebody overtakes.
+         Names and scores are not secret, and a scoreboard nobody can see is not
+         a scoreboard. This replaced a row of small chips: the chips could not
+         show a position changing, which is the whole point. -->
+    <aside class="board" id="board">
+      <h3 class="sect" id="boardHead">In The Room</h3>
+      <ol class="bl" id="blist"></ol>
+      <p class="blnote" id="blnote"></p>
+    </aside>
+    </div><!-- /roomgrid -->
 
     <div id="over" hidden>
       <h2 class="reshead">Final Blame</h2>

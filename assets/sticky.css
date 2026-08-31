@@ -5,6 +5,63 @@
    Every colour here is a token from room.css. Nothing defines its own palette,
    so the light and dark themes come for free and cannot drift from the estate. */
 
+/* The badge picker in the lobby. */
+.picks { display: grid; grid-template-columns: repeat(8, 1fr); gap: .3rem; }
+.pick { appearance: none; -webkit-appearance: none; cursor: pointer; font-size: 19px;
+        line-height: 1; padding: .35rem 0; border: 1px solid var(--rule);
+        border-radius: 8px; background: var(--raised);
+        transition: border-color .15s, background .15s; }
+.pick:hover { border-color: var(--accent); }
+.pick.on { border-color: var(--accent); background: var(--grid); }
+
+/* ---------------------------------------------------------- the leaderboard --
+   On the side at desktop width, above the round on a phone. It replaced a row of
+   small chips, which could not show a position changing - and watching somebody
+   overtake is the entire reason it is on screen. */
+.roomgrid { display: grid; gap: 1.6rem; margin-top: 1.4rem; }
+@media (min-width: 861px) {
+  .roomgrid { grid-template-columns: minmax(0, 1fr) 15.5rem; align-items: start; gap: 2.2rem; }
+  .board { position: sticky; top: 1.5rem; }
+  .roommain { grid-column: 1; grid-row: 1; }
+  .board { grid-column: 2; grid-row: 1; }
+}
+@media (max-width: 860px) {
+  /* On a phone the board comes FIRST: it is the thing you glance at, and the
+     round below it is the thing you scroll to. */
+  .roommain { order: 2; }
+  .board { order: 1; }
+  .roomgrid { display: flex; flex-direction: column; }
+}
+
+.board .sect { margin-top: 0; }
+.bl { list-style: none; margin: 0; padding: 0; }
+/* Positioned so a row can be moved by a transform without disturbing the rest. */
+.blrow { display: grid; grid-template-columns: 1.3rem 1.6rem minmax(0, 1fr) auto;
+         align-items: center; gap: .5rem; padding: .5rem .55rem;
+         border-radius: 9px; border: 1px solid transparent;
+         font: 400 15px/1.25 ui-sans-serif, system-ui, sans-serif; }
+.blrow.me { border-color: var(--rule); background: var(--raised); }
+.blpos { font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--faint); }
+.blicon { font-size: 19px; line-height: 1; }
+.blname { color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis;
+          white-space: nowrap; }
+.blright { font: 600 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink); }
+.blwatch { font: 400 12px/1 ui-sans-serif, system-ui, sans-serif; color: var(--faint); }
+.blrow.away .blname { opacity: .55; }
+.blrow.away .blicon { filter: grayscale(1); opacity: .5; }
+.blrow.stalling { cursor: pointer; border-color: var(--accent); }
+.blrow.stalling:hover { background: var(--grid); }
+.blnote { color: var(--faint); font: 400 12px/1 ui-sans-serif, system-ui, sans-serif;
+          margin: .7rem 0 0; }
+
+/* Overtaking. Up the board is good, because up is less blame. */
+.blrow.rose { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.blrow.fell { background: color-mix(in srgb, var(--soft) 12%, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .blrow { transition: none !important; }
+  .blrow.rose, .blrow.fell { background: none; }
+}
+
 .lede-s { color: var(--soft); font: 400 14.5px/1.55 ui-sans-serif, system-ui, sans-serif;
           margin: 0 0 1.4rem; }
 
@@ -17,65 +74,9 @@
 
 #progress { color: var(--faint); font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; }
 
-/* ---------------------------------------------------------------- the seats --
-   Who is in the room, what they have scored, and whether the round is waiting on
-   them. A tick is the whole signal: it says "done", and its absence says "not
-   yet", which is the only thing anybody needs while a round is open. */
-.seats { list-style: none; margin: 1.4rem 0 0; padding: 0;
-         display: flex; flex-wrap: wrap; gap: .5rem .8rem; }
-.seat { display: inline-flex; align-items: baseline; gap: .45rem;
-        border: 1px solid var(--rule); border-radius: 999px; padding: .3rem .75rem;
-        font: 400 13.5px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
-.seat .nm { color: var(--ink); }
-.seat .sc { font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-            color: var(--accent); }
-.seat .tick { color: var(--accent); }
-/* A watcher is in the room but not in the game: they arrived after the deal, so
-   there is no hand to give them without taking cards off somebody. */
-.seat.watching { opacity: .55; }
-.seat.watching .sc { display: none; }
-
-/* Somebody the round is stuck on. A button, not a label: tapping it pokes them,
-   and the whole chip is the target because on a phone you are trying to hurry a
-   friend along with one thumb. */
-.seat.stalling { cursor: pointer; border-color: var(--accent); background: transparent;
-                 font: 400 13.5px/1 ui-sans-serif, system-ui, sans-serif;
-                 animation: seatpulse 2.2s ease-in-out infinite; }
-.seat.stalling:hover { background: var(--grid); }
-/* Nobody is behind this seat right now. They are still in the game and still
-   being waited for, so they stay on screen rather than vanishing. */
-.seat.away .nm { opacity: .6; }
-.seat.away::after { content: "away"; color: var(--faint);
-                    font: 400 11.5px/1 ui-sans-serif, system-ui, sans-serif; }
-@keyframes seatpulse {
-  0%, 100% { border-color: var(--rule); }
-  50%      { border-color: var(--accent); }
-}
-
-/* Being poked. The point is that you are NOT looking at the screen, so it moves
-   and the phone buzzes. */
-.page.poked { animation: pokeshake .5s cubic-bezier(.36,.07,.19,.97) both; }
-@keyframes pokeshake {
-  10%, 90% { transform: translate3d(-2px, 0, 0); }
-  20%, 80% { transform: translate3d(4px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-7px, 0, 0); }
-  40%, 60% { transform: translate3d(7px, 0, 0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .seat.stalling { animation: none; border-color: var(--accent); }
-  .page.poked { animation: none; outline: 2px solid var(--accent); outline-offset: -2px; }
-}
-
-/* Bots, and the only way to try the game on your own. */
-.botrow { display: flex; align-items: center; gap: .55rem; margin: 1.4rem 0 0; }
-.botlbl { font: 600 11.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .16em;
-          text-transform: uppercase; color: var(--faint); }
-.botn { font: 600 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-        color: var(--ink); min-width: 1.2em; text-align: center; }
-/* A bot must never be mistaken for somebody worth waiting for. */
-.bottag { font: 600 10px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em;
-          text-transform: uppercase; color: var(--on-accent); background: var(--faint);
-          border-radius: 4px; padding: .15rem .3rem; }
+/* A tick means "this player has done what the round is waiting for". Used by the
+   leaderboard; the row of chips it used to belong to is gone. */
+.tick { color: var(--accent); }
 
 .waiting { color: var(--soft); font: 400 15px/1.5 ui-sans-serif, system-ui, sans-serif;
            margin: 1.6rem 0 0; }
