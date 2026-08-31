@@ -258,11 +258,18 @@
   function renderRound(s) {
     var you = s.you;
 
-    el("modifier").hidden = !s.modifier;
-    if (s.modifier) {
-      el("modifier").textContent = s.modifier === "worst"
-        ? "Worst card wins this round"
-        : "Points are doubled this round";
+    /* The instruction, in the words a player needs: what to hunt for in the
+       hand, and what the room will be asked at the vote. A reverse round says
+       the opposite of every other round, so it is the loud one. */
+    var reverse = s.ask === "worst";
+    el("ask").textContent = reverse
+      ? "REVERSE ROUND: play your BEST card. The room votes for the WORST."
+      : "Play your WORST card. The room votes for the best of a bad lot.";
+    el("ask").className = "ask" + (reverse ? " reverse" : "");
+
+    el("modifier").hidden = !s.modifier || s.modifier === "reverse";
+    if (s.modifier === "double") {
+      el("modifier").textContent = "Double blame this round";
     }
     el("situation").textContent = s.situation || "";
 
@@ -306,7 +313,8 @@
     var table = s.table;
     el("tableWrap").hidden = !table;
     if (table) {
-      el("tableHead").textContent = s.phase === "voting" ? "Pick The Winner"
+      el("tableHead").textContent = s.phase === "voting"
+          ? (reverse ? "Pick The Worst" : "Pick The Best")
         : s.phase === "scored" ? "The Result" : "On The Table";
       var wrap = el("table");
       wrap.textContent = "";
@@ -376,14 +384,11 @@
     if (s.phase === "scored" && s.last) {
       var gained = s.last.gained[you.id];
       var bits = [];
-      if (gained !== undefined) bits.push(gained === 1 ? "You scored 1 point." : "You scored " + gained + " points.");
+      /* Blame is bad, so taking none is the good outcome and says so. */
+      if (gained === 0) bits.push("No blame. Nobody picked yours.");
+      else if (gained !== undefined) bits.push("You take " + gained + " blame.");
       if (s.last.sweep) {
-        /* A sweep on a worst round is nobody voting for you, which is the
-           opposite of taking the room. Saying "took the room" there printed the
-           reverse of what had just happened. */
-        bits.push(s.last.worst
-          ? "Nobody voted for " + ownerName(s, s.last.sweep) + "."
-          : ownerName(s, s.last.sweep) + " took the room.");
+        bits.push(ownerName(s, s.last.sweep) + " was picked by the whole room.");
       }
       return bits.join(" ");
     }
@@ -425,9 +430,10 @@
     note("");
     var list = el("final");
     list.textContent = "";
+    /* Ascending: this is golf, and the fewest blame wins. */
     var ranked = s.players.filter(function (q) { return q.playing; })
-      .slice().sort(function (a, b) { return b.score - a.score; });
-    var top = ranked.length ? ranked[0].score : 0;
+      .slice().sort(function (a, b) { return a.score - b.score; });
+    var top = ranked.reduce(function (m, q) { return Math.max(m, q.score); }, 0);
     ranked.forEach(function (q) {
       var li = document.createElement("li");
       li.className = "simrow";
@@ -438,7 +444,9 @@
       bar.className = "simbar";
       var fill = document.createElement("span");
       fill.style.width = (top ? Math.round((q.score / top) * 100) : 0) + "%";
-      fill.style.background = "var(--accent)";
+      /* The bar is how much blame you carry, so a long bar is a bad thing and
+         the accent would read as a prize. */
+      fill.style.background = "var(--soft)";
       bar.appendChild(fill);
       var pct = document.createElement("span");
       pct.className = "simpct";
@@ -584,7 +592,9 @@
         { slot: 2, text: "a nan who is 94 and deaf", owner: "p4", votes: 0 },
         { slot: 3, text: "a friend who has just got back from Bali", owner: "p3", votes: 0 },
       ],
-      last: { round: 4, worst: false, double: false, sweep: null, gained: { p1: 2, p2: 1, p3: 0, p4: 0 } },
+      ask: "best",
+      last: { round: 4, reverse: false, ask: "best", double: false, sweep: null,
+              gained: { p1: 2, p2: 1, p3: 0, p4: 0 } },
     });
   }
 })();

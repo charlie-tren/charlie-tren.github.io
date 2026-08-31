@@ -88,6 +88,10 @@
     </div>
 
     <div id="play" hidden>
+      <!-- What the room is being asked for. The single most important line on
+           the screen: it decides whether you wanted to play your worst card or
+           your best one, and it is the thing players missed. -->
+      <p class="ask" id="ask"></p>
       <p class="modifier" id="modifier" hidden></p>
       <p class="statement" id="situation"></p>
 
@@ -128,7 +132,8 @@
     </div>
 
     <div id="over" hidden>
-      <h2 class="reshead">Final Scores</h2>
+      <h2 class="reshead">Final Blame</h2>
+      <p class="lede-s">Fewest wins.</p>
       <ol class="simlist" id="final"></ol>
     </div>
   </section>
