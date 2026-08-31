@@ -287,6 +287,12 @@ def test_indicator_coverage_is_reported_not_assumed():
     the sixty are on the new measured-only rows and eleven are the launch set's
     own long-standing gaps, which are Singapore and the UAE.
 
+    NONE OF THAT CHANGED ON 31/08/2026 when the last eight rows were coded, and
+    that is the point: coding a matrix adds no indicator cells, so the total is
+    still 570 of 630. What changed is only which line of the breakdown they are
+    counted on, since all forty-five are now matchable and the measured-only
+    group is empty.
+
     TAIWAN IS THE THINNEST ROW IN THE FILE at 6 of 14. It is in none of the World
     Bank, WHO GHED or OECD collections, all three of which exclude it, so what it
     has comes from the six that do cover it: Ember, V-Dem, SIPRI, UN DESA,
@@ -306,7 +312,14 @@ def test_indicator_coverage_is_reported_not_assumed():
     oh, ot = share(measured_only())
     print(f"\nindicator coverage: {have} of {total} cells ({100 * have / total:.1f}%)")
     print(f"  matchable      {mh} of {mt} ({100 * mh / mt:.1f}%)")
-    print(f"  measured only  {oh} of {ot} ({100 * oh / ot:.1f}%)")
+    # THE MEASURED-ONLY GROUP IS EMPTY FROM 31/08/2026 and this line divided by
+    # its size, so the whole build refused to write on a report of a number
+    # rather than on anything being wrong. The line is kept rather than deleted:
+    # the category still exists and the next country added arrives in it, and a
+    # report that disappears the moment the group empties is how a later
+    # regression goes unnoticed.
+    print(f"  measured only  {oh} of {ot}"
+          + (f" ({100 * oh / ot:.1f}%)" if ot else " (none left to code)"))
     thin = sorted((sum(1 for a in axis_ids if a in c["indicators"]), c["code"])
                   for c in COUNTRIES)[:5]
     print("  thinnest rows  " + ", ".join(f"{code} {n}/14" for n, code in thin))

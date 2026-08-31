@@ -19,14 +19,17 @@ const data = JSON.parse(readFileSync(join(here, 'data.json'), 'utf8'));
 const byCode = (code) => data.countries.find((c) => c.code === code);
 
 // THE COUNTRIES THAT CAN BE AN ANSWER. data.countries is forty-five rows and
-// only thirty-seven of them carry a policy matrix; the other eight are measured
-// only, added 30/08/2026, and have `choices: {}`. Nine of the original
-// twenty-five, Ireland, Italy, Spain, Portugal, Austria, Belgium, Greece,
-// Luxembourg and Iceland, were coded on 30/08/2026, and Czechia, Poland,
-// Slovakia, Slovenia, Croatia, Lithuania, Latvia and Hungary the same day, so
-// sixteen became eight. Every test below that starts
-// from a country's choices, encodes them into a URL, or asks what a country
-// matches has to run over THIS list, because the other sixteen have nothing
+// ALL FORTY-FIVE now carry a policy matrix, since Uruguay, Taiwan, Saudi
+// Arabia, Qatar, Kuwait, Malta, Cyprus and Panama were coded on 31/08/2026 and
+// the measured-only pool added on 30/08/2026 is empty.
+//
+// THIS FILTER IS NOT NOW REDUNDANT AND MUST NOT BE REMOVED. It reads the flag
+// rather than counting the rows, so it costs nothing while the pool is empty
+// and it is the only thing standing between an `choices: {}` row and the reveal
+// on the day the next country is added. The guard being currently unexercised
+// is exactly why the test below feeds it a synthetic empty row. Every test that
+// starts from a country's choices, encodes them into a URL, or asks what a
+// country matches runs over THIS list, because a row with no matrix has nothing
 // to start from. Reading it through match.js rather than filtering here keeps
 // one definition of the split in one place.
 const MATCHABLE = matchable(data);
@@ -40,8 +43,8 @@ const stateOf = (code, overrides = {}) => ({ ...startingState(data, code), ...ov
 test('data.json has the shape the modules assume', () => {
   assert.equal(data.domains.length, 13);
   assert.equal(data.countries.length, 45);
-  assert.equal(MATCHABLE.length, 37);
-  assert.equal(data.countries.filter((c) => !c.matchable).length, 8);
+  assert.equal(MATCHABLE.length, 45);
+  assert.equal(data.countries.filter((c) => !c.matchable).length, 0);
   assert.equal(data.axes.length, 14);
   assert.equal(data.fallback, 'AU');
 
@@ -69,13 +72,34 @@ test('data.json has the shape the modules assume', () => {
 // is reachable: five options are tagged to no country at all, so a visitor who
 // picks the aspirational menu builds one. The guard is the filter in match.js
 // and this is the test that it is doing the work.
+//
+// THE REAL POOL EMPTIED ON 31/08/2026 when the last eight rows were coded, and
+// this test was rewritten rather than deleted. A guard with nothing left to
+// exclude reads exactly like a guard that works, so the exclusion is now
+// asserted against a SYNTHETIC measured-only row spliced into a copy of the
+// data, built to be the adversary the real ones were: indicators sitting at the
+// dead centre of every axis, so it wins any distance tiebreak it is allowed
+// into. If someone deletes the filter in match.js, this fails. It also fails if
+// a future measured-only country is added and the filter has rotted, because
+// the same assertions run over the real rows alongside the fake one.
 test('rank never returns a country with no policy matrix', () => {
-  const unmatchable = new Set(data.countries.filter((c) => !c.matchable).map((c) => c.code));
-  assert.ok(unmatchable.size >= 8, 'there should be measured-only countries to exclude');
+  const midpoint = Object.fromEntries(data.axes.map((a) => [
+    a.id, { value: (a.bounds[0] + a.bounds[1]) / 2, year: 2026, source: 'synthetic test fixture' },
+  ]));
+  const probe = {
+    code: 'ZZ', name: 'Nowhere', timezones: [], nonTaxRevenue: 0.0,
+    matchable: false, choices: {}, indicators: midpoint,
+  };
+  const spiked = { ...data, countries: [...data.countries, probe] };
+  const unmatchable = new Set(
+    spiked.countries.filter((c) => !c.matchable).map((c) => c.code),
+  );
+  assert.ok(unmatchable.has('ZZ'), 'the fixture must itself be measured only');
+  assert.equal(matchable(spiked).length, MATCHABLE.length, 'the fixture must not be matchable');
 
   // Every matchable country's own design.
   for (const country of MATCHABLE) {
-    const rows = rank(data, country.choices);
+    const rows = rank(spiked, country.choices);
     assert.equal(rows.length, MATCHABLE.length);
     for (const row of rows) {
       assert.ok(!unmatchable.has(row.code), `${row.code} was ranked against ${country.code}`);
@@ -91,7 +115,7 @@ test('rank never returns a country with no policy matrix', () => {
     if (aspirational) untagged[d.id] = aspirational.id;
   }
   assert.ok(Object.keys(untagged).length >= 4, 'expected several untagged options');
-  const rows = rank(data, untagged);
+  const rows = rank(spiked, untagged);
   assert.equal(rows.length, MATCHABLE.length);
   for (const row of rows) {
     assert.ok(!unmatchable.has(row.code), `${row.code} won an all-aspirational design`);
@@ -99,14 +123,14 @@ test('rank never returns a country with no policy matrix', () => {
 
   // An empty selection matches nothing anywhere, so every row ties at zero and
   // the sort is decided entirely by distance. The winner must still be one of
-  // the twenty-nine.
-  const empty = rank(data, {});
+  // the forty-five.
+  const empty = rank(spiked, {});
   assert.equal(empty[0].matched, 0, 'an empty design should agree with nobody');
   assert.ok(!unmatchable.has(empty[0].code), `${empty[0].code} won an empty design`);
 });
 
 // 1. Every country can afford to be itself.
-test('all thirty-seven countries can afford to be themselves', () => {
+test('all forty-five countries can afford to be themselves', () => {
   const financiallyOver = [];
 
   for (const country of MATCHABLE) {
@@ -156,8 +180,13 @@ test('all thirty-seven countries can afford to be themselves', () => {
   // of the eight needed a nonTaxRevenue or the floor to pay for its own status
   // quo, which is the expected result: all eight measure a tax take of 33% to
   // 38% of GDP against modelled spends below that.
+  // STILL EMPTY WITH THE LAST EIGHT, checked 31/08/2026, and this is the one
+  // batch where it was in doubt. Six of the eight needed the floor rather than
+  // clearing on their own, which is recorded below, but the floor is what stops
+  // "needs a top-up" becoming "cannot afford itself" and none of the eight is
+  // over.
   assert.deepEqual(financiallyOver, []);
-  assert.equal(MATCHABLE.length, 37);
+  assert.equal(MATCHABLE.length, 45);
 
   // The floor only ever binds for the UAE. Nineteen countries raise more than
   // they spend, so their capacity is untouched by it, and this asserts that
@@ -212,7 +241,40 @@ test('all thirty-seven countries can afford to be themselves', () => {
   // Spain is the marginal case at 0.6 points and needs no special explanation.
   // It runs a persistent general government deficit, so a model in which it
   // funds itself out of tax to the last tenth would be the surprising result.
-  assert.deepEqual(propped, ['SG', 'AE', 'IE', 'ES']);
+  //
+  // SIX MORE ARRIVED ON 31/08/2026 AND THE LIST MORE THAN DOUBLED. That is the
+  // largest single change to this assertion and it is not drift, so the top-up
+  // each one needs is written down beside it. Two shapes, and only one of them
+  // is about the countries:
+  //
+  //   THE THREE GULF STATES ARE THE UAE'S CASE WITHOUT THE UAE'S FIX, and they
+  //   need the three largest top-ups in the file by a distance: Kuwait 24.0
+  //   points of GDP, Qatar 19.0 and Saudi Arabia 13.5. None of the three
+  //   carries a measured tax_take, so the slider starts at tax_minimal's 16.0,
+  //   and their nonTaxRevenue is 0.0 while the UAE's is 11.8. It is 0.0 because
+  //   it could not be sourced on the same basis as the axis, not because it is
+  //   believed to be zero, and the reasoning is written out above their rows in
+  //   countries.py. The IMF puts their 2024 general government revenue at 74.2,
+  //   26.7 and 27.1% of GDP respectively, which is what actually pays for the
+  //   free universities and the pensions the model is pricing. SOURCING THOSE
+  //   THREE NUMBERS ON THE RIGHT BASIS WOULD RETIRE MOST OF THIS BLOCK, and
+  //   until someone does, the floor is carrying an oil economy exactly as it
+  //   was built to.
+  //
+  //   PANAMA, URUGUAY AND MALTA are the Singapore shape: a real measured tax
+  //   take that is genuinely low. Panama needs 10.5 points on a measured take of
+  //   11.3% of GDP, THE LOWEST IN THE FILE, with roughly half the labour force
+  //   informal and outside it. Uruguay needs 2.3 on 27.3 and Malta 4.1 on 28.7,
+  //   both of which run deficits, and both are smaller top-ups than Ireland's.
+  //
+  // TAIWAN AND CYPRUS ARE NOT ON THE LIST and the reason is worth knowing,
+  // because it is an artefact rather than a virtue: neither carries a measured
+  // tax_take either, so both start at tax_anglo's 34.0, which is roughly two
+  // and a half times Taiwan's real take of about 13% of GDP. THE FLOOR IS THE
+  // HONEST MECHANISM AND THE MISSING INDICATOR IS THE PROBLEM. A country with
+  // no measured take inherits its option's number, and whether that flatters or
+  // punishes it is pure luck of which option it sits on.
+  assert.deepEqual(propped, ['SG', 'AE', 'IE', 'ES', 'UY', 'SA', 'QA', 'KW', 'MT', 'PA']);
 
   const ae = budgets(data, startingState(data, 'AE'));
   assert.equal(ae.financial.capacity, 32.0, 'floored at what the UAE already spends');
@@ -665,9 +727,11 @@ test('the UAE capacity comes from non-tax revenue and is not attributed to tax',
   assert.equal(option('tax', 'tax_minimal').axis.tax_take, 16.0);
   assert.equal(axisValues(data, ae.selection).tax_take, 16.0);
 
-  // Nineteen of the twenty matchable countries carry nothing, so the field is not
-  // a fudge factor. The twenty-five measured-only rows are 0.0 as well, but for a
-  // different reason: the figure could not be sourced. See countries.py.
+  // Forty-four of the forty-five carry nothing, so the field is not a fudge
+  // factor. Saudi Arabia, Qatar and Kuwait are 0.0 for a DIFFERENT reason, and
+  // it survived them becoming matchable on 31/08/2026: the figure could not be
+  // sourced on the same basis as the tax_take axis, and inventing one would
+  // have been worse. That is why all three sit on the floor. See countries.py.
   const others = MATCHABLE.filter((c) => c.code !== 'AE');
   assert.deepEqual([...new Set(others.map((c) => c.nonTaxRevenue))], [0]);
 
