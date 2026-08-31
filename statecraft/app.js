@@ -291,9 +291,14 @@ function budgetEffect(o) {
 }
 
 function costTable() {
-  const rows = data.domains.map((d) => (d.options || []).map((o) => `
-      <tr>
-        <td>${esc(d.name)}</td>
+  // Colour-coded by domain, matching the sliders above. The swatch and the
+  // domain name carry the section's own hue so a reader scanning the table can
+  // find the block they were just looking at.
+  const rows = data.domains.map((d) => (d.options || []).map((o, i) => `
+      <tr style="--dom: var(--dom-${esc(d.id)})">
+        <td class="mt-dom">${i === 0
+          ? `<i class="mt-sw" aria-hidden="true"></i>${esc(d.name)}`
+          : ''}</td>
         <td>${esc(o.label)}</td>
         <td class="num">${esc(budgetEffect(o))}</td>
         <td class="num">${esc(o.political)}</td>
@@ -321,7 +326,9 @@ function axisTable() {
         <td>${esc(a.label)}</td>
         <td>${esc(a.unit)}</td>
         <td>${esc(a.bounds[0])} to ${esc(a.bounds[1])}</td>
-        <td>${esc(a.source)}</td>
+        <td>${a.url
+          ? `<a href="${esc(a.url)}" rel="noopener">${esc(a.source)}</a>`
+          : esc(a.source)}</td>
       </tr>`).join('');
 
   return `
@@ -365,15 +372,7 @@ function paintMethod() {
     <div class="scroller">${axisTable()}</div>
   </details>
 
-  <details class="mdet">
-    <summary>The ${hand.length} figures with no country behind them</summary>
-    <p class="mnote">${esc(hand.join('; '))}. Redistribution is summed from the tax, work and family choices rather than owned by one domain, so it is hand-set throughout.</p>
-  </details>
-
-  <details class="mdet">
-    <summary>What is and is not in the ${matchable(data).length} countries</summary>
-    <p class="mnote">All ${matchable(data).length} can be the answer. The set is high income and Europe-heavy, because those are the countries where these ${data.domains.length} are choices rather than constraints. Above ${TAX.KINK} per cent each further point of tax raises less than the last, so ${TAX.MAX} realises ${one(realisedRevenue(TAX.MAX))}.</p>
-  </details>`;
+`;
 }
 
 function paintMeter(key, b, text) {

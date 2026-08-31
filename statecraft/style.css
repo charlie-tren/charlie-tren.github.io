@@ -21,19 +21,19 @@
   --over: #9c3a2c;
   --agree: #1f5c3d;
   --them: #5f5a52;
-  --dom-tax: #1f8452;
-  --dom-healthcare: #b030cf;
-  --dom-education: #6f7a1d;
-  --dom-housing: #2a7ab4;
-  --dom-retirement: #cf305b;
-  --dom-energy: #1f8623;
-  --dom-speech: #6730cf;
-  --dom-voting: #956d23;
-  --dom-work: #1f827e;
-  --dom-defence: #cc30a2;
-  --dom-immigration: #49821f;
-  --dom-justice: #3043cf;
-  --dom-family: #c84c2f;
+  --dom-tax: #276037;
+  --dom-healthcare: #606fa9;
+  --dom-education: #764b23;
+  --dom-housing: #025f63;
+  --dom-retirement: #9e5d84;
+  --dom-energy: #485b23;
+  --dom-speech: #055a84;
+  --dom-voting: #a55f51;
+  --dom-work: #12816d;
+  --dom-defence: #67487c;
+  --dom-immigration: #817137;
+  --dom-justice: #037c98;
+  --dom-family: #873d4d;
   --band: #ede4dc;
   --held: #8a6714;
   --held-bg: #f0e9d8;
@@ -55,19 +55,19 @@
   --over: #9c3a2c;
   --agree: #1f5c3d;
   --them: #5f5a52;
-  --dom-tax: #1f8452;
-  --dom-healthcare: #b030cf;
-  --dom-education: #6f7a1d;
-  --dom-housing: #2a7ab4;
-  --dom-retirement: #cf305b;
-  --dom-energy: #1f8623;
-  --dom-speech: #6730cf;
-  --dom-voting: #956d23;
-  --dom-work: #1f827e;
-  --dom-defence: #cc30a2;
-  --dom-immigration: #49821f;
-  --dom-justice: #3043cf;
-  --dom-family: #c84c2f;
+  --dom-tax: #276037;
+  --dom-healthcare: #606fa9;
+  --dom-education: #764b23;
+  --dom-housing: #025f63;
+  --dom-retirement: #9e5d84;
+  --dom-energy: #485b23;
+  --dom-speech: #055a84;
+  --dom-voting: #a55f51;
+  --dom-work: #12816d;
+  --dom-defence: #67487c;
+  --dom-immigration: #817137;
+  --dom-justice: #037c98;
+  --dom-family: #873d4d;
   --band: #ede4dc;
   --held: #8a6714;
   --held-bg: #f0e9d8;
@@ -89,19 +89,19 @@
   --over: #dc8b76;
   --agree: #63bf8f;
   --them: #a9a49a;
-  --dom-tax: #39c680;
-  --dom-healthcare: #bc63d2;
-  --dom-education: #b5c639;
-  --dom-housing: #3d8dc7;
-  --dom-retirement: #d26381;
-  --dom-energy: #39c63f;
-  --dom-speech: #9775d7;
-  --dom-voting: #c69539;
-  --dom-work: #39c6c0;
-  --dom-defence: #d05db1;
-  --dom-immigration: #75c639;
-  --dom-justice: #7580d7;
-  --dom-family: #cd6b53;
+  --dom-tax: #81b48b;
+  --dom-healthcare: #bcc6ff;
+  --dom-education: #cf9f78;
+  --dom-housing: #52b7bd;
+  --dom-retirement: #f6b7db;
+  --dom-energy: #9eaf79;
+  --dom-speech: #76aedd;
+  --dom-voting: #ffb8a9;
+  --dom-work: #86d9c4;
+  --dom-defence: #bc9dd0;
+  --dom-immigration: #dbc891;
+  --dom-justice: #7bd5f4;
+  --dom-family: #de94a1;
   --band: #241d1f;
   --held: #cfad63;
   --held-bg: #241f14;
@@ -124,19 +124,19 @@
     --over: #dc8b76;
     --agree: #63bf8f;
     --them: #a9a49a;
-  --dom-tax: #39c680;
-  --dom-healthcare: #bc63d2;
-  --dom-education: #b5c639;
-  --dom-housing: #3d8dc7;
-  --dom-retirement: #d26381;
-  --dom-energy: #39c63f;
-  --dom-speech: #9775d7;
-  --dom-voting: #c69539;
-  --dom-work: #39c6c0;
-  --dom-defence: #d05db1;
-  --dom-immigration: #75c639;
-  --dom-justice: #7580d7;
-  --dom-family: #cd6b53;
+  --dom-tax: #81b48b;
+  --dom-healthcare: #bcc6ff;
+  --dom-education: #cf9f78;
+  --dom-housing: #52b7bd;
+  --dom-retirement: #f6b7db;
+  --dom-energy: #9eaf79;
+  --dom-speech: #76aedd;
+  --dom-voting: #ffb8a9;
+  --dom-work: #86d9c4;
+  --dom-defence: #bc9dd0;
+  --dom-immigration: #dbc891;
+  --dom-justice: #7bd5f4;
+  --dom-family: #de94a1;
     --band: #241d1f;
     --held: #cfad63;
     --held-bg: #241f14;
@@ -660,14 +660,19 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   pointer-events: none;
 }
 
+/* THE STOPS. One per policy the slider can land on, so the thumb comes to rest
+   on a tick every time and the marks explain themselves by being where it goes.
+   They were --rule at 8px, faint enough that the question they raised was "what
+   are these lines" rather than "those are the settings". Now the domain's own
+   colour at a low alpha, and tall enough to sit either side of the track. */
 .d-ticks i {
   position: absolute;
-  top: -4px;
+  top: -5px;
   width: 2px;
-  height: 8px;
+  height: 10px;
   margin-left: -1px;
   border-radius: 1px;
-  background: var(--rule);
+  background: color-mix(in srgb, var(--dom, var(--faint)) 45%, transparent);
 }
 
 .d-ticks i.home {
@@ -1505,3 +1510,23 @@ h1 { font-weight: 700; letter-spacing: -0.028em; }
 main.wrap > .finish { grid-column: 1; }
 .finish-in { justify-content: flex-start; }
 .finish .primary { flex: 0 0 auto; }
+
+/* The costs table carries each domain's colour, so a reader can find the block
+   they were just looking at. The name appears once per domain rather than on
+   every row, which also stops thirteen names repeating 69 times. */
+.mt-dom { color: var(--dom); font-weight: 600; white-space: nowrap; }
+
+.mt-sw {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.45rem;
+  background: var(--dom);
+  vertical-align: baseline;
+}
+
+/* Each domain's first row carries a rule above it, so the table reads as
+   thirteen blocks rather than 69 undifferentiated lines. */
+.mt tbody tr:has(.mt-sw) td { border-top: 1px solid var(--rule); }
+
+.mt a { color: var(--accent); }
