@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#1a1c1f"/>
+  <!-- A key held at a distance: the absentee's only relationship with the
+       building. Drawn with few heavy strokes so it survives 16px. -->
+  <circle cx="11.5" cy="11.5" r="5.2" fill="none" stroke="#2f6fb2" stroke-width="2.6"/>
+  <path d="M15.2 15.2 L24 24" stroke="#2f6fb2" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M20.4 20.4 L18.2 22.6" stroke="#c98a3f" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M23 23 L20.8 25.2" stroke="#c98a3f" stroke-width="2.6" stroke-linecap="round"/>
+</svg>
