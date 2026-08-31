@@ -1,5 +1,6 @@
-"""IANA timezone to ISO country code, for the twenty-nine MATCHABLE countries
-plus the common zones that resolve to them.
+"""IANA timezone to ISO country code, for the MATCHABLE countries plus the
+common zones that resolve to them. All forty-five are matchable as of
+31/08/2026, so every country in the file now contributes its own zones.
 
 This is how the page opens on the visitor's own country with no IP lookup, no
 third-party request and no API key. A timezone outside this map falls back to
@@ -25,6 +26,21 @@ because Czechia, Poland, Latvia and Lithuania had no matrix. All four now do, an
 each zone resolves to its own country through the comprehension above. Bratislava,
 Ljubljana, Zagreb and Budapest never had a hand mapping and now resolve on their
 own as well, so the whole Central European and Baltic block is exact.
+
+TWO MORE WENT ON 31/08/2026 for the same reason. Asia/Riyadh and Asia/Qatar
+resolved to the United Arab Emirates, which was a real answer for a visitor in
+Riyadh right up until Saudi Arabia and Qatar got a matrix of their own, and a
+wrong one from the moment they did. Asia/Kuwait, Asia/Taipei, Europe/Malta,
+Asia/Nicosia, Asia/Famagusta, America/Montevideo and America/Panama never had a
+hand mapping and now resolve on their own.
+
+TWO APPROXIMATIONS BELOW ARE NOW ARGUABLE and are deliberately left alone,
+because changing them is a judgement about the page rather than a correction.
+America/Buenos_Aires resolves to Chile and Uruguay is now available, which is
+the nearer neighbour on almost every axis. Asia/Hong_Kong resolves to Singapore
+and Taiwan is now available. Neither Argentina nor Hong Kong is in the file, so
+neither entry is wrong in the way Riyadh's was; they are guesses that could be
+better guesses.
 """
 
 from countries import COUNTRIES
@@ -48,8 +64,6 @@ TIMEZONES.update({
     "America/Buenos_Aires": "CL",
     "America/Mexico_City": "US",
     "Africa/Johannesburg": "UK",
-    "Asia/Riyadh": "AE",
-    "Asia/Qatar": "AE",
 })
 
 FALLBACK = "AU"

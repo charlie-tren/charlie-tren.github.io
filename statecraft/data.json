@@ -5240,8 +5240,22 @@
         "America/Montevideo"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_anglo",
+        "healthcare": "hc_insurance",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_earnings",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_bargaining",
+        "defence": "de_neutral",
+        "immigration": "im_controlled",
+        "justice": "ju_tough",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 27.3,
@@ -5297,8 +5311,22 @@
         "Asia/Taipei"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_anglo",
+        "healthcare": "hc_insurance",
+        "education": "ed_market",
+        "housing": "ho_market",
+        "retirement": "re_earnings",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_conscript",
+        "immigration": "im_closed",
+        "justice": "ju_tough",
+        "family": "fa_universal"
+      },
       "indicators": {
         "grid_carbon": {
           "value": 633.2,
@@ -5339,8 +5367,22 @@
         "Asia/Riyadh"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_minimal",
+        "healthcare": "hc_mixed",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_earnings",
+        "energy": "en_fossil",
+        "speech": "sp_restricted",
+        "voting": "vo_none",
+        "work": "wo_at_will",
+        "defence": "de_power",
+        "immigration": "im_guest",
+        "justice": "ju_corporal",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "health_public": {
           "value": 77.8,
@@ -5392,8 +5434,22 @@
         "Asia/Qatar"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_minimal",
+        "healthcare": "hc_mixed",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_generous",
+        "energy": "en_fossil",
+        "speech": "sp_restricted",
+        "voting": "vo_none",
+        "work": "wo_minimum",
+        "defence": "de_conscript",
+        "immigration": "im_guest",
+        "justice": "ju_corporal",
+        "family": "fa_none"
+      },
       "indicators": {
         "health_public": {
           "value": 83.0,
@@ -5445,8 +5501,22 @@
         "Asia/Kuwait"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_minimal",
+        "healthcare": "hc_mixed",
+        "education": "ed_free",
+        "housing": "ho_singapore",
+        "retirement": "re_generous",
+        "energy": "en_fossil",
+        "speech": "sp_order",
+        "voting": "vo_none",
+        "work": "wo_minimum",
+        "defence": "de_conscript",
+        "immigration": "im_guest",
+        "justice": "ju_standard",
+        "family": "fa_universal"
+      },
       "indicators": {
         "health_public": {
           "value": 88.5,
@@ -5498,8 +5568,22 @@
         "Europe/Malta"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_anglo",
+        "healthcare": "hc_public",
+        "education": "ed_free",
+        "housing": "ho_subsidy",
+        "retirement": "re_earnings",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_neutral",
+        "immigration": "im_open",
+        "justice": "ju_standard",
+        "family": "fa_universal"
+      },
       "indicators": {
         "tax_take": {
           "value": 28.7,
@@ -5561,8 +5645,22 @@
         "Asia/Famagusta"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_anglo",
+        "healthcare": "hc_insurance",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_earnings",
+        "energy": "en_carbon_tax",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_militia",
+        "immigration": "im_controlled",
+        "justice": "ju_standard",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "health_public": {
           "value": 76.8,
@@ -5613,8 +5711,22 @@
         "America/Panama"
       ],
       "nonTaxRevenue": 0.0,
-      "matchable": false,
-      "choices": {},
+      "matchable": true,
+      "choices": {
+        "tax": "tax_anglo",
+        "healthcare": "hc_mixed",
+        "education": "ed_free",
+        "housing": "ho_market",
+        "retirement": "re_private",
+        "energy": "en_fossil",
+        "speech": "sp_hate_limits",
+        "voting": "vo_proportional",
+        "work": "wo_minimum",
+        "defence": "de_neutral",
+        "immigration": "im_controlled",
+        "justice": "ju_tough",
+        "family": "fa_targeted"
+      },
       "indicators": {
         "tax_take": {
           "value": 11.3,
@@ -5722,6 +5834,15 @@
     "Atlantic/Reykjavik": "IS",
     "Europe/Luxembourg": "LU",
     "Europe/Budapest": "HU",
+    "America/Montevideo": "UY",
+    "Asia/Taipei": "TW",
+    "Asia/Riyadh": "SA",
+    "Asia/Qatar": "QA",
+    "Asia/Kuwait": "KW",
+    "Europe/Malta": "MT",
+    "Asia/Nicosia": "CY",
+    "Asia/Famagusta": "CY",
+    "America/Panama": "PA",
     "Asia/Hong_Kong": "SG",
     "Asia/Kuala_Lumpur": "SG",
     "Asia/Shanghai": "SG",
@@ -5732,9 +5853,7 @@
     "America/Sao_Paulo": "CL",
     "America/Buenos_Aires": "CL",
     "America/Mexico_City": "US",
-    "Africa/Johannesburg": "UK",
-    "Asia/Riyadh": "AE",
-    "Asia/Qatar": "AE"
+    "Africa/Johannesburg": "UK"
   },
   "fallback": "AU"
 }

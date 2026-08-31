@@ -1,20 +1,30 @@
-"""Forty-five countries, of which thirty-seven are matchable.
+"""Forty-five countries, all of them matchable.
 
 TWO KINDS OF COUNTRY LIVE IN THIS FILE and the difference is `matchable`.
 
 A MATCHABLE country has all thirteen `choices` and can be the answer the reveal
-gives. There are thirty-seven of them: the launch twenty, plus Ireland, Italy,
-Spain, Portugal, Austria, Belgium, Greece, Luxembourg and Iceland, and then
-Czechia, Poland, Slovakia, Slovenia, Croatia, Lithuania, Latvia and Hungary, all
-coded on 30/08/2026 out of the measured-only pool.
+gives. There are forty-five of them: the launch twenty, plus Ireland, Italy,
+Spain, Portugal, Austria, Belgium, Greece, Luxembourg and Iceland, then Czechia,
+Poland, Slovakia, Slovenia, Croatia, Lithuania, Latvia and Hungary on 30/08/2026,
+and finally Uruguay, Taiwan, Saudi Arabia, Qatar, Kuwait, Malta, Cyprus and
+Panama on 31/08/2026.
 
 A MEASURED-ONLY country has `choices == {}` and `matchable == False`. It can
 appear on an axis and it counts towards indicator coverage, but it can never be
 a nearest neighbour, because there is nothing to match against. Twenty-five were
-added on 30/08/2026 and seventeen of them were coded the same day, leaving eight.
-This is the build-out predicted below: the axes are
-automatable and went wide first, and the matrix follows one country at a time
-because every matrix cell is a human judgement with a citation behind it.
+added on 30/08/2026 and THERE ARE NONE LEFT: seventeen were coded the same day
+and the last eight on 31/08/2026. The category and every guard that enforces it
+are deliberately kept, in `matchable`, in match.js and in both test files,
+because the next country added will arrive measured-only again. An empty
+`choices` must keep failing loudly rather than quietly scoring zero.
+
+This was the build-out predicted below: the axes are automatable and went wide
+first, and the matrix followed one country at a time, because every matrix cell
+is a human judgement with a citation behind it.
+
+THE FINAL EIGHT ARE THE ONES THE MENU WAS NOT WRITTEN FOR, and the record of
+where it did not reach them is the point of that batch rather than an apology
+for it. See THE MENU GAPS AFTER THE LAST EIGHT at the end of this docstring.
 
 `matchable` is redundant with `choices` on purpose. It is the field the page and
 the JS read, so neither has to infer intent from an empty dict, and
@@ -90,6 +100,98 @@ policy have no option:
   a mixed-member electoral system. Hungary and Lithuania are coded vo_fptp on the
   tier that holds more seats and on measured disproportionality, which is the
   domain's axis.
+
+THE LAST EIGHT, coded 31/08/2026: Uruguay, Taiwan, Saudi Arabia, Qatar, Kuwait,
+Malta, Cyprus and Panama. Re-measured over all 990 pairs of the forty-five.
+
+THE CEILING DID NOT MOVE. It is still eleven and still the same four pairs,
+SI HR, SE NO, IT PT and BE LU, and no pair matches on all thirteen. The closest
+new pairs are UY CY, IE MT, GR CY, AE SA and AE QA, all at ten.
+
+THE GULF DID NOT COLLAPSE INTO ONE COUNTRY, which was the risk this batch was
+run to test. Against the UAE, Saudi Arabia and Qatar each differ on three cells
+and Kuwait on seven; the closest Gulf pairs are AE SA and AE QA at ten. Each
+difference is sourced on the row that carries it. The five cells all four share,
+no income tax, a citizen health service with a private tier, an unpriced fossil
+grid, no competitive national elections and a migrant majority with no path to
+citizenship, are the same policy in all four and the sources say so.
+
+THE MENU GAPS AFTER THE LAST EIGHT, which is the deliverable this batch was
+really for. Everything below is a case where NO OPTION HONESTLY DESCRIBED THE
+COUNTRY and the least wrong one was taken. It is the evidence for what the menu
+needs before any low or middle income country is added.
+
+  a SINGLE-PAYER health system. Taiwan's NHI and Cyprus's GESY are one
+  compulsory insurer contracting private providers, and hc_insurance says a
+  regulated MARKET of insurers. Greece is already coded there with the same
+  caveat, so this now affects three countries and is the most-repeated gap in
+  the file.
+
+  a SEGMENTED health system. Panama runs a contributory fund for formal workers
+  and a separate ministry network for everyone else, which is neither
+  hc_insurance nor hc_private nor hc_mixed.
+
+  a PROGRESSIVE INCOME TAX WITH A VERY LOW TAKE. Panama collects 11.3% of GDP
+  and Taiwan about 13%, against tax_anglo's 34.0. tax_minimal is the only option
+  priced near them and its sentence is "no income tax", which is false of both.
+
+  COMPULSORY VOTING THAT IS NOT PREFERENTIAL. Uruguay enforces the duty with
+  fines and exam bans, and the only compulsory option in the menu is Australia's
+  ranked ballot.
+
+  MIXED-MEMBER ELECTORAL SYSTEMS, again. Taiwan and Panama join Hungary and
+  Lithuania, and the two blocks were coded to opposite cells: Taiwan and Panama
+  are vo_proportional and Hungary and Lithuania vo_fptp. THE RULE THAT DECIDED
+  IT IS MEASURED DISPROPORTIONALITY, not the seat tiers: Taiwan's 8.19 and
+  Panama's 9.77 sit inside the vo_proportional band beside Japan 8.92, Greece
+  8.97 and Chile 9.58, while Hungary's 11.76 and Lithuania's 13.58 sit above it.
+  Four countries now hang on a rule the menu does not state.
+
+  AN ELECTED LEGISLATURE UNDER A HEREDITARY EXECUTIVE, and its suspension.
+  Kuwait's National Assembly had real power until it was dissolved in May 2024
+  and Qatar elected two-thirds of its Shura Council in 2021 before abolishing
+  the elections by referendum in 2024. Both are coded vo_none, which is true
+  today and cannot say that one is suspended and the other was repealed. The
+  file also has one None where it needs two: no elections at all, and elections
+  with no political parties, which is why Kuwait's Gallagher cell is empty.
+
+  A CITIZEN-ONLY WELFARE STATE. Free university, free healthcare, a pension, a
+  house and a child allowance in the Gulf reach citizens, who are a minority of
+  residents in three of the four states. Every welfare option in the menu is
+  written as though a resident is a citizen. The UAE's retirement cell raised
+  this first and it now runs through twelve cells across four countries.
+
+  A TWO-TIER LABOUR MARKET. wo_at_will and wo_minimum describe the law that
+  applies; neither can say that most workers are migrants whose right to remain
+  depends on an employer.
+
+  AN INFORMAL LABOUR MARKET. About half of Panama's workforce is outside every
+  contributory scheme the menu describes, which is what makes its tax, health
+  and work cells all read wrong at once.
+
+  ABOLITION OF THE ARMED FORCES. Panama abolished its military in 1990 and
+  banned it in the constitution in 1994. de_neutral's "a force sized for the
+  border only" is literally true of SENAFRONT and its "professional force" is
+  not. Costa Rica and Iceland would hit the same wall.
+
+  A HEAVY-SPENDING ARMS IMPORTER. Saudi Arabia spends 7.3% of GDP, the most in
+  the file, with no conscription, no alliance and no bases abroad. de_power is
+  the only option priced for it and it describes power projection Saudi Arabia
+  does not have.
+
+  A CLEAN GRID NOBODY PRICED. Panama is 221 g/kWh on majority hydro with no
+  carbon price at all, so it is on en_fossil at 480. The energy domain assumes
+  pricing and cleanliness travel together.
+
+  STATE-SUBSIDISED OWNER-OCCUPATION, which the Central European block already
+  logged for Hungary and which Saudi Arabia and Qatar now join: land grants and
+  interest-free state loans that put citizens into ownership without the state
+  building the housing. All three are coded ho_market, whose sentence is that
+  the state does nothing.
+
+  A MANDATORY FUNDED PILLAR BESIDE AN EARNINGS-RELATED PENSION, which the
+  Central European block logged for Croatia and Latvia, and which Uruguay and
+  Taiwan now join.
 """
 
 COUNTRIES = [
@@ -2463,8 +2565,99 @@ COUNTRIES = [
      }},
     {"code": "UY", "name": "Uruguay", "timezones": ["America/Montevideo"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     # Coded 31/08/2026. URUGUAY AND PANAMA WERE THE TWO THE MENU WAS LEAST
+     # READY FOR, and Uruguay turned out to fit better than Panama: a
+     # progressive income tax, a contributory national health fund, free
+     # university and sector-wide wage councils are all things the options
+     # already describe. Where it does not fit is recorded cell by cell below.
+     "choices": {
+                 # 27.3% of GDP, the highest tax take in Latin America and the
+                 # lowest of the fifteen countries on this option. IRPF has been
+                 # progressive since the 2007 reform and sits on top of a 22%
+                 # VAT, so the shape of the option is right and the level is 6.7
+                 # points below its 34.0. Nothing describes a progressive system
+                 # collecting under 30%.
+                 "tax": "tax_anglo",
+                 # SNIS since 2007: FONASA is a single national fund financed by
+                 # earnings-related contributions, and the insured choose between
+                 # the state provider ASSE and the non-profit mutualistas. Cover
+                 # is compulsory and no provider may refuse a member, which is
+                 # what puts it here. Measured public share 72.4 against the
+                 # option's 78.0.
+                 "healthcare": "hc_insurance",
+                 # UdelaR charges no tuition and is where most students go. Same
+                 # gap as Greece: free and underfunded are different claims, and
+                 # the 4.8% of GDP measured is 1.5 points under the option.
+                 "education": "ed_free",
+                 # THE FAMOUS CASE THAT DOES NOT SURVIVE THE NUMBER. FUCVAM's
+                 # mutual-aid housing cooperatives are cited worldwide, but they
+                 # are about 35,000 households across 730 cooperatives against a
+                 # stock of roughly 1.4 million dwellings, so ho_cooperative's
+                 # "a large regulated rental sector" is not true of Uruguay.
+                 # Tenure is dominated by private owner-occupation.
+                 # https://www.housinginternational.coop/co-ops/uruguay/
+                 "housing": "ho_market",
+                 # BPS pays an earnings-related contributory pension. There is
+                 # also a compulsory funded AFAP pillar above an income
+                 # threshold, and NO OPTION CARRIES BOTH LIMBS: re_super pairs
+                 # mandatory saving with a means-tested state pension, and
+                 # Uruguay's is contributory rather than means-tested.
+                 "retirement": "re_earnings",
+                 # A CO2 tax inside the IMESI since January 2022, at about
+                 # USD 167 a tonne the highest headline carbon price in the
+                 # world, though it reaches only petrol and so about a tenth of
+                 # emissions. Cars are kept. The grid is 80.4 g/kWh, cleaner than
+                 # every other country on this option except New Zealand, and
+                 # en_hydro was rejected because Uruguay has no network that
+                 # makes a car optional.
+                 # https://www.iea.org/policies/19297-decree-441021-uruguay-co2-tax
+                 "energy": "en_carbon_tax",
+                 # Law 17.677 criminalises incitement to hatred. The measured
+                 # 0.931 is the second highest in the file, above every other
+                 # country on this option, which is the same known looseness the
+                 # option already carries for Denmark and Canada.
+                 "speech": "sp_hate_limits",
+                 # THE VOLUNTARY LIMB IS FALSE AND IT IS THE CLEANEST EXAMPLE OF
+                 # A MISSING CELL. Uruguay's voting is compulsory and actually
+                 # enforced: a fine, doubled for public employees and public
+                 # university graduates, students barred from two exam periods.
+                 # Greece and Belgium were coded here on compulsory-but-unenforced
+                 # grounds and Uruguay does not have that excuse. The only
+                 # compulsory option in the menu is vo_preferential, and Uruguay
+                 # does not use a ranked ballot, so the closed-list PR limb wins.
+                 # Gallagher 2.14, the second lowest in the file.
+                 "voting": "vo_proportional",
+                 # The Consejos de Salarios are tripartite sector-wide wage
+                 # councils whose agreements are extended erga omnes, restored in
+                 # 2005 after fifteen years dormant. This is the only country
+                 # outside western Europe in the file on sector bargaining and it
+                 # is the strongest single cell in this row.
+                 # https://journals.sagepub.com/doi/full/10.1177/14680181251326845
+                 "work": "wo_bargaining",
+                 # No alliance, no conscription, a volunteer force. The 2.3% of
+                 # GDP is three times the option's 0.7, and the reason is that
+                 # Uruguay's army is sized for UN peacekeeping export rather than
+                 # for the border, which no option describes.
+                 "defence": "de_neutral",
+                 # BOTH LIMBS ARE LOOSER THAN THE OPTION SAYS. Entry is not
+                 # selective, and legal citizenship comes in three years with
+                 # family or five without, not the better part of a decade.
+                 # im_open was considered and rejected: the MERCOSUR residence
+                 # agreement does give nationals of nine South American states a
+                 # right to reside on nationality alone, but it is applied for
+                 # rather than automatic, and Chile is a signatory of the same
+                 # agreement and is already coded im_controlled. Coding Uruguay
+                 # differently would make the file contradict itself.
+                 "immigration": "im_controlled",
+                 # 449 per 100,000, the second highest in the file after Panama
+                 # and well above this option's 300.
+                 "justice": "ju_tough",
+                 # Asignaciones Familiares under the Plan de Equidad is a
+                 # non-contributory transfer to households in socioeconomic
+                 # vulnerability, which is a means test.
+                 # https://dds.cepal.org/bpsnc/programme?id=38
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 27.3, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -2487,8 +2680,115 @@ COUNTRIES = [
      }},
     {"code": "TW", "name": "Taiwan", "timezones": ["Asia/Taipei"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     # Coded 31/08/2026 AGAINST THE THINNEST MEASURED ROW IN THE FILE, 6 of 14.
+     # Taiwan is in none of the World Bank, WHO GHED or OECD collections, so
+     # seven of these thirteen cells have no measured axis to argue with. That
+     # is a reason to cite harder, not to code more loosely, and every cell
+     # below is sourced to Taiwanese law or a Taiwanese ministry rather than
+     # inferred from Japan and Korea. Where the East Asian precedent decided a
+     # cell, the comment says so.
+     "choices": {
+                 # Taiwan's tax burden is about 13 to 14% of GDP, less than half
+                 # this option's 34.0 and the lowest of any developed economy
+                 # here. The rates are genuinely progressive, 5% to 40%, so the
+                 # shape is right and the level is not, and there is no measured
+                 # tax_take cell to print the disagreement. No option describes a
+                 # progressive income tax collecting under 20%.
+                 "tax": "tax_anglo",
+                 # SINGLE-PAYER NATIONAL HEALTH INSURANCE, AND NO OPTION SAYS SO.
+                 # NHI since 1995 is compulsory, premium-financed, nobody may be
+                 # refused, and the providers are overwhelmingly private on
+                 # fee-for-service with copayments. What it is not is the
+                 # "regulated market" of competing insurers this option
+                 # describes: there is one insurer. Coded here on the same
+                 # reading applied to Greece's EOPYY, which is also one fund on a
+                 # contributory basis. hc_public was rejected because NHI is
+                 # financed by premiums, not general taxation.
+                 "healthcare": "hc_insurance",
+                 # Twelve years of basic education are free, and university is
+                 # not: roughly seven students in ten are at private
+                 # universities, whose fees run well above the public schools'.
+                 # The NT$35,000 annual subsidy for private-university students
+                 # from 2024 closes about 70% of the public-private gap without
+                 # removing fees.
+                 # https://focustaiwan.tw/politics/202306290013
+                 "education": "ed_market",
+                 # Owner-occupation is around 85% and the social rental stock is
+                 # a rounding error. The government's main instrument is now a
+                 # rent subsidy reaching a few hundred thousand households, which
+                 # is ho_subsidy's instrument, but that is roughly 3% of
+                 # households against the 12% social stock ho_subsidy's axis
+                 # carries, so the state role is still closer to none than to
+                 # Britain's or Germany's.
+                 "housing": "ho_market",
+                 # Labour Insurance pays an earnings-related old-age benefit and
+                 # is the pillar that matters for employees. As in Uruguay there
+                 # is a compulsory funded pillar beside it, the employer's 6%
+                 # into an individual account under the Labor Pension Act, and no
+                 # option carries both limbs. re_super was rejected because
+                 # Taiwan's state pension is not means-tested.
+                 # https://law.moj.gov.tw/ENG/LawClass/LawAll.aspx?pcode=N0030020
+                 "retirement": "re_earnings",
+                 # THIS CELL BECAME TRUE IN 2026 AND WOULD HAVE BEEN FALSE IN
+                 # 2024. The carbon fee under the Climate Change Response Act
+                 # applies to 2025 emissions from 465 facilities above 25,000
+                 # tonnes at NT$300 a tonne, and the first cycle was actually
+                 # collected by 31 May 2026, raising close to NT$5bn. Emissions
+                 # are priced and people still drive, which is exactly what the
+                 # option claims.
+                 # https://focustaiwan.tw/business/202606030008
+                 # KNOWN WIDE AND WIDENED FURTHER: at 633.2 g/kWh Taiwan is now
+                 # the dirtiest grid on an option whose marker sits at 180, ahead
+                 # of Estonia's 319. That is the gap this option was already
+                 # documented as carrying, since it names an instrument and the
+                 # axis measures an outcome, but Taiwan stretches it further than
+                 # any country on it and check_spread.py should be read with that
+                 # in mind.
+                 "energy": "en_carbon_tax",
+                 # No hate-speech statute of the European kind; what limits
+                 # speech is criminal defamation in Article 310 of the Criminal
+                 # Code, upheld by the Constitutional Court in 2023. That is the
+                 # same basis on which Japan and Korea were moved onto this
+                 # option, and at 0.838 Taiwan sits between them.
+                 "speech": "sp_hate_limits",
+                 # MIXED-MEMBER MAJORITARIAN, WHICH THE MENU DOES NOT HAVE. 73 of
+                 # 113 seats are single-member plurality districts, 34 are
+                 # party-list PR and 6 are indigenous, and the presidency is
+                 # plurality with no runoff. Gallagher is 8.19, nowhere near this
+                 # option's 3.0. Coded here because Japan and Korea run the same
+                 # family of system, Taiwan's 2005 reform was modelled on Japan's,
+                 # and both are already on vo_proportional. Coding Taiwan
+                 # vo_fptp would make the file say two things about one system.
+                 "voting": "vo_proportional",
+                 # A statutory wage floor under the Minimum Wage Act 2024, and
+                 # collective agreement coverage in the low teens at best.
+                 "work": "wo_minimum",
+                 # Conscription was restored to twelve months from 1 January
+                 # 2024, having been cut to four months of training in 2018. The
+                 # option's words are exact. Its 4.5% of GDP is not: Taiwan
+                 # measures 2.1%, less than half, because it buys a year of
+                 # everyone's time cheaply and its defence spending problem is
+                 # widely argued to be that it is too low rather than too high.
+                 "defence": "de_conscript",
+                 # Foreign-born 4.9%, several hundred thousand migrant workers on
+                 # visas that do not convert, and naturalisation that has
+                 # required renouncing the previous citizenship. The same shape
+                 # as Japan and Korea, who are the other two on this option.
+                 "immigration": "im_closed",
+                 # 280 per 100,000, close to this option's 300 and the third
+                 # highest in the file. Taiwan also retains and uses the death
+                 # penalty, which no justice option mentions; Japan does too and
+                 # sits on ju_rehab, so the file already reads these options as
+                 # claims about sentence length and prison population rather than
+                 # about capital punishment.
+                 "justice": "ju_tough",
+                 # The child-rearing allowance of NT$5,000 a month to age six had
+                 # its income test removed, so it is paid to every family, and
+                 # the quasi-public childcare scheme contracts private centres at
+                 # capped fees. Both limbs of the option hold, which is rare.
+                 # https://basicincome.org/news/2026/06/taiwan-is-moving-toward-a-child-basic-income-it-should-not-stop-half-way/
+                 "family": "fa_universal"},
      "indicators": {
          "grid_carbon": {"value": 633.2, "year": 2025,
                        "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"},
@@ -2505,8 +2805,117 @@ COUNTRIES = [
      }},
     {"code": "SA", "name": "Saudi Arabia", "timezones": ["Asia/Riyadh"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     # ----------------------------------------------------------------------
+     # THE THREE GULF ROWS, CODED 31/08/2026 AGAINST THE UAE RATHER THAN FROM
+     # IT. The UAE's matrix is the calibration for this block and every cell
+     # here was checked against a source of its own, because the risk in coding
+     # four Gulf monarchies is that they come out as one country said four
+     # times. They do not. Against the UAE's thirteen:
+     #
+     #   Saudi Arabia differs on three   education, retirement, family
+     #   Qatar        differs on three   education, work, defence
+     #   Kuwait       differs on seven   education, housing, speech, work,
+     #                                   defence, justice, family
+     #
+     # and against each other SA/QA share nine, QA/KW nine and SA/KW six. The
+     # ceiling for the file is eleven, so none of these pairs is near it.
+     #
+     # WHAT THEY GENUINELY SHARE is not laziness: no income tax, a public health
+     # service for citizens with a private tier, an unpriced fossil grid, no
+     # competitive national elections, and a migrant majority on visas that lead
+     # nowhere. Those five are the same policy in all four states and the
+     # sources say so.
+     #
+     # THE CAVEAT THE UAE'S RETIREMENT CELL ALREADY CARRIES APPLIES TO THIS
+     # WHOLE BLOCK. Pensions, housing, family payments, free university and free
+     # healthcare are citizen entitlements, and citizens are a minority of
+     # residents in three of the four. Where a cell describes the citizen system
+     # and not the country, it says so.
+     # ----------------------------------------------------------------------
+     "choices": {
+                 # No personal income tax. 15% VAT since 2020, zakat on Saudi
+                 # and GCC-owned businesses, 20% corporate tax on foreign
+                 # shareholders, and the rest is oil.
+                 "tax": "tax_minimal",
+                 # Free Ministry of Health care for citizens, a private tier
+                 # alongside it, and mandatory cooperative health insurance for
+                 # everyone in private-sector employment including expatriates
+                 # since the 2005 Act. Measured public share 77.8, between this
+                 # option's 80.0 and hc_public's 81.3. Same cell as the UAE.
+                 "healthcare": "hc_mixed",
+                 # DIFFERS FROM THE UAE, which is on ed_vocational. Saudi public
+                 # universities charge citizens no tuition and pay them a monthly
+                 # stipend of SAR 850 to 1,000 for the length of the degree,
+                 # which is this option's second limb exactly. There is no
+                 # early vocational streaming of the German or Emirati kind.
+                 # https://saudipedia.com/en/article/3104/government-and-politics/education-and-training/are-stipends-provided-to-university-students-in-saudi-arabia
+                 "education": "ed_free",
+                 # Sakani has signed over a million subsidised housing contracts
+                 # since 2017 and citizen home ownership has gone from 47% to
+                 # 66%, but the instrument is subsidised finance, land and
+                 # off-plan purchase rather than a state housebuilder, and
+                 # developers build. THE UAE SETS THE BAR HERE: it runs the same
+                 # kind of citizen housing grant programme and is coded ho_market,
+                 # so Saudi Arabia is too. What neither is, is this option's "the
+                 # state zones and nothing else".
+                 # https://momah.gov.sa/en/node/15202
+                 "housing": "ho_market",
+                 # DIFFERS FROM THE UAE, which is on re_generous, and this is the
+                 # difference most likely to be challenged so it is sourced
+                 # twice. The new Social Insurance Law of 3 July 2024, in force
+                 # from 3 July 2025, sets the retirement age for new entrants at
+                 # 65 and cuts the accrual rate from 2.5% to 2.25% a year. The
+                 # UAE's cell was justified by a pension age of 60, a resignation
+                 # pension from 50 and a 100% ceiling, which is re_generous's "a
+                 # low pension age". Sixty-five is not a low pension age, so what
+                 # is left is an earnings-related state pension.
+                 # https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2024/new-social-insurance-law-raises-the-retirement-age
+                 "retirement": "re_earnings",
+                 # 692 g/kWh, the dirtiest grid in the file, no carbon price, and
+                 # domestic crude and gas burned for power.
+                 "energy": "en_fossil",
+                 # 0.092 on the expression index, the second lowest in the file
+                 # after the UAE. Criticism of the ruler is prosecuted under the
+                 # counter-terror and cybercrime laws.
+                 "speech": "sp_restricted",
+                 # No national legislative elections of any kind. The Shura
+                 # Council is wholly appointed and even the municipal elections,
+                 # last held in 2015, have not been repeated. The measured
+                 # disproportionality cell is None for the same reason.
+                 "voting": "vo_none",
+                 # Same cell as the UAE. No trade unions, only workplace labour
+                 # committees, and NO STATUTORY MINIMUM WAGE for the private
+                 # sector: the SAR 4,000 figure is a Nitaqat threshold for
+                 # counting a Saudi towards a firm's localisation quota, not a
+                 # wage floor. That is the fact that keeps Saudi Arabia on
+                 # wo_at_will while Qatar and Kuwait move off it.
+                 "work": "wo_at_will",
+                 # 7.3% of GDP, the highest military burden in the file by two
+                 # points, and an all-volunteer force with no conscription. THE
+                 # OPTION IS THE LEAST WRONG RATHER THAN RIGHT: Saudi Arabia has
+                 # the spending and led a foreign war in Yemen, but it has no
+                 # network of bases abroad and no blue-water navy, so what the
+                 # menu lacks is a heavy-spending arms importer without power
+                 # projection.
+                 "defence": "de_power",
+                 # 40.3% foreign-born, kafala reformed but still employer-tied,
+                 # and naturalisation available to almost nobody. The premium
+                 # residency introduced in 2019 is a paid permit, not a path.
+                 "immigration": "im_guest",
+                 # Judicial corporal punishment and capital punishment are both
+                 # in use: discretionary flogging was abolished by the Supreme
+                 # Court in 2020 but hudud sentences were not, and executions run
+                 # at record numbers. Measured 140 per 100,000 against the
+                 # option's 190.
+                 "justice": "ju_corporal",
+                 # DIFFERS FROM THE UAE, which is on fa_none. Qurrah pays up to
+                 # 50% of childcare costs to a cap of SAR 1,600 a month for
+                 # working mothers in the private sector earning under SAR 8,000,
+                 # which is means-tested help with childcare, and maternity leave
+                 # is twelve weeks paid. That is this option's sentence.
+                 # https://www.hrdf.org.sa/en/products-and-services/programs/individuals/enable/childcare-support-for-working-women/
+                 "family": "fa_targeted"},
      "indicators": {
          "health_public": {"value": 77.8, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
@@ -2528,8 +2937,86 @@ COUNTRIES = [
      }},
     {"code": "QA", "name": "Qatar", "timezones": ["Asia/Qatar"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     "choices": {
+                 # No personal income tax and, alone among the four, still no
+                 # VAT: the GCC framework agreement was signed in 2016 and Qatar
+                 # has not brought it into force.
+                 "tax": "tax_minimal",
+                 # Hamad Medical Corporation and the primary health centres are
+                 # free or near-free for citizens with a private tier alongside,
+                 # and mandatory health insurance for visitors and expatriates
+                 # under Law 22 of 2021. Measured public share 83.0, the second
+                 # highest in the file.
+                 "healthcare": "hc_mixed",
+                 # DIFFERS FROM THE UAE. Education is free to Qatari citizens
+                 # through university, with full state scholarships at Qatar
+                 # University and at approved universities abroad. Measured
+                 # education spend is 3.2% of GDP against this option's 6.3,
+                 # which is the largest education disagreement in the block and
+                 # reflects a small citizen cohort rather than thin provision.
+                 "education": "ed_free",
+                 # Housing Law 2 of 2007 gives citizens a free land plot and a
+                 # long-term interest-free state loan, plus a furniture grant.
+                 # That is subsidised owner-occupation on the Emirati model, not
+                 # a state housebuilder, so the same cell as the UAE and Saudi
+                 # Arabia. Kuwait is the one that moves off it.
+                 # https://hukoomi.gov.qa/en/articles/housing-loans
+                 "housing": "ho_market",
+                 # Social Insurance Law 1 of 2022, in force January 2023: a
+                 # pension age of 60, a minimum of 15 years' service and a high
+                 # replacement rate on final salary. Same reading as the UAE's
+                 # GPSSA cell, and covering Qatari and GCC nationals only.
+                 "retirement": "re_generous",
+                 # 581.5 g/kWh on an almost entirely gas-fired grid, and no
+                 # carbon price.
+                 "energy": "en_fossil",
+                 # 0.055, the lowest expression score in the file.
+                 "speech": "sp_restricted",
+                 # THE 2021 ELECTION HAS BEEN UNDONE, WHICH IS WHY THIS CELL IS
+                 # NOT A DIFFERENCE FROM THE UAE. Qatar elected 30 of the Shura
+                 # Council's 45 members in October 2021, and the constitutional
+                 # referendum of 5 November 2024 abolished the elected element by
+                 # 90.6% on an 84% turnout. All 45 are appointed by the Emir
+                 # again. Had this been coded in 2023 the honest answer would
+                 # have been that no option describes an elected consultative
+                 # chamber under a hereditary executive.
+                 # https://www.idea.int/blog/stability-or-elections-look-qatars-2024-constitutional-referendum
+                 "voting": "vo_none",
+                 # DIFFERS FROM THE UAE. Law 17 of 2020 gave Qatar the first
+                 # non-discriminatory statutory minimum wage in the Gulf, QAR
+                 # 1,000 plus food and accommodation allowances, applying to every
+                 # worker of every nationality in every sector including domestic
+                 # work. Migrant workers still cannot form or join a union, so
+                 # bargaining is individual, which is the rest of this option.
+                 # https://www.ilo.org/resource/news/qatar-adopts-non-discriminatory-minimum-wage
+                 "work": "wo_minimum",
+                 # DIFFERS FROM THE UAE, which is on de_power. Law 5 of 2018
+                 # raised national service from three months to one year and made
+                 # it compulsory for every Qatari male between 18 and 35, with
+                 # employment and professional licences withheld until it is
+                 # done. The option's twelve months is exact. The force is small
+                 # in absolute terms and large against a citizen population of
+                 # roughly a tenth of residents, and the 6.5% military burden is
+                 # well above the option's 4.5.
+                 # https://althanilawfirm.com/en/national-service-system/
+                 "defence": "de_conscript",
+                 # 76.7% foreign-born, the second highest in the file after the
+                 # UAE, and no path to citizenship.
+                 "immigration": "im_guest",
+                 # Flogging remains a judicial sentence for alcohol and illicit
+                 # sex offences and the death penalty is retained and has been
+                 # carried out. THE AXIS DISAGREES LOUDLY: 69 per 100,000 against
+                 # the option's 190, the lowest imprisonment rate of the eight
+                 # coded here, and the reason is that foreign offenders are
+                 # deported rather than held.
+                 "justice": "ju_corporal",
+                 # Same cell as the UAE. The children's allowance that appears in
+                 # Qatari payroll is a salary component for public-sector
+                 # employees rather than a benefit paid to families, and there is
+                 # no child benefit, no subsidised childcare and 50 days of
+                 # maternity leave.
+                 "family": "fa_none"},
      "indicators": {
          "health_public": {"value": 83.0, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
@@ -2551,8 +3038,120 @@ COUNTRIES = [
      }},
     {"code": "KW", "name": "Kuwait", "timezones": ["Asia/Kuwait"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     # KUWAIT IS THE ONE THAT IS NOT A COPY. It differs from the UAE on seven of
+     # thirteen and from Saudi Arabia on seven, which is what a Gulf state with
+     # legal trade unions, a state housebuilder, a universal child allowance, no
+     # judicial corporal punishment and the freest press in the region should
+     # look like. It differs from Qatar on four despite sharing the tax, health,
+     # education, energy, voting, work, defence and immigration cells.
+     "choices": {
+                 # No personal income tax, no VAT, and no zakat levy on
+                 # individuals. Kuwait legislated a 15% domestic minimum top-up
+                 # tax on large multinationals from 2025, which does not change
+                 # the option.
+                 "tax": "tax_minimal",
+                 # Free public healthcare for citizens with a private tier
+                 # alongside, and expatriates pay health fees and are covered by
+                 # a separate insurance scheme. Measured public share 88.5, the
+                 # highest in the file.
+                 "healthcare": "hc_mixed",
+                 # Free through university for citizens, with a monthly student
+                 # grant and fully funded scholarships abroad. Measured
+                 # education spend 6.4% of GDP, which for once agrees with the
+                 # option's 6.3 almost exactly.
+                 "education": "ed_free",
+                 # DIFFERS FROM EVERY OTHER GULF ROW, and it is a difference of
+                 # kind rather than degree. The Public Authority for Housing
+                 # Welfare under Law 47 of 1993 does not lend against a purchase;
+                 # it builds. Al-Mutlaa alone is planned for 400,000 people in
+                 # twelve suburbs, against a citizen population of about 1.5
+                 # million, and Jaber al-Ahmad, Saad al-Abdullah and Khiran add
+                 # more than 50,000 units between them. The state builds the
+                 # housing and transfers it to citizens who then own it, which is
+                 # this option's sentence. Two caveats the reveal should carry:
+                 # the tenure is freehold rather than Singapore's 99-year lease,
+                 # and it reaches citizens only, so most residents of Kuwait rent
+                 # privately and are outside it entirely.
+                 # https://www.pahw.gov.kw/About_en
+                 "housing": "ho_singapore",
+                 # PIFSS is the most generous scheme in the file: retirement from
+                 # age 50 with as little as seven and a half years of service,
+                 # and replacement rates from 65% at fifteen years upward.
+                 # https://www.pifss.gov.kw/sites/En/Pages/PensionSocialSecuritySector/FAQ.aspx
+                 "retirement": "re_generous",
+                 # 635.3 g/kWh on oil and gas, and no carbon price.
+                 "energy": "en_fossil",
+                 # DIFFERS FROM THE OTHER THREE, and the measured axis is the
+                 # evidence rather than an impression: 0.532 against Saudi
+                 # Arabia's 0.092, Qatar's 0.055 and the UAE's 0.063, and above
+                 # Singapore's 0.40 on this same option. Kuwait has the most
+                 # contentious press in the Gulf and simultaneously prosecutes
+                 # criticism of the Emir and speech held to harm national unity,
+                 # which is what this option describes. sp_restricted would put
+                 # it with three countries it is half a scale point clear of.
+                 "speech": "sp_order",
+                 # THE HARDEST CELL IN THE BLOCK AND THE ANSWER CHANGED IN 2024.
+                 # Kuwait's National Assembly was the one elected chamber in the
+                 # Gulf with real power, able to question and force out ministers.
+                 # On 10 May 2024 the Emir dissolved it and suspended the
+                 # constitutional articles governing it for up to four years, and
+                 # the Emir and the Council of Ministers have exercised the
+                 # legislative power since. As at August 2026 the suspension is
+                 # still running and is expected to last to 2028, so there are no
+                 # competitive national elections and this is the honest cell.
+                 # https://constitutionnet.org/news/kuwaits-monarch-dissolves-parliament-and-suspends-constitutional-provisions
+                 # TWO THINGS THE MENU CANNOT SAY. First, that a country's
+                 # elections are suspended rather than absent, which is a
+                 # different claim from the UAE's. Second, that the Assembly when
+                 # sitting was elected by single non-transferable vote with
+                 # political parties banned, so the measured disproportionality
+                 # cell is None because there are no party lists to compare, NOT
+                 # because nobody voted. Those are two different Nones and the
+                 # file has one.
+                 "voting": "vo_none",
+                 # DIFFERS FROM THE UAE. Kuwaiti citizens may form and join trade
+                 # unions, bargain collectively and strike, subject to compulsory
+                 # arbitration, and there is a statutory private-sector minimum
+                 # wage set by ministerial decree. Alone in the Gulf it has a
+                 # union federation that has actually struck: the oil workers
+                 # stopped production in 2016.
+                 # https://www.state.gov/reports/2024-country-reports-on-human-rights-practices/kuwait
+                 "work": "wo_minimum",
+                 # DIFFERS FROM THE UAE. Conscription was reinstated by Law 20 of
+                 # 2015 and enforced from 2017: twelve months for every Kuwaiti
+                 # male at 18, four months' training and eight months' service,
+                 # tightened again by decree in February 2026 which extended the
+                 # reporting window to 180 days and raised the penalties.
+                 # https://www.thenationalnews.com/news/gulf/2026/02/23/kuwait-ratifies-amendments-to-military-service-law/
+                 "defence": "de_conscript",
+                 # 67.3% foreign-born, kafala, and naturalisation capped by law
+                 # at a nominal annual quota that is not filled.
+                 "immigration": "im_guest",
+                 # DIFFERS FROM THE OTHER THREE. Judicial corporal punishment is
+                 # unlawful in Kuwait: there is no provision for it in the
+                 # Criminal Code 1960, the Criminal Procedure Code or the
+                 # Juveniles Act, and Article 31 of the 1962 Constitution
+                 # prohibits degrading treatment. Draft legislation to add
+                 # flogging and amputation in 2001 was never enacted. So
+                 # ju_corporal's first limb is simply false, and the measured 101
+                 # per 100,000 sits on this option's 100.
+                 # https://www.endcorporalpunishment.org/wp-content/uploads/country-reports/Kuwait.pdf
+                 # WHAT THIS CELL DOES NOT SAY is that Kuwait retains the death
+                 # penalty and has executed at least 24 people since 2013. No
+                 # option outside ju_corporal mentions capital punishment, and
+                 # Japan sits on ju_rehab with the same problem, so the file
+                 # already reads this domain as sentence length and prison
+                 # population rather than as the existence of a gallows.
+                 "justice": "ju_standard",
+                 # DIFFERS FROM THE OTHER THREE. Kuwait pays a child allowance to
+                 # citizens with no income test, KD 50 a month per child and
+                 # raised towards KD 100, with the seven-child cap removed. That
+                 # is a universal per-child benefit, which is this option's first
+                 # limb. THE SECOND LIMB FAILS: there is no capped-price
+                 # childcare scheme, and the benefit reaches citizens only.
+                 # https://www.lexis.ae/2023/08/02/kuwait-child-allowance-increase/
+                 "family": "fa_universal"},
      "indicators": {
          "health_public": {"value": 88.5, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
@@ -2574,8 +3173,100 @@ COUNTRIES = [
      }},
     {"code": "MT", "name": "Malta", "timezones": ["Europe/Malta"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     # Malta and Cyprus were predicted to fit the menu about as well as Greece
+     # and they do. Eight of Malta's thirteen cells needed no argument at all.
+     "choices": {
+                 # 28.7% of GDP, the second lowest tax take of the EU members in
+                 # the file after Ireland's distorted figure, on progressive rates
+                 # to 35% with a flat 10% each side in social security. Not
+                 # tax_continental: Maltese social contributions are a flat rate
+                 # rather than the heavy payroll wedge that option describes, and
+                 # 28.7 is fourteen points under it.
+                 "tax": "tax_anglo",
+                 # THE ONLY COUNTRY OTHER THAN THE UNITED KINGDOM ON THIS OPTION,
+                 # and it earns it: Malta runs a Beveridge national health
+                 # service, tax-funded and free at the point of use, with an
+                 # unsubsidised private sector alongside for GP and outpatient
+                 # care. The disagreement is the measured public share, 66.0
+                 # against the option's 81.3, because out-of-pocket spending is
+                 # about 30% of the total and among the highest in the EU. A
+                 # tax-funded service is a claim about how care is financed at
+                 # the point of use, and the OOP share says a third of Maltese
+                 # health spending never reaches that point.
+                 # https://eurohealthobservatory.who.int/publications/i/malta-health-system-summary-2024
+                 "healthcare": "hc_public",
+                 # Free through university and, unusually, a maintenance stipend
+                 # paid to every Maltese undergraduate since 1988. Both limbs of
+                 # the option hold.
+                 "education": "ed_free",
+                 # THE CLOSEST OF THE FIVE AND NOT A GOOD FIT. The Housing
+                 # Authority's Private Rent Housing Benefit Scheme caps a
+                 # tenant's rent at 25% of income and paid EUR 10.7m to just under
+                 # 4,000 families in 2025, which is this option's cash help with
+                 # rent. But the measured social rental stock is 5.5%, closer to
+                 # ho_market's 4.0 than to this option's 12.0, and the Authority
+                 # also runs home-ownership grant schemes that neither option
+                 # mentions. Coded on the instrument rather than the stock, which
+                 # is how Sweden was coded here.
+                 # https://housingauthority.gov.mt/
+                 "housing": "ho_subsidy",
+                 # The two-thirds pension is contributory and earnings-related,
+                 # with no compulsory second pillar. The retirement age is rising
+                 # to 65.
+                 "retirement": "re_earnings",
+                 # In the EU ETS, and in ETS2 for buildings and road transport
+                 # from 2027. The grid is 484 g/kWh, gas plus the interconnector
+                 # to Sicily, which is the known gap on this option between
+                 # pricing emissions and having decarbonised.
+                 "energy": "en_carbon_tax",
+                 # Malta abolished criminal libel in 2018 but retains the
+                 # incitement-to-hatred offence in Article 82A of the Criminal
+                 # Code, as Framework Decision 2008/913/JHA requires of every EU
+                 # member.
+                 "speech": "sp_hate_limits",
+                 # SINGLE TRANSFERABLE VOTE, WHICH THE MENU DOES NOT HAVE, and
+                 # Ireland is the precedent: STV is a preferential ballot that
+                 # produces a proportional result, and Ireland is already coded
+                 # vo_proportional rather than vo_preferential because the
+                 # preferential option also requires compulsory voting and Irish
+                 # and Maltese voting are both voluntary. Gallagher 2.24, helped
+                 # by the constitutional top-up that guarantees a party with a
+                 # first-preference majority a seat majority. The one thing the
+                 # option's detail gets wrong is "coalitions are normal": Malta
+                 # has a two-party parliament and has never had one.
+                 "voting": "vo_proportional",
+                 # A statutory national minimum wage, and bargaining that happens
+                 # at enterprise level with coverage under half. Union density is
+                 # high by EU standards, which is why wo_bargaining was
+                 # considered, but there is no sector-wide agreement machinery.
+                 "work": "wo_minimum",
+                 # Constitutionally neutral since 1974 and outside NATO, with an
+                 # Armed Forces of Malta of about 2,000 whose main task is search
+                 # and rescue and border patrol. At 0.5% of GDP it is the lowest
+                 # military burden in the file, against the option's 0.7.
+                 "defence": "de_neutral",
+                 # THE WEAKEST CELL IN THIS ROW. Malta is in the EU and Schengen,
+                 # so the option's sentence is true as far as it goes, and
+                 # Luxembourg is the precedent for coding a small EU state with a
+                 # very large foreign-born share this way. What it misses is that
+                 # most of Malta's 37% foreign-born are now third-country
+                 # nationals on employment permits with no realistic path to
+                 # citizenship, which is nearer im_guest, and that the
+                 # citizenship-by-investment scheme that did offer a path was
+                 # struck down by the Court of Justice in April 2025. No option
+                 # describes a country running EU free movement and a
+                 # guest-worker regime side by side.
+                 "immigration": "im_open",
+                 # 120 per 100,000 and moderate sentencing.
+                 "justice": "ju_standard",
+                 # Children's Allowance is paid to every family with children,
+                 # at a higher rate below an income threshold and a flat EUR 640
+                 # a year per child above it, and childcare for working parents
+                 # is free rather than merely capped. Both limbs hold and the
+                 # second is stronger than the option claims.
+                 # https://socialsecurity.gov.mt/en/information-and-applications-for-benefits-and-services/family-benefits/childrens-allowance-annual-income-less-than-threshold/
+                 "family": "fa_universal"},
      "indicators": {
          "tax_take": {"value": 28.7, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
@@ -2600,8 +3291,95 @@ COUNTRIES = [
      }},
     {"code": "CY", "name": "Cyprus", "timezones": ["Asia/Nicosia", "Asia/Famagusta"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     # EVERY CELL HERE DESCRIBES THE REPUBLIC OF CYPRUS, which is what the
+     # indicators measure and what the sources cover. The northern third has
+     # been outside the Republic's effective control since 1974 and none of
+     # these thirteen claims reaches it. The file has no way to say that and it
+     # is said here instead.
+     "choices": {
+                 # 37.6% of GDP including net social contributions on the
+                 # Eurostat basis for 2024, three points below the EU average.
+                 # Progressive to 35% with a large exempt band, low social
+                 # contributions and heavy reliance on consumption and corporate
+                 # tax, so tax_anglo rather than tax_continental: Cyprus is not
+                 # funded by a payroll wedge. There is no measured tax_take cell
+                 # on this row, so the 37.6 is not plotted anywhere.
+                 # https://cyprus-mail.com/2025/11/04/cyprus-tax-to-gdp-ratio-ticked-up-in-2024
+                 "tax": "tax_anglo",
+                 # GESY since 2019 is a single-payer contributory scheme: the
+                 # Health Insurance Organisation collects earnings-related
+                 # contributions from employees, employers, the self-employed and
+                 # the state, and contracts public and private providers. Cover is
+                 # compulsory and universal. SAME MENU GAP AS TAIWAN AND GREECE:
+                 # the option says a regulated market of insurers and there is
+                 # one insurer. Measured public share 76.8, close to the option's
+                 # 78.0.
+                 # https://eurohealthobservatory.who.int/publications/i/cyprus-health-system-summary-2024
+                 "healthcare": "hc_insurance",
+                 # The state pays the tuition of Cypriot and EU undergraduates at
+                 # the public universities. Measured spend 4.7% of GDP against
+                 # the option's 6.3.
+                 "education": "ed_free",
+                 # Cyprus has essentially no social rental sector. Housing policy
+                 # is home-ownership support and the displaced-persons estates
+                 # built after 1974, and the ownership rate is among the highest
+                 # in the EU. Same reading as Greece, and the absence of a
+                 # measured social_housing cell is itself the evidence.
+                 "housing": "ho_market",
+                 # The Social Insurance Scheme pays an earnings-related
+                 # contributory pension at 65 with a flat basic component, and
+                 # there is no compulsory funded pillar. Not re_generous, which is
+                 # where Greece sits: Cyprus cut its replacement rates in the
+                 # 2012 adjustment and never restored them.
+                 "retirement": "re_earnings",
+                 # In the EU ETS. The grid is 489 g/kWh, almost entirely heavy
+                 # fuel oil and diesel, because Cyprus is the last EU member with
+                 # no electricity interconnection to anywhere. The same
+                 # instrument-versus-outcome gap this option is documented as
+                 # carrying, and Cyprus is the extreme case of it in the EU.
+                 "energy": "en_carbon_tax",
+                 # Incitement to hatred is criminal, as Framework Decision
+                 # 2008/913/JHA requires. Measured 0.812.
+                 "speech": "sp_hate_limits",
+                 # List PR with a 3.6% threshold. Compulsory voting was abolished
+                 # in 2017, so unlike Uruguay the voluntary limb of this option is
+                 # now true. Gallagher 6.44, high for PR because of the threshold
+                 # and a fragmented party system.
+                 "voting": "vo_proportional",
+                 # A national minimum wage only since January 2023, and sectoral
+                 # collective agreements in hotels, construction and banking with
+                 # coverage under half. Not wo_bargaining: there is no erga omnes
+                 # extension, so the agreements bind their signatories and not an
+                 # industry.
+                 "work": "wo_minimum",
+                 # THE CELL MOST LIKELY TO BE ARGUED WITH, AND THE ARGUMENT IS
+                 # AGAINST GREECE'S. Cyprus conscripts every male citizen for
+                 # fourteen months into the National Guard and holds him in the
+                 # reserve until fifty, and it is outside NATO. That is
+                 # de_militia's shape rather than de_conscript's, and the measured
+                 # 1.6% of GDP sits on de_militia's 1.5 against de_conscript's
+                 # 4.5. Greece went to de_conscript because its standing force is
+                 # 140,000 and its burden 3.1%; Cyprus is an order of magnitude
+                 # smaller in both. The one limb that fails is the Swiss detail
+                 # in the option's text, since Cypriot reservists do not keep
+                 # their weapons at home.
+                 # https://ebco-beoc.org/cyprus/2024
+                 "defence": "de_militia",
+                 # 14.9% foreign-born, almost exactly Greece's 14.2, and Cyprus is
+                 # coded the same way for the same reason: naturalisation takes
+                 # seven to eight years of residence and is discretionary. EU free
+                 # movement applies, which is the case for coding it im_open, and
+                 # the file's practice is to pick one cell per country rather than
+                 # claim both.
+                 "immigration": "im_controlled",
+                 # 117 per 100,000 and moderate sentencing.
+                 "justice": "ju_standard",
+                 # The child benefit has been income-tested since the 2012
+                 # adjustment, with an asset test on top, and childcare is neither
+                 # free nor capped.
+                 # https://www.estatefy.com/cyprus/child-benefit-in-cyprus-everything-you-need-to-know
+                 "family": "fa_targeted"},
      "indicators": {
          "health_public": {"value": 76.8, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
@@ -2622,8 +3400,104 @@ COUNTRIES = [
      }},
     {"code": "PA", "name": "Panama", "timezones": ["America/Panama"],
      "nonTaxRevenue": 0.0,
-     "matchable": False,
-     "choices": {},
+     "matchable": True,
+     # PANAMA IS THE WORST FIT IN THE FILE AND THIS ROW IS THE EVIDENCE FOR
+     # WIDENING THE MENU. Four of its thirteen cells are the least wrong option
+     # rather than the right one, and three of its axes disagree with their own
+     # cell by more than any other country's. Two facts about Panama are absent
+     # from all sixty-nine options and they are the ones that explain the rest:
+     # roughly half the labour force is informal and outside every contributory
+     # scheme the menu describes, and the country is dollarised, so it has no
+     # monetary policy at all. Coded 31/08/2026 anyway, because the alternative
+     # is a page on which only rich countries exist.
+     "choices": {
+                 # 11.3% of GDP, THE LOWEST TAX TAKE IN THE FILE and 22.7 points
+                 # under this option's 34.0, which is the largest cell-versus-axis
+                 # disagreement anywhere in the matrix. The reason it is here and
+                 # not on tax_minimal is that tax_minimal's sentence is "no income
+                 # tax", and Panama has a progressive one at 15% and 25%. What is
+                 # true is the option's third clause: territorial taxation, a
+                 # large exempt band and a huge informal sector mean the take is
+                 # a third of what the option prices. No option describes a
+                 # progressive system that collects almost nothing.
+                 "tax": "tax_anglo",
+                 # TWO PUBLIC SYSTEMS SIDE BY SIDE AND NO OPTION FOR IT. The CSS
+                 # is a payroll-funded fund covering formal employees and their
+                 # dependants; MINSA runs a separate network open to everyone
+                 # else at one to three dollars a visit; and a private sector sits
+                 # above both. hc_insurance was rejected because "everyone must
+                 # buy cover" is false where half the workforce is informal, and
+                 # hc_private was rejected because the CSS is a public fund and
+                 # the option's word is "private". What is left is universal
+                 # public provision with a paid fast lane, which is roughly what
+                 # happens even if it is not how it is organised. The measured
+                 # public share, 51.2%, is nearer hc_private's 50.0 than this
+                 # option's 80.0 and that disagreement should be read as real.
+                 "healthcare": "hc_mixed",
+                 # Public education is free including the public universities.
+                 # Measured spend is 2.5% of GDP, the lowest in the file and 3.8
+                 # points under the option: the same free-and-underfunded gap
+                 # recorded on Greece, at twice the size.
+                 "education": "ed_free",
+                 # A private market with a large self-built informal sector, and
+                 # state activity limited to down-payment grants and the Techos
+                 # de Esperanza programme. No option mentions informal housing,
+                 # which is where a substantial minority of Panamanians live.
+                 "housing": "ho_market",
+                 # Law 462 of 18 March 2025 merged Panama's two pension
+                 # programmes into a Unified Capitalization System: funded
+                 # individual accounts with a guaranteed solidarity minimum of
+                 # B/.265 a month and a non-contributory floor of B/.144 for
+                 # those who could not contribute enough. That is this option's
+                 # sentence almost word for word, and it is the same "mostly"
+                 # caveat Chile carries, since the old defined-benefit subsystem
+                 # runs until 2032 for those already in it.
+                 # https://www.mef.gob.pa/wp-content/uploads/2025/05/250428-Republic-of-Panama-CSS-Reform-Takeaways.pdf
+                 "retirement": "re_private",
+                 # NO CARBON PRICE OF ANY KIND, which is this option's first
+                 # sentence and the reason it is here. Its second sentence is
+                 # also true of a country that has just built a third metro line
+                 # only in its capital. What is not true is the axis: 221.2 g/kWh
+                 # on a grid that is majority hydro, against the option's 480,
+                 # which is the largest energy disagreement in the file. A clean
+                 # grid that nobody priced has no cell in this menu.
+                 "energy": "en_fossil",
+                 # Criminal defamation remains in the penal code and Law 7 of
+                 # 2018 penalises discrimination and incitement. Measured 0.812.
+                 "speech": "sp_hate_limits",
+                 # MIXED AGAIN, LIKE TAIWAN. 45 of the 71 National Assembly seats
+                 # are open-list PR in multi-member circuits and 26 are plurality
+                 # single-member seats, and the president is elected by plurality
+                 # in one round. Coded on the majority of seats, and consistent
+                 # with Japan, Korea and Taiwan. Gallagher 9.77, more than three
+                 # times this option's 3.0 and the highest of any country on it.
+                 "voting": "vo_proportional",
+                 # A statutory minimum wage set by region and sector, and unions
+                 # that are strong in construction and weak everywhere else.
+                 # THE LIMB THE OPTION CANNOT CARRY is that a wage floor governs
+                 # only the formal half of the labour market.
+                 "work": "wo_minimum",
+                 # PANAMA HAS NO ARMED FORCES. The military was abolished in 1990
+                 # and the prohibition written into the constitution in 1994, and
+                 # what remains is a police force plus the 4,000-strong SENAFRONT
+                 # border service. The option's own words, "a force sized for the
+                 # border only", are literally true, and its label, "small
+                 # professional force", is the part that is wrong: there is no
+                 # force at all in the sense the domain means. The menu has no
+                 # cell for abolition, which also affects Costa Rica and Iceland
+                 # if either is ever coded. The measured 1.0% is from 1999 and is
+                 # the stalest indicator in the file.
+                 "defence": "de_neutral",
+                 # Selective entry with a residency-by-investment tier, and
+                 # naturalisation after five years. 10.6% foreign-born.
+                 "immigration": "im_controlled",
+                 # 522 per 100,000, THE HIGHEST INCARCERATION RATE IN THE FILE and
+                 # well above even this option's 300.
+                 "justice": "ju_tough",
+                 # Means-tested conditional transfers, Red de Oportunidades and
+                 # the 120 a los 65 pension, rather than a universal child
+                 # benefit.
+                 "family": "fa_targeted"},
      "indicators": {
          "tax_take": {"value": 11.3, "year": 2024,
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
