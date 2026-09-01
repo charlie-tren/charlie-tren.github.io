@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 120" width="90" height="120">
+  <!-- Worst Case Scenario. A card with an alarm in it: the thing you are
+       holding is the problem. currentColor so it takes the page's accent. -->
+  <rect x="8" y="8" width="74" height="104" rx="12" fill="none" stroke="#82a8ca" stroke-width="7"/>
+  <path d="M45 32 L45 74" stroke="#82a8ca" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="45" cy="92" r="6" fill="#82a8ca"/>
+</svg>
