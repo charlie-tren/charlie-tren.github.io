@@ -5,6 +5,21 @@
    Every colour here is a token from room.css. Nothing defines its own palette,
    so the light and dark themes come for free and cannot drift from the estate. */
 
+/* ------------------------------------------------------------- the wordmark --
+   A card with an alarm inside it: the thing you are holding is the problem.
+   Leans on hover, which is worth the six lines - a mark that responds is the
+   difference between a logo and a picture. Reduced motion gets none of it. */
+.wordmark { display: flex; align-items: center; gap: .7rem; margin: 2.2rem 0 0; }
+.wordmark .mk { color: var(--accent); flex: none;
+                transition: transform .35s cubic-bezier(.34,1.56,.64,1); transform-origin: 50% 88%; }
+.wordmark:hover .mk { transform: rotate(-9deg); }
+.wm { font: 400 clamp(19px, 5.2vw, 26px)/1.05 "Iowan Old Style", "Palatino Linotype",
+      Palatino, Georgia, "Times New Roman", serif; letter-spacing: -.005em; }
+@media (prefers-reduced-motion: reduce) {
+  .wordmark .mk { transition: none; }
+  .wordmark:hover .mk { transform: none; }
+}
+
 /* The badge picker in the lobby. */
 .picks { display: grid; grid-template-columns: repeat(8, 1fr); gap: .3rem; }
 .pick { appearance: none; -webkit-appearance: none; cursor: pointer; font-size: 19px;
