@@ -41,20 +41,51 @@ SCRATCH = HERE / "_card_scratch.html"
 
 WIDTH, HEIGHT = 1200, 630
 
-# The dark block of style.css, verbatim. Update both or neither.
-BG = "#0f1319"
-PANEL = "#171c24"
-INK = "#e6e9ee"
-SOFT = "#8a94a3"
-FAINT = "#5d6675"
-RULE = "#262d38"
-TRACK = "#222933"
-ACCENT = "#82a8ca"
+# READ OUT OF style.css, NOT COPIED FROM IT.
+#
+# These were a hand-copied block with the comment "update both or neither"
+# above them, and of course they drifted: the card kept the old blue accent and
+# the old serif stack through a palette change and a font change, so every share
+# of the page advertised a design the site no longer had. That is invisible from
+# the site itself, exactly like a broken share card, and it is the same fault as
+# the stale thumbnail on the same day.
+#
+# The file already parses the tax constants out of budget.js rather than keeping
+# a second copy. This is the same move for colour and type. If a token is ever
+# renamed the assertion below fails loudly rather than the card quietly reverting
+# to whatever the fallback was.
 
-SERIF = ('"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, '
-         '"Times New Roman", serif')
-SANS = ('-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, '
-        '"Helvetica Neue", Arial, sans-serif')
+STYLE = HERE / "style.css"
+
+# Compiled once, and as a RAW string: written inline through a shell heredoc a
+# backslash-s arrives as a literal escape.
+PROP = re.compile(r"--([a-z0-9-]+):\s*([^;]+);")
+
+
+def dark_tokens():
+    """Every custom property from the :root[data-theme="dark"] block."""
+    css = STYLE.read_text(encoding="utf-8")
+    start = css.index(':root[data-theme="dark"] {')
+    block = css[start:css.index("}", start)]
+    found = dict(PROP.findall(block))
+    missing = [k for k in ("bg", "panel", "ink", "soft", "faint", "rule",
+                           "track", "accent", "font-title", "font-body")
+               if k not in found]
+    if missing:
+        raise SystemExit(f"style.css dark block has no {', '.join(missing)}; "
+                         f"the share card cannot be built from it")
+    return {k: v.strip() for k, v in found.items()}
+
+
+_T = dark_tokens()
+BG, PANEL, INK = _T["bg"], _T["panel"], _T["ink"]
+SOFT, FAINT, RULE, TRACK = _T["soft"], _T["faint"], _T["rule"], _T["track"]
+ACCENT = _T["accent"]
+
+# The page uses one family for both now, but the card keeps two names so its
+# layout code does not have to change if that ever splits again.
+SERIF = _T["font-title"]
+SANS = _T["font-body"]
 
 # Kept identical to og:description in index.html.
 DESCRIPTION = ("Design a country one policy at a time, "
@@ -110,6 +141,14 @@ def default_budgets(data):
         if isinstance(chosen.get("financial"), (int, float)):
             spend += chosen["financial"]
 
+    # ITS OWN MEASURED TAX TAKE, matching startingRate() in budget.js. The option
+    # rate is one hand-set number standing for every country tagged to it, and
+    # this was a third copy of that rule which had drifted back to it: the card
+    # showed Australia raising 33.8% of GDP when the page shows 29.5.
+    measured = (country.get("indicators") or {}).get("tax_take")
+    if measured and isinstance(measured.get("value"), (int, float)):
+        rate = measured["value"]
+
     capacity = max(realised_revenue(rate) + country.get("nonTaxRevenue", 0.0), spend)
     capacity, spend = round(capacity, 1), round(spend, 1)
     return code, [
@@ -132,7 +171,15 @@ def meter_html(name, figure, fraction):
 
 def page_html(meters):
     return f"""<!doctype html>
-<html><head><meta charset="utf-8"><style>
+<html><head><meta charset="utf-8">
+<!-- The font the page actually uses. Without this the card inherits the token's
+     fallback stack and renders in whatever the shooting machine has, which is
+     how it came out in a generic sans while the site was in Archivo. The
+     renderer waits on document.fonts before shooting. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&display=swap">
+<style>
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   html, body {{ width: {WIDTH}px; height: {HEIGHT}px; }}
   body {{
@@ -216,6 +263,25 @@ def main():
                 device_scale_factor=1,
             )
             page.goto(SCRATCH.as_uri())
+            # WAIT FOR THE WEBFONT, and fail rather than ship a card in the
+            # fallback stack: unlike the thumbnail job, this runs by hand and a
+            # wrong card would be committed without anyone seeing it render.
+            #
+            # ASK FOR THE FACES, do not just wait on the status. document.fonts
+            # .status reads "loaded" while a face nothing has demanded yet has
+            # not been fetched, so waiting on it alone passed instantly and then
+            # the check below failed. load() requests them and resolves when they
+            # are there.
+            page.evaluate("""() => Promise.all([
+                document.fonts.load('700 16px Archivo'),
+                document.fonts.load('600 16px Archivo'),
+                document.fonts.load('400 16px Archivo'),
+            ])""")
+            page.wait_for_function("() => document.fonts.status === 'loaded'",
+                                   timeout=15000)
+            if not page.evaluate("() => document.fonts.check('700 16px Archivo')"):
+                raise SystemExit("Archivo did not load; refusing to write a card "
+                                 "in the fallback face")
             page.screenshot(path=str(OUT))
             browser.close()
     finally:
