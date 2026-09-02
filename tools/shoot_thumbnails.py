@@ -108,7 +108,12 @@ READY = {
     # Absentee ranks thirty-four countries from data.json after load, so without
     # this the shot lands on an empty panel. A bar is the first thing that only
     # exists once the data has arrived.
-    "foreign-property-screener": "#rank rect",
+    # Was "#rank rect" until 02/09/2026. The page was redesigned from an SVG
+    # ranking chart to a table, so the selector waited 30s for an element that
+    # no longer exists and failed the whole run - taking seven good thumbnails
+    # with it. A READY selector is coupled to the page's markup; when a page is
+    # redesigned, this is the second place to look.
+    "foreign-property-screener": "table tbody tr",
 }
 READY_TIMEOUT = 30000
 
@@ -225,7 +230,7 @@ ANCHOR = {
     # on the chart, with enough above it to keep the title and a row of the
     # controls in, so the card still shows a website with a chart in it.
     # 0.18 landed mid-hint and left an orphan "HELP." across the top of the card.
-    "foreign-property-screener": {"selector": "#rank-panel", "context_above": 0.10},
+    "foreign-property-screener": {"selector": "table", "context_above": 0.18},
     # The top of the page is the hero and a scatter that is currently just a sorted
     # curve. The cards, with real company names and per-flag scores, are the product.
     #
