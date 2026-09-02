@@ -89,7 +89,10 @@
   .thumb svg { display: block; width: 100%; height: 100%; }
   .proj:hover .thumb { border-color: var(--accent); transform: translateY(-2px); }
 
-  .meta .head { display: flex; align-items: baseline; gap: .9rem; margin-bottom: .5rem; flex-wrap: wrap; }
+  /* CENTRE, not baseline. The status pill is a padded box, so baseline-aligning it
+     to 1.7rem type drops the whole pill below the name and it reads as misaligned.
+     Baseline is right for two runs of text; centre is right for text beside a box. */
+  .meta .head { display: flex; align-items: center; gap: .9rem; margin-bottom: .5rem; flex-wrap: wrap; }
   .meta .name { font-size: 1.7rem; letter-spacing: -.01em; }
   /* Pendulum's mark is a Newton's cradle, left blue, centre purple, right red. The card
      wears it so the name reads the same here as on the site. The rods take currentColor
