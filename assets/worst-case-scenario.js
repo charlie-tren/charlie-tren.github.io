@@ -181,13 +181,6 @@
       var nm = document.createElement("span");
       nm.className = "blname";
       nm.textContent = q.name;
-      if (q.bot) {
-        var tag = document.createElement("span");
-        tag.className = "bottag";
-        tag.textContent = "bot";
-        nm.appendChild(document.createTextNode(" "));
-        nm.appendChild(tag);
-      }
 
       var right = document.createElement("span");
       right.className = "blright";
@@ -263,7 +256,25 @@
     /* The picture, above the words. A hand of ten short lines of text reads as a
        list of radio buttons; a face on each one makes it a card you can pick out
        across a table, which is the whole point of the thing. */
-    if (opts.art) {
+    if (opts.pic) {
+      /* The picture, where the deck has one. `alt` is empty on purpose: the card
+         text is directly underneath, so a screen reader announcing the file as
+         well would read every card twice. */
+      var p = document.createElement("img");
+      p.className = "pic";
+      p.src = opts.pic;
+      p.alt = "";
+      p.loading = "lazy";
+      /* A dead URL leaves a hole where a card's face should be, so the emoji
+         comes back rather than nothing. */
+      p.onerror = function () {
+        var f = document.createElement("span");
+        f.className = "art";
+        f.textContent = opts.art || "";
+        if (p.parentNode) p.parentNode.replaceChild(f, p);
+      };
+      b.appendChild(p);
+    } else if (opts.art) {
       var a = document.createElement("span");
       a.className = "art";
       a.textContent = opts.art;
@@ -426,6 +437,7 @@
         var idx = you.handCards[i];
         hand.appendChild(cardBtn(text, {
           art: you.handArt ? you.handArt[i] : "",
+          pic: you.handPic ? you.handPic[i] : "",
           cls: you.played ? "spent" : (picked === idx ? "chosen" : "") + (swapping ? " swapping" : ""),
           onClick: you.played ? null : function () {
             if (swapping) { swapping = false; send({ t: "redraw", card: idx }); return; }
@@ -464,6 +476,7 @@
         if (s.phase === "scored" && top > 0 && c.votes === top) cls.push("won");
         wrap.appendChild(cardBtn(c.text, {
           art: c.art,
+          pic: c.pic,
           cls: cls.join(" "),
           who: s.phase === "scored" ? ownerName(s, c.owner) : (mine ? "Yours" : null),
           votes: s.phase === "scored" ? c.votes : null,

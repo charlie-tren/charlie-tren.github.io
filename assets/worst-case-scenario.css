@@ -19,6 +19,11 @@
    dimming still reads as a rule rather than as a colour choice. */
 .card { display: flex; flex-direction: column; gap: .5rem; }
 .card .art { font-size: 1.7rem; line-height: 1; }
+/* Square, because every picture is cropped square before it ships: a card is a
+   square hole and a letterboxed photograph in one reads as a bug. */
+.card .pic { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 7px;
+             display: block; background: var(--raised); }
+.card.mine .pic { filter: grayscale(1); opacity: .55; }
 .card.mine .art { filter: grayscale(1); opacity: .55; }
 .card .ctext { display: block; }
 
