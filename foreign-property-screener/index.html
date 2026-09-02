@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Foreign Property Screener</title>
-<meta name="description" content="What a property abroad returns once your own country has taxed the rent. Thirty-four countries against an index fund.">
+<meta name="description" content="Thirty-four residential property markets compared for a foreign buyer: yields, costs, non-resident tax, ownership rules, residency pathways and how hard each one is to actually invest in.">
 <link rel="canonical" href="https://charlietrenorden.com/foreign-property-screener/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Charlie Trenorden">
-<meta property="og:title" content="What a property abroad returns after your own country taxes the rent.">
-<meta property="og:description" content="Thirty-four countries, costed after tax, against an index fund holding the same money.">
+<meta property="og:title" content="Thirty-four property markets, compared for a foreigner.">
+<meta property="og:description" content="Yields, costs, non-resident tax, ownership rules and residency pathways. Filter and sort by any of them.">
 <meta property="og:url" content="https://charlietrenorden.com/foreign-property-screener/">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="style.css">
@@ -23,93 +23,95 @@
   </nav>
   <h1>Foreign Property Screener</h1>
   <p class="standfirst">
-    What a property abroad returns once your own country has taxed the rent.
+    Thirty-four residential markets, compared from the outside. What a foreigner
+    can buy, what it yields, what the local tax office takes, and how hard it is
+    to get in and back out again.
   </p>
 </header>
 
 <main class="wrap">
 
-  <section class="controls" id="controls" aria-label="Your tax position and assumptions">
-    <div class="control">
-      <label for="residence">Where you pay tax</label>
-      <select id="residence">
-        <option value="au" selected>Australia</option>
-        <option value="custom">Somewhere else</option>
-      </select>
-      <span class="hint" id="residence-hint"></span>
+  <section class="panel" id="filters-panel">
+    <div class="filters" id="filters" aria-label="Filters">
+      <div class="control">
+        <label for="f-ease">Ease of investing, at least</label>
+        <div class="row"><input type="range" id="f-ease" min="0" max="100" step="1" value="0"><output id="f-ease-out"></output></div>
+      </div>
+      <div class="control">
+        <label for="f-yield">Net yield, at least</label>
+        <div class="row"><input type="range" id="f-yield" min="0" max="8" step="0.1" value="0"><output id="f-yield-out"></output></div>
+      </div>
+      <div class="control">
+        <label for="f-price">Entry price, at most</label>
+        <div class="row"><input type="range" id="f-price" min="75000" max="650000" step="5000" value="650000"><output id="f-price-out"></output></div>
+      </div>
+      <div class="control">
+        <label for="f-own">Who can own it</label>
+        <select id="f-own">
+          <option value="">Anyone, however restricted</option>
+          <option value="3">Foreigners, no restrictions</option>
+          <option value="2">Foreigners, with conditions</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="f-visa">Residency from buying</label>
+        <select id="f-visa">
+          <option value="">Doesn't matter</option>
+          <option value="3">Buying gets you residency</option>
+          <option value="2">Some investor route</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="f-repat">Getting money out</label>
+        <select id="f-repat">
+          <option value="">Doesn't matter</option>
+          <option value="3">Free</option>
+          <option value="2">Free or on registration</option>
+        </select>
+      </div>
     </div>
-    <div class="control lockable">
-      <label for="mtr">Your rate on rent</label>
-      <div class="row"><input type="range" id="mtr" min="0" max="60" step="0.5" value="47"><output id="mtr-out"></output></div>
-    </div>
-    <div class="control lockable">
-      <label for="cgt">Your rate on the gain</label>
-      <div class="row"><input type="range" id="cgt" min="0" max="50" step="0.5" value="23.5"><output id="cgt-out"></output></div>
-    </div>
-    <div class="control lockable">
-      <label for="scope">Income earned abroad</label>
-      <select id="scope">
-        <option value="worldwide" selected>Taxed at home as well</option>
-        <option value="territorial">Not taxed at home</option>
-      </select>
-    </div>
-    <div class="control">
-      <label for="growth">House price growth</label>
-      <div class="row"><input type="range" id="growth" min="0" max="10" step="0.25" value="3"><output id="growth-out"></output></div>
-    </div>
-    <div class="control">
-      <label for="bench">Index fund return</label>
-      <div class="row"><input type="range" id="bench" min="0" max="12" step="0.25" value="7.5"><output id="bench-out"></output></div>
-    </div>
+    <p class="filter-count" id="count"></p>
   </section>
 
-  <section class="panel" id="rank-panel">
-    <h2>Net Return by Country</h2>
-    <p class="sub" id="rank-blurb"></p>
-    <div class="legend">
-      <span><i style="background:var(--over)"></i>Beats the index fund</span>
-      <span><i style="background:var(--under)"></i>Loses to it</span>
-      <span><i class="rule-mark"></i>The index fund</span>
+  <section class="panel" id="scatter-panel">
+    <h2>Plot Any Two Factors</h2>
+    <div class="axis-picks">
+      <div class="control">
+        <label for="x-axis">Across</label>
+        <select id="x-axis"></select>
+      </div>
+      <div class="control">
+        <label for="y-axis">Up</label>
+        <select id="y-axis"></select>
+      </div>
     </div>
     <figure class="chart">
-      <svg id="rank" role="img" aria-label="Ten-year net return for each country, ranked, against the index fund benchmark"></svg>
-      <div class="readout" id="rank-readout" hidden></div>
+      <svg id="scatter" role="img" aria-label="Scatter plot of the two selected factors across the filtered markets"></svg>
+      <div class="readout" id="scatter-readout" hidden></div>
     </figure>
+    <p class="sub" id="scatter-note"></p>
   </section>
 
-  <section class="panel" id="picked">
-    <div class="picked-head">
-      <h2 id="picked-name"></h2>
-      <span class="verdict" id="picked-verdict"></span>
+  <section class="panel" id="table-panel">
+    <h2>Every Market</h2>
+    <p class="sub">Click a column to sort. Click a row for the detail behind it.</p>
+    <div class="table-scroll">
+      <table id="grid">
+        <thead><tr id="grid-head"></tr></thead>
+        <tbody id="grid-body"></tbody>
+      </table>
     </div>
-
-    <h3>Ten Years From Now</h3>
-    <figure class="chart">
-      <svg id="compare" role="img" aria-label="The same money after ten years: the property untaxed, the property after tax, and an index fund"></svg>
-      <div class="readout" id="compare-readout" hidden></div>
-    </figure>
-
-    <h3>How Far the Currency Can Fall</h3>
-    <p class="sub" id="fx-blurb"></p>
-    <figure class="chart">
-      <svg id="fx" role="img" aria-label="How far the local currency can fall before the property loses to the index fund"></svg>
-      <div class="readout" id="fx-readout" hidden></div>
-    </figure>
-
-    <dl class="facts" id="facts"></dl>
   </section>
 
   <section class="panel notes">
     <h2>Notes</h2>
     <ul>
+      <li><strong>Ease of investing</strong> is six things a foreign buyer runs into, each scored from a stated fact: who may own, whether buying brings residency, whether money can leave, how long a sale takes, what buying costs, and the property-rights score. Open a row to see the six. It is not a recommendation, and the parts matter more than the total.</li>
       <li id="note-tax"></li>
-      <li id="note-review"></li>
-      <li>Growth is one number you set, applied to every country. The source workbook had a per-country estimate; most of it was guesswork, so none of it is used.</li>
-      <li>All cash. No Australian lender takes foreign property as security, so the leverage that makes property work at home is not on offer here.</li>
-      <li>The return does not depend on the purchase price. Rent, gain and costs all scale with it, so the price only sets the size of the numbers in the bars above, not the percentage. What the ranking does depend on is the rent, and that comes from Numbeo, which is user-contributed. No statistical agency publishes rental yields across countries, so there is no official figure to check it against.</li>
+      <li>Yields come from Numbeo, which is user-contributed. No statistical agency publishes rental yields across countries, so there is nothing official to check them against. Treat them as indicative.</li>
+      <li>Prices are a median dwelling converted to Australian dollars, for scale rather than as a quote.</li>
       <li>General information, not advice.</li>
     </ul>
-
     <h3>Sources</h3>
     <table class="src"><tbody id="sources"></tbody></table>
   </section>
