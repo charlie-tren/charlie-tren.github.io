@@ -75,6 +75,7 @@
 
   <section class="panel" id="map-panel">
     <h2>Where They Are</h2>
+    <p class="sub" id="map-sub"></p>
     <div class="axis-picks">
       <div class="control">
         <label for="map-metric">Shade by</label>
@@ -86,25 +87,6 @@
       <div class="readout" id="map-readout" hidden></div>
     </figure>
     <div class="scale" id="map-scale"></div>
-  </section>
-
-  <section class="panel" id="scatter-panel">
-    <h2>Plot Any Two Factors</h2>
-    <div class="axis-picks">
-      <div class="control">
-        <label for="x-axis">Across</label>
-        <select id="x-axis"></select>
-      </div>
-      <div class="control">
-        <label for="y-axis">Up</label>
-        <select id="y-axis"></select>
-      </div>
-    </div>
-    <figure class="chart">
-      <svg id="scatter" role="img" aria-label="Scatter plot of the two selected factors across the filtered markets"></svg>
-      <div class="readout" id="scatter-readout" hidden></div>
-    </figure>
-    <p class="sub" id="scatter-note"></p>
   </section>
 
   <section class="panel" id="table-panel">
