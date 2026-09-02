@@ -1034,8 +1034,8 @@
         },
         {
           "id": "en_deposit",
-          "label": "Clean grid and a deposit-return scheme",
-          "detail": "A clean grid and good rail, cars still allowed, and every container carries a refundable deposit.",
+          "label": "Deposit returns and good rail, cars kept",
+          "detail": "Dense rail, every container carries a refundable deposit, and cars are still allowed. The grid is still coming off coal.",
           "financial": 2.6,
           "political": 40,
           "social": 18,

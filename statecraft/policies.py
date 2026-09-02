@@ -437,8 +437,23 @@ DOMAINS = [
             {"id": "en_car_free", "label": "Private combustion cars banned",
              "detail": "Trams and rail carry everyone. Fuel excise, stamp duty and an annual fee price the rest off the road.", "financial": 1.8, "political": 85, "social": 80,
              "axis": {"grid_carbon": 30.0}},
-            {"id": "en_deposit", "label": "Clean grid and a deposit-return scheme",
-             "detail": "A clean grid and good rail, cars still allowed, and every container carries a refundable deposit.", "financial": 2.6, "political": 40, "social": 18,
+            # RELABELLED 02/09/2026. It read "Clean grid and a deposit-return
+            # scheme", and its detail opened "A clean grid and good rail". Germany
+            # is the only country coded to it and Germany's grid is 329.7 g/kWh,
+            # which is the second dirtiest of the six options here and well above
+            # en_carbon_tax at 217.4. So the page told a visitor who picked a clean
+            # grid that their grid carbon was 330.
+            #
+            # The hand value of 55.0 is what hid it: it agreed with the label, and
+            # nothing compared the label to the country. It is kept below, as every
+            # hand value is, because the gap between 55 and 330 is the record of
+            # the mistake.
+            #
+            # The label lost the limb that was false. The deposit-return scheme and
+            # the rail are real and are what separates this from a carbon tax; the
+            # clean grid was aspiration written as description.
+            {"id": "en_deposit", "label": "Deposit returns and good rail, cars kept",
+             "detail": "Dense rail, every container carries a refundable deposit, and cars are still allowed. The grid is still coming off coal.", "financial": 2.6, "political": 40, "social": 18,
              "axis": {"grid_carbon": 55.0}},
         ],
     },
