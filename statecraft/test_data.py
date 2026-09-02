@@ -508,3 +508,74 @@ def test_the_common_timezones_resolve():
                "Europe/Copenhagen", "Asia/Singapore", "Asia/Tokyo",
                "Europe/Berlin", "America/Los_Angeles", "Pacific/Auckland"]:
         assert tz in TIMEZONES, f"{tz} is unmapped and would fall back"
+
+
+# Added 02/09/2026, after en_deposit.
+REVIEWED_HAND_VS_DERIVED = {
+    # option_id: why the gap is real and the label is not lying about it.
+    "en_deposit": (
+        "Germany alone, and its grid is 329.7 g/kWh against a hand value of 55. "
+        "The label used to say 'Clean grid' and was rewritten to drop that limb. "
+        "The gap stays because the gap is the point: it is the record of a label "
+        "that claimed something its only holder did not do."),
+    "de_conscript": (
+        "Conscription says nothing about how much a country spends. The holders "
+        "run from Greece at 3.1 to Austria at 0.7, so the median lands well below "
+        "a hand value set from the idea of a large standing army."),
+    "ed_free": (
+        "Hand 6.3, measured 4.7 over 24 holders spanning 2.5 to 7.3. Free tuition "
+        "is a question of who pays, not of how much is spent, and the hand value "
+        "was set off a seven-country Nordic sample. The label claims neither. "
+        "Watch it anyway: this option is why the education spoke now sits exactly "
+        "on its 15% travel floor."),
+    "vo_preferential": (
+        "Hand 9.0, measured 23.11, and the measurement is Australia alone. The "
+        "2025 result gave the ALP 62.7% of seats on 34.6% of first preferences, "
+        "by a distance the most disproportional Australian election on record "
+        "against a 1946 to 2019 range of 5.4 to 14.9. The number is right and the "
+        "label claims nothing about proportionality, but a whole option is "
+        "standing on one freak election."),
+    "fa_pronatal": (
+        "Hand 3.8, measured 2.6. Paying people to have children is a policy aim, "
+        "not a spending level, and Hungary and Korea spend very differently in "
+        "pursuit of it."),
+}
+
+
+def test_a_hand_value_and_its_measurement_do_not_wildly_disagree():
+    """Where an option's hand value and its derived value are far apart, one of
+    the two is wrong, and the hand value is usually the one written to agree with
+    the LABEL rather than with any country.
+
+    That is how en_deposit shipped as "Clean grid and a deposit-return scheme"
+    with a hand value of 55 g/kWh while its only holder, Germany, measures 329.7.
+    Both numbers were individually defensible. Nothing compared them, and nothing
+    compared either to the words on the option, so the page told a visitor who had
+    picked a clean grid that their grid carbon was 330.
+
+    THIS IS A REVIEW GATE, NOT A BOUND. A large gap is a question, not a fault:
+    the measurement wins by construction, and the thing to check is whether the
+    LABEL still describes the countries. Answer it and add the option to
+    REVIEWED_HAND_VS_DERIVED with the reason.
+    """
+    from build_data import effective_axis_values
+    bounds = {a["id"]: a["bounds"] for a in AXES}
+    unreviewed = []
+    for d in DOMAINS:
+        for o in d["options"]:
+            axis = d["axis"]
+            eff, hand, basis = effective_axis_values()[o["id"]]
+            if basis == "hand" or axis not in bounds:
+                continue
+            if eff.get(axis) is None or hand.get(axis) is None:
+                continue
+            lo, hi = bounds[axis]
+            gap = abs(eff[axis] - hand[axis]) / (hi - lo)
+            if gap > 0.25 and o["id"] not in REVIEWED_HAND_VS_DERIVED:
+                unreviewed.append(
+                    f"{o['id']} ({o['label']!r}): hand {hand[axis]}, "
+                    f"measured {eff[axis]:.4g}, {gap:.0%} of the {axis} track")
+    assert not unreviewed, (
+        "the hand value and the measurement disagree by more than a quarter of "
+        "the track. Check the LABEL against the countries, then record the "
+        "decision in REVIEWED_HAND_VS_DERIVED:\n  " + "\n  ".join(unreviewed))
