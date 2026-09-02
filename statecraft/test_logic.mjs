@@ -135,7 +135,7 @@ test('rank never returns a country with no policy matrix', () => {
 // KUWAIT'S BUDGET NEVER BINDS, AND THAT IS THE DATA BEING RIGHT.
 //
 // Its nonTaxRevenue is 58.2, from an IMF general government revenue figure of
-// 74.2% of GDP against a modelled spend of 40.1. Most of that gap is Kuwait
+// 74.2% of GDP against a modelled spend of 42.1. Most of that gap is Kuwait
 // Investment Authority income, which the IMF imputes into general government
 // because Kuwait does not publish accounts at that level. The UAE's own 27.8
 // comes from the same indicator and the same call, so the column is consistent;
@@ -292,9 +292,8 @@ test('all forty-five countries can afford to be themselves', () => {
   // afford. The floor is doing exactly what it was built for: reading the
   // wrong-basis revenue figure as the artefact it is.
   //
-  // Spain is the marginal case at 0.6 points and needs no special explanation.
-  // It runs a persistent general government deficit, so a model in which it
-  // funds itself out of tax to the last tenth would be the surprising result.
+  // Spain was the marginal case at 0.6 points. It came off the list entirely on
+  // 02/09/2026 with the healthcare recode; see the note above the assertion.
   //
   // SIX MORE ARRIVED ON 31/08/2026 AND THE LIST MORE THAN DOUBLED. That is the
   // largest single change to this assertion and it is not drift, so the top-up
@@ -317,8 +316,8 @@ test('all forty-five countries can afford to be themselves', () => {
   //   countries.py. The top-ups fall accordingly and are asserted below.
   //
   //   KUWAIT COMES OFF THIS LIST ENTIRELY. Its general government revenue of
-  //   74.2% of GDP exceeds what the model prices its own choices at, 40.1, so
-  //   there is nothing left for the floor to do and it starts with about 34
+  //   74.2% of GDP exceeds what the model prices its own choices at, 42.1, so
+  //   there is nothing left for the floor to do and it starts with about 32
   //   points spare. That is the sourced figure rather than a tuned one, and
   //   roughly thirty of those points are IMF-estimated sovereign fund
   //   investment income that Kuwait's own budget never sees. See the row.
@@ -360,7 +359,17 @@ test('all forty-five countries can afford to be themselves', () => {
   // A country with no measured take inherits its option's number, and whether
   // that flatters or punishes it is pure luck of which option it sits on. Three
   // rows are still in that position and they are the Gulf three above.
-  assert.deepEqual(propped, ['SG', 'AE', 'IE', 'ES', 'UY', 'TW', 'SA', 'QA', 'MT', 'PA']);
+  // SPAIN CAME OFF ON 02/09/2026, and it came off because of a matrix recode
+  // rather than anything about its revenue. It was the marginal case at 0.6
+  // points. The healthcare recode moved it from hc_public to hc_mixed, which is
+  // 7.0 of GDP rather than 9.0, and it now clears its own settings with 1.4
+  // points to spare. Nine countries moved the other way, onto the dearer option,
+  // and none of them joined the list: the tightest is Sweden at 3.2 points of
+  // headroom. Spain moved because MUFACE is the state paying a private premium
+  // for a million public servants, which is the definition of the subsidised
+  // tier, and the budget consequence follows from the policy rather than the
+  // other way round.
+  assert.deepEqual(propped, ['SG', 'AE', 'IE', 'UY', 'TW', 'SA', 'QA', 'MT', 'PA']);
 
   // THE GULF FOUR, PINNED. The three sourced nonTaxRevenue figures land here
   // and nowhere else a test can see them, so the top-up each one leaves behind
@@ -370,7 +379,16 @@ test('all forty-five countries can afford to be themselves', () => {
   for (const [code, nonTax, topUp, capacity] of [
     ['AE', 11.8, 4.2, 32.0],
     ['SA', 11.1, 2.4, 29.5],
-    ['QA', 10.7, 8.3, 35.0],
+    // Qatar's top-up rose 8.3 to 10.3 and its capacity 35.0 to 37.0 on
+    // 02/09/2026, which is the healthcare recode and nothing about Qatar's
+    // revenue. It moved to hc_public, 9.0 of GDP against hc_mixed's 7.0, because
+    // its 2021 insurance mandate binds non-Qataris only and the state-funded
+    // private route for citizens was scrapped at the end of 2015. Kuwait moved
+    // the same way for the same reason and its modelled spend went 40.1 to 42.1,
+    // which the floor absorbs because Kuwait is the Gulf row that funds itself.
+    // The UAE and Saudi Arabia did not move and are the control: both keep a
+    // subsidised private tier for citizens, so both stayed on hc_mixed.
+    ['QA', 10.7, 10.3, 37.0],
     ['KW', 58.2, 0.0, 74.2],
   ]) {
     const f = budgets(data, startingState(data, code)).financial;

@@ -433,56 +433,56 @@
         },
         {
           "id": "hc_mixed",
-          "label": "Public with a private tier",
-          "detail": "Universal public cover, and you may pay to go faster.",
+          "label": "Public with a subsidised private tier",
+          "detail": "Universal public cover, and the state pays you to take private insurance on top of it, or taxes you for going without.",
           "financial": 7.0,
           "political": 20,
           "social": 22,
           "axis": {
-            "health_public": 77.15
+            "health_public": 73.15
           },
           "axis_hand": {
             "health_public": 80.0
           },
-          "axis_basis": "derived from 18 countries",
+          "axis_basis": "derived from 10 countries",
           "holders": [
             "AU",
-            "NZ",
-            "CA",
-            "DK",
-            "SE",
-            "NO",
             "FI",
-            "EE",
             "AE",
             "IE",
             "IT",
+            "ES",
             "PT",
             "LV",
-            "IS",
             "SA",
-            "QA",
-            "KW",
             "PA"
           ]
         },
         {
           "id": "hc_public",
           "label": "Tax-funded national service",
-          "detail": "One service for everyone, free at the point of use and paid for out of general taxation. A private sector exists alongside it, unsubsidised.",
+          "detail": "One service for everyone, paid for out of general taxation. A private sector may exist beside it, but the state gives it nothing and may bar it from duplicating public cover.",
           "financial": 9.0,
           "political": 45,
           "social": 12,
           "axis": {
-            "health_public": 73.2
+            "health_public": 83.0
           },
           "axis_hand": {
             "health_public": 81.3
           },
-          "axis_basis": "derived from 3 countries",
+          "axis_basis": "derived from 11 countries",
           "holders": [
+            "NZ",
             "UK",
-            "ES",
+            "CA",
+            "DK",
+            "SE",
+            "NO",
+            "EE",
+            "IS",
+            "QA",
+            "KW",
             "MT"
           ]
         }
@@ -2178,7 +2178,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_anglo",
-        "healthcare": "hc_mixed",
+        "healthcare": "hc_public",
         "education": "ed_deferred",
         "housing": "ho_market",
         "retirement": "re_super",
@@ -2477,7 +2477,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_anglo",
-        "healthcare": "hc_mixed",
+        "healthcare": "hc_public",
         "education": "ed_free_selective",
         "housing": "ho_market",
         "retirement": "re_flat",
@@ -2861,7 +2861,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_nordic",
-        "healthcare": "hc_mixed",
+        "healthcare": "hc_public",
         "education": "ed_free",
         "housing": "ho_cooperative",
         "retirement": "re_earnings",
@@ -2957,7 +2957,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_nordic",
-        "healthcare": "hc_mixed",
+        "healthcare": "hc_public",
         "education": "ed_free",
         "housing": "ho_subsidy",
         "retirement": "re_earnings",
@@ -3054,7 +3054,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_nordic",
-        "healthcare": "hc_mixed",
+        "healthcare": "hc_public",
         "education": "ed_free",
         "housing": "ho_subsidy",
         "retirement": "re_earnings",
@@ -3246,7 +3246,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_flat",
-        "healthcare": "hc_mixed",
+        "healthcare": "hc_public",
         "education": "ed_free",
         "housing": "ho_market",
         "retirement": "re_super",
@@ -4154,7 +4154,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_continental",
-        "healthcare": "hc_public",
+        "healthcare": "hc_mixed",
         "education": "ed_free",
         "housing": "ho_market",
         "retirement": "re_generous",
@@ -5293,7 +5293,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_anglo",
-        "healthcare": "hc_mixed",
+        "healthcare": "hc_public",
         "education": "ed_free",
         "housing": "ho_subsidy",
         "retirement": "re_super",
@@ -5780,7 +5780,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_minimal",
-        "healthcare": "hc_mixed",
+        "healthcare": "hc_public",
         "education": "ed_free",
         "housing": "ho_market",
         "retirement": "re_generous",
@@ -5847,7 +5847,7 @@
       "matchable": true,
       "choices": {
         "tax": "tax_minimal",
-        "healthcare": "hc_mixed",
+        "healthcare": "hc_public",
         "education": "ed_free",
         "housing": "ho_singapore",
         "retirement": "re_generous",
