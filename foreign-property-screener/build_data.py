@@ -136,6 +136,7 @@ def main():
             "purchase_costs": purchase,
             "holding_costs": num(g("holding_costs")),
             "months_to_sell": months,
+            "months_text": clean(g("liquidity")).replace(" months", "").split(" (")[0],
             "rental_tax_text": clean(g("rental_tax_text")),
             "cgt_text": clean(g("cgt_text")),
             "estate_text": clean(g("estate_text")),

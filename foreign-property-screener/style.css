@@ -223,22 +223,30 @@ footer a { color: var(--ink-faint); }@media (max-width: 620px) {
   background: linear-gradient(to right, transparent, var(--panel));
 }
 .table-wrap.more::after { opacity: 1; }
-table#grid { width: 100%; border-collapse: collapse; font-size: .86rem; white-space: nowrap; }
-table#grid th, table#grid td {
-  padding: 7px 12px 7px 0; text-align: right; border-bottom: 1px solid var(--rule);
+table#grid {
+  width: 100%; border-collapse: collapse; white-space: nowrap;
+  font-size: .92rem; font-variant-numeric: tabular-nums;
 }
+/* Room to breathe. At 7px of vertical padding thirty-four rows were a block of
+   digits; the eye needs a row to be taller than the type in it. */
+table#grid th, table#grid td { padding: 10px 14px 10px 0; text-align: right; }
+table#grid td { border-bottom: 1px solid var(--rule); }
+/* A hairline in front of each group, so the columns read as three blocks:
+   what it costs, what it yields, what it is taxed. */
+table#grid th.grp, table#grid td.grp { border-left: 1px solid var(--rule); padding-left: 14px; }
 table#grid th {
   position: sticky; top: 0; z-index: 2; background: var(--panel);
-  font: 600 11px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint);
+  font: 600 10.5px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint);
   cursor: pointer; user-select: none; vertical-align: bottom;
+  padding-bottom: 8px; border-bottom: 1.5px solid var(--ink);
 }
 table#grid th:hover { color: var(--ink); }
 table#grid th.sorted { color: var(--ink); }
 table#grid th.sorted::after { content: " ↓"; }
 table#grid th.sorted[data-dir="asc"]::after { content: " ↑"; }
 table#grid th.l, table#grid td.l { text-align: left; }
-table#grid td.l { font-weight: 600; }
+table#grid td.l { font-weight: 600; letter-spacing: -.005em; }
 /* The market name stays put while the rest scrolls under it. */
 table#grid th:first-child, table#grid td:first-child {
   position: sticky; left: 0; background: var(--panel); z-index: 1;
@@ -250,7 +258,11 @@ table#grid tbody tr:hover td { background: var(--hover); }
 table#grid tbody tr:hover td:first-child { background: var(--hover); }
 table#grid tr.picked td, table#grid tr.picked td:first-child { background: var(--hover); }
 .tax-nil { color: var(--over); font-weight: 650; }
-.tax-unknown { color: var(--ink-faint); font-style: italic; }
+/* Not a value, so it should not read like one. Twenty of thirty-four rows carry
+   it and in italics at full size they were the loudest thing in the table. */
+/* Quiet by size, not by opacity: at .75 the blend against the paper came out
+   at 2.98:1, and a word nobody can read is not a subtle word. */
+.tax-unknown { color: var(--ink-faint); font-size: .84em; }
 
 /* ---- ease ---- */
 .ease { display: inline-flex; align-items: center; gap: 7px; justify-content: flex-end; }
@@ -301,10 +313,9 @@ tr.detail td { padding: 0 0 18px; white-space: normal; }
    shapes floating on the page. Borders are a warm hairline, not the panel
    colour: against the panel the countries dissolved into each other wherever
    two greys met, which is most of Europe. */
-#map {
-  display: block; width: 100%;
-  background: var(--map-sea); border: 1px solid var(--rule); border-radius: 4px;
-}
+/* No frame. A border around a map turns it into a picture of a map; the tinted
+   sea already separates it from the paper. */
+#map { display: block; width: 100%; background: var(--map-sea); border-radius: 3px; }
 .map-land { fill: var(--map-land); stroke: var(--map-line); stroke-width: .45; }
 .map-mkt { stroke: var(--map-line); stroke-width: .7; cursor: pointer; }
 .map-mkt:hover { stroke: var(--ink); stroke-width: 1.4; }
@@ -323,3 +334,37 @@ tr.detail td { padding: 0 0 18px; white-space: normal; }
 .scale .none i {
   width: 11px; height: 11px; border-radius: 2px; background: var(--map-land); flex: none;
 }
+
+
+/* ---- overall polish ---- */
+
+/* A rule under the masthead, which is what a markets page has instead of a
+   drop shadow. It also stops the standfirst and the first panel running
+   together on a page where everything shares one paper colour. */
+header.wrap { padding-bottom: 4px; }
+.standfirst { padding-bottom: 20px; border-bottom: 1px solid var(--rule); max-width: none; }
+
+/* Panels sit on the paper rather than floating above it: on a single-colour
+   ground a border reads as structure and a shadow reads as a mistake. */
+.panel { box-shadow: none; }
+
+/* The filter row is chrome, not content, so it is quieter than the panels it
+   controls: no card, just the controls and a rule under them. */
+#filters-panel { background: none; border: 0; border-bottom: 1px solid var(--rule); border-radius: 0; padding: 4px 0 18px; }
+.filter-count { color: var(--ink-soft); font-size: .88rem; }
+
+/* Selects were clipping their own longest option. */
+.control select { padding-right: 26px; text-overflow: ellipsis; }
+
+/* Section headings get the space they were asking for. */
+h2 { font-size: 1.42rem; margin-bottom: 6px; }
+.panel > .sub:last-of-type { margin-bottom: 18px; }
+
+/* The ease bar is the only chart inside the table, so it gets a little more
+   room and a rounder cap. */
+.ease-bar { width: 46px; height: 7px; }
+
+/* The opened row should read as a drawer under its row, not as another row. */
+tr.detail td { background: var(--hover); padding: 0 14px 20px; }
+.detail-inner { padding-top: 16px; }
+.facts dd { font-size: .9rem; line-height: 1.45; }

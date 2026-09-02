@@ -23,24 +23,37 @@ let DATA = null, MAP = null, PICKED = null, SORT = { key: "ease", dir: -1 };
 
 /* Columns. `get` pulls the value, `show` renders it, `num` marks it plottable.
    Order here is the order on screen. */
+/* Nine columns on screen, not sixteen. The rest were readable individually and
+   unreadable together: at sixteen every column is narrow, the eye has nothing
+   to anchor on, and the ones a reader actually screens by are lost among the
+   ones they look up afterwards. Those moved into the expanded row.
+
+   `group` draws a hairline before the column, so the table reads as three
+   blocks - what it costs, what it yields, what it is taxed - instead of one
+   undifferentiated run of numbers. */
 const COLS = [
   { key: "country", label: "Market", show: c => c.country, align: "left" },
   { key: "ease", label: "Ease", num: true, show: c => easeCell(c) },
-  { key: "price_aud", label: "Entry", num: true, show: c => fmtK(c.price_aud), unit: "A$" },
-  { key: "gross_yield", label: "Gross yield", num: true, show: c => pc(c.gross_yield), unit: "%" },
+  { key: "price_aud", label: "Entry", num: true, group: true, show: c => fmtK(c.price_aud), unit: "A$" },
+  { key: "purchase_costs", label: "To buy", num: true, show: c => pc(c.purchase_costs), unit: "%" },
+  { key: "gross_yield", label: "Gross yield", num: true, group: true, show: c => pc(c.gross_yield), unit: "%" },
   { key: "net_yield", label: "Net yield", num: true, show: c => pc(c.net_yield), unit: "%" },
-  { key: "rent_tax", label: "Tax on rent", num: true, show: c => taxCell(c, "rent"), unit: "%" },
+  { key: "rent_tax", label: "Tax on rent", num: true, group: true, show: c => taxCell(c, "rent"), unit: "%" },
   { key: "gain_tax", label: "Tax on gain", num: true, show: c => taxCell(c, "cgt"), unit: "%" },
-  { key: "purchase_costs", label: "Buying costs", num: true, show: c => pc(c.purchase_costs), unit: "%" },
-  { key: "months_to_sell", label: "Months to sell", num: true, show: c => c.months_to_sell ?? "" },
-  { key: "price_to_income", label: "Price to income", num: true, show: c => c.price_to_income ?? "" },
-  { key: "property_rights", label: "Property rights", num: true, show: c => c.property_rights ?? "" },
-  { key: "cpi_score", label: "Corruption score", num: true, show: c => c.cpi_score ?? "" },
-  { key: "pop_growth", label: "Population growth", num: true, show: c => pc(c.pop_growth), unit: "%" },
-  { key: "gdp_per_capita", label: "GDP per head", num: true, show: c => c.gdp_per_capita ? "$" + Math.round(c.gdp_per_capita / 1000) + "k" : "" },
-  { key: "fx_vol", label: "Currency swing", num: true, show: c => pc(c.fx_vol), unit: "%" },
-  { key: "sp_rating", label: "Credit rating", show: c => c.sp_rating },
+  { key: "months_to_sell", label: "Months to sell", num: true, group: true, show: c => c.months_text || (c.months_to_sell ?? "") },
 ];
+
+/* Still plottable on the map and still shown when a row is opened, just not
+   given a column of their own. */
+const EXTRA = [
+  { key: "price_to_income", label: "Price to income", num: true },
+  { key: "property_rights", label: "Property rights", num: true },
+  { key: "cpi_score", label: "Corruption score", num: true },
+  { key: "pop_growth", label: "Population growth", num: true, unit: "%" },
+  { key: "gdp_per_capita", label: "GDP per head", num: true, unit: "A$" },
+  { key: "fx_vol", label: "Currency swing", num: true, unit: "%" },
+];
+const PLOTTABLE = [...COLS.filter(c => c.num), ...EXTRA];
 
 /* The two tax columns are the point of the page, so they are sortable numbers
    rather than the source's prose. A rate that cannot be reduced to one number
@@ -64,7 +77,7 @@ function taxCell(c, kind) {
   const r = rate(c, kind);
   if (r === 0) return `<span class="tax-nil">none</span>`;
   if (r != null) return pc(r);
-  return `<span class="tax-unknown" title="The source gives a schedule or a choice of regimes, not one rate">schedule</span>`;
+  return `<span class="tax-unknown" title="The source gives a sliding scale or a choice of regimes, not one rate. Open the row for what it says.">scale</span>`;
 }
 
 function easeCell(c) {
@@ -133,16 +146,35 @@ function showReadout(box, fig, ev, html) {
 
 /* ---------- the map ----------
 
-   Equirectangular, which is the projection you get for free by treating
-   longitude and latitude as x and y. It stretches the poles badly, and for a
-   map whose job is "which country is this" rather than "how big is it" that is
-   the right trade: no projection maths, no library, and every market lands
-   where a reader expects it. Antarctica is cropped because it is a third of the
-   height and none of the subject.
+   Robinson. Equirectangular came free by treating longitude and latitude as x
+   and y, and it looked it: Canada and Russia smeared across the top, Alaska
+   bigger than India, every parallel the same length so the world read as a
+   rectangle of countries rather than as a globe. Robinson is a lookup table of
+   nineteen latitudes interpolated between - about twenty lines, still no
+   library - and it is the projection an atlas would use for exactly this job.
+
+   Antarctica is cropped because it is a third of the height and none of the
+   subject.
 
    Colour runs light to dark on one hue. A market with no figure for the chosen
    factor is left the same grey as the rest of the world and said so in the key,
    because colouring it at the bottom of the ramp would claim a value. */
+
+
+/* Robinson's published table: the length of each parallel (PX) and its distance
+   from the equator (PY), both relative to the equator, every five degrees. */
+const PX = [1, .9986, .9954, .99, .9822, .973, .96, .9427, .9216, .8962, .8679,
+            .835, .7986, .7597, .7186, .6732, .6213, .5722, .5322];
+const PY = [0, .062, .124, .186, .248, .31, .372, .434, .4958, .5571, .6176,
+            .6769, .7346, .7903, .8435, .8936, .9394, .9761, 1];
+
+function robinson(lon, lat) {
+  const a = Math.min(Math.abs(lat), 90) / 5;
+  const i = Math.min(Math.floor(a), 17), t = a - i;
+  const px = PX[i] + (PX[i + 1] - PX[i]) * t;
+  const py = PY[i] + (PY[i + 1] - PY[i]) * t;
+  return [0.8487 * px * (lon * Math.PI / 180), 1.3523 * py * (lat < 0 ? -1 : 1)];
+}
 
 /* Read from the stylesheet rather than hardcoded, so the theme owns its own
    colours and dark mode is not a second copy of the ramp living in a script. */
@@ -173,18 +205,21 @@ function drawMap(shown) {
   const svg = $("map"), fig = svg.parentNode, box = $("map-readout");
   if (!MAP) return;
   const key = $("map-metric").value;
-  const col = COLS.find(c => c.key === key);
+  const col = PLOTTABLE.find(c => c.key === key);
   const narrow = window.innerWidth <= 620;
 
-  // Cropped to 72N-56S. At 84N a third of the height was empty Arctic and a
-  // Greenland the size of Africa, neither of which is a market; the tighter
-  // band spends the same pixels on the latitudes that actually hold one.
+  // The drawn band is 78N to 56S. The projected extent is measured from the
+  // projection itself rather than assumed, so changing the crop cannot silently
+  // squash the map.
   const W = frame(svg, 0);
-  const LAT0 = 72, LAT1 = -56;
-  const H = Math.round(W * (LAT0 - LAT1) / 360);
+  const LAT0 = 78, LAT1 = -56;
+  const top = robinson(0, LAT0)[1], bot = robinson(0, LAT1)[1];
+  const halfW = robinson(180, 0)[0];
+  const H = Math.round(W * (top - bot) / (2 * halfW));
   frame(svg, H);
-  const X = lon => (lon + 180) / 360 * W;
-  const Y = lat => (LAT0 - lat) / (LAT0 - LAT1) * H;
+  const k = W / (2 * halfW);
+  const X = (lon, lat) => (robinson(lon, lat)[0] + halfW) * k;
+  const Y = (lon, lat) => (top - robinson(lon, lat)[1]) * k;
 
   const inSet = new Map(shown.map(c => [c.country, c]));
   const vals = shown.map(c => val(c, key)).filter(v => v != null && v !== "" && isFinite(v)).map(Number);
@@ -193,7 +228,7 @@ function drawMap(shown) {
   const R = ramp();
 
   const path = rings => rings.map(r =>
-    "M" + r.map(pt => X(pt[0]).toFixed(1) + " " + Y(pt[1]).toFixed(1)).join("L") + "Z").join(" ");
+    "M" + r.map(pt => X(pt[0], pt[1]).toFixed(1) + " " + Y(pt[0], pt[1]).toFixed(1)).join("L") + "Z").join(" ");
 
   // Everything grey first, then the markets over it, so a market border is
   // never hidden under a neighbour drawn later.
@@ -218,7 +253,7 @@ function drawMap(shown) {
     if (!c) return;
     const fill = colourFor(val(c, key), lo, hi, invert, R);
     const node = el(svg, "circle", {
-      cx: X(pt.p[0]), cy: Y(pt.p[1]), r: c.country === PICKED ? 6 : 4.5,
+      cx: X(pt.p[0], pt.p[1]), cy: Y(pt.p[0], pt.p[1]), r: c.country === PICKED ? 6 : 4.5,
       class: "map-dot", fill: fill || "var(--map-land)",
     });
     bindMarket(node, c, col, box, fig);
@@ -233,11 +268,13 @@ function drawMap(shown) {
     const centroid = f => {
       const r = f.r.reduce((a, b) => (a.length > b.length ? a : b));
       const xs = r.map(pt => pt[0]), ys = r.map(pt => pt[1]);
-      return [X((Math.min(...xs) + Math.max(...xs)) / 2), Y((Math.min(...ys) + Math.max(...ys)) / 2)];
+      const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+      const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+      return [X(cx, cy), Y(cx, cy)];
     };
     const spot = new Map();
     MAP.features.forEach(f => { if (f.m) spot.set(f.m, centroid(f)); });
-    (MAP.points || []).forEach(pt => spot.set(pt.m, [X(pt.p[0]), Y(pt.p[1])]));
+    (MAP.points || []).forEach(pt => spot.set(pt.m, [X(pt.p[0], pt.p[1]), Y(pt.p[0], pt.p[1])]));
 
     named.forEach(c => {
       const at = spot.get(c.country);
@@ -284,7 +321,7 @@ function drawTable(shown) {
   COLS.forEach(col => {
     const th = document.createElement("th");
     th.textContent = col.label;
-    th.className = (col.align === "left" ? "l " : "") + (SORT.key === col.key ? "sorted" : "");
+    th.className = [col.align === "left" ? "l" : "", col.group ? "grp" : "", SORT.key === col.key ? "sorted" : ""].filter(Boolean).join(" ");
     if (SORT.key === col.key) th.dataset.dir = SORT.dir < 0 ? "desc" : "asc";
     th.tabIndex = 0;
     const sort = () => {
@@ -303,7 +340,7 @@ function drawTable(shown) {
     COLS.forEach(col => {
       const td = document.createElement("td");
       td.innerHTML = col.show(c) ?? "";
-      if (col.align === "left") td.className = "l";
+      td.className = [col.align === "left" ? "l" : "", col.group ? "grp" : ""].filter(Boolean).join(" ");
       tr.appendChild(td);
     });
     tr.addEventListener("click", () => { PICKED = c.country === PICKED ? null : c.country; render(); });
@@ -354,6 +391,12 @@ function detail(c) {
     d.querySelector("dd").textContent = dd;
     facts.appendChild(d);
   };
+  EXTRA.forEach(x => {
+    const v = c[x.key];
+    if (v == null || v === "") return;
+    add(x.label, x.unit === "%" ? pc(v) : x.key === "gdp_per_capita" ? "$" + Math.round(v / 1000) + "k" : String(v));
+  });
+  add("Credit rating", c.sp_rating);
   add("Tax on rent, as the source puts it", c.rental_tax_text);
   add("Tax on the gain", c.cgt_text);
   add("After a ten-year hold", c.verified ? c.cgt_note : "Not checked against PwC; workbook figure");
@@ -392,7 +435,7 @@ function render() {
   $("f-price-out").textContent = f.price >= 650000 ? "any" : fmtK(f.price);
 
   const shown = DATA.countries.filter(c => passes(c, f));
-  const col = COLS.find(c => c.key === SORT.key) || COLS[1];
+
   shown.sort((a, b) => {
     const av = val(a, SORT.key), bv = val(b, SORT.key);
     // Missing values sort last whichever way the column is pointing, so an
@@ -407,7 +450,7 @@ function render() {
     ? `All ${shown.length} markets.`
     : `${shown.length} of ${DATA.countries.length} markets match.`;
 
-  const mCol = COLS.find(x => x.key === $("map-metric").value);
+  const mCol = PLOTTABLE.find(x => x.key === $("map-metric").value);
   $("map-sub").textContent = shown.length <= 12
     ? `${shown.length} markets, shaded by ${mCol.label.toLowerCase()}.`
     : `All ${shown.length} shaded by ${mCol.label.toLowerCase()}. Filter down to a dozen to see them named.`;
@@ -435,7 +478,7 @@ Promise.all([
     DATA = d;
     MAP = m;
 
-    const numeric = COLS.filter(c => c.num);
+    const numeric = PLOTTABLE;
     const mm = $("map-metric");
     numeric.forEach(c => {
       const o = document.createElement("option");
