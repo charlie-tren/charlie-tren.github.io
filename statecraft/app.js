@@ -396,14 +396,19 @@ function axisTable() {
 }
 
 function paintMethod() {
+  // THREE BASES, NOT TWO. A tax option's figure is the rate on its stop, which
+  // is neither a median of countries nor a judgement, so counting it as either
+  // would put a wrong number in the sentence below.
   const options = data.domains.reduce((n, d) => n + (d.options || []).length, 0);
   const hand = [];
+  let slider = 0;
   for (const d of data.domains) {
     for (const o of (d.options || [])) {
       if (o.axis_basis === 'hand') hand.push(`${d.name}, ${o.label}`);
+      else if (o.axis_basis === 'the rate on the slider') slider += 1;
     }
   }
-  const derived = options - hand.length;
+  const derived = options - hand.length - slider;
 
   document.getElementById('method').innerHTML = `
   <h2>Method</h2>
@@ -412,7 +417,7 @@ function paintMethod() {
 
   <p>Budget is in per cent of GDP and the tax rate sets how much of it you have. Political capital and public patience are pools of 100 points, and both are charged only on the domains you move away from where you started.</p>
 
-  <p>${derived} of ${options} option figures are the median of the countries running that policy. I set the other ${hand.length} by hand, along with every cost in the table below.</p>
+  <p>${derived} of the ${options} option figures are the median of the countries running that policy. The ${slider} tax figures are just the rate you set. I set the last ${hand.length} by hand, along with every cost in the table below.</p>
 
   <details class="mdet">
     <summary>Every option and what it costs</summary>
@@ -634,7 +639,7 @@ function render(change) {
       document.getElementById(`det_${id}`).textContent =
         `Raises ${one(b.financial.realisedTax)}% of GDP. The next point of tax adds ${one(nextPoint)}, and at ${TAX.MAX} a point would add only ${one(realisedRevenue(TAX.MAX) - realisedRevenue(TAX.MAX - 1))}.`;
       document.getElementById(`who_${id}`).textContent = stop
-        ? `${stop.detail} ${whereLine(stop.countries)}`
+        ? `${stop.detail} ${whereLine(stop.holders)}`
         : '';
       continue;
     }
@@ -662,7 +667,7 @@ function render(change) {
       <span class="d-cost">${esc(one(here ? here.financial : 0))}% of GDP, political capital ${esc(Math.round(reformCost(here ? here.political : 0)))}, public patience ${esc(Math.round(reformCost(here ? here.social : 0)))}</span>
       ${sinceStart(id, live)}`;
     document.getElementById(`det_${id}`).textContent = option ? `${option.detail}${between}` : '';
-    document.getElementById(`who_${id}`).textContent = option ? whereLine(option.countries) : '';
+    document.getElementById(`who_${id}`).textContent = option ? whereLine(option.holders) : '';
 
     const cutLine = document.getElementById(`cut_${id}`);
     if (cutIds.has(id) && change.moved) {
@@ -690,7 +695,12 @@ function render(change) {
   // to stop the panel telling them something that is no longer true.
   const result = document.getElementById('result');
   if (revealed && !stuck.length) {
-    result.innerHTML = renderReveal(data, rank(data, live.selection), live.selection, livePos);
+    // ONE RATE, READ OFF THE BUDGET, for both the tiebreak and the axis row.
+    // It is the same expression paintChart hands the fingerprint, so the tax
+    // spoke and the tax axis row are drawn from a single number rather than two
+    // that agree until somebody rounds one of them.
+    const rate = b.financial.taxRate;
+    result.innerHTML = renderReveal(data, rank(data, live.selection, rate), live.selection, livePos, rate);
     result.hidden = false;
   } else {
     result.hidden = true;

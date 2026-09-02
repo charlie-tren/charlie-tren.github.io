@@ -142,7 +142,7 @@ def default_budgets(data):
             spend += chosen["financial"]
 
     # ITS OWN MEASURED TAX TAKE, matching startingRate() in budget.js. The option
-    # rate is one hand-set number standing for every country tagged to it, and
+    # rate is one hand-set number standing for every country that runs it, and
     # this was a third copy of that rule which had drifted back to it: the card
     # showed Australia raising 33.8% of GDP when the page shows 29.5.
     measured = (country.get("indicators") or {}).get("tax_take")

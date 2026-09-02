@@ -1,8 +1,8 @@
-"""Does each option's country tag list agree on that option's own axis?
+"""Do the countries that hold an option agree on that option's own axis?
 
-Every option implies a position on its domain's axis, and it carries a list of
-countries said to do it. Take the countries in the matrix that hold the option,
-read their measured value on that axis, and take the range. Divide by the axis's
+Every option implies a position on its domain's axis. Take the matchable
+countries whose matrix cell IS the option, read their measured value on that
+axis, and take the range. Divide by the axis's
 plotting bounds so options in different units are comparable, and print anything
 above THRESHOLD.
 
@@ -37,12 +37,18 @@ A fifth, en_carbon_tax, is case 2 above and is annotated in policies.py: pricing
 carbon is not the same claim as having decarbonised, so a priced grid burning oil
 shale sits beside a priced grid running on hydro.
 
-Run it after any change to the matrix, the tags or the indicator values.
+THE POPULATION IS THE MATRIX, not the option's `countries` tag list. It was the
+tag list until 02/09/2026, which meant this check ranged over the same stale
+third of the holders that the derived medians were being taken over, so the one
+diagnostic meant to catch a bad matrix cell could not see most of the matrix.
+
+Run it after any change to the matrix or the indicator values.
 
     python check_spread.py
 """
 
 from axes import AXES
+from build_data import holders
 from countries import COUNTRIES
 from policies import DOMAINS
 
@@ -68,7 +74,7 @@ def spreads(threshold=THRESHOLD):
         for o in d["options"]:
             hand = o["axis"].get(axis)
             found = []
-            for code in o["countries"]:
+            for code in holders(d["id"], o["id"]):
                 cell = measured.get(code, {}).get(axis)
                 # None is "does not apply" and a missing key is "no data".
                 # Neither can be ranged, and both are silently skipped here

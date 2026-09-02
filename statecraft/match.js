@@ -1,10 +1,16 @@
 // Statecraft matching. No DOM access: this module is pure so it can be tested in node.
 
-import { valuesAt } from './budget.js';
+import { TAX_DOMAIN, clampRate, valuesAt } from './budget.js';
 
 // redistribution is contributed to by several domains and must be summed.
 // Every other axis is set directly by its own domain's option.
 const SUMMED_AXES = new Set(['redistribution']);
+
+/** The axis the tax domain sets. The rate overrides it wherever one is given. */
+function taxAxisOf(data) {
+  const domain = (data.domains || []).find((d) => d.id === TAX_DOMAIN);
+  return domain ? domain.axis : null;
+}
 
 /**
  * The visitor's value on every axis.
@@ -18,8 +24,22 @@ const SUMMED_AXES = new Set(['redistribution']);
  * used, which is the same thing at an integer position. THE MATCHING IS STILL
  * DONE ON THE SELECTION: rank() below compares option ids and nothing here
  * changes that.
+ *
+ * `rate` is optional and is the headline tax rate the visitor has set. Where it
+ * is given it WINS on the tax axis, over whatever the tax option carries.
+ *
+ * THE TAX AXIS IS THE SLIDER, NOT THE OPTION, and the two are not the same
+ * number. A tax option's tax_take is derived at build time as the median
+ * measured take of the countries running that regime, so tax_nordic ships 42.45
+ * against a labelled stop at 46. Reading the option here left the fingerprint's
+ * tax spoke, which plots the raw rate, and the reveal's tax axis row, which read
+ * the option, printing two different figures for one quantity: a visitor on 46
+ * saw a spoke at 46 above a line saying 42.5. The rate is the honest one. It is
+ * what the visitor actually chose and it is what the budget is computed from,
+ * and putting the override here rather than at each caller means the chart, the
+ * reveal and the match cannot disagree about it.
  */
-export function axisValues(data, selection, pos) {
+export function axisValues(data, selection, pos, rate) {
   const out = {};
   for (const axis of data.axes) out[axis.id] = null;
 
@@ -40,6 +60,10 @@ export function axisValues(data, selection, pos) {
       }
     }
   }
+
+  const taxAxis = taxAxisOf(data);
+  if (taxAxis && Number.isFinite(Number(rate))) out[taxAxis] = clampRate(rate);
+
   return out;
 }
 
@@ -87,9 +111,22 @@ export function matchable(data) {
 /**
  * One row per matchable country, sorted by matched descending then distance
  * ascending. The match is a COUNT. Distance is only a tiebreak.
+ *
+ * `rate` is the visitor's headline tax rate and is threaded through to the
+ * tiebreak. Without it the tax slider had NO EFFECT ON THE MATCH AT ALL: the
+ * distance is taken over the measured axes, tax_take is one of them, and this
+ * function was calling axisValues with no rate, so every position on a
+ * continuous control collapsed onto the six labelled stops before the tiebreak
+ * ever saw it. It is a parameter rather than a module-level value because
+ * check_coverage.mjs ranks thousands of designs that never touch the page's
+ * state, and a global would have made those runs read whatever the last caller
+ * happened to leave behind.
+ *
+ * Callers with no rate to hand may omit it, and the tax option's own axis value
+ * is used, which is the behaviour that was there before.
  */
-export function rank(data, selection) {
-  const mine = axisValues(data, selection);
+export function rank(data, selection, rate) {
+  const mine = axisValues(data, selection, undefined, rate);
 
   const rows = matchable(data).map((country) => {
     const agreements = [];
@@ -109,7 +146,7 @@ export function rank(data, selection) {
           domainName: domain.name,
           yours: yours || null,
           theirs: theirs || null,
-          yourCountries: yours ? yours.countries || [] : [],
+          yourCountries: yours ? yours.holders || [] : [],
         });
       }
     }

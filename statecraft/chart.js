@@ -21,7 +21,9 @@
 // which is the opposite of the property this graphic is here for. The one
 // exception is tax, where the slider is continuous: both sides use the rate, the
 // visitor's live and the country's the rate its own state runs at, which are the
-// same number until the slider moves.
+// same number until the slider moves. Both rates go in through axisValues rather
+// than being substituted for the tax spoke here, so this graphic and the reveal's
+// tax axis row cannot end up printing two different numbers for one quantity.
 //
 // DRAWN AT CONTAINER PIXEL SCALE. The viewBox comes from the host's own bounding
 // rect, so one user unit is one CSS pixel and an 11.5px label renders at 11.5px
@@ -40,7 +42,7 @@
 // A tier is taken whole or not at all, so the ring never ends up with nine names
 // and four gaps.
 
-import { TAX, startingRate } from './budget.js';
+import { startingRate } from './budget.js';
 import { axisValues } from './match.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -91,25 +93,25 @@ function norm(spoke, value) {
   return Math.max(0, Math.min(1, (value - spoke.lo) / span));
 }
 
-const clampRate = (r) => Math.min(TAX.MAX, Math.max(TAX.MIN, Number(r)));
-
 /**
  * The two shapes, as arrays of 0-to-1 positions with null for "does not apply".
  * @returns {{you: Array<number|null>, them: Array<number|null>, gaps: string[]}}
  */
 export function fingerprint(data, base, view) {
-  const mine = axisValues(data, view.selection, view.pos);
   const country = data.countries.find((c) => c.code === view.startCode) || null;
-  const theirs = country ? axisValues(data, country.choices) : {};
-  const theirRate = country ? clampRate(startingRate(data, country)) : TAX.MIN;
+  // Each side's tax rate goes in as the fourth argument, so the tax spoke needs
+  // no special case out here. axisValues clamps it to the slider's own ends.
+  const mine = axisValues(data, view.selection, view.pos, view.rate);
+  const theirs = country
+    ? axisValues(data, country.choices, undefined, startingRate(data, country))
+    : {};
 
   const you = [];
   const them = [];
   const gaps = [];
   for (const spoke of base.spokes) {
-    const isTax = spoke.id === 'tax';
-    const a = norm(spoke, isTax ? clampRate(view.rate) : mine[spoke.axisId]);
-    const b = norm(spoke, isTax ? theirRate : theirs[spoke.axisId]);
+    const a = norm(spoke, mine[spoke.axisId]);
+    const b = norm(spoke, theirs[spoke.axisId]);
     you.push(a);
     them.push(b);
     if (a === null || b === null) gaps.push(spoke.name);

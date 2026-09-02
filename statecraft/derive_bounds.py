@@ -33,9 +33,12 @@ A value outside the bounds is clamped to the edge by chart.js and read by the
 visitor as a fact, which is the silent failure this exists to prevent.
 """
 
+import itertools
+
 from axes import AXES
 from build_data import effective_axis_values
 from countries import COUNTRIES
+from policies import DOMAINS
 
 PAD = 0.06
 
@@ -69,16 +72,36 @@ NON_NEGATIVE = {
 
 
 def occupants(axis_id):
-    """Every value plotted on this axis, with a label saying where it came from."""
+    """Every value plotted on this axis, with a label saying where it came from.
+
+    A SUMMED AXIS IS NOT PLOTTED ONE OPTION AT A TIME. Redistribution is the sum
+    of the tax, work and family contributions, so listing each contribution
+    separately builds a population whose maximum is one contribution and whose
+    real maximum is three. That is how (0, 0.27) came to be derived from a
+    plotted value that reached 0.44: the bound was fitted to a quantity nobody
+    plots. Every reachable combination is enumerated instead, which is 180
+    designs and cheap.
+    """
     out = []
     for c in COUNTRIES:
         cell = c["indicators"].get(axis_id)
         if cell and cell.get("value") is not None:
             out.append((cell["value"], c["code"]))
-    for option_id, (effective, _hand, _basis) in effective_axis_values().items():
-        value = effective.get(axis_id)
-        if value is not None:
-            out.append((value, option_id))
+    effective = effective_axis_values()
+    if any(a["id"] == axis_id and a.get("summed") for a in AXES):
+        contributors = [
+            [(o["id"], effective[o["id"]][0].get(axis_id, 0.0)) for o in d["options"]]
+            for d in DOMAINS
+            if any(effective[o["id"]][0].get(axis_id) is not None for o in d["options"])
+        ]
+        for combo in itertools.product(*contributors):
+            out.append((round(sum(v for _, v in combo), 10),
+                        " + ".join(i for i, _ in combo)))
+    else:
+        for option_id, (eff, _hand, _basis) in effective.items():
+            value = eff.get(axis_id)
+            if value is not None:
+                out.append((value, option_id))
     if axis_id == "tax_take":
         out.append((TAX_SLIDER[0], "slider min"))
         out.append((TAX_SLIDER[1], "slider max"))

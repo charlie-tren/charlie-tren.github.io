@@ -174,11 +174,12 @@
       "id": "redistribution",
       "domain": null,
       "label": "Redistribution",
+      "summed": true,
       "unit": "Gini cut, market to disposable",
       "direction": "neither",
       "bounds": [
         0,
-        0.27
+        0.31
       ],
       "source": "OECD Income Distribution Database",
       "url": "https://data-explorer.oecd.org/"
@@ -194,134 +195,159 @@
           "id": "tax_minimal",
           "label": "Minimal state",
           "detail": "No income tax. Revenue from resources and consumption.",
-          "countries": [
-            "AE"
-          ],
           "rate": 16.0,
           "political": 25,
           "social": 20,
           "axis": {
             "tax_take": 16.0,
-            "redistribution": 0.01
+            "redistribution": 0.0066
           },
           "axis_hand": {
             "tax_take": 16.0,
             "redistribution": 0.01
           },
-          "axis_basis": "hand"
+          "axis_basis": "the rate on the slider",
+          "holders": [
+            "AE",
+            "SA",
+            "QA",
+            "KW"
+          ]
         },
         {
           "id": "tax_flat",
           "label": "Flat income tax",
           "detail": "One rate on all income, few deductions.",
-          "countries": [
-            "EE"
-          ],
           "rate": 33.0,
           "political": 30,
           "social": 15,
           "axis": {
-            "tax_take": 32.8,
-            "redistribution": 0.08
+            "tax_take": 33.0,
+            "redistribution": 0.053
           },
           "axis_hand": {
             "tax_take": 33.0,
             "redistribution": 0.08
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "the rate on the slider",
+          "holders": [
+            "EE",
+            "HU"
+          ]
         },
         {
           "id": "tax_anglo",
           "label": "Moderate progressive",
           "detail": "Progressive rates, a middling take, broad exemptions.",
-          "countries": [
-            "US",
-            "AU",
-            "NZ",
-            "CA",
-            "JP",
-            "KR",
-            "CH",
-            "IL",
-            "CL",
-            "SG"
-          ],
           "rate": 34.0,
           "political": 10,
           "social": 8,
           "axis": {
-            "tax_take": 30.75,
-            "redistribution": 0.11
+            "tax_take": 34.0,
+            "redistribution": 0.0729
           },
           "axis_hand": {
             "tax_take": 34.0,
             "redistribution": 0.11
           },
-          "axis_basis": "derived from 10 countries"
+          "axis_basis": "the rate on the slider",
+          "holders": [
+            "AU",
+            "NZ",
+            "US",
+            "CA",
+            "CH",
+            "SG",
+            "JP",
+            "KR",
+            "IL",
+            "CL",
+            "IE",
+            "LT",
+            "LV",
+            "IS",
+            "UY",
+            "TW",
+            "MT",
+            "CY",
+            "PA"
+          ]
         },
         {
           "id": "tax_continental",
           "label": "High, funded by payroll",
           "detail": "Heavy social contributions on wages alongside income tax.",
-          "countries": [
-            "DE",
-            "FR",
-            "NL",
-            "UK"
-          ],
           "rate": 43.0,
           "political": 25,
           "social": 20,
           "axis": {
-            "tax_take": 38.65,
-            "redistribution": 0.18
+            "tax_take": 43.0,
+            "redistribution": 0.1193
           },
           "axis_hand": {
             "tax_take": 43.0,
             "redistribution": 0.18
           },
-          "axis_basis": "derived from 4 countries"
+          "axis_basis": "the rate on the slider",
+          "holders": [
+            "UK",
+            "DE",
+            "FR",
+            "NL",
+            "IT",
+            "ES",
+            "PT",
+            "AT",
+            "BE",
+            "GR",
+            "CZ",
+            "PL",
+            "SK",
+            "SI",
+            "HR",
+            "LU"
+          ]
         },
         {
           "id": "tax_nordic",
           "label": "Nordic take",
           "detail": "High broad-based income tax and a high VAT.",
-          "countries": [
-            "DK",
-            "SE",
-            "NO",
-            "FI"
-          ],
           "rate": 46.0,
           "political": 40,
           "social": 30,
           "axis": {
-            "tax_take": 42.45,
-            "redistribution": 0.24
+            "tax_take": 46.0,
+            "redistribution": 0.1591
           },
           "axis_hand": {
             "tax_take": 46.0,
             "redistribution": 0.24
           },
-          "axis_basis": "derived from 4 countries"
+          "axis_basis": "the rate on the slider",
+          "holders": [
+            "DK",
+            "SE",
+            "NO",
+            "FI"
+          ]
         },
         {
           "id": "tax_departure",
           "label": "Nordic take plus a departure tax",
           "detail": "A high broad-based take, and residents pay to leave, subsidising arrivals.",
-          "countries": [],
           "rate": 47.0,
           "political": 60,
           "social": 55,
           "axis": {
             "tax_take": 47.0,
-            "redistribution": 0.25
+            "redistribution": 0.1658
           },
           "axis_hand": {
             "tax_take": 47.0,
             "redistribution": 0.25
           },
-          "axis_basis": "hand"
+          "axis_basis": "the rate on the slider",
+          "holders": []
         }
       ]
     },
@@ -334,9 +360,6 @@
           "id": "hc_private",
           "label": "Private, employer-led",
           "detail": "Insurance through work, a safety net for the old and poor.",
-          "countries": [
-            "US"
-          ],
           "financial": 8.5,
           "political": 15,
           "social": 30,
@@ -346,15 +369,15 @@
           "axis_hand": {
             "health_public": 50.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "US"
+          ]
         },
         {
           "id": "hc_savings",
           "label": "Compulsory medical savings",
           "detail": "Everyone saves into their own account and is charged at the point of use.",
-          "countries": [
-            "SG"
-          ],
           "financial": 2.5,
           "political": 55,
           "social": 35,
@@ -364,38 +387,65 @@
           "axis_hand": {
             "health_public": 45.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "SG"
+          ]
         },
         {
           "id": "hc_insurance",
           "label": "Mandatory insurance, regulated market",
           "detail": "Everyone must buy cover; insurers may not refuse anyone.",
-          "countries": [
-            "NL",
-            "CH",
-            "DE",
-            "FR",
-            "JP",
-            "KR",
-            "IL",
-            "CL"
-          ],
           "financial": 7.5,
           "political": 30,
           "social": 15,
           "axis": {
-            "health_public": 66.80000000000001
+            "health_public": 73.4
           },
           "axis_hand": {
             "health_public": 78.0
           },
-          "axis_basis": "derived from 8 countries"
+          "axis_basis": "derived from 21 countries",
+          "holders": [
+            "DE",
+            "FR",
+            "NL",
+            "CH",
+            "JP",
+            "KR",
+            "IL",
+            "CL",
+            "AT",
+            "BE",
+            "GR",
+            "CZ",
+            "PL",
+            "SK",
+            "SI",
+            "HR",
+            "LT",
+            "LU",
+            "HU",
+            "UY",
+            "TW",
+            "CY"
+          ]
         },
         {
           "id": "hc_mixed",
           "label": "Public with a private tier",
           "detail": "Universal public cover, and you may pay to go faster.",
-          "countries": [
+          "financial": 7.0,
+          "political": 20,
+          "social": 22,
+          "axis": {
+            "health_public": 77.15
+          },
+          "axis_hand": {
+            "health_public": 80.0
+          },
+          "axis_basis": "derived from 18 countries",
+          "holders": [
             "AU",
             "NZ",
             "CA",
@@ -404,36 +454,37 @@
             "NO",
             "FI",
             "EE",
-            "AE"
-          ],
-          "financial": 7.0,
-          "political": 20,
-          "social": 22,
-          "axis": {
-            "health_public": 77.7
-          },
-          "axis_hand": {
-            "health_public": 80.0
-          },
-          "axis_basis": "derived from 9 countries"
+            "AE",
+            "IE",
+            "IT",
+            "PT",
+            "LV",
+            "IS",
+            "SA",
+            "QA",
+            "KW",
+            "PA"
+          ]
         },
         {
           "id": "hc_public",
           "label": "Tax-funded national service",
           "detail": "One service for everyone, free at the point of use and paid for out of general taxation. A private sector exists alongside it, unsubsidised.",
-          "countries": [
-            "UK"
-          ],
           "financial": 9.0,
           "political": 45,
           "social": 12,
           "axis": {
-            "health_public": 81.8
+            "health_public": 73.2
           },
           "axis_hand": {
             "health_public": 81.3
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 3 countries",
+          "holders": [
+            "UK",
+            "ES",
+            "MT"
+          ]
         }
       ]
     },
@@ -446,33 +497,31 @@
           "id": "ed_market",
           "label": "Fees at every level past school",
           "detail": "Universities set their own prices. Loans, not grants.",
-          "countries": [
-            "US",
-            "KR",
-            "JP",
-            "CL",
-            "SG"
-          ],
           "financial": 4.2,
           "political": 10,
           "social": 25,
           "axis": {
-            "education_spend": 4.9
+            "education_spend": 4.3
           },
           "axis_hand": {
             "education_spend": 4.2
           },
-          "axis_basis": "derived from 5 countries"
+          "axis_basis": "derived from 7 countries",
+          "holders": [
+            "US",
+            "SG",
+            "JP",
+            "KR",
+            "CL",
+            "IT",
+            "LV",
+            "TW"
+          ]
         },
         {
           "id": "ed_deferred",
           "label": "Free at school, deferred fees after",
           "detail": "Tertiary costs are paid back through the tax system once you earn.",
-          "countries": [
-            "AU",
-            "NZ",
-            "UK"
-          ],
           "financial": 4.8,
           "political": 20,
           "social": 22,
@@ -482,60 +531,84 @@
           "axis_hand": {
             "education_spend": 4.8
           },
-          "axis_basis": "derived from 3 countries"
+          "axis_basis": "derived from 3 countries",
+          "holders": [
+            "AU",
+            "NZ",
+            "UK"
+          ]
         },
         {
           "id": "ed_vocational",
           "label": "Free, with an early vocational track",
           "detail": "Free through university, and most students stream into apprenticeships.",
-          "countries": [
-            "DE",
-            "CH",
-            "NL",
-            "AE"
-          ],
           "financial": 5.0,
           "political": 35,
           "social": 20,
           "axis": {
-            "education_spend": 5.050000000000001
+            "education_spend": 4.9
           },
           "axis_hand": {
             "education_spend": 5.0
           },
-          "axis_basis": "derived from 4 countries"
+          "axis_basis": "derived from 9 countries",
+          "holders": [
+            "DE",
+            "NL",
+            "CH",
+            "AE",
+            "AT",
+            "CZ",
+            "SK",
+            "SI",
+            "HR"
+          ]
         },
         {
           "id": "ed_free",
           "label": "Free through university",
           "detail": "No tuition at any level, and a maintenance grant while studying.",
-          "countries": [
+          "financial": 6.3,
+          "political": 35,
+          "social": 10,
+          "axis": {
+            "education_spend": 4.7
+          },
+          "axis_hand": {
+            "education_spend": 6.3
+          },
+          "axis_basis": "derived from 24 countries",
+          "holders": [
+            "FR",
             "DK",
             "SE",
             "NO",
             "FI",
             "EE",
-            "FR",
-            "IL"
-          ],
-          "financial": 6.3,
-          "political": 35,
-          "social": 10,
-          "axis": {
-            "education_spend": 5.9
-          },
-          "axis_hand": {
-            "education_spend": 6.3
-          },
-          "axis_basis": "derived from 7 countries"
+            "IL",
+            "IE",
+            "ES",
+            "PT",
+            "BE",
+            "GR",
+            "PL",
+            "LT",
+            "IS",
+            "LU",
+            "HU",
+            "UY",
+            "SA",
+            "QA",
+            "KW",
+            "MT",
+            "CY",
+            "PA"
+          ]
         },
         {
           "id": "ed_free_selective",
           "label": "Free, and selective from twelve",
           "detail": "No tuition, and an exam at twelve decides which school you attend.",
-          "countries": [
-            "CA"
-          ],
           "financial": 4.0,
           "political": 45,
           "social": 40,
@@ -545,7 +618,10 @@
           "axis_hand": {
             "education_spend": 5.4
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "CA"
+          ]
         }
       ]
     },
@@ -558,41 +634,50 @@
           "id": "ho_market",
           "label": "Private market, no state role",
           "detail": "Housing is built and owned privately. The state zones and nothing else.",
-          "countries": [
-            "US",
-            "AU",
-            "NZ",
-            "CA",
-            "EE",
-            "CL",
-            "IL",
-            "AE"
-          ],
           "financial": 0.3,
           "political": 5,
           "social": 30,
           "axis": {
-            "social_housing": 3.35
+            "social_housing": 2.5
           },
           "axis_hand": {
             "social_housing": 4.0
           },
-          "axis_basis": "derived from 6 countries"
+          "axis_basis": "derived from 17 countries",
+          "holders": [
+            "AU",
+            "NZ",
+            "US",
+            "CA",
+            "EE",
+            "IL",
+            "CL",
+            "AE",
+            "IT",
+            "ES",
+            "PT",
+            "BE",
+            "GR",
+            "PL",
+            "SK",
+            "SI",
+            "HR",
+            "LT",
+            "LV",
+            "LU",
+            "HU",
+            "UY",
+            "TW",
+            "SA",
+            "QA",
+            "CY",
+            "PA"
+          ]
         },
         {
           "id": "ho_subsidy",
           "label": "Private market with rent support",
           "detail": "Cash help with rent rather than housing built by the state.",
-          "countries": [
-            "UK",
-            "DE",
-            "JP",
-            "KR",
-            "CH",
-            "NO",
-            "FI",
-            "SE"
-          ],
           "financial": 1.2,
           "political": 15,
           "social": 25,
@@ -602,34 +687,46 @@
           "axis_hand": {
             "social_housing": 12.0
           },
-          "axis_basis": "derived from 7 countries"
+          "axis_basis": "derived from 11 countries",
+          "holders": [
+            "UK",
+            "DE",
+            "SE",
+            "NO",
+            "FI",
+            "CH",
+            "JP",
+            "KR",
+            "IE",
+            "CZ",
+            "IS",
+            "MT"
+          ]
         },
         {
           "id": "ho_cooperative",
           "label": "Co-operative and non-profit rental",
           "detail": "A large regulated rental sector run by non-profits, alongside a private market.",
-          "countries": [
-            "DK",
-            "FR"
-          ],
           "financial": 1.6,
           "political": 35,
           "social": 15,
           "axis": {
-            "social_housing": 17.65
+            "social_housing": 21.3
           },
           "axis_hand": {
             "social_housing": 22.0
           },
-          "axis_basis": "derived from 2 countries"
+          "axis_basis": "derived from 3 countries",
+          "holders": [
+            "FR",
+            "DK",
+            "AT"
+          ]
         },
         {
           "id": "ho_social",
           "label": "Large social rental sector",
           "detail": "Non-profit housing associations own close to 29% of the stock and let it below market rent.",
-          "countries": [
-            "NL"
-          ],
           "financial": 2.0,
           "political": 45,
           "social": 12,
@@ -639,15 +736,15 @@
           "axis_hand": {
             "social_housing": 29.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "NL"
+          ]
         },
         {
           "id": "ho_singapore",
           "label": "State-built flats, sold to residents",
           "detail": "The state builds most housing and sells it on long leases. Most people own.",
-          "countries": [
-            "SG"
-          ],
           "financial": 2.4,
           "political": 70,
           "social": 10,
@@ -657,7 +754,11 @@
           "axis_hand": {
             "social_housing": 3.9
           },
-          "axis_basis": "hand"
+          "axis_basis": "hand",
+          "holders": [
+            "SG",
+            "KW"
+          ]
         }
       ]
     },
@@ -670,10 +771,6 @@
           "id": "re_private",
           "label": "Private accounts, mandatory",
           "detail": "Retirement is funded mostly out of your own compulsory fund. The state pension is a floor only.",
-          "countries": [
-            "CL",
-            "SG"
-          ],
           "financial": 3.0,
           "political": 55,
           "social": 30,
@@ -683,83 +780,100 @@
           "axis_hand": {
             "pension_spend": 3.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "SG",
+            "CL",
+            "PA"
+          ]
         },
         {
           "id": "re_super",
           "label": "Means-tested pension plus mandatory saving",
           "detail": "A state pension for those who need it, and compulsory employer contributions.",
-          "countries": [
-            "AU",
-            "NZ",
-            "NL",
-            "CH",
-            "EE"
-          ],
           "financial": 5.0,
           "political": 40,
           "social": 15,
           "axis": {
-            "pension_spend": 6.4
+            "pension_spend": 6.5
           },
           "axis_hand": {
             "pension_spend": 5.0
           },
-          "axis_basis": "derived from 5 countries"
+          "axis_basis": "derived from 8 countries",
+          "holders": [
+            "AU",
+            "NZ",
+            "NL",
+            "EE",
+            "CH",
+            "HR",
+            "LV",
+            "IS"
+          ]
         },
         {
           "id": "re_flat",
           "label": "Flat state pension, saving voluntary",
           "detail": "The same modest pension for everyone. Private saving is encouraged, not required.",
-          "countries": [
-            "UK",
-            "CA",
-            "IL",
-            "US"
-          ],
           "financial": 6.5,
           "political": 15,
           "social": 12,
           "axis": {
-            "pension_spend": 6.5
+            "pension_spend": 6.2
           },
           "axis_hand": {
             "pension_spend": 6.5
           },
-          "axis_basis": "derived from 4 countries"
+          "axis_basis": "derived from 6 countries",
+          "holders": [
+            "US",
+            "UK",
+            "CA",
+            "IL",
+            "IE",
+            "LT"
+          ]
         },
         {
           "id": "re_earnings",
           "label": "Earnings-related state pension",
           "detail": "What the state pays you depends on what you earned.",
-          "countries": [
-            "DK",
-            "SE",
-            "NO",
-            "FI",
-            "DE",
-            "JP",
-            "KR"
-          ],
           "financial": 9.0,
           "political": 25,
           "social": 10,
           "axis": {
-            "pension_spend": 8.0
+            "pension_spend": 8.2
           },
           "axis_hand": {
             "pension_spend": 9.0
           },
-          "axis_basis": "derived from 7 countries"
+          "axis_basis": "derived from 13 countries",
+          "holders": [
+            "DE",
+            "DK",
+            "SE",
+            "NO",
+            "FI",
+            "JP",
+            "KR",
+            "BE",
+            "CZ",
+            "PL",
+            "SK",
+            "SI",
+            "HU",
+            "UY",
+            "TW",
+            "SA",
+            "MT",
+            "CY"
+          ]
         },
         {
           "id": "re_generous",
           "label": "Generous earnings-related, early retirement",
           "detail": "A high replacement rate and a low pension age.",
-          "countries": [
-            "FR",
-            "AE"
-          ],
           "financial": 14.0,
           "political": 45,
           "social": 8,
@@ -769,7 +883,19 @@
           "axis_hand": {
             "pension_spend": 14.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 7 countries",
+          "holders": [
+            "FR",
+            "AE",
+            "IT",
+            "ES",
+            "PT",
+            "AT",
+            "GR",
+            "LU",
+            "QA",
+            "KW"
+          ]
         }
       ]
     },
@@ -782,93 +908,118 @@
           "id": "en_fossil",
           "label": "Cheap fossil power, cars assumed",
           "detail": "No carbon price. Roads are the transport plan.",
-          "countries": [
-            "US",
-            "AE",
-            "AU"
-          ],
           "financial": 0.4,
           "political": 5,
           "social": 40,
           "axis": {
-            "grid_carbon": 467.5
+            "grid_carbon": 508.95000000000005
           },
           "axis_hand": {
             "grid_carbon": 480.0
           },
-          "axis_basis": "derived from 3 countries"
+          "axis_basis": "derived from 8 countries",
+          "holders": [
+            "AU",
+            "US",
+            "IL",
+            "AE",
+            "SA",
+            "QA",
+            "KW",
+            "PA"
+          ]
         },
         {
           "id": "en_carbon_tax",
           "label": "Carbon tax, private cars kept",
           "detail": "Emissions are priced. People still drive.",
-          "countries": [
-            "CA",
-            "NZ",
-            "UK",
-            "DK",
-            "CL",
-            "EE",
-            "NL",
-            "JP",
-            "SG",
-            "KR"
-          ],
           "financial": 0.6,
           "political": 35,
           "social": 25,
           "axis": {
-            "grid_carbon": 271.55
+            "grid_carbon": 217.4
           },
           "axis_hand": {
             "grid_carbon": 180.0
           },
-          "axis_basis": "derived from 10 countries"
+          "axis_basis": "derived from 29 countries",
+          "holders": [
+            "NZ",
+            "UK",
+            "CA",
+            "NL",
+            "DK",
+            "EE",
+            "SG",
+            "JP",
+            "KR",
+            "CL",
+            "IE",
+            "IT",
+            "ES",
+            "PT",
+            "BE",
+            "GR",
+            "CZ",
+            "PL",
+            "SI",
+            "HR",
+            "LT",
+            "LV",
+            "IS",
+            "LU",
+            "HU",
+            "UY",
+            "TW",
+            "MT",
+            "CY"
+          ]
         },
         {
           "id": "en_nuclear",
           "label": "Nuclear baseload",
           "detail": "Most power from reactors the state builds and guarantees.",
-          "countries": [
-            "FR"
-          ],
           "financial": 2.2,
           "political": 70,
           "social": 20,
           "axis": {
-            "grid_carbon": 41.4
+            "grid_carbon": 68.15
           },
           "axis_hand": {
             "grid_carbon": 60.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 2 countries",
+          "holders": [
+            "FR",
+            "SK"
+          ]
         },
         {
           "id": "en_hydro",
           "label": "Renewables and heavy public transport",
           "detail": "A clean grid, and a network good enough that a car is optional.",
-          "countries": [
-            "NO",
-            "SE",
-            "FI",
-            "CH"
-          ],
           "financial": 2.4,
           "political": 45,
           "social": 20,
           "axis": {
-            "grid_carbon": 37.25
+            "grid_carbon": 39.2
           },
           "axis_hand": {
             "grid_carbon": 45.0
           },
-          "axis_basis": "derived from 4 countries"
+          "axis_basis": "derived from 5 countries",
+          "holders": [
+            "SE",
+            "NO",
+            "FI",
+            "CH",
+            "AT"
+          ]
         },
         {
           "id": "en_car_free",
           "label": "Private combustion cars banned",
           "detail": "Trams and rail carry everyone. Fuel excise, stamp duty and an annual fee price the rest off the road.",
-          "countries": [],
           "financial": 1.8,
           "political": 85,
           "social": 80,
@@ -878,15 +1029,13 @@
           "axis_hand": {
             "grid_carbon": 30.0
           },
-          "axis_basis": "hand"
+          "axis_basis": "hand",
+          "holders": []
         },
         {
           "id": "en_deposit",
           "label": "Clean grid and a deposit-return scheme",
           "detail": "A clean grid and good rail, cars still allowed, and every container carries a refundable deposit.",
-          "countries": [
-            "DE"
-          ],
           "financial": 2.6,
           "political": 40,
           "social": 18,
@@ -896,7 +1045,10 @@
           "axis_hand": {
             "grid_carbon": 55.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "DE"
+          ]
         }
       ]
     },
@@ -909,7 +1061,6 @@
           "id": "sp_absolute",
           "label": "Absolute freedom of speech",
           "detail": "No legal limit on what may be said, including hatred and defamation.",
-          "countries": [],
           "financial": 0.0,
           "political": 60,
           "social": 65,
@@ -919,15 +1070,13 @@
           "axis_hand": {
             "expression": 0.97
           },
-          "axis_basis": "hand"
+          "axis_basis": "hand",
+          "holders": []
         },
         {
           "id": "sp_first_amendment",
           "label": "Near-absolute, narrow exceptions",
           "detail": "Speech is protected except for incitement and a short list of harms.",
-          "countries": [
-            "US"
-          ],
           "financial": 0.1,
           "political": 14,
           "social": 30,
@@ -937,67 +1086,90 @@
           "axis_hand": {
             "expression": 0.93
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "US"
+          ]
         },
         {
           "id": "sp_hate_limits",
           "label": "Free, with hate-speech limits",
           "detail": "Broad protection, and speech attacking a group is a crime.",
-          "countries": [
-            "DK",
-            "SE",
-            "NO",
-            "FI",
-            "NL",
-            "DE",
-            "FR",
-            "UK",
-            "CA",
-            "AU",
-            "NZ",
-            "EE",
-            "CH",
-            "IL",
-            "CL",
-            "JP",
-            "KR"
-          ],
           "financial": 0.2,
           "political": 15,
           "social": 15,
           "axis": {
-            "expression": 0.933
+            "expression": 0.917
           },
           "axis_hand": {
             "expression": 0.88
           },
-          "axis_basis": "derived from 17 countries"
+          "axis_basis": "derived from 39 countries",
+          "holders": [
+            "AU",
+            "NZ",
+            "UK",
+            "CA",
+            "DE",
+            "FR",
+            "NL",
+            "DK",
+            "SE",
+            "NO",
+            "FI",
+            "EE",
+            "CH",
+            "JP",
+            "KR",
+            "IL",
+            "CL",
+            "IE",
+            "IT",
+            "ES",
+            "PT",
+            "AT",
+            "BE",
+            "GR",
+            "CZ",
+            "PL",
+            "SK",
+            "SI",
+            "HR",
+            "LT",
+            "LV",
+            "IS",
+            "LU",
+            "HU",
+            "UY",
+            "TW",
+            "MT",
+            "CY",
+            "PA"
+          ]
         },
         {
           "id": "sp_order",
           "label": "Limited where it threatens public order",
           "detail": "Speech that the state judges divisive or destabilising is restricted.",
-          "countries": [
-            "SG"
-          ],
           "financial": 0.2,
           "political": 12,
           "social": 45,
           "axis": {
-            "expression": 0.4
+            "expression": 0.466
           },
           "axis_hand": {
             "expression": 0.62
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 2 countries",
+          "holders": [
+            "SG",
+            "KW"
+          ]
         },
         {
           "id": "sp_restricted",
           "label": "State-controlled",
           "detail": "Criticism of the state and its rulers is prosecuted.",
-          "countries": [
-            "AE"
-          ],
           "financial": 0.3,
           "political": 8,
           "social": 85,
@@ -1007,7 +1179,12 @@
           "axis_hand": {
             "expression": 0.2
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 3 countries",
+          "holders": [
+            "AE",
+            "SA",
+            "QA"
+          ]
         }
       ]
     },
@@ -1020,9 +1197,6 @@
           "id": "vo_none",
           "label": "No competitive national elections",
           "detail": "Rulers are not chosen at the ballot box.",
-          "countries": [
-            "AE"
-          ],
           "financial": 0.0,
           "political": 90,
           "social": 80,
@@ -1032,35 +1206,41 @@
           "axis_hand": {
             "disproportionality": null
           },
-          "axis_basis": "hand"
+          "axis_basis": "hand",
+          "holders": [
+            "AE",
+            "SA",
+            "QA",
+            "KW"
+          ]
         },
         {
           "id": "vo_fptp",
           "label": "First past the post, voluntary",
           "detail": "One member per seat, most votes wins, turnout is up to you.",
-          "countries": [
-            "US",
-            "UK",
-            "CA"
-          ],
           "financial": 0.1,
           "political": 10,
           "social": 38,
           "axis": {
-            "disproportionality": 5.01
+            "disproportionality": 12.67
           },
           "axis_hand": {
             "disproportionality": 14.0
           },
-          "axis_basis": "derived from 3 countries"
+          "axis_basis": "derived from 6 countries",
+          "holders": [
+            "US",
+            "UK",
+            "CA",
+            "SG",
+            "LT",
+            "HU"
+          ]
         },
         {
           "id": "vo_preferential",
           "label": "Preferential and compulsory",
           "detail": "You rank the candidates, and voting is a legal duty.",
-          "countries": [
-            "AU"
-          ],
           "financial": 0.2,
           "political": 40,
           "social": 25,
@@ -1070,44 +1250,65 @@
           "axis_hand": {
             "disproportionality": 9.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "AU"
+          ]
         },
         {
           "id": "vo_proportional",
           "label": "Proportional, voluntary",
           "detail": "Seats match the national vote share. Coalitions are normal.",
-          "countries": [
-            "DK",
-            "SE",
-            "NO",
-            "FI",
-            "NL",
-            "DE",
-            "NZ",
-            "EE",
-            "IL",
-            "CL",
-            "JP",
-            "KR"
-          ],
           "financial": 0.2,
           "political": 45,
           "social": 15,
           "axis": {
-            "disproportionality": 4.195
+            "disproportionality": 5.96
           },
           "axis_hand": {
             "disproportionality": 3.0
           },
-          "axis_basis": "derived from 12 countries"
+          "axis_basis": "derived from 33 countries",
+          "holders": [
+            "NZ",
+            "DE",
+            "FR",
+            "NL",
+            "DK",
+            "SE",
+            "NO",
+            "FI",
+            "EE",
+            "JP",
+            "KR",
+            "IL",
+            "CL",
+            "IE",
+            "IT",
+            "ES",
+            "PT",
+            "AT",
+            "BE",
+            "GR",
+            "CZ",
+            "PL",
+            "SK",
+            "SI",
+            "HR",
+            "LV",
+            "IS",
+            "LU",
+            "UY",
+            "TW",
+            "MT",
+            "CY",
+            "PA"
+          ]
         },
         {
           "id": "vo_direct",
           "label": "Proportional plus binding referendums",
           "detail": "Any law can be put to a public vote by petition.",
-          "countries": [
-            "CH"
-          ],
           "financial": 0.4,
           "political": 70,
           "social": 10,
@@ -1117,13 +1318,15 @@
           "axis_hand": {
             "disproportionality": 2.5
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "CH"
+          ]
         },
         {
           "id": "vo_age_cap",
           "label": "Proportional, with an age cap on representatives",
           "detail": "Seats match the vote, and nobody may stand past a fixed age.",
-          "countries": [],
           "financial": 0.05,
           "political": 75,
           "social": 35,
@@ -1133,7 +1336,8 @@
           "axis_hand": {
             "disproportionality": 3.0
           },
-          "axis_basis": "hand"
+          "axis_basis": "hand",
+          "holders": []
         }
       ]
     },
@@ -1146,134 +1350,159 @@
           "id": "wo_at_will",
           "label": "At-will employment, thin welfare",
           "detail": "Easy to hire and fire. Unemployment help is short and conditional.",
-          "countries": [
-            "US",
-            "SG",
-            "AE",
-            "KR"
-          ],
           "financial": 0.8,
           "political": 10,
           "social": 30,
           "axis": {
             "bargaining": 13.7,
-            "redistribution": 0.01
+            "redistribution": 0.0066
           },
           "axis_hand": {
             "bargaining": 12.0,
             "redistribution": 0.01
           },
-          "axis_basis": "derived from 2 countries"
+          "axis_basis": "derived from 2 countries",
+          "holders": [
+            "US",
+            "SG",
+            "KR",
+            "AE",
+            "SA"
+          ]
         },
         {
           "id": "wo_minimum",
           "label": "Statutory minimums, weak unions",
           "detail": "The law sets a wage floor and leave. Bargaining is mostly individual.",
-          "countries": [
-            "UK",
-            "NZ",
-            "JP",
-            "CA",
-            "EE",
-            "CL",
-            "IL",
-            "CH"
-          ],
           "financial": 1.4,
           "political": 20,
           "social": 26,
           "axis": {
-            "bargaining": 24.75,
-            "redistribution": 0.03
+            "bargaining": 27.6,
+            "redistribution": 0.0199
           },
           "axis_hand": {
             "bargaining": 28.0,
             "redistribution": 0.03
           },
-          "axis_basis": "derived from 8 countries"
+          "axis_basis": "derived from 17 countries",
+          "holders": [
+            "NZ",
+            "UK",
+            "CA",
+            "EE",
+            "CH",
+            "JP",
+            "IL",
+            "CL",
+            "IE",
+            "GR",
+            "CZ",
+            "PL",
+            "SK",
+            "LT",
+            "LV",
+            "LU",
+            "HU",
+            "TW",
+            "QA",
+            "KW",
+            "MT",
+            "CY",
+            "PA"
+          ]
         },
         {
           "id": "wo_bargaining",
           "label": "Sector-wide bargaining",
           "detail": "Unions and employers set pay across a whole industry, members or not.",
-          "countries": [
-            "DE",
-            "NL",
-            "AU",
-            "DK",
-            "FI"
-          ],
           "financial": 1.8,
           "political": 45,
           "social": 20,
           "axis": {
-            "bargaining": 72.1,
-            "redistribution": 0.06
+            "bargaining": 86.05,
+            "redistribution": 0.0398
           },
           "axis_hand": {
             "bargaining": 80.0,
             "redistribution": 0.06
           },
-          "axis_basis": "derived from 5 countries"
+          "axis_basis": "derived from 12 countries",
+          "holders": [
+            "AU",
+            "DE",
+            "NL",
+            "DK",
+            "FI",
+            "IT",
+            "ES",
+            "PT",
+            "AT",
+            "BE",
+            "SI",
+            "HR",
+            "IS",
+            "UY"
+          ]
         },
         {
           "id": "wo_mandated_leave",
           "label": "Sector bargaining, six weeks leave",
           "detail": "Industry-wide pay deals, and the law guarantees six weeks paid leave and twelve public holidays.",
-          "countries": [
-            "SE",
-            "FR"
-          ],
           "financial": 2.2,
           "political": 55,
           "social": 12,
           "axis": {
             "bargaining": 93.0,
-            "redistribution": 0.07
+            "redistribution": 0.0464
           },
           "axis_hand": {
             "bargaining": 90.0,
             "redistribution": 0.07
           },
-          "axis_basis": "derived from 2 countries"
+          "axis_basis": "derived from 2 countries",
+          "holders": [
+            "FR",
+            "SE"
+          ]
         },
         {
           "id": "wo_ubi",
           "label": "Universal basic income",
           "detail": "Every adult gets an unconditional payment. Most other benefits fold into it.",
-          "countries": [],
           "financial": 9.0,
           "political": 80,
           "social": 10,
           "axis": {
             "bargaining": 40.0,
-            "redistribution": 0.14
+            "redistribution": 0.0928
           },
           "axis_hand": {
             "bargaining": 40.0,
             "redistribution": 0.14
           },
-          "axis_basis": "hand"
+          "axis_basis": "hand",
+          "holders": []
         },
         {
           "id": "wo_transparency",
           "label": "Sector bargaining, every salary public",
           "detail": "Industry-wide pay deals, and any salary can be looked up. The viewee sees who looked.",
-          "countries": [
-            "NO"
-          ],
           "financial": 1.9,
           "political": 60,
           "social": 18,
           "axis": {
             "bargaining": 72.0,
-            "redistribution": 0.07
+            "redistribution": 0.0464
           },
           "axis_hand": {
             "bargaining": 80.0,
             "redistribution": 0.07
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "NO"
+          ]
         }
       ]
     },
@@ -1286,37 +1515,27 @@
           "id": "de_neutral",
           "label": "Neutral, small professional force",
           "detail": "No alliance, no conscription, a force sized for the border only.",
-          "countries": [
-            "IE"
-          ],
           "financial": 0.7,
           "political": 35,
           "social": 10,
           "axis": {
-            "military_burden": 0.2
+            "military_burden": 0.75
           },
           "axis_hand": {
             "military_burden": 0.7
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 4 countries",
+          "holders": [
+            "IE",
+            "UY",
+            "MT",
+            "PA"
+          ]
         },
         {
           "id": "de_alliance",
           "label": "Small force inside an alliance",
           "detail": "Defence is shared with allies, so the standing force is modest.",
-          "countries": [
-            "DK",
-            "NO",
-            "NL",
-            "DE",
-            "CA",
-            "NZ",
-            "EE",
-            "JP",
-            "AU",
-            "UK",
-            "CL"
-          ],
           "financial": 1.8,
           "political": 20,
           "social": 8,
@@ -1326,66 +1545,101 @@
           "axis_hand": {
             "military_burden": 1.8
           },
-          "axis_basis": "derived from 11 countries"
+          "axis_basis": "derived from 26 countries",
+          "holders": [
+            "AU",
+            "NZ",
+            "UK",
+            "CA",
+            "DE",
+            "NL",
+            "DK",
+            "SE",
+            "NO",
+            "EE",
+            "JP",
+            "CL",
+            "IT",
+            "ES",
+            "PT",
+            "BE",
+            "CZ",
+            "PL",
+            "SK",
+            "SI",
+            "HR",
+            "LT",
+            "LV",
+            "IS",
+            "LU",
+            "HU"
+          ]
         },
         {
           "id": "de_militia",
           "label": "Neutral, with militia conscription",
           "detail": "No alliance. Most men serve, then keep their kit and train for years.",
-          "countries": [
-            "CH",
-            "FI",
-            "SE"
-          ],
           "financial": 1.5,
           "political": 25,
           "social": 55,
           "axis": {
-            "military_burden": 2.0
+            "military_burden": 1.0
           },
           "axis_hand": {
             "military_burden": 1.5
           },
-          "axis_basis": "derived from 3 countries"
+          "axis_basis": "derived from 3 countries",
+          "holders": [
+            "CH",
+            "AT",
+            "CY"
+          ]
         },
         {
           "id": "de_conscript",
           "label": "Mandatory service, twelve months",
           "detail": "Everyone serves. The force is large relative to the population.",
-          "countries": [
-            "IL",
-            "KR"
-          ],
           "financial": 4.5,
           "political": 12,
           "social": 75,
           "axis": {
-            "military_burden": 5.7
+            "military_burden": 2.95
           },
           "axis_hand": {
             "military_burden": 4.5
           },
-          "axis_basis": "derived from 2 countries"
+          "axis_basis": "derived from 8 countries",
+          "holders": [
+            "FI",
+            "SG",
+            "KR",
+            "IL",
+            "GR",
+            "TW",
+            "QA",
+            "KW"
+          ]
         },
         {
           "id": "de_power",
           "label": "Global force projection",
           "detail": "Bases abroad, a blue-water navy, and the spending that goes with them.",
-          "countries": [
-            "US",
-            "FR",
-            "AE"
-          ],
           "financial": 3.4,
           "political": 15,
           "social": 25,
           "axis": {
-            "military_burden": 3.4
+            "military_burden": 4.5
           },
           "axis_hand": {
             "military_burden": 3.4
           },
-          "axis_basis": "derived from 3 countries"
+          "axis_basis": "derived from 4 countries",
+          "holders": [
+            "US",
+            "FR",
+            "AE",
+            "SA"
+          ]
         }
       ]
     },
@@ -1398,58 +1652,60 @@
           "id": "im_closed",
           "label": "Very low intake, citizenship by descent",
           "detail": "Few people move in, and being born there is how you become a citizen.",
-          "countries": [
-            "JP",
-            "KR"
-          ],
           "financial": 0.1,
           "political": 25,
           "social": 25,
           "axis": {
-            "foreign_born": 3.15
+            "foreign_born": 3.5
           },
           "axis_hand": {
             "foreign_born": 3.0
           },
-          "axis_basis": "derived from 2 countries"
+          "axis_basis": "derived from 3 countries",
+          "holders": [
+            "JP",
+            "KR",
+            "TW"
+          ]
         },
         {
           "id": "im_controlled",
           "label": "Controlled intake, long path to citizenship",
           "detail": "Selective entry, and naturalisation takes the better part of a decade.",
-          "countries": [
-            "DK",
-            "FR",
-            "UK",
-            "IT",
-            "CL",
-            "CH"
-          ],
           "financial": 0.3,
           "political": 20,
           "social": 20,
           "axis": {
-            "foreign_born": 14.0
+            "foreign_born": 13.6
           },
           "axis_hand": {
             "foreign_born": 15.0
           },
-          "axis_basis": "derived from 6 countries"
+          "axis_basis": "derived from 17 countries",
+          "holders": [
+            "UK",
+            "FR",
+            "DK",
+            "CH",
+            "CL",
+            "IT",
+            "PT",
+            "AT",
+            "GR",
+            "SK",
+            "SI",
+            "HR",
+            "LT",
+            "HU",
+            "UY",
+            "CY",
+            "PA"
+          ]
         },
         {
           "id": "im_points",
           "label": "High skilled intake, real path to citizenship",
           "detail": "A points system brings people in, and most of them can become citizens.",
-          "countries": [
-            "CA",
-            "AU",
-            "NZ",
-            "SE",
-            "NO",
-            "IL",
-            "SG",
-            "US"
-          ],
           "financial": 0.5,
           "political": 30,
           "social": 14,
@@ -1459,46 +1715,68 @@
           "axis_hand": {
             "foreign_born": 25.0
           },
-          "axis_basis": "derived from 8 countries"
+          "axis_basis": "derived from 8 countries",
+          "holders": [
+            "AU",
+            "NZ",
+            "US",
+            "CA",
+            "SE",
+            "NO",
+            "SG",
+            "IL"
+          ]
         },
         {
           "id": "im_guest",
           "label": "Very high intake, no path to citizenship",
           "detail": "Most residents are foreign workers on visas that never lead anywhere.",
-          "countries": [
-            "AE"
-          ],
           "financial": 0.05,
           "political": 55,
           "social": 60,
           "axis": {
-            "foreign_born": 74.0
+            "foreign_born": 70.65
           },
           "axis_hand": {
             "foreign_born": 85.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 4 countries",
+          "holders": [
+            "AE",
+            "SA",
+            "QA",
+            "KW"
+          ]
         },
         {
           "id": "im_open",
           "label": "Open borders within a bloc",
           "detail": "Anyone from the union may live and work without a visa.",
-          "countries": [
-            "EE",
-            "DE",
-            "NL",
-            "FI"
-          ],
           "financial": 0.4,
           "political": 65,
           "social": 18,
           "axis": {
-            "foreign_born": 15.55
+            "foreign_born": 18.5
           },
           "axis_hand": {
             "foreign_born": 20.0
           },
-          "axis_basis": "derived from 4 countries"
+          "axis_basis": "derived from 13 countries",
+          "holders": [
+            "DE",
+            "NL",
+            "FI",
+            "EE",
+            "IE",
+            "ES",
+            "BE",
+            "CZ",
+            "PL",
+            "LV",
+            "IS",
+            "LU",
+            "MT"
+          ]
         }
       ]
     },
@@ -1511,99 +1789,118 @@
           "id": "ju_rehab",
           "label": "Rehabilitation, short sentences",
           "detail": "Prison is a last resort and the maximum term is low. Few people are inside.",
-          "countries": [
-            "NO",
-            "SE",
-            "FI",
-            "DK",
-            "NL",
-            "JP"
-          ],
           "financial": 0.4,
           "political": 40,
           "social": 30,
           "axis": {
-            "incarceration": 64.0
+            "incarceration": 63.5
           },
           "axis_hand": {
             "incarceration": 60.0
           },
-          "axis_basis": "derived from 6 countries"
+          "axis_basis": "derived from 8 countries",
+          "holders": [
+            "NL",
+            "DK",
+            "SE",
+            "NO",
+            "FI",
+            "JP",
+            "SI",
+            "IS"
+          ]
         },
         {
           "id": "ju_standard",
           "label": "Mixed, moderate sentences",
           "detail": "Prison for serious crime, community sentences below it.",
-          "countries": [
-            "DE",
-            "FR",
-            "CA",
-            "IE",
-            "CH",
-            "KR",
-            "IT"
-          ],
           "financial": 0.5,
           "political": 10,
           "social": 10,
           "axis": {
-            "incarceration": 103.0
+            "incarceration": 112.0
           },
           "axis_hand": {
             "incarceration": 100.0
           },
-          "axis_basis": "derived from 7 countries"
+          "axis_basis": "derived from 18 countries",
+          "holders": [
+            "CA",
+            "DE",
+            "FR",
+            "CH",
+            "KR",
+            "IE",
+            "IT",
+            "ES",
+            "AT",
+            "BE",
+            "GR",
+            "SK",
+            "HR",
+            "LT",
+            "LU",
+            "KW",
+            "MT",
+            "CY"
+          ]
         },
         {
           "id": "ju_tough",
           "label": "Long sentences, high imprisonment",
           "detail": "Long terms, limited parole, and a large prison population.",
-          "countries": [
-            "US",
-            "IL",
-            "CL",
-            "NZ",
-            "AU",
-            "UK",
-            "EE"
-          ],
           "financial": 0.9,
           "political": 8,
           "social": 35,
           "axis": {
-            "incarceration": 210.0
+            "incarceration": 208.0
           },
           "axis_hand": {
             "incarceration": 300.0
           },
-          "axis_basis": "derived from 7 countries"
+          "axis_basis": "derived from 14 countries",
+          "holders": [
+            "AU",
+            "NZ",
+            "US",
+            "UK",
+            "EE",
+            "IL",
+            "CL",
+            "CZ",
+            "PL",
+            "LV",
+            "HU",
+            "UY",
+            "TW",
+            "PA"
+          ]
         },
         {
           "id": "ju_corporal",
           "label": "Severe penalties, caning and capital punishment",
           "detail": "Harsh punishments for a wide range of offences, and very low crime.",
-          "countries": [
-            "SG",
-            "AE"
-          ],
           "financial": 0.15,
           "political": 55,
           "social": 65,
           "axis": {
-            "incarceration": 141.0
+            "incarceration": 122.0
           },
           "axis_hand": {
             "incarceration": 190.0
           },
-          "axis_basis": "derived from 2 countries"
+          "axis_basis": "derived from 4 countries",
+          "holders": [
+            "SG",
+            "AE",
+            "SA",
+            "QA"
+          ]
         },
         {
           "id": "ju_decriminalised",
           "label": "Rehabilitation, drugs decriminalised",
           "detail": "Short sentences and a small prison population, and possessing any drug is treated as a health matter rather than a crime.",
-          "countries": [
-            "PT"
-          ],
           "financial": 0.3,
           "political": 60,
           "social": 45,
@@ -1613,7 +1910,10 @@
           "axis_hand": {
             "incarceration": 90.0
           },
-          "axis_basis": "derived from 1 country"
+          "axis_basis": "derived from 1 country",
+          "holders": [
+            "PT"
+          ]
         }
       ]
     },
@@ -1626,12 +1926,6 @@
           "id": "fa_none",
           "label": "No state support",
           "detail": "Childcare and leave are between you and your employer.",
-          "countries": [
-            "US",
-            "AE",
-            "SG",
-            "KR"
-          ],
           "financial": 0.6,
           "political": 5,
           "social": 42,
@@ -1643,100 +1937,130 @@
             "family_spend": 0.6,
             "redistribution": 0.0
           },
-          "axis_basis": "derived from 2 countries"
+          "axis_basis": "derived from 2 countries",
+          "holders": [
+            "US",
+            "SG",
+            "KR",
+            "AE",
+            "QA"
+          ]
         },
         {
           "id": "fa_targeted",
           "label": "Payments to those who need them",
           "detail": "Means-tested help with childcare and a modest paid leave scheme.",
-          "countries": [
-            "AU",
-            "NZ",
-            "CA",
-            "JP",
-            "NL",
-            "CH",
-            "IL",
-            "CL",
-            "EE"
-          ],
           "financial": 1.8,
           "political": 15,
           "social": 28,
           "axis": {
-            "family_spend": 1.9,
-            "redistribution": 0.02
+            "family_spend": 1.8,
+            "redistribution": 0.0133
           },
           "axis_hand": {
             "family_spend": 1.8,
             "redistribution": 0.02
           },
-          "axis_basis": "derived from 9 countries"
+          "axis_basis": "derived from 17 countries",
+          "holders": [
+            "AU",
+            "NZ",
+            "CA",
+            "NL",
+            "EE",
+            "CH",
+            "JP",
+            "IL",
+            "CL",
+            "IE",
+            "IT",
+            "ES",
+            "PT",
+            "GR",
+            "CZ",
+            "SI",
+            "HR",
+            "UY",
+            "SA",
+            "CY",
+            "PA"
+          ]
         },
         {
           "id": "fa_universal",
           "label": "Universal child benefit and cheap childcare",
           "detail": "Every family is paid per child, and childcare is capped at a low price.",
-          "countries": [
-            "DK",
-            "FI",
-            "DE",
-            "UK"
-          ],
           "financial": 3.3,
           "political": 30,
           "social": 12,
           "axis": {
-            "family_spend": 2.9000000000000004,
-            "redistribution": 0.05
+            "family_spend": 2.8,
+            "redistribution": 0.0332
           },
           "axis_hand": {
             "family_spend": 3.3,
             "redistribution": 0.05
           },
-          "axis_basis": "derived from 4 countries"
+          "axis_basis": "derived from 10 countries",
+          "holders": [
+            "UK",
+            "DE",
+            "DK",
+            "FI",
+            "AT",
+            "BE",
+            "SK",
+            "LT",
+            "LV",
+            "LU",
+            "TW",
+            "KW",
+            "MT"
+          ]
         },
         {
           "id": "fa_pronatal",
           "label": "Payments to have more children",
           "detail": "Large transfers, loans forgiven per child, tax relief for big families.",
-          "countries": [
-            "HU",
-            "FR"
-          ],
           "financial": 3.8,
           "political": 12,
           "social": 35,
           "axis": {
-            "family_spend": 2.45,
-            "redistribution": 0.04
+            "family_spend": 2.6,
+            "redistribution": 0.0265
           },
           "axis_hand": {
             "family_spend": 3.8,
             "redistribution": 0.04
           },
-          "axis_basis": "derived from 2 countries"
+          "axis_basis": "derived from 3 countries",
+          "holders": [
+            "FR",
+            "PL",
+            "HU"
+          ]
         },
         {
           "id": "fa_leave",
           "label": "Universal, with a long shared parental leave",
           "detail": "Every family gets a per-child benefit and capped-price childcare, plus more than a year of paid leave split between parents.",
-          "countries": [
-            "SE",
-            "NO"
-          ],
           "financial": 3.6,
           "political": 40,
           "social": 8,
           "axis": {
-            "family_spend": 3.05,
-            "redistribution": 0.05
+            "family_spend": 3.3,
+            "redistribution": 0.0332
           },
           "axis_hand": {
             "family_spend": 3.6,
             "redistribution": 0.05
           },
-          "axis_basis": "derived from 2 countries"
+          "axis_basis": "derived from 3 countries",
+          "holders": [
+            "SE",
+            "NO",
+            "IS"
+          ]
         }
       ]
     }
@@ -2641,7 +2965,7 @@
         "speech": "sp_hate_limits",
         "voting": "vo_proportional",
         "work": "wo_mandated_leave",
-        "defence": "de_militia",
+        "defence": "de_alliance",
         "immigration": "im_points",
         "justice": "ju_rehab",
         "family": "fa_leave"
@@ -2834,7 +3158,7 @@
         "speech": "sp_hate_limits",
         "voting": "vo_proportional",
         "work": "wo_bargaining",
-        "defence": "de_militia",
+        "defence": "de_conscript",
         "immigration": "im_open",
         "justice": "ju_rehab",
         "family": "fa_universal"
@@ -3597,7 +3921,7 @@
         "military_burden": {
           "value": 5.6,
           "year": 2014,
-          "source": "World Bank / SIPRI, military expenditure % of GDP"
+          "source": "World Bank / SIPRI, military expenditure % of GDP; the series ends in 2014 because the UAE has published nothing since that supports an estimate, so this is the last measured year and not a current one"
         },
         "foreign_born": {
           "value": 74.0,
@@ -5031,7 +5355,7 @@
         "military_burden": {
           "value": 0.0,
           "year": 2025,
-          "source": "SIPRI via Our World in Data, military expenditure % of GDP; SIPRI records Iceland at zero for every year of the series, it has no standing armed forces"
+          "source": "imputed, not measured: Iceland has no armed forces, and SIPRI excludes it from the military expenditure series rather than recording a zero (the 2025 fact sheet notes only \"excluding Iceland, which has no military expenditure\")"
         },
         "foreign_born": {
           "value": 25.1,
@@ -5785,7 +6109,7 @@
         "military_burden": {
           "value": 1.0,
           "year": 1999,
-          "source": "World Bank / SIPRI, military expenditure % of GDP"
+          "source": "World Bank / SIPRI, military expenditure % of GDP; the series ends in 1999 and is null for every year since, because Panama abolished its armed forces in 1990 and reports no military expenditure"
         },
         "foreign_born": {
           "value": 10.6,
