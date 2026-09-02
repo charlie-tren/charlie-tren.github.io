@@ -42,11 +42,11 @@
     "card": "a chef",
     "file": "03.webp",
     "glyphs": [
-      "1F373",
-      "1F468"
+      "CHEF",
+      "1F373"
     ],
     "family": "pro",
-    "source": "OpenMoji 15.0.0",
+    "source": "Drawn for this deck (sticky-situations/art) + OpenMoji 15.0.0",
     "licence": "CC BY-SA 4.0",
     "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
     "page": "https://openmoji.org/"
@@ -328,11 +328,11 @@
     "card": "a bagpiper",
     "file": "25.webp",
     "glyphs": [
-      "1F3B5",
-      "1F3F4"
+      "BAGPIPER",
+      "1F3B6"
     ],
     "family": "performers",
-    "source": "OpenMoji 15.0.0",
+    "source": "Drawn for this deck (sticky-situations/art) + OpenMoji 15.0.0",
     "licence": "CC BY-SA 4.0",
     "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
     "page": "https://openmoji.org/"
@@ -588,11 +588,11 @@
     "card": "an emu",
     "file": "45.webp",
     "glyphs": [
-      "1FAB6",
+      "EMU",
       "1F3DC"
     ],
     "family": "animals",
-    "source": "OpenMoji 15.0.0",
+    "source": "Drawn for this deck (sticky-situations/art) + OpenMoji 15.0.0",
     "licence": "CC BY-SA 4.0",
     "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
     "page": "https://openmoji.org/"
