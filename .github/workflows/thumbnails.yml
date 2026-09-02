@@ -106,6 +106,14 @@ jobs:
         run: python tools/shoot_thumbnails.py ${{ steps.target.outputs.value }}
 
       - name: Commit anything that actually changed
+        # ALWAYS, even when Shoot failed. shoot_thumbnails.py says in its own exit
+        # path that "anything written above is kept and still committed - a partial
+        # refresh beats none", and this step silently broke that promise: on
+        # 02/09/2026 one stale selector turned the run red and GitHub skipped this
+        # step, throwing away seven freshly-shot cards including the one Charlie had
+        # asked about. The run still goes red so the failure is seen; the good work
+        # just stops being collateral.
+        if: '!cancelled()'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
