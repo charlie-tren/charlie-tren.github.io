@@ -1,30 +1,29 @@
 """The thirteen domains and their options.
 
-Most options are something a real country actually does, and carry the country
-tags to prove it. That constraint is what stops the menu being one-sided: the
-original spec's list was almost entirely interventionist, which would have
-collapsed every visitor onto Denmark and killed the reveal.
+Most options are something a real country actually does. That constraint is what
+stops the menu being one-sided: the original spec's list was almost entirely
+interventionist, which would have collapsed every visitor onto Denmark and killed
+the reveal.
 
-`countries` IS A SAMPLE, NOT A POPULATION, and since 02/09/2026 nothing measures
-anything off it. The list is a hand-written witness that the option is a real
-policy somewhere, and it was written when the matrix held twenty countries and
-never extended as the matrix reached forty-five, so it now names about a third of
-the countries that actually hold each option. Every name in it is still true and
-`test_option_country_tags_name_a_country_that_holds_that_option` keeps it that
-way, but it is not the list of holders and must not be used as one. WHO HOLDS AN
-OPTION IS THE `choices` MATRIX IN countries.py, and `build_data.holders` reads it:
-the derived axis medians and the reveal's "Also the policy in ..." both come from
-there. What still reads `countries` is the slider caption in app.js and
-`yourCountries` in match.js, which is why the lists are here at all.
+WHO HOLDS AN OPTION IS THE `choices` MATRIX IN countries.py, and it is the only
+record of that. `build_data.holders` reads it, and everything downstream reads
+holders: the derived axis medians, the reveal's "Also the policy in ...", the
+slider caption in app.js and `yourCountries` in match.js.
 
-A SMALL MINORITY carry an empty `countries` list on purpose, and the empty list
-is a deliberate claim rather than a missing field: nobody does this. Universal
-basic income, absolute freedom of speech, banning private combustion cars and an
-age cap on representatives are all things a visitor should be able to choose and
-no country has. Those same five are the options no matrix cell holds either, so
-the sample and the matrix agree about the empty set. The reveal says so in as
-many words, and `test_the_menu_stays_grounded` holds the untagged share down so
-the page cannot drift into a wishlist.
+There used to be a second answer. Every option carried a `countries` tag list,
+hand-written, and four of those surfaces read it instead. It was written when the
+matrix held twenty countries and never extended as the matrix reached forty-five,
+so by 02/09/2026 it named 190 of the 585 matrix cells. Every tag in it was still
+TRUE, which is why nothing ever failed and why the test guarding it passed every
+day of that year: it could catch a wrong tag and never a missing one. The lists
+were deleted rather than repaired, because a hand-maintained copy of the matrix
+goes stale again the moment somebody codes a country and forgets.
+
+FIVE OPTIONS ARE HELD BY NOBODY, on purpose. Universal basic income, absolute
+freedom of speech, banning private combustion cars and an age cap on
+representatives are all things a visitor should be able to choose and no country
+has. The reveal says so in as many words, and `test_the_menu_stays_grounded`
+holds that share down so the page cannot drift into a wishlist.
 
 COSTS ARE SUBJECTIVE AND THE PAGE SAYS SO. They are published in full in the
 method section, as on DCF Studio and One Story, so a reader who disagrees can
@@ -169,13 +168,46 @@ DOMAINS = [
              "detail": "Everyone must buy cover; insurers may not refuse anyone.",
              "financial": 7.5, "political": 30, "social": 15,
              "axis": {"health_public": 78.0}},
+            # WHAT SEPARATES THIS OPTION FROM hc_public, settled 02/09/2026. It used
+            # to be nothing. Both options described a universal service, both sets of
+            # holders had a private sector beside it, and the split between them had no
+            # stated rule: the UK, Spain and Malta sat on hc_public while Denmark,
+            # Sweden, Norway, Canada and six others ran the same kind of service and sat
+            # here. The measurements agreed there was no difference, medians of 73.2 and
+            # 77.15 on a track from 29 to 92.
+            #
+            # The rule is now whether the state SUPPORTS the private tier or merely
+            # tolerates it. hc_mixed means the state pays people to hold duplicate
+            # private cover or penalises them for going without: a premium rebate, tax
+            # relief on premiums, a surcharge on non-holders, a mandate to buy, or an
+            # explicit opt-out into a state-funded private scheme. hc_public means it
+            # does none of those, and may restrict duplicate cover outright.
+            #
+            # Australia is the anchor here, with a rebate and the Medicare Levy
+            # Surcharge running at once. Canada is the anchor for hc_public, where six
+            # provinces prohibit duplicate insurance. Ten cells moved on the rule and
+            # every one carries its mechanism in countries.py.
+            #
             # Social raised from 10 on 2026-08-29. A universal service with a paid fast
             # lane sorts patients by what they can pay at the moment they are least able
             # to shop, and that resentment is a real cohesion cost. Pricing it as the
             # least divisive option here made it dominate every other healthcare choice
             # on all three budgets at once.
-            {"id": "hc_mixed", "label": "Public with a private tier",
-             "detail": "Universal public cover, and you may pay to go faster.",
+            #
+            # THE COSTS WERE RE-EXAMINED 02/09/2026 UNDER THE NEW RULE AND KEPT. The
+            # question was whether 7.0 / 20 / 22 still reads, now that the option means
+            # a subsidised tier rather than merely a tolerated one. It reads better than
+            # it did. Financial 7.0 against hc_public's 9.0 is the point of the policy:
+            # a rebate costs money but buys the state out of some of the demand, and
+            # every holder here spends less publicly than the UK does. Political 20
+            # against 45 is right because subsidising insurance is the easy sell and
+            # abolishing the private tier is the hard one. Social 22 against 12 is the
+            # one carrying the most weight, and it is the honest direction: a state that
+            # pays some people to jump the queue has chosen to sort patients by money,
+            # where a state that merely permits it has only failed to stop it.
+            {"id": "hc_mixed", "label": "Public with a subsidised private tier",
+             "detail": "Universal public cover, and the state pays you to take private "
+                       "insurance on top of it, or taxes you for going without.",
              "financial": 7.0, "political": 20, "social": 22,
              "axis": {"health_public": 80.0}},
             # UK label and detail corrected 2026-08-29. The original read "Fully
@@ -191,9 +223,20 @@ DOMAINS = [
             # Social cut from 25. One service everyone uses, with the rich and the poor in
             # the same queue, is the least socially divisive arrangement in the domain.
             # What it costs is money and political capital, not cohesion.
+            # Detail rewritten 02/09/2026 to state the rule above rather than imply it.
+            # "A private sector exists alongside it, unsubsidised" was already the right
+            # test and was too quiet to code against: eleven holders now turn on that
+            # clause, so it says what it means. "Free at the point of use" came out
+            # because it was never the test and was false of several holders anyway.
+            # The hand axis value below is not what the page plots, since build_data
+            # derives every non-tax axis from the median of the holders, so the ONS
+            # figure that set it now documents one country of eleven rather than the
+            # option. Left as it stands rather than restated as a median that would go
+            # stale the next time a cell moves.
             {"id": "hc_public", "label": "Tax-funded national service",
-             "detail": "One service for everyone, free at the point of use and paid for out of "
-                       "general taxation. A private sector exists alongside it, unsubsidised.", "financial": 9.0, "political": 45, "social": 12,
+             "detail": "One service for everyone, paid for out of general taxation. A private "
+                       "sector may exist beside it, but the state gives it nothing and may bar "
+                       "it from duplicating public cover.", "financial": 9.0, "political": 45, "social": 12,
              "axis": {"health_public": 81.3}},
         ],
     },

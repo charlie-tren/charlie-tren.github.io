@@ -57,12 +57,26 @@ unreachable in the reveal, but the count of shared cells on the closest pairs is
 the margin the whole match turns on:
 
     12  SE NO   work
-    11  SI HR   retirement, justice
+    11  IT ES   education, immigration
     11  IT PT   education, justice
+    11  ES PT   immigration, justice
     11  BE LU   retirement, work
-    10  twenty-two pairs: AU NZ / NZ EE / NZ LV / DE BE / NL SI / NL HR /
-        EE LV / AE SA / AE QA / IE MT / IT ES / IT HR / ES PT / ES BE /
-        ES LU / BE PL / GR LU / GR CY / CZ PL / PL LU / PL HU / UY CY
+    11  SI HR   retirement, justice
+    10  sixteen pairs: NZ EE / DE BE / NL SI / NL HR / AE SA / IE MT /
+        IT HR / ES BE / ES LU / BE PL / GR LU / GR CY / CZ PL / PL LU /
+        PL HU / UY CY
+
+THE HEALTHCARE RECODE OF 02/09/2026 DID NOT MOVE THE CEILING and it left the
+matrix wider overall, which is the opposite of what a recode usually does. Ten
+cells moved between hc_public and hc_mixed on the subsidy rule set out on the
+two options in policies.py. Six pairs at ten fell away, because AU NZ, NZ LV,
+EE LV, AE QA and the rest had been agreeing on a cell that was not saying
+anything; two pairs rose to eleven, IT ES and ES PT, because Spain moved to
+hc_mixed and joined the two countries it was already closest to. Sweden and
+Norway moved together, so the one pair at twelve is untouched and still turns on
+work alone. Watch IT ES, IT PT and ES PT as a trio now: they are three of the
+five pairs at eleven and any further southern European cell change touches all
+three at once.
 
 THE CEILING MOVED TO TWELVE ON 02/09/2026 AND A DATA FIX IS WHAT MOVED IT, which
 is the case this note was written to catch. Sweden was coded de_militia, an
@@ -126,11 +140,22 @@ above, not this batch.
 
 THE GULF DID NOT COLLAPSE INTO ONE COUNTRY, which was the risk this batch was
 run to test. Against the UAE, Saudi Arabia and Qatar each differ on three cells
-and Kuwait on seven; the closest Gulf pairs are AE SA and AE QA at ten. Each
-difference is sourced on the row that carries it. The five cells all four share,
-no income tax, a citizen health service with a private tier, an unpriced fossil
-grid, no competitive national elections and a migrant majority with no path to
-citizenship, are the same policy in all four and the sources say so.
+and Kuwait on seven; the closest Gulf pair is now AE SA at ten. Each difference
+is sourced on the row that carries it. The four cells all four share, no income
+tax, an unpriced fossil grid, no competitive national elections and a migrant
+majority with no path to citizenship, are the same policy in all four and the
+sources say so.
+
+THE HEALTH CELL WAS THE FIFTH AND IT SPLIT ON 02/09/2026, which is worth keeping
+because the old sentence was the kind of claim this file is meant to catch. All
+four were coded hc_mixed on "a citizen health service with a private tier",
+which described the shape of provision and not any policy: every rich country
+has a private tier. Under the subsidy rule the UAE and Saudi Arabia keep the
+cell, because Abu Dhabi's Thiqa pays private providers for citizens and the
+Saudi mandate makes private-sector nationals hold duplicate cover, while Qatar
+and Kuwait move to hc_public, because each ran exactly that mechanism and
+abolished it, Seha at the end of 2015 and Afya in 2025. AE QA fell out of the
+pairs at ten as a result.
 
 THE MENU GAPS AFTER THE LAST EIGHT, which is the deliverable this batch was
 really for. Everything below is a case where NO OPTION HONESTLY DESCRIBED THE
@@ -217,7 +242,19 @@ COUNTRIES = [
         "Australia/Darwin"],
      "nonTaxRevenue": 0.0,
      "matchable": True,
-     "choices": {"tax": "tax_anglo", "healthcare": "hc_mixed", "education": "ed_deferred",
+     "choices": {"tax": "tax_anglo",
+                 # THE ANCHOR FOR hc_mixed, and the cell the option's rule was
+                 # written from on 02/09/2026. Australia does all three things
+                 # the option names at once: the income-tested Private Health
+                 # Insurance Rebate pays part of the premium, the Medicare Levy
+                 # Surcharge taxes higher earners who hold no hospital cover,
+                 # and Lifetime Health Cover loads the premium of anyone who
+                 # joins after 30. That is the state paying people to hold
+                 # duplicate private cover and taxing them for going without,
+                 # which is what separates this option from hc_public.
+                 # https://www.ato.gov.au/individuals-and-families/medicare-and-private-health-insurance
+                 "healthcare": "hc_mixed",
+                 "education": "ed_deferred",
                  "housing": "ho_market", "retirement": "re_super", "energy": "en_fossil",
                  "speech": "sp_hate_limits", "voting": "vo_preferential", "work": "wo_bargaining",
                  "defence": "de_alliance", "immigration": "im_points", "justice": "ju_tough",
@@ -255,7 +292,16 @@ COUNTRIES = [
     {"code": "NZ", "name": "New Zealand", "timezones": ["Pacific/Auckland"],
      "nonTaxRevenue": 0.0,
      "matchable": True,
-     "choices": {"tax": "tax_anglo", "healthcare": "hc_mixed", "education": "ed_deferred",
+     "choices": {"tax": "tax_anglo",
+                 # MOVED FROM hc_mixed 02/09/2026 on the subsidy rule. New
+                 # Zealand has a large duplicate private tier and the state puts
+                 # nothing into it. Employer-paid medical insurance is a fringe
+                 # benefit taxed at 63.93% on the single and pooled rates, above
+                 # a de minimis of NZD 300 per employee a quarter; there is no
+                 # premium rebate and nothing is charged for going without.
+                 # https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir400---ir499/ir409/ir409-2026.pdf
+                 "healthcare": "hc_public",
+                 "education": "ed_deferred",
                  "housing": "ho_market", "retirement": "re_super", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_minimum",
                  "defence": "de_alliance", "immigration": "im_points", "justice": "ju_tough",
@@ -372,7 +418,19 @@ COUNTRIES = [
         "America/Edmonton", "America/Winnipeg", "America/Halifax", "America/St_Johns"],
      "nonTaxRevenue": 0.0,
      "matchable": True,
-     "choices": {"tax": "tax_anglo", "healthcare": "hc_mixed", "education": "ed_free_selective",
+     "choices": {"tax": "tax_anglo",
+                 # MOVED FROM hc_mixed 02/09/2026 on the subsidy rule, and
+                 # Canada is the clearest case in the file of a state that goes
+                 # past tolerating a private tier to restricting it. Six
+                 # provinces holding most of the population, British Columbia,
+                 # Alberta, Manitoba, Ontario, Quebec and Prince Edward Island,
+                 # functionally prohibit DUPLICATE private insurance for
+                 # medically necessary hospital and physician services, which is
+                 # a provincial choice rather than a Canada Health Act
+                 # requirement. In the other four no such market has formed.
+                 # https://www.iedm.org/improving-canadian-patients-access-to-care-the-role-of-duplicate-private-health-insurance/
+                 "healthcare": "hc_public",
+                 "education": "ed_free_selective",
                  "housing": "ho_market", "retirement": "re_flat", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_fptp", "work": "wo_minimum",
                  "defence": "de_alliance", "immigration": "im_points", "justice": "ju_standard",
@@ -528,7 +586,18 @@ COUNTRIES = [
     {"code": "DK", "name": "Denmark", "timezones": ["Europe/Copenhagen"],
      "nonTaxRevenue": 0.0,
      "matchable": True,
-     "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
+     "choices": {"tax": "tax_nordic",
+                 # MOVED FROM hc_mixed 02/09/2026 on the subsidy rule. Denmark
+                 # is the country that tried the subsidy and repealed it:
+                 # ligningsloven section 30 made employer-paid health insurance
+                 # tax free from 2002, and lov nr. 1382 of 28 December 2011
+                 # abolished that from income year 2012. The premium is now
+                 # ordinary taxable pay with no threshold, and what survives is
+                 # narrow, work-related injury and illness plus addiction and
+                 # smoking cessation. No rebate, no surcharge, no opt-out.
+                 # https://www.retsinformation.dk/api/pdf/139266
+                 "healthcare": "hc_public",
+                 "education": "ed_free",
                  "housing": "ho_cooperative", "retirement": "re_earnings", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_bargaining",
                  "defence": "de_alliance", "immigration": "im_controlled", "justice": "ju_rehab",
@@ -571,7 +640,17 @@ COUNTRIES = [
     {"code": "SE", "name": "Sweden", "timezones": ["Europe/Stockholm"],
      "nonTaxRevenue": 0.0,
      "matchable": True,
-     "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
+     "choices": {"tax": "tax_nordic",
+                 # MOVED FROM hc_mixed 02/09/2026 on the subsidy rule, and the
+                 # same repeal Denmark and Norway made. Prop. 2017/18:131
+                 # removed the tax exemption for privately financed health care
+                 # as an employment benefit from 1 July 2018, and Skatteverket's
+                 # 2019 position sets the standard split at 60% of the premium
+                 # taxable, 40% free as rehabilitation and occupational health.
+                 # No rebate, no surcharge, no opt-out.
+                 # https://www.riksdagen.se/sv/dokument-och-lagar/dokument/proposition/slopad-skattefrihet-for-forman-av-halso-och_h503131/html/
+                 "healthcare": "hc_public",
+                 "education": "ed_free",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_mandated_leave",
                  # MOVED OFF de_militia 02/09/2026, and BOTH of that option's
@@ -622,7 +701,18 @@ COUNTRIES = [
     {"code": "NO", "name": "Norway", "timezones": ["Europe/Oslo"],
      "nonTaxRevenue": 0.0,
      "matchable": True,
-     "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
+     "choices": {"tax": "tax_nordic",
+                 # MOVED FROM hc_mixed 02/09/2026 on the subsidy rule, and
+                 # Norway is the third Nordic to have tried the subsidy and
+                 # dropped it: a tax incentive for employer-bought cover was
+                 # legislated in 2001, implemented in 2003 and withdrawn in
+                 # 2006. Employer-paid behandlingsforsikring is now a taxable
+                 # benefit from the first krone, carrying withholding and
+                 # employer's national insurance, with only preventive
+                 # occupational health and approved work injury outside it.
+                 # https://www.skatteetaten.no/en/business-and-organisation/employer/the-a-melding/the-a-melding-guide/salary-and-benefits/overview-of-salary-and-other-benefits/taxable-part-of-certain-types-of-insurance-premium/
+                 "healthcare": "hc_public",
+                 "education": "ed_free",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_transparency",
                  "defence": "de_alliance", "immigration": "im_points", "justice": "ju_rehab",
@@ -660,7 +750,23 @@ COUNTRIES = [
     {"code": "FI", "name": "Finland", "timezones": ["Europe/Helsinki"],
      "nonTaxRevenue": 0.0,
      "matchable": True,
-     "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
+     "choices": {"tax": "tax_nordic",
+                 # THE ONE NORDIC THAT STAYS hc_mixed, checked 02/09/2026, and
+                 # the reason is written here because a future pass will
+                 # otherwise move it to sit with the other four. Finland pays
+                 # for a second tier three ways. Kela reimburses employers 60%
+                 # of preventive and 50% of curative occupational health care,
+                 # capped at EUR 492.50 per employee in 2025, and that care is
+                 # bought from private providers and reaches most employed
+                 # Finns ahead of the public queue. Kela also reimburses private
+                 # fees directly, EUR 8 a doctor's appointment from 1 January
+                 # 2026, down from EUR 30, with gynaecology and psychiatry left
+                 # at EUR 70 and EUR 50 to 60. And an employer's collective
+                 # sairauskuluvakuutus is tax free under TVL 69.
+                 # https://www.kela.fi/tyonantajat-tyoterveyshuolto-korvauksen-maara
+                 # https://www.kela.fi/news/lower-reimbursements-from-kela-for-private-healthcare-appointments-from-1-january-2026
+                 "healthcare": "hc_mixed",
+                 "education": "ed_free",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_bargaining",
                  # MOVED OFF de_militia 02/09/2026 on the first limb only.
@@ -711,7 +817,26 @@ COUNTRIES = [
     {"code": "EE", "name": "Estonia", "timezones": ["Europe/Tallinn"],
      "nonTaxRevenue": 0.0,
      "matchable": True,
-     "choices": {"tax": "tax_flat", "healthcare": "hc_mixed", "education": "ed_free",
+     "choices": {"tax": "tax_flat",
+                 # MOVED FROM hc_mixed 02/09/2026 on the subsidy rule, and the
+                 # weakest call of the ten. Estonia has a relief that touches
+                 # private cover: the Income Tax Act section 48 health
+                 # promotion allowance, EUR 400 per employee a year, has
+                 # included voluntary health insurance premiums since 1 January
+                 # 2018. It is coded hc_public anyway because that allowance is
+                 # a wellbeing budget in which insurance is one eligible item
+                 # beside gym and massage, not a premium subsidy, and because
+                 # there is no tier for it to support: voluntary insurance is
+                 # about 1.0% of Estonian health spending. No surcharge, no
+                 # opt-out.
+                 # https://eurohealthobservatory.who.int/monitors/health-systems-monitor/analyses/hspm/hspm-estonia-2023/the-development-of-voluntary-health-insurance-in-estonia
+                 # SEPARATELY MISCODED ON ITS OWN TERMS, and left alone. The
+                 # Tervisekassa is one compulsory insurer funded by an earmarked
+                 # 13 points of the 33% social tax, not a service paid for out
+                 # of general taxation, so Estonia belongs in the SINGLE-PAYER
+                 # gap this file already records for Taiwan, Cyprus and Greece.
+                 "healthcare": "hc_public",
+                 "education": "ed_free",
                  "housing": "ho_market", "retirement": "re_super", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_minimum",
                  "defence": "de_alliance", "immigration": "im_open", "justice": "ju_tough",
@@ -1017,7 +1142,22 @@ COUNTRIES = [
      # and against CBUAE's Quarterly Economic Review (26.9% in H1 2024).
      "nonTaxRevenue": 11.8,
      "matchable": True,
-     "choices": {"tax": "tax_minimal", "healthcare": "hc_mixed", "education": "ed_vocational",
+     "choices": {"tax": "tax_minimal",
+                 # REASON ADDED 02/09/2026, because Qatar and Kuwait moved off
+                 # this cell that day and "free care for citizens with a private
+                 # tier alongside" is now true of countries on both options.
+                 # The UAE stays hc_mixed because the state buys the private
+                 # tier for its own citizens: Abu Dhabi's Thiqa is a
+                 # government-funded insurance card administered by Daman that
+                 # pays 100% at government facilities and 80% at PRIVATE ones
+                 # inside the emirate, and Dubai runs Enaya for its government
+                 # employees and nationals. Residents are covered by a separate
+                 # mandate, Dubai Health Insurance Law 11 of 2013, under which
+                 # the employer must buy the cover and may not deduct it from
+                 # pay.
+                 # https://www.doh.gov.ae/en/news/haad-announces-health-insurance-changes-for-the-emirate-of-abu-dhabi
+                 "healthcare": "hc_mixed",
+                 "education": "ed_vocational",
                  "housing": "ho_market", "retirement": "re_generous", "energy": "en_fossil",
                  "speech": "sp_restricted", "voting": "vo_none", "work": "wo_at_will",
                  "defence": "de_power", "immigration": "im_guest", "justice": "ju_corporal",
@@ -1209,10 +1349,21 @@ COUNTRIES = [
                  # specialist and diagnostic care, and intramoenia lets a public
                  # hospital's own consultants sell faster appointments inside
                  # the public hospital, to the point that in many hospitals the
-                 # private slots now outnumber the public ones. Spain, coded
-                 # hc_public below, has no equivalent of either.
+                 # private slots now outnumber the public ones.
+                 # REASON REWRITTEN 02/09/2026. This used to end "Spain, coded
+                 # hc_public below, has no equivalent of either", and Spain has
+                 # since moved to hc_mixed, so the contrast is gone. Italy
+                 # stays hc_mixed on the subsidy rule, which the tickets and the
+                 # intramoenia above do not settle either way: art. 51(2)(a)
+                 # TUIR keeps employer and collective contributions to a fondo
+                 # sanitario integrativo out of taxable employment income up to
+                 # EUR 3,615.20 a year, and art. 10(1)(e-ter) gives an
+                 # individual the same ceiling as a deduction. Ordinary
+                 # medical-expense policies bought alone get nothing, so the
+                 # support runs through the employer channel.
+                 # https://www.agenziaentrate.gov.it/portale/la-detrazione-per-le-polizze-assicurative
                  # https://feather-insurance.com/en-it/blog/public-health-insurance-ssn-guide
-                 # Checked 2026-08-30.
+                 # Checked 2026-08-30, rule re-checked 2026-09-02.
                  "healthcare": "hc_mixed",
                  # The only one of the nine coded ed_market, and the fit is on
                  # the fee-charging limb only. Italian public universities set
@@ -1296,17 +1447,24 @@ COUNTRIES = [
      "nonTaxRevenue": 0.0,
      "matchable": True,
      "choices": {"tax": "tax_continental",
-                 # The one of the three southern Beveridge systems that is
-                 # genuinely hc_public. The SNS is funded from general taxation,
-                 # covers about 99.5% of residents and charges nothing at the
-                 # point of use for consultations or hospital care; the only
-                 # standing co-payment is on pharmaceuticals. Private cover
-                 # exists and is unsubsidised for the general population. Italy
-                 # and Portugal both charge user fees for care and are coded
-                 # hc_mixed on that difference.
-                 # https://www.commonwealthfund.org/sites/default/files/2026-04/2026_Country-Profiles_Spain.pdf
-                 # Checked 2026-08-30.
-                 "healthcare": "hc_public",
+                 # MOVED FROM hc_public TO hc_mixed 02/09/2026, and this cell is
+                 # the reason the rule was rewritten. The old comment read "the
+                 # one of the three southern Beveridge systems that is genuinely
+                 # hc_public ... private cover exists and is unsubsidised for the
+                 # general population", which was decided on user charges and
+                 # missed the largest state-funded private tier in the file.
+                 # MUFACE, ISFAS and MUGEJU are an explicit opt-out: a civil
+                 # servant chooses each year between the SNS and a private
+                 # insurer, and the state pays the premium either way. MUFACE
+                 # alone carried 1,142,571 titulares and 429,593 beneficiarios in
+                 # December 2024, about 1.57 million people, and roughly 69% of
+                 # them take a private entity. The 2025 to 2027 concierto is
+                 # worth EUR 4,808.5m and took effect 1 May 2025 after the first
+                 # tender drew no bids at all. Art. 42.3.c LIRPF separately
+                 # exempts employer-paid premiums up to EUR 500 a person.
+                 # https://muface.es/actualidad/noticias/2025/octubre-2025/memoria_2024
+                 # https://civio.es/el-boe-nuestro-de-cada-dia/2025/05/01/entra-en-vigor-el-concierto-de-muface-con-asisa-y-adeslas-pero-sin-dkv/
+                 "healthcare": "hc_mixed",
                  # Fees are set by the regions inside a national band, roughly
                  # EUR 700 to 2,000 a year, and several regions have cut or
                  # abolished them outright. Grants, not loans.
@@ -1377,10 +1535,22 @@ COUNTRIES = [
                  # are charged for emergency, diagnostic and some GP care, the
                  # ADSE subsystem covers more than 1.3 million public servants
                  # through private providers, and private hospital use is
-                 # substantial. That is a universal service with a paid tier
-                 # beside it, which is hc_mixed and not hc_public.
+                 # substantial.
+                 # REASON REWRITTEN 02/09/2026. "A universal service with a paid
+                 # tier beside it" was the old test and it no longer separates
+                 # anything, since Denmark and Sweden have one too and are now
+                 # hc_public. Portugal stays hc_mixed on the subsidy rule, and
+                 # the mechanism is the tax code rather than ADSE: art. 78.-C of
+                 # the IRS code deducts 15% of health expenses up to EUR 1,000 a
+                 # household, and a premium qualifies where the policy covers
+                 # health risks only. ADSE itself does NOT support the finding,
+                 # and that is worth writing down: since 1 January 2015 employer
+                 # entities pay nothing into it and members fund it alone out of
+                 # 3.5% of base pay, so it is a state-organised private tier
+                 # that the state does not pay for.
+                 # https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78c.aspx
                  # https://www.internationalinsurance.com/countries/portugal/healthcare/
-                 # Checked 2026-08-30.
+                 # Checked 2026-08-30, rule re-checked 2026-09-02.
                  "healthcare": "hc_mixed",
                  # The propina is capped at about EUR 697 a year for a first
                  # cycle degree. Nominal by the standards of ed_market, and
@@ -2262,12 +2432,20 @@ COUNTRIES = [
                  # THE ONE OF THE EIGHT THAT IS NOT AN INSURANCE SYSTEM. The
                  # 2017 compulsory health insurance law was postponed and then
                  # abandoned, and the WHO observatory classifies Latvia as a
-                 # tax-funded national health service. It is coded hc_mixed
-                 # rather than hc_public for the same reason Denmark, Sweden,
-                 # Italy and Portugal are: universal public cover with a private
-                 # tier people pay to use. Out-of-pocket spending is 27% of
-                 # health spending, among the highest in the EU, and the public
-                 # share of 59.5% is the lowest of the eight.
+                 # tax-funded national health service. REASON REWRITTEN
+                 # 02/09/2026: this used to say "coded hc_mixed for the same
+                 # reason Denmark, Sweden, Italy and Portugal are, universal
+                 # public cover with a private tier people pay to use", and two
+                 # of those four have since moved to hc_public, so that
+                 # sentence no longer picks anything out. Latvia stays hc_mixed
+                 # on the subsidy rule instead: section 8, part 5 of the Law on
+                 # Personal Income Tax keeps employer-paid health, life and
+                 # accident premiums out of taxable pay up to 10% of gross
+                 # annual salary and no more than EUR 750 a year, both limits
+                 # binding. Out-of-pocket spending is 27% of health spending,
+                 # among the highest in the EU, and the public share of 59.5%
+                 # is the lowest of the eight.
+                 # https://likumi.lv/ta/id/56880-par-iedzivotaju-ienakuma-nodokli
                  # https://eurohealthobservatory.who.int/publications/i/latvia-health-system-summary-2024
                  # Checked 2026-08-30.
                  "healthcare": "hc_mixed",
@@ -2364,7 +2542,16 @@ COUNTRIES = [
                  # https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/12/revenue-statistics-2025-country-notes_3708be73/iceland_af992b4b/43c3175c-en.pdf
                  # Checked 2026-08-30.
                  "tax": "tax_anglo",
-                 "healthcare": "hc_mixed",
+                 # MOVED FROM hc_mixed 02/09/2026 on the subsidy rule, and the
+                 # easiest of the ten. The European Observatory's Iceland
+                 # profile says no particular legislation applies to private
+                 # health insurance at all, so there is nothing to subsidise
+                 # and nothing subsidising it. Voluntary schemes are about 2%
+                 # of health spending, there are no private hospitals, and the
+                 # main use of a policy is the six-month residence wait before
+                 # Sjukratryggingar Islands cover starts.
+                 # https://www.ncbi.nlm.nih.gov/books/NBK447715/
+                 "healthcare": "hc_public",
                  # Public universities charge a registration fee of about
                  # ISK 75,000 and no tuition, and Iceland's 7.3% of GDP is the
                  # highest public education spend of the forty-five.
@@ -3049,8 +3236,19 @@ COUNTRIES = [
                  # Free Ministry of Health care for citizens, a private tier
                  # alongside it, and mandatory cooperative health insurance for
                  # everyone in private-sector employment including expatriates
-                 # since the 2005 Act. Measured public share 77.8, between this
-                 # option's 80.0 and hc_public's 81.3. Same cell as the UAE.
+                 # since the 2005 Act. REASON SHARPENED 02/09/2026, when Qatar
+                 # and Kuwait left this cell: what keeps Saudi Arabia on it is
+                 # that the mandate was extended in 2008 to SAUDI NATIONALS in
+                 # private-sector work, with the employer paying the whole
+                 # premium for the worker and dependants. A citizen who already
+                 # has a free Ministry of Health entitlement is therefore
+                 # required by the state to hold duplicate private cover on top
+                 # of it, which is the option's test. Public-sector and
+                 # non-working citizens are outside the mandate, so the cell
+                 # describes most working Saudis rather than all of them.
+                 # Measured public share 77.8, between this option and
+                 # hc_public. Same cell as the UAE, no longer the same as Qatar.
+                 # https://www.chi.gov.sa/en/
                  "healthcare": "hc_mixed",
                  # DIFFERS FROM THE UAE, which is on ed_vocational. Saudi public
                  # universities charge citizens no tuition and pay them a monthly
@@ -3154,12 +3352,20 @@ COUNTRIES = [
                  # VAT: the GCC framework agreement was signed in 2016 and Qatar
                  # has not brought it into force.
                  "tax": "tax_minimal",
-                 # Hamad Medical Corporation and the primary health centres are
-                 # free or near-free for citizens with a private tier alongside,
-                 # and mandatory health insurance for visitors and expatriates
-                 # under Law 22 of 2021. Measured public share 83.0, the second
-                 # highest in the file.
-                 "healthcare": "hc_mixed",
+                 # MOVED FROM hc_mixed 02/09/2026 on the subsidy rule, and it
+                 # SPLITS QATAR FROM THE UAE AND SAUDI ARABIA, which stay on
+                 # hc_mixed. The mandatory insurance under Law 22 of 2021, in
+                 # force 4 May 2022, binds non-Qatari residents and visitors
+                 # only; citizens are expressly outside it and use Hamad Medical
+                 # Corporation and the PHCC health centres. Qatar did once run
+                 # the mechanism this option describes and stopped: the Seha
+                 # scheme from 2013 paid private hospitals for citizen care, and
+                 # it was scrapped at the end of 2015 with its insurer wound up.
+                 # A Qatari wanting private care now buys it. Measured public
+                 # share 83.0, the second highest in the file.
+                 # https://hamad.qa/EN/Patient-Information/National-Insurance-Scheme/Pages/About-Seha.aspx
+                 # https://www.clydeco.com/en/insights/2021/12/new-mandatory-health-insurance-system-introduced-i
+                 "healthcare": "hc_public",
                  # DIFFERS FROM THE UAE. Education is free to Qatari citizens
                  # through university, with full state scholarships at Qatar
                  # University and at approved universities abroad. Measured
@@ -3270,11 +3476,25 @@ COUNTRIES = [
                  # tax on large multinationals from 2025, which does not change
                  # the option.
                  "tax": "tax_minimal",
-                 # Free public healthcare for citizens with a private tier
-                 # alongside, and expatriates pay health fees and are covered by
-                 # a separate insurance scheme. Measured public share 88.5, the
-                 # highest in the file.
-                 "healthcare": "hc_mixed",
+                 # MOVED FROM hc_mixed 02/09/2026 on the subsidy rule, and the
+                 # date matters because Kuwait crossed the line recently.
+                 # Afya, enacted by Law 114 of 2014 and running from July 2016,
+                 # bought retired Kuwaiti citizens private treatment at state
+                 # expense up to KWD 17,000 a head, which is exactly this
+                 # option. It was suspended in October 2024 and then repealed
+                 # outright in 2025, the explanatory note citing cost and the
+                 # same services being available in government facilities.
+                 # Working-age citizens never had a state-funded private route.
+                 # The expatriate health fee, KWD 100 a head from 23 December
+                 # 2025, buys access to GOVERNMENT facilities, so it is not a
+                 # private tier either. Measured public share 88.5, the highest
+                 # in the file, which agrees with the move.
+                 # https://onlinelibrary.wiley.com/doi/10.1002/wmh3.70016
+                 # SOFT SPOT: the repealing instrument is reported as
+                 # Decree-Law 141 of 2025 and that citation could not be opened
+                 # directly. The suspension and the repeal are well corroborated;
+                 # the decree number is the part to re-check.
+                 "healthcare": "hc_public",
                  # Free through university for citizens, with a monthly student
                  # grant and fully funded scholarships abroad. Measured
                  # education spend 6.4% of GDP, which for once agrees with the
@@ -3671,6 +3891,16 @@ COUNTRIES = [
                  # happens even if it is not how it is organised. The measured
                  # public share, 51.2%, is nearer hc_private's 50.0 than this
                  # option's 80.0 and that disagreement should be read as real.
+                 # RE-CHECKED 02/09/2026 against the subsidy rule, which Panama
+                 # passes on the tax limb: article 709, numeral 7 of the Codigo
+                 # Fiscal deducts medical spending including the premiums on
+                 # hospitalisation and medical-care policies, with no monetary
+                 # cap, provided the spending is inside Panama and evidenced.
+                 # The B/.3,600 figure that circulates is the schooling cap, not
+                 # this one. There is no opt-out from the CSS, and the CSS may
+                 # buy in private services only where it temporarily cannot
+                 # deliver them itself.
+                 # https://dgi.mef.gob.pa/DInforme/GD-ISR
                  "healthcare": "hc_mixed",
                  # Public education is free including the public universities.
                  # Measured spend is 2.5% of GDP, the second lowest in the file
