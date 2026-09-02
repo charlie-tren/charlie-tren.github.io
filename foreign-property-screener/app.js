@@ -176,10 +176,11 @@ function drawMap(shown) {
   const col = COLS.find(c => c.key === key);
   const narrow = window.innerWidth <= 620;
 
-  // 2:1 is equirectangular's natural ratio; cropping Antarctica takes the
-  // bottom off, so the drawn band is 84N to 58S.
+  // Cropped to 72N-56S. At 84N a third of the height was empty Arctic and a
+  // Greenland the size of Africa, neither of which is a market; the tighter
+  // band spends the same pixels on the latitudes that actually hold one.
   const W = frame(svg, 0);
-  const LAT0 = 84, LAT1 = -58;
+  const LAT0 = 72, LAT1 = -56;
   const H = Math.round(W * (LAT0 - LAT1) / 360);
   frame(svg, H);
   const X = lon => (lon + 180) / 360 * W;
@@ -223,6 +224,38 @@ function drawMap(shown) {
     bindMarket(node, c, col, box, fig);
   });
 
+  /* Name the markets when the filter has cut the set down far enough to read.
+     Above about a dozen the labels collide into a smear and the map is better
+     off silent, so the threshold is the point where naming still helps. */
+  const named = shown.length <= 12 ? shown : (PICKED ? shown.filter(c => c.country === PICKED) : []);
+  if (named.length) {
+    const placed = [];
+    const centroid = f => {
+      const r = f.r.reduce((a, b) => (a.length > b.length ? a : b));
+      const xs = r.map(pt => pt[0]), ys = r.map(pt => pt[1]);
+      return [X((Math.min(...xs) + Math.max(...xs)) / 2), Y((Math.min(...ys) + Math.max(...ys)) / 2)];
+    };
+    const spot = new Map();
+    MAP.features.forEach(f => { if (f.m) spot.set(f.m, centroid(f)); });
+    (MAP.points || []).forEach(pt => spot.set(pt.m, [X(pt.p[0]), Y(pt.p[1])]));
+
+    named.forEach(c => {
+      const at = spot.get(c.country);
+      if (!at) return;
+      const w = c.country.length * 5.4 + 8, h = 13;
+      const bx = at[0] - w / 2, by = at[1] - 15;
+      const clash = placed.some(r => bx < r.x + r.w && r.x < bx + w && by < r.y + r.h && r.y < by + h);
+      if (clash && c.country !== PICKED) return;
+      placed.push({ x: bx, y: by, w, h });
+      el(svg, "text", {
+        x: at[0], y: at[1] - 6, "text-anchor": "middle",
+        fill: "var(--ink)", "font-size": narrow ? 9.5 : 10.5,
+        "font-weight": c.country === PICKED ? 700 : 500,
+        "paint-order": "stroke", stroke: "var(--panel)", "stroke-width": 3.2, "stroke-linejoin": "round",
+      }, c.country);
+    });
+  }
+
   const scale = $("map-scale");
   const fmtEnd = v => col.unit === "A$" ? fmtK(v) : (Math.abs(v) >= 100 ? Math.round(v) : (+v).toFixed(1)) + (col.unit === "%" ? "%" : "");
   const swatches = (invert ? [...R].reverse() : R).map(c => `<i style="background:${c}"></i>`).join("");
@@ -241,108 +274,6 @@ function bindMarket(node, c, col, box, fig) {
      <span class="num">Ease ${c.ease}</span>`));
   node.addEventListener("mouseleave", () => { box.hidden = true; });
   node.addEventListener("click", () => { PICKED = c.country === PICKED ? null : c.country; render(); });
-}
-
-/* ---------- the scatter ---------- */
-
-function drawScatter(shown, all) {
-  const svg = $("scatter"), fig = svg.parentNode, box = $("scatter-readout");
-  const narrow = window.innerWidth <= 620;
-  const xKey = $("x-axis").value, yKey = $("y-axis").value;
-  const xCol = COLS.find(c => c.key === xKey), yCol = COLS.find(c => c.key === yKey);
-
-  const H = narrow ? 300 : 380, W = frame(svg, H);
-  const L = narrow ? 44 : 56, R = 16, T = 14, B = 52;
-  const plotW = Math.max(60, W - L - R), plotH = H - T - B;
-
-  const pts = shown.map(c => ({ c, x: val(c, xKey), y: val(c, yKey) }))
-                   .filter(p => p.x != null && p.y != null && p.x !== "" && p.y !== "");
-  const missing = shown.length - pts.length;
-
-  if (!pts.length) {
-    el(svg, "text", { x: W / 2, y: H / 2, "text-anchor": "middle", fill: "var(--ink-faint)", "font-size": 13 },
-       "Nothing to plot with those two factors.");
-    $("scatter-note").textContent = "";
-    return;
-  }
-
-  const xs = pts.map(p => +p.x), ys = pts.map(p => +p.y);
-  const pad = (a, b) => { const d = (b - a) || Math.abs(a) || 1; return [a - d * 0.08, b + d * 0.08]; };
-  const [x0, x1] = pad(Math.min(...xs), Math.max(...xs));
-  const [y0, y1] = pad(Math.min(...ys), Math.max(...ys));
-  const X = v => L + ((v - x0) / (x1 - x0)) * plotW;
-  const Y = v => T + plotH - ((v - y0) / (y1 - y0)) * plotH;
-  const fmtAxis = (v, col) => col.unit === "A$" ? fmtK(v) : (Math.abs(v) >= 100 ? Math.round(v) : (+v).toFixed(1)) + (col.unit === "%" ? "%" : "");
-
-  for (let i = 0; i <= 4; i++) {
-    const v = y0 + (y1 - y0) * (i / 4);
-    el(svg, "line", { x1: L, y1: Y(v), x2: L + plotW, y2: Y(v), stroke: "var(--rule)", "stroke-width": 1 });
-    el(svg, "text", { x: L - 7, y: Y(v) + 3.6, "text-anchor": "end", fill: "var(--ink-faint)", "font-size": narrow ? 10 : 11 }, fmtAxis(v, yCol));
-  }
-  for (let i = 0; i <= 4; i++) {
-    const v = x0 + (x1 - x0) * (i / 4);
-    el(svg, "text", {
-      x: X(v), y: H - B + 20, "text-anchor": i === 0 ? "start" : i === 4 ? "end" : "middle",
-      fill: "var(--ink-faint)", "font-size": narrow ? 10 : 11,
-    }, fmtAxis(v, xCol));
-  }
-  el(svg, "text", { x: L + plotW / 2, y: H - 6, "text-anchor": "middle", fill: "var(--ink-faint)", "font-size": narrow ? 11 : 12 }, xCol.label);
-  el(svg, "text", {
-    x: 13, y: T + plotH / 2, "text-anchor": "middle", fill: "var(--ink-faint)",
-    "font-size": narrow ? 11 : 12, transform: `rotate(-90 13 ${T + plotH / 2})`,
-  }, yCol.label);
-
-  // Medians, so a point reads as "expensive for what it yields" rather than
-  // just "somewhere in a cloud". Four quadrants beats thirty-four dots.
-  const med = a => { const b = [...a].sort((x, y) => x - y); return b[b.length >> 1]; };
-  const mx = med(xs), my = med(ys);
-  el(svg, "line", { x1: X(mx), y1: T, x2: X(mx), y2: T + plotH, stroke: "var(--rule)", "stroke-width": 1, "stroke-dasharray": "4 4" });
-  el(svg, "line", { x1: L, y1: Y(my), x2: L + plotW, y2: Y(my), stroke: "var(--rule)", "stroke-width": 1, "stroke-dasharray": "4 4" });
-
-  // Labels are placed after the dots and skipped where they would collide with
-  // one already placed, so a crowded corner loses its labels rather than
-  // turning into a smear. The dot is still hoverable either way.
-  const placed = [];
-  const fits = (x, y, w, h) => !placed.some(r => x < r.x + r.w && r.x < x + w && y < r.y + r.h && r.y < y + h);
-
-  pts.forEach(p => {
-    const sel = p.c.country === PICKED;
-    const g = el(svg, "g", { style: "cursor:pointer" });
-    el(g, "circle", {
-      cx: X(+p.x), cy: Y(+p.y), r: sel ? 7 : 5,
-      fill: sel ? "var(--accent)" : "var(--dot)",
-      stroke: "var(--panel)", "stroke-width": 1.5,
-    });
-    // A hit area bigger than the dot, so a 5px target is not a 5px target.
-    const hit = el(g, "circle", { cx: X(+p.x), cy: Y(+p.y), r: 13, fill: "transparent" });
-    hit.addEventListener("mousemove", ev => showReadout(box, fig, ev,
-      `<strong>${p.c.country}</strong>
-       <span class="num">${xCol.label}: ${fmtAxis(+p.x, xCol)}</span><br>
-       <span class="num">${yCol.label}: ${fmtAxis(+p.y, yCol)}</span>`));
-    hit.addEventListener("mouseleave", () => { box.hidden = true; });
-    hit.addEventListener("click", () => { PICKED = p.c.country === PICKED ? null : p.c.country; render(); });
-
-    if (!narrow) {
-      const text = p.c.country;
-      // Estimated, because the width is needed before the text exists. The
-      // estimate is deliberately generous: a label wrongly skipped costs
-      // nothing, a label wrongly kept overlaps its neighbour.
-      const w = text.length * 6.4 + 12, h = 15;
-      const lx = X(+p.x) + 9, ly = Y(+p.y) - 6;
-      if (sel || fits(lx, ly - h, w, h)) {
-        placed.push({ x: lx, y: ly - h, w, h });
-        el(svg, "text", {
-          x: lx, y: ly + 4, fill: sel ? "var(--ink)" : "var(--ink-soft)",
-          "font-size": 10.5, "font-weight": sel ? 700 : 400,
-          "paint-order": "stroke", stroke: "var(--panel)", "stroke-width": 3, "stroke-linejoin": "round",
-        }, text);
-      }
-    }
-  });
-
-  $("scatter-note").textContent = missing
-    ? `${missing} of the ${shown.length} markets shown have no figure for one of these and are not plotted.`
-    : "";
 }
 
 /* ---------- the table ---------- */
@@ -476,9 +407,13 @@ function render() {
     ? `All ${shown.length} markets.`
     : `${shown.length} of ${DATA.countries.length} markets match.`;
 
+  const mCol = COLS.find(x => x.key === $("map-metric").value);
+  $("map-sub").textContent = shown.length <= 12
+    ? `${shown.length} markets, shaded by ${mCol.label.toLowerCase()}.`
+    : `All ${shown.length} shaded by ${mCol.label.toLowerCase()}. Filter down to a dozen to see them named.`;
+
   drawTable(shown);
   drawMap(shown);
-  drawScatter(shown, DATA.countries);
   fadeHint();
 
   const verified = DATA.countries.filter(c => c.verified).length;
@@ -509,17 +444,6 @@ Promise.all([
       mm.appendChild(o);
     });
     mm.addEventListener("change", render);
-
-    [["x-axis", "net_yield"], ["y-axis", "ease"]].forEach(([id, dflt]) => {
-      const sel = $(id);
-      numeric.forEach(c => {
-        const o = document.createElement("option");
-        o.value = c.key; o.textContent = c.label;
-        if (c.key === dflt) o.selected = true;
-        sel.appendChild(o);
-      });
-      sel.addEventListener("change", render);
-    });
 
     const tb = $("sources");
     (d.sources || []).forEach(s => {

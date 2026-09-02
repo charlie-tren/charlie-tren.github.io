@@ -1,4 +1,7 @@
 :root {
+  /* Light only. The salmon paper IS the design; a night edition of it was
+     a second palette to keep in step for no reader who asked. */
+  color-scheme: light;
   /* Financial press. Salmon paper, navy ink, teal accent - the palette of a
      printed markets page, which is what a screener of thirty-four markets is.
      The accent is deliberately NOT a blue: on this paper a blue reads as a
@@ -18,7 +21,9 @@
   --under: #a8432e;
   --bench: #8a7566;
   --hover: #fbe6d3;
-  --map-land: #f2ddca;
+  --map-land: #f6e5d5;
+  --map-line: #e2c8b0;
+  --map-sea: #fdf6ee;
   --dot: #3f9aa2;
   --ease-fill: #0d7680;
   --ease-track: #f4e2d1;
@@ -73,10 +78,6 @@ h1 {
   margin: 0 0 4px; max-width: 46rem;
   font-size: 1.06rem; color: var(--ink-soft);
 }
-.detail-line {
-  margin: 14px 0 0; font-size: 13px; letter-spacing: .2em;
-  text-transform: uppercase; color: var(--ink-faint);
-}
 
 main.wrap { padding-bottom: 70px; }
 
@@ -115,22 +116,10 @@ h3 {
   min-width: 3.6em; text-align: right; font-variant-numeric: tabular-nums;
   font-size: 1rem; font-weight: 650;
 }
-.control .hint { display: block; margin-top: 5px; font-size: .8rem; color: var(--ink-faint); }
-.controls.locked .lockable { opacity: .55; }
 
 /* ---- charts ---- */
 figure.chart { margin: 0; position: relative; }
 figure.chart svg { display: block; width: 100%; }
-.legend {
-  display: flex; flex-wrap: wrap; gap: 6px 16px;
-  margin: 0 0 12px; font-size: .82rem; color: var(--ink-soft);
-}
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
-.legend i {
-  width: 11px; height: 11px; border-radius: 2px; display: inline-block;
-  flex: none;
-}
-.legend i.rule-mark { height: 0; border-top: 2px dashed var(--bench); border-radius: 0; }
 
 .readout {
   position: absolute; pointer-events: none; z-index: 5;
@@ -141,16 +130,6 @@ figure.chart svg { display: block; width: 100%; }
 .readout strong { display: block; font-size: .92rem; }
 .readout .num { font-variant-numeric: tabular-nums; }
 .readout[hidden] { display: none; }
-
-/* ---- selected country ---- */
-.picked-head {
-  display: flex; flex-wrap: wrap; align-items: baseline;
-  gap: 8px 14px; margin-bottom: 2px;
-}
-.picked-head h2 { margin: 0; }
-.verdict { font-size: .88rem; font-weight: 650; }
-.verdict.over { color: var(--over); }
-.verdict.under { color: var(--under); }
 
 .facts {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -182,9 +161,7 @@ table.src td:last-child { color: var(--ink-faint); }
 table.src a { color: var(--accent); }
 
 footer.wrap { padding: 0 20px 50px; font-size: .85rem; color: var(--ink-faint); }
-footer a { color: var(--ink-faint); }
-
-@media (max-width: 620px) {
+footer a { color: var(--ink-faint); }@media (max-width: 620px) {
   .panel { padding: 15px; }
   .facts { grid-template-columns: 1fr 1fr; }
 
@@ -193,9 +170,6 @@ footer a { color: var(--ink-faint); }
      comes first here and the controls sit under it. Measured, not guessed: the
      wall is only a wall at this width, so the desktop order is untouched. */
   main.wrap { display: flex; flex-direction: column; }
-  #rank-panel { order: 1; margin-top: 22px; }
-  #controls   { order: 2; }
-  #picked     { order: 3; }
   .notes      { order: 4; }
 
   /* Three columns will not hold at this width: measured, the table pushed the
@@ -211,28 +185,9 @@ footer a { color: var(--ink-faint); }
   table.src td:nth-child(2) { margin-top: 2px; }
   table.src td:last-child { margin-top: 2px; font-size: .84rem; }
   table.src td:empty { display: none; }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Night edition. The salmon becomes the ink and the navy becomes the
-       paper, so the page keeps its identity instead of turning into a
-       different site after sunset. */
-    --ink: #f6e7d8; --ink-soft: #c3ab98; --ink-faint: #9c8879;
-    --rule: #22384b; --bg: #0b1d2b; --panel: #102636; --accent: #4fb3ba;
-    --over: #4fb3ba; --under: #d4705a; --bench: #8a9aa6;
-    --map-land: #1c3547; --dot: #4fb3ba;
-    --ease-fill: #4fb3ba; --ease-track: #1c3547;
-    --ramp1: #1e3d4a; --ramp2: #2b5a63; --ramp3: #3a7a80;
-    --ramp4: #4c9aa0; --ramp5: #63b9bd; --ramp6: #8ad6d8;
-  }
-  .readout { background: rgba(26,29,34,.97); }
-}
-
-@media (prefers-reduced-motion: reduce) {
+}@media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
-
 
 /* ---- filters ---- */
 .filters {
@@ -323,9 +278,7 @@ tr.detail td { padding: 0 0 18px; white-space: normal; }
   display: block; font-size: 10.5px; letter-spacing: .08em;
   text-transform: uppercase; color: var(--ink-faint);
 }
-.ep-label { display: block; font-size: .86rem; }
-
-@media (max-width: 620px) {
+.ep-label { display: block; font-size: .86rem; }@media (max-width: 620px) {
   .table-scroll { margin: 0 -15px; padding: 0 15px; }
 
   /* Six filters stack into the whole of a 844px screen and the table starts
@@ -334,21 +287,29 @@ tr.detail td { padding: 0 0 18px; white-space: normal; }
      alone because at that width they cost two rows. */
   main.wrap { display: flex; flex-direction: column; }
   #table-panel    { order: 1; margin-top: 22px; }
-  #filters-panel  { order: 2; }
-  #scatter-panel  { order: 3; }
+  #map-panel      { order: 2; }
+  #filters-panel  { order: 3; }
   .notes          { order: 4; }
+  /* A world map is 113px tall at this width, which is a thin thing to open a
+     page on. The table is the substance, so it leads and the map follows. */
   table#grid { font-size: .8rem; }
   table#grid th, table#grid td { padding: 6px 9px 6px 0; }
 }
 
-
 /* ---- map ---- */
-#map { display: block; width: 100%; }
-.map-land { fill: var(--map-land); stroke: var(--panel); stroke-width: .5; }
-.map-mkt { stroke: var(--panel); stroke-width: .6; cursor: pointer; }
-.map-mkt:hover { stroke: var(--ink); stroke-width: 1.2; }
-.map-mkt.picked { stroke: var(--ink); stroke-width: 1.6; }
-.map-dot { cursor: pointer; stroke: var(--panel); stroke-width: 1.2; }
+/* The map sits on its own tinted ground so it reads as a map rather than as
+   shapes floating on the page. Borders are a warm hairline, not the panel
+   colour: against the panel the countries dissolved into each other wherever
+   two greys met, which is most of Europe. */
+#map {
+  display: block; width: 100%;
+  background: var(--map-sea); border: 1px solid var(--rule); border-radius: 4px;
+}
+.map-land { fill: var(--map-land); stroke: var(--map-line); stroke-width: .45; }
+.map-mkt { stroke: var(--map-line); stroke-width: .7; cursor: pointer; }
+.map-mkt:hover { stroke: var(--ink); stroke-width: 1.4; }
+.map-mkt.picked { stroke: var(--ink); stroke-width: 1.8; }
+.map-dot { cursor: pointer; stroke: var(--panel); stroke-width: 1.3; }
 
 .scale {
   display: flex; align-items: center; gap: 9px; margin-top: 12px;
