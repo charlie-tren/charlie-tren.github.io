@@ -51,15 +51,19 @@ for (let i = 0; i < DRAWS; i += 1) {
   // had to pay for, not what it settled on: this script asks whether the reveal
   // discriminates, so it discards an unaffordable design rather than cutting it
   // back to one.
+  const taxRate = rateForOption(data, selection.tax);
   const b = budgets(data, {
     start: start.code,
-    taxRate: rateForOption(data, selection.tax),
+    taxRate,
     selection,
     locked: [],
   });
   if (blockers(b).length) { blocked += 1; continue; }
 
-  const ranked = rank(data, selection);
+  // The same rate the budget was priced at. rank() takes it because the distance
+  // tiebreak runs over tax_take, so leaving it out would score every draw
+  // against the tax option's median rather than the rate it was charged for.
+  const ranked = rank(data, selection, taxRate);
   winners.set(ranked[0].code, (winners.get(ranked[0].code) || 0) + 1);
   runnersUp.set(ranked[1].code, (runnersUp.get(ranked[1].code) || 0) + 1);
   matchedTotal += ranked[0].matched;

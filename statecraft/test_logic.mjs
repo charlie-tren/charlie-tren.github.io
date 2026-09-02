@@ -12,6 +12,8 @@ import {
 } from './budget.js';
 import { applyChange, ladder, setLock, setTaxRate } from './cascade.js';
 import { axisValues, rank, matchable } from './match.js';
+import { chartBase, fingerprint } from './chart.js';
+import { renderReveal } from './reveal.js';
 import { encode, decode, countryForTimezone, detectTimezone } from './state.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -548,7 +550,15 @@ test('divergences name the countries that already do what you chose', () => {
   assert.equal(housing.yours.id, 'ho_singapore');
   assert.equal(housing.theirs.id, 'ho_market');
   assert.ok(housing.yourCountries.includes('SG'), 'Singapore should be named as doing what you chose');
-  assert.deepEqual(housing.yourCountries, option('housing', 'ho_singapore').countries);
+  assert.deepEqual(housing.yourCountries, option('housing', 'ho_singapore').holders);
+  // The list is the matrix, not a tag list, so it must be EVERY country coded to
+  // the option. Asserted against the country rows rather than against holders, so
+  // this cannot pass by comparing build_data's answer with itself.
+  const fromMatrix = data.countries
+    .filter((c) => c.choices && c.choices.housing === 'ho_singapore')
+    .map((c) => c.code);
+  assert.deepEqual([...housing.yourCountries].sort(), fromMatrix.sort(),
+    'yourCountries must name every holder in the matrix, not a stale subset');
   assert.equal(housing.domainName, domain('housing').name);
 
   // Singapore itself now agrees with you on housing, so it is not a divergence there.
@@ -644,12 +654,19 @@ test('redistribution is summed across every contributing domain', () => {
   const au = byCode('AU');
   const values = axisValues(data, au.choices);
 
-  const parts = [
-    option('tax', 'tax_anglo').axis.redistribution,       // 0.11
-    option('work', 'wo_bargaining').axis.redistribution,  // 0.06
-    option('family', 'fa_targeted').axis.redistribution,  // 0.02
-  ];
-  assert.deepEqual(parts, [0.11, 0.06, 0.02]);
+  // The shipped values, not the hand values in policies.py. build_data.py puts
+  // the contributions on the country cells' basis (REDISTRIBUTION_SCALE) before
+  // they reach data.json, so the hand 0.11 / 0.06 / 0.02 ship as these. Asserted
+  // against axis_hand rather than hard-coded, so a re-fit of the constant moves
+  // this test with the data instead of breaking it.
+  const SCALE = 0.663;
+  const parts = ['tax:tax_anglo', 'work:wo_bargaining', 'family:fa_targeted'].map((s) => {
+    const [d, o] = s.split(':');
+    const opt = option(d, o);
+    assert.ok(Math.abs(opt.axis.redistribution - opt.axis_hand.redistribution * SCALE) < 5e-4,
+      `${o} ships ${opt.axis.redistribution} from a hand value of ${opt.axis_hand.redistribution}`);
+    return opt.axis.redistribution;
+  });
 
   const expected = parts.reduce((a, b) => a + b, 0);
   assert.ok(Math.abs(values.redistribution - expected) < 1e-9, `got ${values.redistribution}`);
@@ -1061,7 +1078,7 @@ test('the option is the nearer one either side of a midpoint, and the label agre
   assert.equal(justAbove.selection.healthcare, rungs[i + 1].id);
   const agreesOn = (state, code) => rank(data, state.selection)
     .find((r) => r.code === code).agreements.some((a) => a.domain === 'healthcare');
-  const dearerCountry = (rungs[i + 1].countries || [])[0];
+  const dearerCountry = (rungs[i + 1].holders || [])[0];
   assert.ok(dearerCountry, 'the dearer option is somewhere');
   assert.equal(agreesOn(justAbove, dearerCountry), true,
     'past the midpoint you are matched on the dearer option');
@@ -1322,4 +1339,126 @@ test('a null axis is taken from the nearer option and never averaged', () => {
     }
   }
   assert.deepEqual(nulls, ['voting.vo_none.disproportionality']);
+});
+
+/* The tax rate reaches everything that draws it ---------------------------- */
+
+// 26. ONE QUANTITY, ONE NUMBER.
+//
+// The tax spoke on the fingerprint and the tax row in the reveal are the same
+// measurement said twice, and they disagreed. The spoke plots the raw slider
+// rate; the row read the tax OPTION's tax_take, which build_data.py derives as
+// the median measured take of the countries running that regime. A visitor on 46
+// saw a spoke at 46 sitting above a line reading "Your country 42.5% of GDP".
+// Both numbers were real. Only one of them was the visitor's.
+test('the tax spoke and the tax axis row both print the slider rate', () => {
+  const se = startingState(data, 'SE');
+  assert.equal(se.selection.tax, 'tax_nordic');
+
+  // THE RATE IS BETWEEN STOPS, and it has to be for this to bite. The slider is
+  // continuous, so the visitor's rate is almost never the selected option's own
+  // value; a test run at a stop would have both sides reading 46 and could not
+  // fail. Until 02/09/2026 tax_take was derived like every other axis, so the two
+  // differed at every rate including the stops, which is why 46 was chosen here
+  // and why the test stopped biting when the derivation was removed.
+  const shipped = option('tax', 'tax_nordic').axis.tax_take;
+  assert.equal(rateForOption(data, 'tax_nordic'), 46);
+  assert.equal(shipped, 46,
+    'a tax option ships the rate on its stop, not a median of its holders');
+
+  const RATE = 43.7;
+  assert.ok(Math.abs(shipped - RATE) > 1,
+    `the rate and the option's axis value must differ for this to bite, got ${shipped}`);
+  const state = { ...se, taxRate: RATE };
+  const view = {
+    startCode: 'SE', selection: state.selection, pos: state.pos, rate: RATE,
+  };
+
+  // The chart, read back off the spoke's own bounds into the axis unit.
+  const base = chartBase(data);
+  const i = base.spokes.findIndex((s) => s.id === 'tax');
+  const spoke = base.spokes[i];
+  assert.equal(spoke.axisId, 'tax_take');
+  const fp = fingerprint(data, base, view);
+  const spokeValue = spoke.lo + fp.you[i] * (spoke.hi - spoke.lo);
+  assert.ok(Math.abs(spokeValue - RATE) < 1e-9, `the spoke plots ${spokeValue}, not ${RATE}`);
+
+  // The reveal, read out of the rendered panel rather than recomputed, because
+  // the fault was in what the panel PRINTED.
+  const html = renderReveal(
+    data, rank(data, state.selection, RATE), state.selection, state.pos, RATE,
+  );
+  const taxAxis = data.axes.find((a) => a.id === 'tax_take');
+  const row = html.split('<div class="ax">')
+    .find((chunk) => chunk.includes(`class="ax-name">${taxAxis.label} <`));
+  assert.ok(row, 'the reveal has no tax take row');
+  const printed = /Your country ([0-9.]+)</.exec(row);
+  assert.ok(printed, `no "Your country" figure in the tax row: ${row}`);
+
+  assert.equal(Number(printed[1]), RATE,
+    `the axis row prints ${printed[1]} where the slider and the spoke say ${RATE}`);
+  assert.notEqual(Number(printed[1]), Number(shipped.toFixed(1)),
+    'the row is still reading the option rather than the slider');
+
+  // And they agree at every rate, not only at a labelled stop. 43.7 is nobody's
+  // option, which is the whole reason the slider is continuous.
+  for (const rate of [TAX.MIN, 20, 31.5, 43.7, TAX.MAX]) {
+    const shape = fingerprint(data, base, { ...view, rate });
+    const at = spoke.lo + shape.you[i] * (spoke.hi - spoke.lo);
+    const panel = renderReveal(
+      data, rank(data, state.selection, rate), state.selection, state.pos, rate,
+    );
+    const chunk = panel.split('<div class="ax">')
+      .find((c) => c.includes(`class="ax-name">${taxAxis.label} <`));
+    const said = Number(/Your country ([0-9.]+)</.exec(chunk)[1]);
+    assert.ok(Math.abs(at - rate) < 1e-9, `spoke says ${at} at ${rate}`);
+    assert.equal(said, Number(rate.toFixed(1)), `the row says ${said} at ${rate}`);
+  }
+});
+
+// 27. THE TAX SLIDER MUST MOVE THE MATCH.
+//
+// rank() called axisValues with no rate, so the tiebreak scored every design
+// against the six labelled stops however the thumb was placed. The count cannot
+// move on a rate, and must not: the match is a count of agreeing domains and the
+// selection is unchanged. The DISTANCE is a distance over the measured axes,
+// tax_take is one of the fourteen, and it has to be the rate the visitor set.
+test('the tax slider moves the match, not just the budget and the chart', () => {
+  const au = startingState(data, 'AU');
+  const low = rank(data, au.selection, TAX.MIN);
+  const high = rank(data, au.selection, TAX.MAX);
+
+  const at = (rows, code) => rows.find((r) => r.code === code);
+  for (const c of MATCHABLE) {
+    assert.equal(at(low, c.code).matched, at(high, c.code).matched,
+      `${c.code} changed its matched count on a rate, which is not a domain`);
+  }
+
+  // Every country with a measured tax take is a different distance away from a
+  // state taxing at 12 than from one taxing at 55.
+  const measured = MATCHABLE.filter(
+    (c) => c.indicators.tax_take && c.indicators.tax_take.value !== null,
+  );
+  assert.ok(measured.length > 35, `expected most countries measured, got ${measured.length}`);
+  for (const c of measured) {
+    assert.notEqual(at(low, c.code).distance, at(high, c.code).distance,
+      `${c.code} is the same distance away at ${TAX.MIN} and at ${TAX.MAX}`);
+  }
+
+  // And it reaches the ORDER, which is the thing a visitor actually sees.
+  assert.notDeepEqual(low.map((r) => r.code), high.map((r) => r.code),
+    'the whole ranked field is in the same order at both ends of the slider');
+
+  // A rate nearer a country's own take is a shorter distance to it. Sweden
+  // measures 41.3 and Singapore 12.6, so this is not a coincidence of scale.
+  const se = at(rank(data, au.selection, 41.3), 'SE').distance;
+  const seFar = at(rank(data, au.selection, TAX.MIN), 'SE').distance;
+  assert.ok(se < seFar, `taxing at Sweden's own rate must move you towards Sweden`);
+
+  // Omitting the rate is still allowed and still means the option's own value,
+  // so callers with no rate to hand are unchanged.
+  assert.deepEqual(
+    rank(data, au.selection).map((r) => r.distance),
+    rank(data, au.selection, option('tax', au.selection.tax).axis.tax_take).map((r) => r.distance),
+  );
 });

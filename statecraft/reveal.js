@@ -79,9 +79,22 @@ function sentence(s) {
 
 /* Divergences --------------------------------------------------------------- */
 
-/** Who else runs the option the visitor picked. Five options are run by nobody. */
+/**
+ * Who else runs the option the visitor picked. Some options are run by nobody.
+ *
+ * `holders` is every matchable country whose matrix cell IS this option, built
+ * by build_data.py. It is NOT the option's `countries` tag list, which is a
+ * hand-written sample frozen at twenty countries and names only about a third
+ * of the matrix, so printing it read as an exhaustive list while quietly
+ * omitting most of the countries: seventeen named for sp_hate_limits when
+ * thirty-nine hold it.
+ *
+ * The list is only ever shown on a DIVERGENCE row, where by construction the
+ * matched country does not hold the visitor's option, so it cannot appear here
+ * and there is nothing to exclude.
+ */
 function whoElse(data, option) {
-  const codes = (option && option.countries) || [];
+  const codes = (option && option.holders) || [];
   if (!codes.length) {
     return `Not the policy of any of the ${data.countries.length} countries coded.`;
   }
@@ -206,9 +219,15 @@ function axisRow(data, axis, mine, country, selection) {
  * @param {object} selection  domain id -> option id
  * @param {object} [pos]      domain id -> continuous slider position, so the
  *                            axis rows read where the thumbs actually are
+ * @param {number} [rate]     the headline tax rate the visitor has set, which is
+ *                            what the tax axis row prints. The tax option's own
+ *                            tax_take is a median over the countries running
+ *                            that regime and is a different number, so reading
+ *                            it here had the row saying 42.5 under a slider and
+ *                            a chart spoke both reading 46.
  * @returns {string} HTML for #result
  */
-export function renderReveal(data, ranked, selection, pos) {
+export function renderReveal(data, ranked, selection, pos, rate) {
   if (!ranked || !ranked.length) {
     return '<p class="rv-empty">No country is coded yet, so there is nothing to match against.</p>';
   }
@@ -221,7 +240,7 @@ export function renderReveal(data, ranked, selection, pos) {
   // Borrowed from match.js rather than recomputed here. Redistribution is
   // summed across three domains and a second implementation of that rule would
   // eventually disagree with the one the ranking was built from.
-  const mine = axisValues(data, selection, pos);
+  const mine = axisValues(data, selection, pos, rate);
 
   const runner = ranked[1];
   const runnerLine = runner

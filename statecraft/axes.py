@@ -105,8 +105,22 @@ AXES = [
      "unit": "% of GDP", "direction": "neither", "bounds": (0.4, 4),
      "source": "OECD Social Expenditure Database",
      "url": "https://data-explorer.oecd.org/"},
+    # THE ONLY SUMMED AXIS. `summed` says the visitor's value is the sum of
+    # several domains' contributions rather than one domain's option value, and
+    # it is declared here because three separate places used to hold their own
+    # copy of that fact: match.js, test_data.py and derive_bounds.py. Two of the
+    # three agreed. derive_bounds.py did not, and derived this axis's bounds from
+    # a population of single contributions when what gets plotted is the sum of
+    # three, which is how a ceiling of 0.27 came to sit under a plotted 0.44.
     {"id": "redistribution", "domain": None, "label": "Redistribution",
-     "unit": "Gini cut, market to disposable", "direction": "neither", "bounds": (0, 0.27),
+     "summed": True,
+     # (0, 0.31) from derive_bounds.py on 02/09/2026, once occupants() started
+     # enumerating the sum instead of the parts. The ceiling is the most
+     # redistributive design the menu can build (tax_departure + wo_ubi +
+     # fa_universal, 0.2918), which sits above every real country: Finland tops
+     # the measured cells at 0.246. That is correct. The menu contains policies
+     # no country runs, so a visitor can build past the top of the world.
+     "unit": "Gini cut, market to disposable", "direction": "neither", "bounds": (0, 0.31),
      "source": "OECD Income Distribution Database",
      "url": "https://data-explorer.oecd.org/"},
 ]

@@ -51,20 +51,31 @@ spends. See budget.js.
 "does not apply" and must never be confused with a missing key, which is "no
 data". Both are handled separately in the reveal.
 
-WHERE THE MATRIX IS THIN, re-measured 30/08/2026 over all 666 pairs of the
-thirty-seven matchable countries. The measured-only rows have no matrix and cannot
-appear. No pair matches on all thirteen, so no country is unreachable in the
-reveal, but the count of shared cells on the closest pairs is the margin the
-whole match turns on:
+WHERE THE MATRIX IS THIN, re-measured 02/09/2026 over all 990 pairs of the
+forty-five matchable countries. No pair matches on all thirteen, so no country is
+unreachable in the reveal, but the count of shared cells on the closest pairs is
+the margin the whole match turns on:
 
+    12  SE NO   work
     11  SI HR   retirement, justice
-    11  SE NO   work, defence
     11  IT PT   education, justice
     11  BE LU   retirement, work
-    10  SE FI / PL LU / PL HU / NZ LV / NZ EE / NL SI / NL HR / IT HR
+    10  twenty-two pairs: AU NZ / NZ EE / NZ LV / DE BE / NL SI / NL HR /
+        EE LV / AE SA / AE QA / IE MT / IT ES / IT HR / ES PT / ES BE /
+        ES LU / BE PL / GR LU / GR CY / CZ PL / PL LU / PL HU / UY CY
+
+THE CEILING MOVED TO TWELVE ON 02/09/2026 AND A DATA FIX IS WHAT MOVED IT, which
+is the case this note was written to catch. Sweden was coded de_militia, an
+option whose sentence starts "No alliance", and Sweden joined NATO on 7 March
+2024; correcting the cell to de_alliance put it on Norway's, and SE NO now
+differ on work alone. It is the only pair above eleven and no pair reaches
+thirteen, so nothing is unreachable, but the margin on that pair is one cell:
+Sweden is wo_mandated_leave and Norway wo_transparency. If either of those two
+cells ever moves, check this pair BEFORE shipping it. Fixing a fact is allowed to
+narrow the matrix; the file simply has to say when it did.
 
 ADDING THE CENTRAL EUROPEAN AND BALTIC BLOCK DID NOT MOVE THE CEILING, which
-stayed at eleven, and added one pair to it. Slovenia and Croatia are separated by
+stayed at eleven at the time, and added one pair to it. Slovenia and Croatia are separated by
 retirement, Croatia kept the compulsory funded second pillar it legislated in
 2002 and Slovenia's is voluntary, and by justice, 69 per 100,000 against 128.
 Those two cells carry more weight than any others in this block and are the first
@@ -96,8 +107,9 @@ policy have no option:
   forgivable loans and a 3% state mortgage, and the only option with a state that
   does that is ho_singapore, which requires the state to build the flats.
 
-  a large volunteer army inside an alliance. Poland spends 4.5% of GDP on
-  defence, the most in NATO, and de_alliance says the standing force is modest.
+  a large volunteer army inside an alliance. Poland's measured cell is 4.2% of
+  GDP, the most of any NATO member in the file, and de_alliance says the
+  standing force is modest.
 
   a mixed-member electoral system. Hungary and Lithuania are coded vo_fptp on the
   tier that holds more seats and on measured disproportionality, which is the
@@ -106,9 +118,11 @@ policy have no option:
 THE LAST EIGHT, coded 31/08/2026: Uruguay, Taiwan, Saudi Arabia, Qatar, Kuwait,
 Malta, Cyprus and Panama. Re-measured over all 990 pairs of the forty-five.
 
-THE CEILING DID NOT MOVE. It is still eleven and still the same four pairs,
-SI HR, SE NO, IT PT and BE LU, and no pair matches on all thirteen. The closest
-new pairs are UY CY, IE MT, GR CY, AE SA and AE QA, all at ten.
+THE CEILING DID NOT MOVE ON THIS BATCH. It stayed at eleven on the same four
+pairs, SI HR, SE NO, IT PT and BE LU, and no pair matched on all thirteen. The
+closest new pairs are UY CY, IE MT, GR CY, AE SA and AE QA, all at ten. What
+moved the ceiling to twelve two days later was the Sweden defence correction
+above, not this batch.
 
 THE GULF DID NOT COLLAPSE INTO ONE COUNTRY, which was the risk this batch was
 run to test. Against the UAE, Saudi Arabia and Qatar each differ on three cells
@@ -176,8 +190,9 @@ needs before any low or middle income country is added.
   border only" is literally true of SENAFRONT and its "professional force" is
   not. Costa Rica and Iceland would hit the same wall.
 
-  A HEAVY-SPENDING ARMS IMPORTER. Saudi Arabia spends 7.3% of GDP, the most in
-  the file, with no conscription, no alliance and no bases abroad. de_power is
+  A HEAVY-SPENDING ARMS IMPORTER. Saudi Arabia spends 7.3% of GDP, second only
+  to Israel's 8.8 in the file, with no conscription, no alliance and no bases
+  abroad, which is what separates it from Israel. de_power is
   the only option priced for it and it describes power projection Saudi Arabia
   does not have.
 
@@ -559,7 +574,19 @@ COUNTRIES = [
      "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_mandated_leave",
-                 "defence": "de_militia", "immigration": "im_points", "justice": "ju_rehab",
+                 # MOVED OFF de_militia 02/09/2026, and BOTH of that option's
+                 # limbs had failed. Sweden joined NATO on 7 March 2024 as the
+                 # thirty-second member, so "No alliance" is false; and
+                 # conscription is selective, not universal, so "most men serve"
+                 # is false too. The Conscription and Assessment Agency called
+                 # 28,184 of the 2007 cohort to muster and enlists about 8,000 a
+                 # year against a birth cohort near 100,000, which is the same
+                 # test that put Lithuania on de_alliance below. The measured
+                 # 2.0% of GDP sits on de_alliance's 1.8 against de_militia's
+                 # 1.5.
+                 # https://www.nato.int/en/news-and-events/articles/news/2024/03/07/sweden-officially-joins-nato
+                 # https://www.pliktverket.se/om-myndigheten/in-english
+                 "defence": "de_alliance", "immigration": "im_points", "justice": "ju_rehab",
                  "family": "fa_leave"},
      "indicators": {
          "health_public": {"value": 86.1, "year": 2023,
@@ -636,7 +663,20 @@ COUNTRIES = [
      "choices": {"tax": "tax_nordic", "healthcare": "hc_mixed", "education": "ed_free",
                  "housing": "ho_subsidy", "retirement": "re_earnings", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_proportional", "work": "wo_bargaining",
-                 "defence": "de_militia", "immigration": "im_open", "justice": "ju_rehab",
+                 # MOVED OFF de_militia 02/09/2026 on the first limb only.
+                 # Finland joined NATO on 4 April 2023, so "No alliance" is
+                 # false. The second limb holds and is why this is de_conscript
+                 # rather than de_alliance: 76.29% of the male age group were
+                 # ordered into service in the 2025 call-up, and a wartime
+                 # strength of 280,000 on a population of 5.6 million is not the
+                 # "modest" standing force de_alliance describes. That is the
+                 # reading already applied to Greece, a NATO member coded
+                 # de_conscript on the same two limbs. The tension is the
+                 # burden: 2.3% of GDP against this option's hand 4.5, though it
+                 # sits beside Greece's 3.1 and South Korea's 2.6.
+                 # https://www.nato.int/en/what-we-do/partnerships-and-cooperation/relations-with-finland
+                 # https://puolustusvoimat.fi/en/-/1950813/2025-call-up-now-completed-76-of-the-given-age-group-to-service
+                 "defence": "de_conscript", "immigration": "im_open", "justice": "ju_rehab",
                  "family": "fa_universal"},
      "indicators": {
          "health_public": {"value": 81.1, "year": 2023,
@@ -712,6 +752,18 @@ COUNTRIES = [
      "choices": {"tax": "tax_anglo", "healthcare": "hc_insurance", "education": "ed_vocational",
                  "housing": "ho_subsidy", "retirement": "re_super", "energy": "en_hydro",
                  "speech": "sp_hate_limits", "voting": "vo_direct", "work": "wo_minimum",
+                 # CHECKED AND KEPT 02/09/2026 when Sweden and Finland moved off
+                 # this option, leaving Switzerland, Austria and Cyprus on it.
+                 # Both limbs hold. Permanent armed neutrality, no alliance and
+                 # no NATO membership; and Article 59 of the Federal
+                 # Constitution makes military service compulsory for every
+                 # Swiss man, with the rifle kept at home and refresher courses
+                 # spread over years, which is the "keep their kit and train for
+                 # years" half of the sentence. The measured 0.7% of GDP is
+                 # under the option's hand 1.5, and with Sweden and Finland gone
+                 # the derived median falls to 1.0 on Switzerland 0.7, Austria
+                 # 1.0 and Cyprus 1.6.
+                 # https://www.fedlex.admin.ch/eli/cc/1999/404/en#art_59
                  "defence": "de_militia", "immigration": "im_controlled", "justice": "ju_standard",
                  "family": "fa_targeted"},
      "indicators": {
@@ -749,7 +801,8 @@ COUNTRIES = [
     # not: the grid is 497.1 g/kWh, close to the fossil end of the axis. Singapore
     # has taxed carbon since 2019 and raised the rate five-fold in 2024. Sources are
     # on the en_carbon_tax option in policies.py. The speech cell is unchanged and
-    # Singapore is now the only country on sp_order.
+    # Singapore was the only country on sp_order when this was written; Kuwait
+    # joined it on 31/08/2026 and the two of them are the option.
     {"code": "SG", "name": "Singapore", "timezones": ["Asia/Singapore"],
      "nonTaxRevenue": 0.0,
      "matchable": True,
@@ -974,8 +1027,18 @@ COUNTRIES = [
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
          "education_spend": {"value": 3.9, "year": 2021,
                              "source": "World Bank, government expenditure on education % of GDP"},
+         # THE SAME SHAPE AS PANAMA'S 1999 CELL AND TREATED THE SAME WAY: the
+         # year is old because the SERIES ENDS THERE, and the reason now ships
+         # in the source string rather than sitting in a comment. World Bank
+         # MS.MIL.XPND.GD.ZS for ARE runs 1997 to 2014 and is null after it.
+         # The reason differs from Panama's and is the opposite one: the UAE
+         # still spends, and spends heavily, but has published nothing since
+         # 2014 that lets SIPRI make an estimate, so this is the last real
+         # figure rather than a measure of something that stopped existing. No
+         # substitute on a comparable basis exists, so the cell is kept.
+         # https://www.sipri.org/databases/milex
          "military_burden": {"value": 5.6, "year": 2014,
-                             "source": "World Bank / SIPRI, military expenditure % of GDP"},
+                             "source": "World Bank / SIPRI, military expenditure % of GDP; the series ends in 2014 because the UAE has published nothing since that supports an estimate, so this is the last measured year and not a current one"},
          "foreign_born": {"value": 74.0, "year": 2024,
                           "source": "UN DESA / World Bank, international migrant stock % of population"},
          "grid_carbon": {"value": 467.5, "year": 2024,
@@ -1095,7 +1158,8 @@ COUNTRIES = [
                  "work": "wo_minimum",
                  # The de_neutral tag in policies.py holds. Militarily neutral,
                  # no alliance, no conscription, and 0.2% of GDP, the lowest
-                 # military burden of the forty-five.
+                 # measured military burden of the forty-five; Iceland's 0.0 is
+                 # lower and is imputed rather than measured.
                  "defence": "de_neutral",
                  "immigration": "im_open", "justice": "ju_standard",
                  # Child Benefit is universal at EUR 140 a month per child, but
@@ -1174,8 +1238,11 @@ COUNTRIES = [
                  "energy": "en_carbon_tax", "speech": "sp_hate_limits",
                  # THE MEASURED CELL AND THIS CHOICE DISAGREE AND THE REASON IS
                  # A MENU GAP, not an error in either. Italy's Gallagher index
-                 # is 12.37, the second highest of the matchable set after the
-                 # UK, because the Rosatellum is a mixed system: about 37% of
+                 # is 12.37, the sixth highest of the forty-five behind the UK
+                 # 23.64, Australia 23.11, Singapore 16.88, South Korea 15.27
+                 # and Lithuania 13.58, and the highest of any country the file
+                 # codes vo_proportional apart from South Korea, because the
+                 # Rosatellum is a mixed system: about 37% of
                  # seats are single-member and won on a plurality, and 61% are
                  # allocated proportionally. There is no mixed-member option in
                  # this domain. vo_fptp would be the false half, since Italy
@@ -1303,8 +1370,10 @@ COUNTRIES = [
      "matchable": True,
      "choices": {"tax": "tax_continental",
                  # The SNS is tax-funded and universal, but the public share of
-                 # health spending is 61.4%, the lowest of the nine and the
-                 # lowest of any Beveridge system in the file. Taxas moderadoras
+                 # health spending is 61.4%, the second lowest of the nine after
+                 # Greece's 50.6, and the lowest of any Beveridge system in the
+                 # file: Greece funds the ESY through EOPYY contributions and is
+                 # coded hc_insurance below. Taxas moderadoras
                  # are charged for emergency, diagnostic and some GP care, the
                  # ADSE subsystem covers more than 1.3 million public servants
                  # through private providers, and private hospital use is
@@ -1549,7 +1618,9 @@ COUNTRIES = [
                  # contributory limb is what puts it on hc_insurance, but EOPYY
                  # is one public fund rather than the regulated market of
                  # insurers the option describes, and the measured public share
-                 # of 50.6% is the lowest of the forty-five. No option in this
+                 # of 50.6% is the third lowest of the forty-five, after
+                 # Switzerland's 33.1 and Chile's 48.5 on the identical WHO
+                 # basis, and the lowest in the EU. No option in this
                  # domain describes a universal system carrying a third of its
                  # cost out of patients' pockets.
                  # https://pmc.ncbi.nlm.nih.gov/articles/PMC12733077/
@@ -1755,12 +1826,13 @@ COUNTRIES = [
                  # made opt-in, and PPK from 2019 is auto-enrolment with an
                  # opt-out, so nothing here is compulsory saving. The pillar
                  # that pays is the ZUS notional defined contribution account,
-                 # which is earnings-related, and 11.2% of GDP is the second
-                 # highest of the eight.
+                 # which is earnings-related, and 11.2% of GDP is the highest of
+                 # the eight, ahead of Slovenia's 10.6.
                  "retirement": "re_earnings",
                  # In the EU ETS, so emissions are priced. The grid is 588.6
-                 # g/kWh, the dirtiest in the EU and the highest value on this
-                 # option by 90 points: pricing carbon is not the same claim as
+                 # g/kWh, the dirtiest in the EU and the second highest value on
+                 # this option after Taiwan's 633.2, which was coded onto it
+                 # later: pricing carbon is not the same claim as
                  # having decarbonised, which is the spread check_spread.py
                  # already records against en_carbon_tax.
                  "energy": "en_carbon_tax",
@@ -1950,7 +2022,9 @@ COUNTRIES = [
                  # option.
                  "work": "wo_bargaining",
                  # NATO, no conscription, and 1.3% of GDP, the lowest military
-                 # burden in the alliance.
+                 # burden of the eight and joint third lowest of the file's
+                 # NATO members with Belgium and Canada, behind Iceland's
+                 # imputed 0.0 and Luxembourg's 1.0.
                  "defence": "de_alliance",
                  # Ten years of residence and no dual nationality in the
                  # standard case, which is the Austrian test applied above.
@@ -2235,7 +2309,8 @@ COUNTRIES = [
                  # cell rather than the Lithuanian one.
                  # https://www.europarl.europa.eu/RegData/etudes/BRIE/2025/769502/EPRS_BRI(2025)769502_EN.pdf
                  "immigration": "im_open",
-                 # 188 per 100,000, second highest of the eight.
+                 # 188 per 100,000, third highest of the eight behind Hungary's
+                 # 206 and Poland's 194.
                  "justice": "ju_tough",
                  # The family state benefit is paid for every child with no
                  # means test and rises steeply with the number of children:
@@ -2329,8 +2404,8 @@ COUNTRIES = [
                  # de_neutral, which requires no alliance.
                  "defence": "de_alliance",
                  "immigration": "im_open",
-                 # 36 per 100,000, the lowest of the forty-five and barely half
-                 # the ju_rehab hand value of 60.
+                 # 36 per 100,000, the second lowest of the forty-five after
+                 # Japan's 33, and barely half the ju_rehab hand value of 60.
                  "justice": "ju_rehab",
                  # Twelve months of leave split six and six between parents for
                  # children born from 2021, of which only six weeks is
@@ -2361,8 +2436,17 @@ COUNTRIES = [
                        "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"},
          "bargaining": {"value": 90.0, "year": 2024,
                        "source": "OECD/AIAS ICTWSS via OECD Data Explorer, collective bargaining coverage, % of employees with the right to bargain"},
+         # THE OLD SOURCE STRING SAID SIPRI RECORDS ICELAND AT ZERO AND IT DOES
+         # NOT. SIPRI EXCLUDES Iceland from the series instead of entering a
+         # zero, and the World Bank mirror MS.MIL.XPND.GD.ZS for ISL is null for
+         # every year. The only thing the 2025 fact sheet says about Iceland is
+         # a parenthesis in the NATO paragraph, "excluding Iceland, which has no
+         # military expenditure". So the 0.0 is not a reading; it is IMPUTED
+         # from the fact that Iceland has no armed forces, and the source string
+         # now says that on the page rather than claiming a measurement.
+         # https://www.sipri.org/sites/default/files/2025-04/2504_fs_milex_2024.pdf
          "military_burden": {"value": 0.0, "year": 2025,
-                       "source": "SIPRI via Our World in Data, military expenditure % of GDP; SIPRI records Iceland at zero for every year of the series, it has no standing armed forces"},
+                       "source": "imputed, not measured: Iceland has no armed forces, and SIPRI excludes it from the military expenditure series rather than recording a zero (the 2025 fact sheet notes only \"excluding Iceland, which has no military expenditure\")"},
          "foreign_born": {"value": 25.1, "year": 2024,
                        "source": "UN DESA / World Bank, international migrant stock % of population"},
          "incarceration": {"value": 36.0, "year": 2025,
@@ -2386,7 +2470,8 @@ COUNTRIES = [
                  # Nationale de Sante, a single public fund since the 2008 merger
                  # rather than the competing insurers of the Belgian or Dutch
                  # model, but Bismarckian and compulsory, which is the option's
-                 # claim. Public share 86.9%, the highest of the forty-five.
+                 # claim. Public share 86.9%, the second highest of the
+                 # forty-five after Kuwait's 88.5.
                  # https://cns.public.lu/en/employeur/bases-bonnes-pratiques/assurance-maladie-bref.html
                  "healthcare": "hc_insurance",
                  # About EUR 800 a year at the University of Luxembourg. Not
@@ -2605,8 +2690,12 @@ COUNTRIES = [
      # university and sector-wide wage councils are all things the options
      # already describe. Where it does not fit is recorded cell by cell below.
      "choices": {
-                 # 27.3% of GDP, the highest tax take in Latin America and the
-                 # lowest of the fifteen countries on this option. IRPF has been
+                 # 27.3% of GDP, the highest of the three Latin American
+                 # countries in the file, ahead of Chile's 23.9 and Panama's
+                 # 11.3, though Brazil is higher and is not in the file.
+                 # Nineteen countries now sit on this option and Uruguay is
+                 # seventh from the bottom of them, above Panama, Singapore,
+                 # Taiwan, Ireland, Chile and Switzerland. IRPF has been
                  # progressive since the 2007 reform and sits on top of a 22%
                  # VAT, so the shape of the option is right and the level is 6.7
                  # points below its 34.0. Nothing describes a progressive system
@@ -2659,13 +2748,17 @@ COUNTRIES = [
                  # grounds and Uruguay does not have that excuse. The only
                  # compulsory option in the menu is vo_preferential, and Uruguay
                  # does not use a ranked ballot, so the closed-list PR limb wins.
-                 # Gallagher 2.14, the second lowest in the file.
+                 # Gallagher 2.14, the fifth lowest in the file behind Sweden
+                 # 0.64, the United States 1.01, Denmark 1.13 and the
+                 # Netherlands 1.46.
                  "voting": "vo_proportional",
                  # The Consejos de Salarios are tripartite sector-wide wage
                  # councils whose agreements are extended erga omnes, restored in
-                 # 2005 after fifteen years dormant. This is the only country
-                 # outside western Europe in the file on sector bargaining and it
-                 # is the strongest single cell in this row.
+                 # 2005 after fifteen years dormant. Of the fourteen countries
+                 # on sector bargaining, twelve are European and the other two
+                 # are Australia and Uruguay, which makes this the only Latin
+                 # American cell on the option and the strongest single cell in
+                 # this row.
                  # https://journals.sagepub.com/doi/full/10.1177/14680181251326845
                  "work": "wo_bargaining",
                  # No alliance, no conscription, a volunteer force. The 2.3% of
@@ -3006,8 +3099,9 @@ COUNTRIES = [
                  # wage floor. That is the fact that keeps Saudi Arabia on
                  # wo_at_will while Qatar and Kuwait move off it.
                  "work": "wo_at_will",
-                 # 7.3% of GDP, the highest military burden in the file by two
-                 # points, and an all-volunteer force with no conscription. THE
+                 # 7.3% of GDP, the second highest military burden in the file
+                 # after Israel's 8.8 and 0.8 points clear of Qatar in third,
+                 # and an all-volunteer force with no conscription. THE
                  # OPTION IS THE LEAST WRONG RATHER THAN RIGHT: Saudi Arabia has
                  # the spending and led a foreign war in Yemen, but it has no
                  # network of bases abroad and no blue-water navy, so what the
@@ -3070,7 +3164,9 @@ COUNTRIES = [
                  # through university, with full state scholarships at Qatar
                  # University and at approved universities abroad. Measured
                  # education spend is 3.2% of GDP against this option's 6.3,
-                 # which is the largest education disagreement in the block and
+                 # which is the largest education disagreement of the four Gulf
+                 # states, though not of the eight coded with Qatar, since
+                 # Panama's is 3.8, and
                  # reflects a small citizen cohort rather than thin provision.
                  "education": "ed_free",
                  # Housing Law 2 of 2007 gives citizens a free land plot and a
@@ -3366,8 +3462,10 @@ COUNTRIES = [
                  "work": "wo_minimum",
                  # Constitutionally neutral since 1974 and outside NATO, with an
                  # Armed Forces of Malta of about 2,000 whose main task is search
-                 # and rescue and border patrol. At 0.5% of GDP it is the lowest
-                 # military burden in the file, against the option's 0.7.
+                 # and rescue and border patrol. At 0.5% of GDP it is the third
+                 # lowest military burden in the file, after Iceland's imputed
+                 # 0.0 and Ireland's 0.2, and it sits just under the option's
+                 # hand 0.7.
                  "defence": "de_neutral",
                  # THE WEAKEST CELL IN THIS ROW. Malta is in the EU and Schengen,
                  # so the option's sentence is true as far as it goes, and
@@ -3549,7 +3647,11 @@ COUNTRIES = [
      "choices": {
                  # 11.3% of GDP, THE LOWEST TAX TAKE IN THE FILE and 22.7 points
                  # under this option's 34.0, which is the largest cell-versus-axis
-                 # disagreement anywhere in the matrix. The reason it is here and
+                 # disagreement on the tax axis, just ahead of Singapore's 21.9.
+                 # It is NOT the largest anywhere in the matrix: the energy cells
+                 # run to Taiwan's 453 points, though points on grid carbon and
+                 # points on a tax take are not the same size of thing. The
+                 # reason it is here and
                  # not on tax_minimal is that tax_minimal's sentence is "no income
                  # tax", and Panama has a progressive one at 15% and 25%. What is
                  # true is the option's third clause: territorial taxation, a
@@ -3571,8 +3673,10 @@ COUNTRIES = [
                  # option's 80.0 and that disagreement should be read as real.
                  "healthcare": "hc_mixed",
                  # Public education is free including the public universities.
-                 # Measured spend is 2.5% of GDP, the lowest in the file and 3.8
-                 # points under the option: the same free-and-underfunded gap
+                 # Measured spend is 2.5% of GDP, the second lowest in the file
+                 # after Singapore's 2.2, and 3.8 points under the option, which
+                 # is the largest education disagreement in the matrix: the same
+                 # free-and-underfunded gap
                  # recorded on Greece, at twice the size.
                  "education": "ed_free",
                  # A private market with a large self-built informal sector, and
@@ -3594,8 +3698,11 @@ COUNTRIES = [
                  # sentence and the reason it is here. Its second sentence is
                  # also true of a country that has just built a third metro line
                  # only in its capital. What is not true is the axis: 221.2 g/kWh
-                 # on a grid that is majority hydro, against the option's 480,
-                 # which is the largest energy disagreement in the file. A clean
+                 # on a grid that is majority hydro, against the option's 480, a
+                 # gap of 259 points. It is the largest energy disagreement in
+                 # the file IN THE CLEAN DIRECTION and the only one of any size
+                 # that runs that way; the bigger gaps, Taiwan's 453 and
+                 # Poland's 409, are dirty grids on a priced option. A clean
                  # grid that nobody priced has no cell in this menu.
                  "energy": "en_fossil",
                  # Criminal defamation remains in the penal code and Law 7 of
@@ -3606,7 +3713,9 @@ COUNTRIES = [
                  # single-member seats, and the president is elected by plurality
                  # in one round. Coded on the majority of seats, and consistent
                  # with Japan, Korea and Taiwan. Gallagher 9.77, more than three
-                 # times this option's 3.0 and the highest of any country on it.
+                 # times this option's 3.0, and sixth highest of the
+                 # thirty-three countries on it behind South Korea 15.27, Italy
+                 # 12.37, Slovenia 11.49, Latvia 10.65 and Czechia 10.34.
                  "voting": "vo_proportional",
                  # A statutory minimum wage set by region and sector, and unions
                  # that are strong in construction and weak everywhere else.
@@ -3647,8 +3756,22 @@ COUNTRIES = [
                        "source": "V-Dem via Our World in Data, freedom of expression and alternative sources of information index (v2x_freexp_altinf), central estimate"},
          "disproportionality": {"value": 9.77, "year": 2024,
                        "source": "Gallagher, Election indices (Trinity College Dublin), 16 June 2025 edition, least squares index at the most recent national legislative election"},
+         # THE ONLY 1999 FIGURE IN A COLUMN OF 2024s AND 2025s, KEPT WITH THE
+         # REASON ON THE PAGE RATHER THAN IN THIS COMMENT. World Bank
+         # MS.MIL.XPND.GD.ZS for PAN runs 1987 to 1999 and is null every year
+         # since, so 1999 is the END of the series and not a stale read of a
+         # live one. It is also not a figure for an army: Panama abolished its
+         # military in 1990 and banned it in the constitution in 1994, so the
+         # whole 1990 to 1999 run already measures the same public force under
+         # the Ministry of Public Security that exists today. Checked against
+         # the current equivalent rather than assumed: that ministry's 2024
+         # budget of USD 1,029m on a GDP of USD 86.5bn is 1.19%, against 0.97%
+         # in 1999, so the measure has barely moved in twenty-five years. The
+         # ministry figure is NOT what ships, because it is a different basis
+         # from the forty-four cells beside it.
+         # https://www.infodefensa.com/texto-diario/mostrar/5975591/panama-asigna-cerca-118-seguridad-publica-2027
          "military_burden": {"value": 1.0, "year": 1999,
-                       "source": "World Bank / SIPRI, military expenditure % of GDP"},
+                       "source": "World Bank / SIPRI, military expenditure % of GDP; the series ends in 1999 and is null for every year since, because Panama abolished its armed forces in 1990 and reports no military expenditure"},
          "foreign_born": {"value": 10.6, "year": 2024,
                        "source": "UN DESA / World Bank, international migrant stock % of population"},
          "incarceration": {"value": 522.0, "year": 2026,

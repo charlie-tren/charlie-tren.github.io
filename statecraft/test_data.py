@@ -1,6 +1,8 @@
 """Validations for the Statecraft data. Every one of these must be able to fail:
 each is proven against a deliberately broken fixture in the task that adds it."""
 
+import itertools
+
 from axes import AXES
 
 
@@ -34,13 +36,16 @@ def test_every_option_is_fully_costed():
         for o in d["options"]:
             assert o.get("label"), f"{o['id']} has no label"
             assert o.get("detail"), f"{o['id']} has no detail"
-            # The KEY must exist; the LIST may be empty. An empty list is the
-            # deliberate claim that no country does this, which the reveal prints
-            # in as many words. A missing key is a forgotten field. Requiring a
-            # tag outright would delete UBI, absolute free speech, a car-free
-            # country and the age cap, which are the aspirational half of the menu.
-            assert isinstance(o.get("countries"), list), \
-                f"{o['id']} has no countries list"
+            # An option no country holds is fine and deliberate: UBI, absolute
+            # free speech, a car-free country and the age cap are the aspirational
+            # half of the menu, and the reveal says so in as many words.
+            # test_the_menu_stays_grounded holds that share down.
+            #
+            # There used to be an assertion here that the option carried a
+            # `countries` list. It checked that a hand-maintained copy of the
+            # matrix EXISTED, never that it was current, so it passed every day of
+            # the year that copy spent going stale. The tag lists were deleted on
+            # 02/09/2026 and holders() reads the matrix instead.
             pol = o.get("political")
             assert pol is not None and 0 <= pol <= 100, f"{o['id']} political out of range"
             soc = o.get("social")
@@ -73,32 +78,49 @@ def test_every_tax_rate_sits_on_the_slider_and_matches_its_own_axis():
     the same claim written twice, and they drifted apart once already: tax_minimal
     carried 27.8 against an axis of 16.0, because the field was carrying general
     government revenue rather than a tax take. That is what the split into `rate`
-    plus `nonTaxRevenue` fixed, and this is the check that stops it recurring."""
+    plus `nonTaxRevenue` fixed, and this is the check that stops it recurring.
+
+    THE SECOND CHECK IS AGAINST WHAT SHIPS, not against the hand value. It read
+    `o["axis"]["tax_take"]` off policies.py, which is the number BEFORE
+    build_data.py derives it from the countries holding the option, so the
+    derivation walked straight through the check that exists to catch the two
+    drifting apart. data.json is what the page loads, and the effective value is
+    what it carries."""
     lo, hi = TAX_SLIDER
     tax = next(d for d in DOMAINS if d["id"] == TAX_DOMAIN)
     rates = [o["rate"] for o in tax["options"]]
     assert rates == sorted(rates), f"tax stops are out of order: {rates}"
     assert len(set(rates)) == len(rates), f"two tax stops share a rate: {rates}"
+    shipped = {oid: eff for oid, (eff, _h, _b) in effective_axis_values().items()}
+    basis_of = {oid: b for oid, (_e, _h, b) in effective_axis_values().items()}
     for o in tax["options"]:
         assert lo <= o["rate"] <= hi, (
             f"{o['id']} sits at {o['rate']}, off a slider that runs {lo} to {hi}")
-        assert o["rate"] == o["axis"]["tax_take"], (
-            f"{o['id']} raises {o['rate']} but plots at {o['axis']['tax_take']} on "
-            f"the tax_take axis; those are the same number said twice")
+        ships = shipped[o["id"]]["tax_take"]
+        assert o["rate"] == ships, (
+            f"{o['id']} raises {o['rate']} but ships {ships} on the tax_take "
+            f"axis [{basis_of[o['id']]}]; those are the same number said twice")
 
 
 def test_the_menu_stays_grounded():
-    """Untagged options are allowed and are the aspirational half of the menu.
-    Too many of them and the page stops being a comparison with real countries
-    and becomes a wishlist, which is the failure the country tags exist to
-    prevent. Print the share rather than only asserting on it: a bare pass here
-    says nothing about which way the number is drifting."""
-    options = [o for d in DOMAINS for o in d["options"]]
-    untagged = [o["id"] for o in options if not o["countries"]]
-    share = len(untagged) / len(options)
-    print(f"\nuntagged options: {len(untagged)} of {len(options)} "
-          f"({share:.0%}) {untagged}")
-    assert share <= 0.20, f"the menu has drifted into a wishlist: {untagged}"
+    """An option no country holds is allowed and is the aspirational half of the
+    menu. Too many of them and the page stops being a comparison with real
+    countries and becomes a wishlist, which is the failure this guards. Print the
+    share rather than only asserting on it: a bare pass here says nothing about
+    which way the number is drifting.
+
+    COUNTED OFF THE MATRIX. It used to be counted off each option's `countries`
+    tag list, a second hand-maintained answer to a question the matrix already
+    answered. By 02/09/2026 the two disagreed: the tags named 190 of the 585
+    matrix cells. The tag lists were deleted rather than repaired, and this is
+    one of the checks that used to read them."""
+    from build_data import holders
+    options = [(d["id"], o) for d in DOMAINS for o in d["options"]]
+    empty = [o["id"] for did, o in options if not holders(did, o["id"])]
+    share = len(empty) / len(options)
+    print(f"\noptions no country holds: {len(empty)} of {len(options)} "
+          f"({share:.0%}) {empty}")
+    assert share <= 0.20, f"the menu has drifted into a wishlist: {empty}"
 
 
 def test_option_ids_are_globally_unique():
@@ -195,31 +217,18 @@ def test_a_measured_only_country_can_never_be_a_match():
             f"page for nothing")
 
 
-def test_option_country_tags_name_a_country_that_holds_that_option():
-    """A tag on an option is a claim that some country does this. Where that
-    country is in the matrix, the matrix must agree. Tags naming countries
-    outside the twenty are allowed and are how the menu proves it is not
-    invented, so they are skipped rather than failed."""
-    in_matrix = {c["code"]: c["choices"] for c in matchable()}
-    unmatched = {c["code"] for c in measured_only()}
-    outside = set()
-    for d in DOMAINS:
-        for o in d["options"]:
-            for code in o["countries"]:
-                if code in in_matrix:
-                    assert in_matrix[code][d["id"]] == o["id"], (
-                        f"{o['id']} is tagged {code}, but the matrix has {code}.{d['id']} "
-                        f"= {in_matrix[code][d['id']]}")
-                else:
-                    # A measured-only country is OUTSIDE the matrix, exactly like a
-                    # country not in the file at all: its row cannot confirm or
-                    # contradict the tag. Indexing it would have raised KeyError on
-                    # an empty dict, which is a crash rather than a finding, so it
-                    # is named here instead of silently skipped.
-                    outside.add(code)
-    print(f"\ntags outside the matrix: "
-          f"{sorted(outside & unmatched)} measured only, "
-          f"{sorted(outside - unmatched)} not in the file")
+# DELETED 02/09/2026: test_option_country_tags_name_a_country_that_holds_that_option.
+#
+# It checked that each option's `countries` tag list agreed with the `choices`
+# matrix. Every tag did agree, right up to the day the tag lists were deleted,
+# and that is the point: agreement was never the problem. The tags were written
+# when the matrix held twenty countries and were never extended as it grew to
+# forty-five, so they named 190 of the 585 cells. True, and a third of the truth.
+#
+# A test that can only catch a WRONG tag cannot catch a MISSING one, and missing
+# was the failure mode the whole time. Nothing validates the tags now because
+# there are no tags: build_data.holders() reads the matrix, which is the only
+# record of who holds what.
 
 
 def test_every_country_carries_a_non_tax_revenue():
@@ -388,6 +397,17 @@ def test_no_option_is_strictly_dominated():
 
 from build_data import effective_axis_values
 
+# Axes no single option owns. match.js SUMS these across every domain that
+# contributes one, so the number on the track is the sum and never any one
+# option's share of it.
+SUMMED_AXES = {"redistribution"}
+
+
+def contributing_domains(axis_id):
+    """The domains whose options put a value on a summed axis."""
+    return [d for d in DOMAINS
+            if any(o["axis"].get(axis_id) is not None for o in d["options"])]
+
 
 def test_every_effective_axis_value_fits_inside_its_axis_bounds():
     """The value the page PLOTS, derived or hand, must sit inside the track it is
@@ -400,19 +420,72 @@ def test_every_effective_axis_value_fits_inside_its_axis_bounds():
     share of dwellings let below market. Both sides now sit on the OECD PH4.2
     basis, and Singapore correctly reads low.
 
-    A None value is 'does not apply' and cannot be out of bounds. Contributions
-    to redistribution are checked here too, since they are plotted on the same
-    fourteen tracks as everything else."""
+    A None value is 'does not apply' and cannot be out of bounds.
+
+    A SUMMED AXIS IS CHECKED AS THE SUM, which is what this test used to claim
+    and did not do. Redistribution is contributed to by the tax, work and family
+    choices and match.js adds the three together; nothing ever plots one
+    contribution on its own. Checking them one at a time asked whether 0.25 fits
+    inside (0, 0.27), which it does, and never asked the question the axis is
+    there to answer. The docstring said contributions were covered "since they
+    are plotted on the same fourteen tracks", which was exactly the wrong
+    inference: being on the same track is the reason the SUM is what has to
+    fit."""
     bounds = {a["id"]: a["bounds"] for a in AXES}
     for option_id, (effective, _hand, basis) in effective_axis_values().items():
         for axis, value in effective.items():
-            if value is None:
+            if value is None or axis in SUMMED_AXES:
                 continue
             lo, hi = bounds[axis]
             assert lo <= value <= hi, (
                 f"{option_id} sits at {value} on {axis}, whose bounds are "
                 f"({lo}, {hi}); the marker would be clamped and read as a fact "
                 f"[{basis}]")
+
+    effective_of = {oid: eff for oid, (eff, _h, _b) in effective_axis_values().items()}
+    for axis in sorted(SUMMED_AXES):
+        lo, hi = bounds[axis]
+        domains = contributing_domains(axis)
+        assert len(domains) > 1, (
+            f"{axis} is summed but only {len(domains)} domain contributes to it")
+
+        # Every design a visitor can build out of the contributing domains, since
+        # every one of them is reachable by dragging and each draws a marker.
+        # Sorted worst first, so the red names the largest breach rather than
+        # whichever one itertools reached first.
+        designs = []
+        for combo in itertools.product(*[d["options"] for d in domains]):
+            total = sum(effective_of[o["id"]].get(axis) or 0 for o in combo)
+            designs.append((total, [o["id"] for o in combo]))
+        designs.sort(reverse=True)
+        out = [d for d in designs if not lo <= d[0] <= hi]
+
+        # The countries' OWN coded designs, which is what the page OPENS on. A
+        # breach reachable only by dragging is a fault; one a visitor is handed
+        # before they touch anything is the same fault, arriving sooner.
+        starts = []
+        for c in matchable():
+            total = sum(effective_of[c["choices"][d["id"]]].get(axis) or 0
+                        for d in domains if c["choices"].get(d["id"]))
+            starts.append((total, c["code"], c["name"]))
+        starts.sort(reverse=True)
+        bad_starts = [s for s in starts if not lo <= s[0] <= hi]
+
+        print(f"\n{axis}: bounds ({lo}, {hi}), {len(domains)} contributing "
+              f"domains, {len(designs)} reachable designs.\n"
+              f"  highest sum {designs[0][0]:.2f} from {designs[0][1]}\n"
+              f"  {len(out)} of {len(designs)} designs outside the bounds\n"
+              f"  worst starting country {starts[0][2]} at {starts[0][0]:.2f}, "
+              f"{len(bad_starts)} of {len(starts)} countries outside on arrival")
+
+        assert not out, (
+            f"{len(out)} of {len(designs)} reachable designs fall outside the "
+            f"{axis} bounds ({lo}, {hi}). The worst is "
+            f"{' + '.join(designs[0][1])} at {designs[0][0]:.2f}. "
+            f"{len(bad_starts)} of {len(starts)} countries are outside on their "
+            f"own coded design before the visitor touches anything, the worst "
+            f"being {starts[0][2]} at {starts[0][0]:.2f}. Every one of these "
+            f"markers is clamped to the end of the track and read as a fact")
 
 
 from timezones import TIMEZONES, FALLBACK

@@ -10,20 +10,26 @@ figures is worse than a stale one, so the failure mode is deliberately
 The substance is the derivation. Every option in policies.py carries a
 hand-written `axis` value, the position that option implies on its domain's axis.
 Hand values have been wrong twice in ways that reached a live claim, most
-recently en_carbon_tax sitting at 180 g/kWh while its ten tagged countries
+recently en_carbon_tax sitting at 180 g/kWh while the countries that run it
 average about 287. So an option's axis value is now the MEDIAN of the measured
-values of the countries tagged to it, computed here at build time from
+values of the countries that hold it, computed here at build time from
 countries.py.
+
+WHO HOLDS IT IS READ OFF THE `choices` MATRIX, not off the option's `countries`
+tag list. Until 02/09/2026 it was the tag list, and the tag lists were frozen
+when the matrix held twenty countries while the matrix grew to forty-five, so
+every median was taken over an arbitrary third of the countries that actually
+run the policy. See `holders` below for what that did to first past the post.
 
 MEDIAN, not mean, because it is robust to a single classification artefact.
 Switzerland reads 33.1 on public health share, against 48 to 85 for the rest of
 its option, because WHO counts compulsory Swiss cover as private insurance. A
 mean would let that one cell drag the marker; a median will not.
 
-An option with no tagged country, or whose tagged countries have no measured
-value for that axis, keeps its hand value. Five options are untagged on purpose
-and are the aspirational half of the menu, so a hand value is the only thing
-available and that is correct.
+An option no matchable country holds, or whose holders have no measured value
+for that axis, keeps its hand value. Several options are held by nobody on
+purpose and are the aspirational half of the menu, so a hand value is the only
+thing available and that is correct.
 
 `redistribution` is contributed to by the tax, work and family choices and summed
 rather than owned by one domain, so those entries stay hand values. Only each
@@ -63,16 +69,11 @@ def measured(axis, codes):
     bottom of its track.
 
     MATCHABLE COUNTRIES ONLY, decided 30/08/2026 when twenty-five measured-only
-    countries were added. A country tag on an option is the claim that that
-    country runs that policy, and the thing that holds the claim honest is
-    test_option_country_tags_name_a_country_that_holds_that_option, which checks
-    the tag against the country's own matrix cell. A measured-only country has no
-    matrix, so its tag cannot be checked, and letting an unchecked tag pull the
-    marker would put an unverifiable claim on the page dressed as a measurement.
-    Five options are tagged to one: de_neutral IE, im_controlled IT, ju_standard
-    IE and IT, ju_decriminalised PT, fa_pronatal HU. They contribute nothing
-    until those countries are coded, at which point they start contributing and
-    the matrix check starts covering them, both automatically.
+    countries were added, and unchanged by the move to matrix holders on
+    02/09/2026 because a measured-only country has no matrix row and so cannot
+    be a holder of anything in the first place. Its policies are not coded, so
+    letting it pull a marker would put an unverifiable claim on the page dressed
+    as a measurement.
     """
     cells = {c["code"]: c["indicators"] for c in COUNTRIES if c["matchable"]}
     out = []
@@ -83,6 +84,56 @@ def measured(axis, codes):
     return out
 
 
+def holders(domain_id, option_id):
+    """Every matchable country whose `choices` matrix cell IS this option.
+
+    THIS IS THE POPULATION, not the `countries` tag list on the option. The tag
+    lists were written when the matrix held twenty countries and were never
+    extended when it reached forty-five, so by 02/09/2026 they named only 190 of
+    the 585 matrix cells. Every tag was still true, which is why nothing failed:
+    they had simply stopped being the whole truth, and a median over an
+    arbitrary third of the holders is not a median over the holders.
+
+    vo_fptp is what made it visible. Three tags (US, CA, UK) put it at 5.01 on
+    electoral disproportionality when its six actual holders sit at 12.67, so
+    the page read first past the post as MORE proportional than proportional
+    representation, which is the one thing that axis exists to say.
+
+    Order follows countries.py rather than the tag list, so the list a visitor
+    reads is stable and does not depend on the order somebody typed tags in.
+    """
+    return [c["code"] for c in COUNTRIES
+            if c["matchable"] and c["choices"].get(domain_id) == option_id]
+
+
+# REDISTRIBUTION IS THE ONE AXIS NOBODY MEASURES PER OPTION.
+#
+# Every other axis is derived: an option's value is the median of the countries
+# that hold it, so the axis is on the same footing as the country cells plotted
+# beside it. Redistribution cannot work that way, because it is the sum of three
+# choices (tax, work, family) rather than the property of one, so the seventeen
+# contributions in policies.py are hand-set.
+#
+# Hand-set, they were on a different scale from the country cells. The country
+# cells are the OECD IDD Gini cut from market to disposable income. Rebuilding a
+# country's own thirteen policies and summing gave a mean of 0.230 against a
+# measured mean of 0.158 across the 35 countries with a cell, mean absolute
+# error 0.076 on a track 0.27 wide, and eight countries (DE, FR, DK, SE, NO, FI,
+# AT, BE) summed past the ceiling. Selecting Denmark's own policies printed
+# "Your country 0.35, Denmark 0.17" with the marker pinned at 100% and a console
+# warning. Two numbers on one track, in the same unit, that were never the same
+# quantity.
+#
+# This is the least-squares scale that puts the sum on the measured basis: MAE
+# 0.076 to 0.030, largest sum 0.36 to 0.239, inside the bound. It is a single
+# positive constant, so it calibrates the level and changes no ordering. The
+# contributions in policies.py stay readable as relative strengths.
+#
+# Re-fit it if the contributions change, with test_data.py's fit test as the
+# check.
+REDISTRIBUTION_SCALE = 0.663
+
+
 def derive(domain, option):
     """Return (effective axis dict, basis string) for one option.
 
@@ -91,8 +142,24 @@ def derive(domain, option):
     testing.
     """
     axis = domain["axis"]
-    values = measured(axis, option["countries"])
     effective = dict(option["axis"])
+    # Before any early return: the tax options carry the largest redistribution
+    # contributions in the file, so scaling has to happen above the tax branch.
+    if "redistribution" in effective:
+        effective["redistribution"] = round(
+            effective["redistribution"] * REDISTRIBUTION_SCALE, 4)
+    # TAX IS THE ONE AXIS WITH AN AUTHORITY OTHER THAN THE COUNTRIES.
+    #
+    # Everywhere else the option is a label and the countries holding it are the
+    # only evidence for where it sits, so the median is the honest value. Tax is
+    # a rate the visitor sets on a slider, and the stop IS the option: tax_nordic
+    # means 46%, not "whatever the countries currently coded to it happen to
+    # average". Deriving it put 42.45 on the axis row under a spoke reading 46,
+    # and made provenance() tell the visitor their own figure came from a country.
+    # The country cells on this axis stay measured; only the option is fixed.
+    if axis == "tax_take":
+        return effective, "the rate on the slider"
+    values = measured(axis, holders(domain["id"], option["id"]))
     if not values:
         return effective, "hand"
     effective[axis] = statistics.median(values)
@@ -116,7 +183,11 @@ def effective_axis_values():
 
 
 def build():
-    derived_count = hand_count = 0
+    # Three bases, counted separately. Counting the slider rates as "derived from
+    # real countries" would have let the summary line, and the page's own method
+    # section, keep saying 63 of 69 figures came from countries when six of them
+    # are the rate on a stop.
+    derived_count = hand_count = slider_count = 0
     domains_out = []
     for d in DOMAINS:
         options_out = []
@@ -124,12 +195,19 @@ def build():
             effective, basis = derive(d, o)
             if basis == "hand":
                 hand_count += 1
+            elif basis == "the rate on the slider":
+                slider_count += 1
             else:
                 derived_count += 1
             out = {k: v for k, v in o.items() if k != "axis"}
             out["axis"] = effective
             out["axis_hand"] = o["axis"]
             out["axis_basis"] = basis
+            # The countries that actually run this, read off the matrix. The
+            # reveal names them, and naming the tag list instead was how
+            # "Also the policy in ..." came to print seventeen countries for a
+            # speech option that thirty-nine countries hold.
+            out["holders"] = holders(d["id"], o["id"])
             options_out.append(out)
         domains_out.append({**d, "options": options_out})
 
@@ -141,7 +219,7 @@ def build():
         "timezones": TIMEZONES,
         "fallback": FALLBACK,
     }
-    return payload, derived_count, hand_count
+    return payload, derived_count, hand_count, slider_count
 
 
 def coverage():
@@ -158,7 +236,7 @@ def main():
         print("validations failed: data.json NOT rewritten", file=sys.stderr)
         return 1
 
-    payload, derived_count, hand_count = build()
+    payload, derived_count, hand_count, slider_count = build()
     OUT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
                    encoding="utf-8")
 
@@ -169,7 +247,7 @@ def main():
     print(f"  domains        {len(DOMAINS)}")
     print(f"  options        {options}")
     print(f"  axis values    {derived_count} derived from real countries, "
-          f"{hand_count} hand")
+          f"{slider_count} the rate on a tax stop, {hand_count} hand")
     print(f"  timezones      {len(TIMEZONES)} mapped, fallback {FALLBACK}")
     print(f"  indicators     {have} of {total} cells ({100 * have / total:.0f}%)")
     return 0
