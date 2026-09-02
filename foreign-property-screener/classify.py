@@ -101,7 +101,15 @@ def visa(text):
             "elite visa", "retiree visa", "srrv", "rentista"):
         return 2, "Investor visa, not property-specific"
     if says(t, "temporary residency", "residency possible", "elective residency",
-            "digital nomad", "non-lucrative", "innovator", "business manager"):
+            "digital nomad", "non-lucrative", "innovator", "business manager",
+            # NAMED long-stay schemes only. Without these Malaysia scored "no
+            # pathway" on the strength of MM2H's own sentence saying it is not a
+            # property-based golden visa, which is true and not the question.
+            # Deliberately not "residence permit" or "permit routes": ordinary
+            # immigration exists everywhere, so counting it empties the bottom
+            # band and eight markets jumped a level for having a sentence that
+            # says they are normal.
+            "long-stay", "mm2h"):
         return 1, "Residency, but not through property"
     return 0, "No pathway"
 

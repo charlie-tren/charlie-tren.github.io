@@ -1069,15 +1069,15 @@
    "repatriation": "Generally free. Some administrative requirements.",
    "obstacles": "High non-resident tax rates (30% rental, 30% RPGT early years). State-level minimum price rules add complexity. Oversupply in some segments (KL condos). DTA with Australia provides relief. Relatively close timezone.",
    "profile": "Market: Stable, regulated market with moderate growth. KL condo oversupply in some segments. MM2H visa programme available. Opportunity: Affordable entry. Strong GDP growth. Close timezone to Australia. DTA provides tax relief. Risk: 30% non-resident rental and RPGT rates. State-level minimum price rules (MYR 600K-1M). Oversupply in Kuala Lumpur condos. Entry: Foreign buyer must meet state minimum. Process is well-established. Engage local solicitor. Structure: Individual ownership most common. Malaysian Sdn Bhd possible but adds complexity. DTA with Australia helps. Timing: Market has been relatively flat in real terms. Awaiting catalysts from government housing policy reform.",
-   "ease": 50,
+   "ease": 56,
    "ease_parts": {
     "ownership": {
      "score": 1,
      "label": "Designated zones or a price floor"
     },
     "visa": {
-     "score": 0,
-     "label": "No pathway"
+     "score": 1,
+     "label": "Residency, but not through property"
     },
     "repatriation": {
      "score": 3,
