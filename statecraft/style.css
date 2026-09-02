@@ -665,6 +665,13 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
    They were --rule at 8px, faint enough that the question they raised was "what
    are these lines" rather than "those are the settings". Now the domain's own
    colour at a low alpha, and tall enough to sit either side of the track. */
+/* THE STOP TICKS ARE GONE. One per option, they were the lines Charlie asked
+   about and then asked to remove: with the sliders now continuous they marked
+   where the LABEL changes rather than where anything lands, so they were
+   answering a question nobody had. The "where you started" mark stays, and is
+   now the only line on the track, which is what makes it legible. */
+.d-ticks i:not(.home) { display: none; }
+
 .d-ticks i {
   position: absolute;
   top: -5px;
@@ -1368,6 +1375,12 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
  * chart's grid area the full height of the sliders column and then `sticky` has
  * nothing to stick within, so it silently does nothing. */
 @media (min-width: 1180px) {
+  /* THE HEADER SHARES MAIN'S WIDTH. Only main widened to 76rem, so above this
+     breakpoint the wordmark, the theme toggle and the back-link sat in a 48rem
+     column while everything under them ran to 76rem, and the two left edges did
+     not line up. */
+  header.wrap { max-width: 76rem; }
+
   main.wrap {
     max-width: 76rem;
     display: grid;
@@ -1530,3 +1543,18 @@ main.wrap > .finish { grid-column: 1; }
 .mt tbody tr:has(.mt-sw) td { border-top: 1px solid var(--rule); }
 
 .mt a { color: var(--accent); }
+
+/* Before and after on a slider that has moved. The policy you left is the
+   quiet half; the money is the half you are being asked to notice, so it is the
+   only part in the domain's own colour. */
+.d-was {
+  color: var(--faint);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.d-was b {
+  margin-left: 0.4rem;
+  color: var(--dom);
+  font-weight: 600;
+}

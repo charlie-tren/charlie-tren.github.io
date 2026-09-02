@@ -28,7 +28,21 @@
 // twenty countries are unaffected, because their revenue already exceeds their
 // own spending.
 
-export const REFORM_POOL = 250;
+// A HUNDRED, not two hundred and fifty. Same mechanic, friendlier number: the
+// pool is a share of your capacity to reform, and a share reads as a percentage.
+//
+// The costs in policies.py are on the original 250 scale, where they were
+// calibrated, and are scaled here rather than rewritten. One constant beats 138
+// hand-edited numbers, the calibration comments in that file stay true of the
+// numbers they describe, and the cost table scales through the same helper so
+// the page can never show one scale while the meter counts the other.
+export const REFORM_POOL = 100;
+const COST_SCALE = REFORM_POOL / 250;
+
+/** An option's political or social cost, on the pool's scale. */
+export function reformCost(n) {
+  return (Number(n) || 0) * COST_SCALE;
+}
 
 export const TAX_DOMAIN = 'tax';
 
@@ -468,8 +482,8 @@ export function budgets(data, state) {
     // other part of the drag is continuous because the interpolated cost is.
     if (base[domain.id] !== undefined && base[domain.id] !== chosen.id) {
       changed.push({ domain: domain.id, domainName: domain.name, from: base[domain.id], to: chosen.id });
-      political += v ? v.political : (chosen.political || 0);
-      social += v ? v.social : (chosen.social || 0);
+      political += reformCost(v ? v.political : chosen.political);
+      social += reformCost(v ? v.social : chosen.social);
     }
   }
 
@@ -495,19 +509,25 @@ export function budgets(data, state) {
       // Unrounded, for anything that has to decide rather than display.
       exact: { capacity: cap.capacity, used: spend, left },
     },
+    // ROUNDED FOR DISPLAY, exact underneath. Interpolating between two options
+    // makes these fractional, and the meter read "97.21000000000001 of 250"
+    // because a float was being printed straight. `exact` is what any comparison
+    // should use; `used` and `left` are what the page shows.
     political: {
       capacity: REFORM_POOL,
-      used: political,
-      left: REFORM_POOL - political,
-      over: political > REFORM_POOL,
+      used: Math.round(political),
+      left: Math.round(REFORM_POOL - political),
+      over: political > REFORM_POOL + 1e-9,
       unit: 'points',
+      exact: { used: political, left: REFORM_POOL - political },
     },
     social: {
       capacity: REFORM_POOL,
-      used: social,
-      left: REFORM_POOL - social,
-      over: social > REFORM_POOL,
+      used: Math.round(social),
+      left: Math.round(REFORM_POOL - social),
+      over: social > REFORM_POOL + 1e-9,
       unit: 'points',
+      exact: { used: social, left: REFORM_POOL - social },
     },
     changed,
     changedCount: changed.length,
