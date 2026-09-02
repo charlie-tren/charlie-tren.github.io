@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 
 import {
   budgets, blockers, capacityOf, optionForRate, rateForOption, realisedRevenue,
-  spendOf, startingState, REFORM_POOL, TAX,
+  spendOf, startingState, REFORM_POOL, TAX, reformCost,
   clampPos, financialAt, posFromSelection, posOfOption, positionsOf, valuesAt,
 } from './budget.js';
 import { applyChange, ladder, setLock, setTaxRate } from './cascade.js';
@@ -460,11 +460,14 @@ test('changing one domain charges exactly that option, and changing back charges
   const b = budgets(data, { ...start, selection: reformed });
   const ho = option('housing', 'ho_singapore');
 
+  // The raw costs in policies.py are on the scale they were calibrated on; the
+  // meters are on the pool's scale. Comparing the two directly is comparing two
+  // units, which is what this used to do before the pool became 100.
   assert.equal(ho.political, 70);
   assert.equal(ho.social, 10);
-  assert.equal(b.political.used, ho.political);
-  assert.equal(b.social.used, ho.social);
-  assert.equal(b.political.left, REFORM_POOL - 70);
+  assert.equal(b.political.used, Math.round(reformCost(ho.political)));
+  assert.equal(b.social.used, Math.round(reformCost(ho.social)));
+  assert.equal(b.political.left, Math.round(REFORM_POOL - reformCost(70)));
   assert.equal(b.changedCount, 1);
   assert.equal(b.changed[0].domain, 'housing');
 
@@ -898,7 +901,8 @@ test('cascaded cuts are charged, and a cut back to the starting option is free',
   // housing and retirement so the cascade has exactly one place to look.
   const withFlats = applyChange(data, au, 'housing', 'ho_singapore');
   assert.equal(withFlats.state.selection.housing, 'ho_singapore');
-  assert.equal(withFlats.budgets.political.used, option('housing', 'ho_singapore').political);
+  assert.equal(withFlats.budgets.political.used,
+    Math.round(reformCost(option('housing', 'ho_singapore').political)));
 
   // A small squeeze: the rate comes down to 26 with housing the only thing that
   // can move, which is 0.8 to find. Housing steps part way down and stops on an
@@ -910,9 +914,13 @@ test('cascaded cuts are charged, and a cut back to the starting option is free',
   assert.ok(partial, 'housing should have paid for the tax cut');
   assert.notEqual(partial.to, 'ho_market', 'this case is the part-way cut');
   assert.ok(partial.steps > 1, 'and it took more than one rung');
+  // Both sides on the POOL's scale. The meter is scaled through reformCost and
+  // the raw option numbers are not, so summing raw ones and comparing was
+  // comparing two units once the pool became 100.
   assert.equal(
     squeeze.budgets.political.used,
-    option('tax', squeeze.state.selection.tax).political + option('housing', partial.to).political,
+    Math.round(reformCost(option('tax', squeeze.state.selection.tax).political)
+      + reformCost(option('housing', partial.to).political)),
     'a cut that lands somewhere new is a reform and someone has to pass it',
   );
 
@@ -927,7 +935,7 @@ test('cascaded cuts are charged, and a cut back to the starting option is free',
   assert.equal(full.steps, 4);
   assert.equal(
     shove.budgets.political.used,
-    option('retirement', 're_generous').political,
+    Math.round(reformCost(option('retirement', 're_generous').political)),
     "a cut back to the country's own option must be charged nothing",
   );
   assert.equal(shove.budgets.changedCount, 1);

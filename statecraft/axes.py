@@ -31,10 +31,20 @@ across its entire option range and the graphic sat still while the visitor
 changed policy. check_travel.py is what keeps that from creeping back.
 
 `url` is the page the figures were actually read from, checked with a real
-browser user agent on 31/08/2026. An axis whose source has moved carries an
-EMPTY url and the page prints its name without a link, because a dead link is
-worse than no link: Gallagher's index has left its old Trinity address and no
-candidate resolved.
+browser user agent on 31/08/2026.
+
+GALLAGHER IS THE AWKWARD ONE and its link points at the Internet Archive
+deliberately. Michael Gallagher's Election Indices has left its old Trinity
+address: every candidate path 404s, including the two the values were originally
+read through. The Wayback availability API confirms the PDF is archived, so the
+link is the archive's HISTORY for that file rather than one snapshot, because
+the only snapshot it holds is from 2023 and these figures are the 16 June 2025
+edition. Linking the 2023 copy would point a reader at different numbers from
+the ones on the page. The edition is named in the source text instead.
+
+Direct fetches of web.archive.org returned 429 while checking this, which is
+rate limiting rather than absence: the availability API answered 200 for the
+same URL in the same minute.
 
 `direction` says which way is better ONLY for the purpose of never colouring a
 track by it. It exists so the page can state the direction in words next to the
@@ -73,8 +83,8 @@ AXES = [
      "url": "https://ourworldindata.org/grapher/freedom-of-expression-index"},
     {"id": "disproportionality", "domain": "voting", "label": "Electoral disproportionality",
      "unit": "Gallagher index", "direction": "lower", "bounds": (0, 25.5),
-     "source": "Gallagher, Election Indices",
-     "url": ""},
+     "source": "Gallagher, Election Indices, 16 June 2025, via the Internet Archive",
+     "url": "https://web.archive.org/web/*/tcd.ie/Political_Science/people/michael_gallagher/ElSystems/Docts/ElectionIndices.pdf"},
     {"id": "bargaining", "domain": "work", "label": "Collective bargaining coverage",
      "unit": "%", "direction": "neither", "bounds": (5, 100),
      "source": "OECD/AIAS ICTWSS",

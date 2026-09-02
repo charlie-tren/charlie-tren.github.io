@@ -414,7 +414,14 @@ export function drawChart(host, data, base, view) {
   const prev = shapes.get(host);
   if (prev && prev.raf) cancelAnimationFrame(prev.raf);
 
-  const canAnimate = prev && !reducedMotion()
+  // NO TWEEN WHILE A SLIDER IS UNDER A FINGER. drawChart runs on every input
+  // event, and the ease restarted from wherever the shape had got to each time,
+  // so during a drag the outline was permanently chasing a target that had
+  // already moved again. That is the clunkiness: an easing curve and a live drag
+  // fighting each other. Dragging is 1:1 now, and the tween is kept for the
+  // moves that ARE discrete: a cascade cut, a change of starting country, a
+  // shared link loading.
+  const canAnimate = prev && !view.live && !reducedMotion()
     && prev.you.length === you.length
     && prev.you.every((v, i) => (v === null) === (you[i] === null))
     && prev.them.every((v, i) => (v === null) === (them[i] === null));

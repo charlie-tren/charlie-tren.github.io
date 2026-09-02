@@ -171,9 +171,9 @@ function axisRow(data, axis, mine, country, selection) {
 
   const keys = [];
   if (youHave) {
-    keys.push(`<span class="ax-k"><i class="ax-sw ax-sw-you" aria-hidden="true"></i>Your design ${esc(fmt(axis, yours))}</span>`);
+    keys.push(`<span class="ax-k"><i class="ax-sw ax-sw-you" aria-hidden="true"></i>Your country ${esc(fmt(axis, yours))}</span>`);
   } else {
-    keys.push('<span class="ax-k ax-k-flat">Your design: none of your thirteen choices sets this.</span>');
+    keys.push('<span class="ax-k ax-k-flat">Your country: none of your thirteen choices sets this.</span>');
   }
 
   if (themHave) {

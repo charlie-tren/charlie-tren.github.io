@@ -12,7 +12,7 @@
 
 import {
   TAX, TAX_DOMAIN, budgets, blockers, realisedRevenue, rateForOption, startingState,
-  ladder, positionsOf, valuesAt, posFromSelection,
+  ladder, positionsOf, valuesAt, posFromSelection, reformCost,
 } from './budget.js';
 import { applyChange, setTaxRate, toggleLock, isLocked } from './cascade.js';
 import { rank, matchable } from './match.js';
@@ -188,9 +188,38 @@ function paintKey(startCode, gaps, differs) {
     ? `<span class="ck"><i class="ck-sw ck-them" aria-hidden="true"></i>${esc(countryName(startCode))}</span>`
     : '';
   document.getElementById('chartKey').innerHTML = `
-    <span class="ck"><i class="ck-sw ck-you" aria-hidden="true"></i>Your design</span>
+    <span class="ck"><i class="ck-sw ck-you" aria-hidden="true"></i>Your country</span>
     ${themEntry}
     ${gapNote}`;
+}
+
+/** What this domain was when you arrived, and what moving it has cost.
+ *
+ * Unchanged it says so. Changed, it names the policy you left and the money the
+ * move costs, signed, so a slider carries its own before and after rather than
+ * only its current state. */
+function sinceStart(id, live) {
+  const from = baseline()[id];
+  const to = live.selection[id];
+  if (from === to) return '<span class="d-home">Where you started</span>';
+
+  const a = optionOf(id, from);
+  const b = optionOf(id, to);
+  if (!a || !b) return '';
+
+  if (id === TAX_DOMAIN) {
+    const was = rateForOption(data, from);
+    const now = Number(live.taxRate);
+    const d = now - was;
+    return `<span class="d-was">Was ${esc(one(was))}%, now ${esc(one(now))}%`
+      + `<b>${d >= 0 ? '+' : ''}${esc(one(d))} points</b></span>`;
+  }
+
+  const d = (b.financial || 0) - (a.financial || 0);
+  const money = Math.abs(d) < 0.05
+    ? 'about the same money'
+    : `${d > 0 ? '+' : ''}${one(d)}% of GDP`;
+  return `<span class="d-was">Was ${esc(a.label)}<b>${esc(money)}</b></span>`;
 }
 
 /** One slider per domain, painted once. Values are written by render(). */
@@ -229,12 +258,12 @@ function paintDomains() {
       <div class="d-head">
         <h2 id="h_${esc(domain.id)}">${esc(domain.name)}</h2>
         <span class="chip" id="chip_${esc(domain.id)}" hidden>Changed</span>
-        ${`<button class="lock${first ? ' lock-first' : ''}" type="button" id="lock_${esc(domain.id)}"
+        ${`<button class="lock" type="button" id="lock_${esc(domain.id)}"
                 data-lock="${esc(domain.id)}" aria-pressed="false">
           <svg class="lk" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
             <rect class="lk-body" x="3" y="7" width="10" height="7" rx="1.6"/>
             <path class="lk-shackle" fill="none" stroke-width="1.7" stroke-linecap="round"/>
-          </svg>${first ? '<span class="lk-hint">Lock</span>' : ''}
+          </svg><span class="lk-hint">Lock</span>
         </button>`}
       </div>
       <div class="d-slide">
@@ -322,8 +351,8 @@ function costTable() {
           : ''}</td>
         <td>${esc(o.label)}</td>
         <td class="num">${esc(budgetEffect(o))}</td>
-        <td class="num">${esc(o.political)}</td>
-        <td class="num">${esc(o.social)}</td>
+        <td class="num">${esc(Math.round(reformCost(o.political)))}</td>
+        <td class="num">${esc(Math.round(reformCost(o.social)))}</td>
       </tr>`).join('')).join('');
 
   return `
@@ -379,9 +408,11 @@ function paintMethod() {
   document.getElementById('method').innerHTML = `
   <h2>Method</h2>
 
-  <p>The match is a count: one point per domain where your choice is the policy that country actually has. The Budget is in points of GDP. Political capital and public patience are not, because there is no honest unit for either.</p>
+  <p>Your match is a count. One point for every domain where you picked the policy that country actually runs. Countries level on that count are separated by how far your settings sit from theirs on the measured axes.</p>
 
-  <p>${derived} of ${options} option figures are the median of the countries that run that policy. The other ${hand.length}, and every cost, are judgements. They are all here to be argued with.</p>
+  <p>Budget is in per cent of GDP and the tax rate sets how much of it you have. Political capital and public patience are pools of 100 points, and both are charged only on the domains you move away from where you started.</p>
+
+  <p>${derived} of ${options} option figures are the median of the countries running that policy. I set the other ${hand.length} by hand, along with every cost in the table below.</p>
 
   <details class="mdet">
     <summary>Every option and what it costs</summary>
@@ -415,6 +446,9 @@ function paintChart() {
     startCode: live.start,
     selection: live.selection,
     pos: positionsOf(data, live),
+    // True while a thumb is under a finger, so the fingerprint follows it 1:1
+    // instead of easing toward a target that moves again next frame.
+    live: previewPos !== null || previewRate !== null,
     rate: b.financial.taxRate,
   });
   // The key names the starting country, so it is rewritten whenever the chart
@@ -595,8 +629,8 @@ function render(change) {
       document.getElementById(`val_${id}`).innerHTML = `
         <span class="d-big">${esc(one(rate))}%</span>
         <span class="d-opt">${esc(stop ? stop.label : '')}</span>
-        <span class="d-cost">political capital ${esc(stop ? stop.political : 0)}, public patience ${esc(stop ? stop.social : 0)}</span>
-        ${startChoices[id] === live.selection[id] ? '<span class="d-home">Where you started</span>' : ''}`;
+        <span class="d-cost">political capital ${esc(Math.round(reformCost(stop ? stop.political : 0)))}, public patience ${esc(Math.round(reformCost(stop ? stop.social : 0)))}</span>
+        ${sinceStart(id, live)}`;
       document.getElementById(`det_${id}`).textContent =
         `Raises ${one(b.financial.realisedTax)}% of GDP. The next point of tax adds ${one(nextPoint)}, and at ${TAX.MAX} a point would add only ${one(realisedRevenue(TAX.MAX) - realisedRevenue(TAX.MAX - 1))}.`;
       document.getElementById(`who_${id}`).textContent = stop
@@ -625,8 +659,8 @@ function render(change) {
 
     document.getElementById(`val_${id}`).innerHTML = `
       <span class="d-opt">${esc(option ? option.label : '')}</span>
-      <span class="d-cost">${esc(one(here ? here.financial : 0))}% of GDP, political capital ${esc(Math.round(here ? here.political : 0))}, public patience ${esc(Math.round(here ? here.social : 0))}</span>
-      ${startChoices[id] === live.selection[id] ? '<span class="d-home">Where you started</span>' : ''}`;
+      <span class="d-cost">${esc(one(here ? here.financial : 0))}% of GDP, political capital ${esc(Math.round(reformCost(here ? here.political : 0)))}, public patience ${esc(Math.round(reformCost(here ? here.social : 0)))}</span>
+      ${sinceStart(id, live)}`;
     document.getElementById(`det_${id}`).textContent = option ? `${option.detail}${between}` : '';
     document.getElementById(`who_${id}`).textContent = option ? whereLine(option.countries) : '';
 
