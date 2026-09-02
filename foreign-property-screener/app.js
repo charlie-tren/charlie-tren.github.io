@@ -19,7 +19,7 @@ const fmtMoney = v => v == null ? "" : "A$" + Math.round(v).toLocaleString("en-A
 const fmtK = v => v == null ? "" : "A$" + Math.round(v / 1000) + "k";
 const pc = v => v == null ? "" : (+v).toFixed(1) + "%";
 
-let DATA = null, PICKED = null, SORT = { key: "ease", dir: -1 };
+let DATA = null, MAP = null, PICKED = null, SORT = { key: "ease", dir: -1 };
 
 /* Columns. `get` pulls the value, `show` renders it, `num` marks it plottable.
    Order here is the order on screen. */
@@ -131,6 +131,107 @@ function showReadout(box, fig, ev, html) {
   box.style.top = Math.max(0, y) + "px";
 }
 
+/* ---------- the map ----------
+
+   Equirectangular, which is the projection you get for free by treating
+   longitude and latitude as x and y. It stretches the poles badly, and for a
+   map whose job is "which country is this" rather than "how big is it" that is
+   the right trade: no projection maths, no library, and every market lands
+   where a reader expects it. Antarctica is cropped because it is a third of the
+   height and none of the subject.
+
+   Colour runs light to dark on one hue. A market with no figure for the chosen
+   factor is left the same grey as the rest of the world and said so in the key,
+   because colouring it at the bottom of the ramp would claim a value. */
+
+const RAMP = ["#dbe6f0", "#b3cbe2", "#89aed1", "#5f90bf", "#3a71a8", "#22548a"];
+
+function colourFor(v, lo, hi, invert) {
+  if (v == null || v === "" || !isFinite(v)) return null;
+  let t = hi === lo ? 0.5 : (v - lo) / (hi - lo);
+  if (invert) t = 1 - t;
+  return RAMP[Math.max(0, Math.min(RAMP.length - 1, Math.floor(t * RAMP.length)))];
+}
+
+/* Factors where a BIG number is the worse outcome, so the ramp is flipped and
+   dark always means "more of what you want". Without this the map would show
+   the most expensive and most corrupt markets in the strongest colour. */
+const INVERT = new Set(["price_aud", "purchase_costs", "months_to_sell", "price_to_income",
+                        "rent_tax", "gain_tax", "fx_vol"]);
+
+function drawMap(shown) {
+  const svg = $("map"), fig = svg.parentNode, box = $("map-readout");
+  if (!MAP) return;
+  const key = $("map-metric").value;
+  const col = COLS.find(c => c.key === key);
+  const narrow = window.innerWidth <= 620;
+
+  // 2:1 is equirectangular's natural ratio; cropping Antarctica takes the
+  // bottom off, so the drawn band is 84N to 58S.
+  const W = frame(svg, 0);
+  const LAT0 = 84, LAT1 = -58;
+  const H = Math.round(W * (LAT0 - LAT1) / 360);
+  frame(svg, H);
+  const X = lon => (lon + 180) / 360 * W;
+  const Y = lat => (LAT0 - lat) / (LAT0 - LAT1) * H;
+
+  const inSet = new Map(shown.map(c => [c.country, c]));
+  const vals = shown.map(c => val(c, key)).filter(v => v != null && v !== "" && isFinite(v)).map(Number);
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  const invert = INVERT.has(key);
+
+  const path = rings => rings.map(r =>
+    "M" + r.map(pt => X(pt[0]).toFixed(1) + " " + Y(pt[1]).toFixed(1)).join("L") + "Z").join(" ");
+
+  // Everything grey first, then the markets over it, so a market border is
+  // never hidden under a neighbour drawn later.
+  MAP.features.forEach(f => {
+    if (f.m && inSet.has(f.m)) return;
+    el(svg, "path", { d: path(f.r), class: "map-land" });
+  });
+
+  MAP.features.forEach(f => {
+    const c = f.m && inSet.get(f.m);
+    if (!c) return;
+    const fill = colourFor(val(c, key), lo, hi, invert);
+    const node = el(svg, "path", {
+      d: path(f.r), class: "map-mkt" + (c.country === PICKED ? " picked" : ""),
+      fill: fill || "var(--map-land)",
+    });
+    bindMarket(node, c, col, box, fig);
+  });
+
+  (MAP.points || []).forEach(pt => {
+    const c = inSet.get(pt.m);
+    if (!c) return;
+    const fill = colourFor(val(c, key), lo, hi, invert);
+    const node = el(svg, "circle", {
+      cx: X(pt.p[0]), cy: Y(pt.p[1]), r: c.country === PICKED ? 6 : 4.5,
+      class: "map-dot", fill: fill || "var(--map-land)",
+    });
+    bindMarket(node, c, col, box, fig);
+  });
+
+  const scale = $("map-scale");
+  const fmtEnd = v => col.unit === "A$" ? fmtK(v) : (Math.abs(v) >= 100 ? Math.round(v) : (+v).toFixed(1)) + (col.unit === "%" ? "%" : "");
+  const ramp = (invert ? [...RAMP].reverse() : RAMP).map(c => `<i style="background:${c}"></i>`).join("");
+  const anyMissing = shown.some(c => { const v = val(c, key); return v == null || v === "" || !isFinite(v); });
+  scale.innerHTML = `<span>${fmtEnd(lo)}</span><span class="ramp">${ramp}</span><span>${fmtEnd(hi)}</span>`
+    + (anyMissing ? `<span class="none"><i></i>no figure</span>` : "");
+}
+
+function bindMarket(node, c, col, box, fig) {
+  node.style.cursor = "pointer";
+  const v = val(c, col.key);
+  const shownVal = v == null || v === "" ? "no figure" :
+    (col.unit === "A$" ? fmtK(v) : (Math.abs(v) >= 100 ? Math.round(v) : (+v).toFixed(1)) + (col.unit === "%" ? "%" : ""));
+  node.addEventListener("mousemove", ev => showReadout(box, fig, ev,
+    `<strong>${c.country}</strong><span class="num">${col.label}: ${shownVal}</span><br>
+     <span class="num">Ease ${c.ease}</span>`));
+  node.addEventListener("mouseleave", () => { box.hidden = true; });
+  node.addEventListener("click", () => { PICKED = c.country === PICKED ? null : c.country; render(); });
+}
+
 /* ---------- the scatter ---------- */
 
 function drawScatter(shown, all) {
@@ -180,6 +281,19 @@ function drawScatter(shown, all) {
     "font-size": narrow ? 11 : 12, transform: `rotate(-90 13 ${T + plotH / 2})`,
   }, yCol.label);
 
+  // Medians, so a point reads as "expensive for what it yields" rather than
+  // just "somewhere in a cloud". Four quadrants beats thirty-four dots.
+  const med = a => { const b = [...a].sort((x, y) => x - y); return b[b.length >> 1]; };
+  const mx = med(xs), my = med(ys);
+  el(svg, "line", { x1: X(mx), y1: T, x2: X(mx), y2: T + plotH, stroke: "var(--rule)", "stroke-width": 1, "stroke-dasharray": "4 4" });
+  el(svg, "line", { x1: L, y1: Y(my), x2: L + plotW, y2: Y(my), stroke: "var(--rule)", "stroke-width": 1, "stroke-dasharray": "4 4" });
+
+  // Labels are placed after the dots and skipped where they would collide with
+  // one already placed, so a crowded corner loses its labels rather than
+  // turning into a smear. The dot is still hoverable either way.
+  const placed = [];
+  const fits = (x, y, w, h) => !placed.some(r => x < r.x + r.w && r.x < x + w && y < r.y + r.h && r.y < y + h);
+
   pts.forEach(p => {
     const sel = p.c.country === PICKED;
     const g = el(svg, "g", { style: "cursor:pointer" });
@@ -196,6 +310,23 @@ function drawScatter(shown, all) {
        <span class="num">${yCol.label}: ${fmtAxis(+p.y, yCol)}</span>`));
     hit.addEventListener("mouseleave", () => { box.hidden = true; });
     hit.addEventListener("click", () => { PICKED = p.c.country === PICKED ? null : p.c.country; render(); });
+
+    if (!narrow) {
+      const text = p.c.country;
+      // Estimated, because the width is needed before the text exists. The
+      // estimate is deliberately generous: a label wrongly skipped costs
+      // nothing, a label wrongly kept overlaps its neighbour.
+      const w = text.length * 6.4 + 12, h = 15;
+      const lx = X(+p.x) + 9, ly = Y(+p.y) - 6;
+      if (sel || fits(lx, ly - h, w, h)) {
+        placed.push({ x: lx, y: ly - h, w, h });
+        el(svg, "text", {
+          x: lx, y: ly + 4, fill: sel ? "var(--ink)" : "var(--ink-soft)",
+          "font-size": 10.5, "font-weight": sel ? 700 : 400,
+          "paint-order": "stroke", stroke: "var(--panel)", "stroke-width": 3, "stroke-linejoin": "round",
+        }, text);
+      }
+    }
   });
 
   $("scatter-note").textContent = missing
@@ -300,6 +431,16 @@ function detail(c) {
   return wrap;
 }
 
+/* The table hides its scrollbar, so something else has to say there is more to
+   the right. The fade appears only while there is somewhere to scroll to and
+   goes when you reach the end, which a permanent gradient would not. */
+function fadeHint() {
+  const sc = $("table-scroll"), wrap = $("table-wrap");
+  if (!sc || !wrap) return;
+  const more = sc.scrollWidth - sc.clientWidth - sc.scrollLeft > 2;
+  wrap.classList.toggle("more", more);
+}
+
 /* ---------- render ---------- */
 
 function render() {
@@ -325,7 +466,9 @@ function render() {
     : `${shown.length} of ${DATA.countries.length} markets match.`;
 
   drawTable(shown);
+  drawMap(shown);
   drawScatter(shown, DATA.countries);
+  fadeHint();
 
   const verified = DATA.countries.filter(c => c.verified).length;
   $("note-tax").textContent =
@@ -338,12 +481,24 @@ function render() {
 
 /* ---------- boot ---------- */
 
-fetch("data.json")
-  .then(r => r.json())
-  .then(d => {
+Promise.all([
+  fetch("data.json").then(r => r.json()),
+  fetch("world.json").then(r => r.json()).catch(() => null),
+])
+  .then(([d, m]) => {
     DATA = d;
+    MAP = m;
 
     const numeric = COLS.filter(c => c.num);
+    const mm = $("map-metric");
+    numeric.forEach(c => {
+      const o = document.createElement("option");
+      o.value = c.key; o.textContent = c.label;
+      if (c.key === "ease") o.selected = true;
+      mm.appendChild(o);
+    });
+    mm.addEventListener("change", render);
+
     [["x-axis", "net_yield"], ["y-axis", "ease"]].forEach(([id, dflt]) => {
       const sel = $(id);
       numeric.forEach(c => {
@@ -371,6 +526,7 @@ fetch("data.json")
     if (want && d.countries.some(c => c.country === want)) PICKED = want;
 
     render();
+    $("table-scroll").addEventListener("scroll", fadeHint, { passive: true });
     let t;
     addEventListener("resize", () => { clearTimeout(t); t = setTimeout(render, 120); });
   })
