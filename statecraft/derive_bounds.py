@@ -54,7 +54,7 @@ CEILING = {"expression": 1.0, "bargaining": 100.0}
 # would be false precision and rounding the V-Dem index to the nearest 10 would
 # collapse it.
 STEP = {
-    "tax_take": 0.5, "health_public": 1, "education_spend": 0.1,
+    "tax_take": 0.5, "health_public": 1, "tertiary_public": 1,
     "social_housing": 0.5, "pension_spend": 0.5, "grid_carbon": 10,
     "expression": 0.01, "disproportionality": 0.5, "bargaining": 1,
     "military_burden": 0.5, "foreign_born": 1, "incarceration": 10,
@@ -64,7 +64,7 @@ STEP = {
 # Axes whose measure cannot go below zero. Padding below the minimum must not
 # invent negative territory on a track that is a share or a count.
 NON_NEGATIVE = {
-    "tax_take", "health_public", "education_spend", "social_housing",
+    "tax_take", "health_public", "tertiary_public", "social_housing",
     "pension_spend", "grid_carbon", "expression", "disproportionality",
     "bargaining", "military_burden", "foreign_born", "incarceration",
     "family_spend", "redistribution",

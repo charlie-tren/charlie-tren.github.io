@@ -427,6 +427,12 @@ function paintMethod() {
   <details class="mdet">
     <summary>The ${data.axes.length} axes and their sources</summary>
     <div class="scroller">${axisTable()}</div>
+    <!-- The one axis whose convention a reader cannot infer from its label. The
+         OECD series is the after-transfers column, so the United Kingdom reads
+         21.8 where the same table's initial-funds column reads 44.05, and
+         without this line the UK's spoke looks like a fault. State the
+         convention and stop: the mechanism is in axes.py. -->
+    <p>University funding is counted after transfers, so a state student loan that the student repays counts as private money.</p>
   </details>
 
 `;

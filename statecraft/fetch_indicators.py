@@ -31,7 +31,11 @@ import sys
 import urllib.request
 
 CODES = {
-    "education_spend": ("SE.XPD.TOTL.GD.ZS", "World Bank, government expenditure on education % of GDP"),
+    # education_spend WAS HERE AND ITS AXIS IS GONE, replaced 02/09/2026 by
+    # tertiary_public, the OECD public share of expenditure on tertiary
+    # educational institutions. That is the UOE finance collection on the OECD
+    # SDMX endpoint, not a World Bank series, so it is not fetched here and
+    # this script no longer covers the education domain.
     "military_burden": ("MS.MIL.XPND.GD.ZS", "World Bank / SIPRI, military expenditure % of GDP"),
     "health_public": ("SH.XPD.GHED.CH.ZS", "WHO GHED, domestic general government health expenditure % of current health expenditure"),
     "foreign_born": ("SM.POP.TOTL.ZS", "UN DESA / World Bank, international migrant stock % of population"),

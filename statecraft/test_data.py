@@ -288,13 +288,24 @@ def test_indicator_coverage_is_reported_not_assumed():
     the real figure, so a later addition that quietly drops coverage fails here
     rather than being absorbed by a slack threshold.
 
-    WHERE THE SIXTY MISSING CELLS ARE. Fifty-eight of the sixty are the six
-    OECD-sourced axes (tax_take, social_housing, pension_spend, family_spend,
-    redistribution, bargaining) on countries the OECD does not publish. The other
-    two are Taiwan's education_spend and health_public. By country: TW 8, then AE
-    6, SA 6, QA 6, KW 6, CY 6, SG 5, UY 5, PA 5, MT 4, HR 2, GR 1. Forty-nine of
-    the sixty are on the new measured-only rows and eleven are the launch set's
-    own long-standing gaps, which are Singapore and the UAE.
+    WHERE THE MISSING CELLS ARE. Most of them are the six OECD-sourced axes
+    (tax_take, social_housing, pension_spend, family_spend, redistribution,
+    bargaining) on countries the OECD does not publish, plus Taiwan's
+    health_public.
+
+    THE EDUCATION AXIS SWAP OF 02/09/2026 IS WHY THIS SITS AT 564 AND NOT 572.
+    education_spend was a World Bank series covering 44 of the 45; it measured
+    the size of the school system while every option in the domain is about who
+    pays for university, and the spoke travelled 15%. tertiary_public measures
+    the right quantity and covers 36, so the swap cost ten cells and bought a
+    60% spoke. NINE COUNTRIES NOW HAVE NO EDUCATION READING: AE, CH, KW, PA, QA,
+    SA, SG, TW, UY. Eight of the nine already have none on bargaining.
+    Switzerland is the exception and the one that hurts, and the reason it
+    cannot be filled is on its own row in countries.py.
+
+    THE MARGIN IS THREE CELLS. 630 x 0.89 is 560.7, so the floor bites at 561
+    and the file holds 564. The next axis that trades coverage for validity has
+    to argue for the floor as well as for itself.
 
     NONE OF THAT CHANGED ON 31/08/2026 when the last eight rows were coded, and
     that is the point: coding a matrix adds no indicator cells, so the total is
@@ -522,12 +533,17 @@ REVIEWED_HAND_VS_DERIVED = {
         "Conscription says nothing about how much a country spends. The holders "
         "run from Greece at 3.1 to Austria at 0.7, so the median lands well below "
         "a hand value set from the idea of a large standing army."),
+    # CLOSED BY THE AXIS SWAP OF 02/09/2026 rather than by a re-judgement, and
+    # kept as the record of what it caught. On education_spend the entry read
+    # hand 6.3 against a measured 4.7, and the reason given was that free tuition
+    # is a question of who pays and not of how much is spent. That was the case
+    # for replacing the axis, and it was replaced: the domain now plots
+    # tertiary_public, hand 80.0 against a measured 77.45 over 19 holders, a gap
+    # of 3% of the track rather than 27%. This no longer gates anything.
     "ed_free": (
-        "Hand 6.3, measured 4.7 over 24 holders spanning 2.5 to 7.3. Free tuition "
-        "is a question of who pays, not of how much is spent, and the hand value "
-        "was set off a seven-country Nordic sample. The label claims neither. "
-        "Watch it anyway: this option is why the education spoke now sits exactly "
-        "on its 15% travel floor."),
+        "Hand 80.0, measured 77.45 over 19 of 24 holders. The gap the old entry "
+        "recorded was the axis measuring the wrong quantity, and the axis was "
+        "changed. Kept so the next session can see that."),
     "vo_preferential": (
         "Hand 9.0, measured 23.11, and the measurement is Australia alone. The "
         "2025 result gave the ALP 62.7% of seats on 34.6% of first preferences, "
