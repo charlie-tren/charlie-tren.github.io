@@ -144,13 +144,23 @@ function showReadout(box, fig, ev, html) {
    factor is left the same grey as the rest of the world and said so in the key,
    because colouring it at the bottom of the ramp would claim a value. */
 
-const RAMP = ["#dbe6f0", "#b3cbe2", "#89aed1", "#5f90bf", "#3a71a8", "#22548a"];
+/* Read from the stylesheet rather than hardcoded, so the theme owns its own
+   colours and dark mode is not a second copy of the ramp living in a script. */
+function ramp() {
+  const cs = getComputedStyle(document.documentElement);
+  const out = [];
+  for (let i = 1; i <= 6; i++) {
+    const v = cs.getPropertyValue("--ramp" + i).trim();
+    if (v) out.push(v);
+  }
+  return out.length ? out : ["#d5e6e5", "#a8cfd2", "#74b3b8", "#3f9aa2", "#17808a", "#0a5b66"];
+}
 
-function colourFor(v, lo, hi, invert) {
+function colourFor(v, lo, hi, invert, R) {
   if (v == null || v === "" || !isFinite(v)) return null;
   let t = hi === lo ? 0.5 : (v - lo) / (hi - lo);
   if (invert) t = 1 - t;
-  return RAMP[Math.max(0, Math.min(RAMP.length - 1, Math.floor(t * RAMP.length)))];
+  return R[Math.max(0, Math.min(R.length - 1, Math.floor(t * R.length)))];
 }
 
 /* Factors where a BIG number is the worse outcome, so the ramp is flipped and
@@ -179,6 +189,7 @@ function drawMap(shown) {
   const vals = shown.map(c => val(c, key)).filter(v => v != null && v !== "" && isFinite(v)).map(Number);
   const lo = Math.min(...vals), hi = Math.max(...vals);
   const invert = INVERT.has(key);
+  const R = ramp();
 
   const path = rings => rings.map(r =>
     "M" + r.map(pt => X(pt[0]).toFixed(1) + " " + Y(pt[1]).toFixed(1)).join("L") + "Z").join(" ");
@@ -193,7 +204,7 @@ function drawMap(shown) {
   MAP.features.forEach(f => {
     const c = f.m && inSet.get(f.m);
     if (!c) return;
-    const fill = colourFor(val(c, key), lo, hi, invert);
+    const fill = colourFor(val(c, key), lo, hi, invert, R);
     const node = el(svg, "path", {
       d: path(f.r), class: "map-mkt" + (c.country === PICKED ? " picked" : ""),
       fill: fill || "var(--map-land)",
@@ -204,7 +215,7 @@ function drawMap(shown) {
   (MAP.points || []).forEach(pt => {
     const c = inSet.get(pt.m);
     if (!c) return;
-    const fill = colourFor(val(c, key), lo, hi, invert);
+    const fill = colourFor(val(c, key), lo, hi, invert, R);
     const node = el(svg, "circle", {
       cx: X(pt.p[0]), cy: Y(pt.p[1]), r: c.country === PICKED ? 6 : 4.5,
       class: "map-dot", fill: fill || "var(--map-land)",
@@ -214,9 +225,9 @@ function drawMap(shown) {
 
   const scale = $("map-scale");
   const fmtEnd = v => col.unit === "A$" ? fmtK(v) : (Math.abs(v) >= 100 ? Math.round(v) : (+v).toFixed(1)) + (col.unit === "%" ? "%" : "");
-  const ramp = (invert ? [...RAMP].reverse() : RAMP).map(c => `<i style="background:${c}"></i>`).join("");
+  const swatches = (invert ? [...R].reverse() : R).map(c => `<i style="background:${c}"></i>`).join("");
   const anyMissing = shown.some(c => { const v = val(c, key); return v == null || v === "" || !isFinite(v); });
-  scale.innerHTML = `<span>${fmtEnd(lo)}</span><span class="ramp">${ramp}</span><span>${fmtEnd(hi)}</span>`
+  scale.innerHTML = `<span>${fmtEnd(lo)}</span><span class="ramp">${swatches}</span><span>${fmtEnd(hi)}</span>`
     + (anyMissing ? `<span class="none"><i></i>no figure</span>` : "");
 }
 
