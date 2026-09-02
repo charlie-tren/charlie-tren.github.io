@@ -230,7 +230,13 @@ ANCHOR = {
     # on the chart, with enough above it to keep the title and a row of the
     # controls in, so the card still shows a website with a chart in it.
     # 0.18 landed mid-hint and left an orphan "HELP." across the top of the card.
-    "foreign-property-screener": {"selector": "table", "context_above": 0.18},
+    # The MAP, not the table. Anchored on the table the card sliced its own last
+    # column, because a nine-column table is wider than 16:10 will hold and the
+    # crop has to cut somewhere. A world map is legible at card size and a
+    # truncated table is not, so the card shows the map with the masthead above
+    # it. (Before that it was "#rank-panel", an element deleted two redesigns
+    # earlier - ANCHOR is coupled to the markup exactly like READY is.)
+    "foreign-property-screener": {"selector": "#map-panel", "context_above": 0.22},
     # The top of the page is the hero and a scatter that is currently just a sorted
     # curve. The cards, with real company names and per-flag scores, are the product.
     #
