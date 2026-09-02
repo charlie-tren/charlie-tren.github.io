@@ -243,32 +243,86 @@ DOMAINS = [
     {
         "id": "education",
         "name": "Education",
-        "axis": "education_spend",
+        "axis": "tertiary_public",
+        # THE FIVE HAND VALUES BELOW ARE ON A NEW SCALE from 02/09/2026. The axis
+        # was education_spend, public education spend across all levels as a
+        # share of GDP, and it is now tertiary_public, the general government
+        # share of expenditure on tertiary institutions after transfers, in per
+        # cent. The old values ran 4.2 to 6.3 and would read as almost no public
+        # funding at all on a percentage-share track, so every one of them was
+        # rewritten as a judgement of what share of the university bill that
+        # option's government picks up.
+        #
+        # THEY ARE FALLBACKS AND NOTHING ELSE. build_data.py derives an option's
+        # plotted value from the median of the countries that hold it, so a hand
+        # value only reaches the page where no holder has a measurement. Of the
+        # five, only ed_free_selective is in that position, because the Canada
+        # recode left it with no holders at all.
         "options": [
             {"id": "ed_market", "label": "Fees at every level past school",
              "detail": "Universities set their own prices. Loans, not grants.",
              "financial": 4.2, "political": 10, "social": 25,
-             "axis": {"education_spend": 4.2}},
+             # A fee market still leaves the state paying for research, capital
+             # and a good deal of undergraduate teaching, so under half rather
+             # than nothing. Holders measure 47.29.
+             "axis": {"tertiary_public": 45.0}},
             # Social raised from 12. Deferred fees hand young adults a debt that follows
             # them for decades and shapes when they can buy a house or start a family.
             # That was priced at almost nothing.
             {"id": "ed_deferred", "label": "Free at school, deferred fees after",
              "detail": "Tertiary costs are paid back through the tax system once you earn.", "financial": 4.8, "political": 20, "social": 22,
-             "axis": {"education_spend": 4.8}},
+             # THE LOWEST OF THE FIVE, which is not a mistake. On the
+             # after-transfers convention a loan the state advances and the
+             # student repays is the student's money, so a deferred-fee system
+             # books more of the bill to households than an ordinary fee market
+             # does. Holders measure 33.95.
+             "axis": {"tertiary_public": 35.0}},
             {"id": "ed_vocational", "label": "Free, with an early vocational track",
              "detail": "Free through university, and most students stream into apprenticeships.", "financial": 5.0, "political": 35, "social": 20,
-             "axis": {"education_spend": 5.0}},
+             # THE HIGHEST OF THE FIVE. Free tuition and a publicly funded
+             # apprenticeship system beside it, with a smaller fee-paying
+             # foreign intake than the free-tuition group carries. Holders
+             # measure 81.61.
+             "axis": {"tertiary_public": 82.0}},
             {"id": "ed_free", "label": "Free through university",
              "detail": "No tuition at any level, and a maintenance grant while studying.",
              "financial": 6.3, "political": 35, "social": 10,
-             "axis": {"education_spend": 6.3}},
+             # No tuition means the state is close to the whole bill, short of
+             # what private and international students pay in. Holders measure
+             # 77.45, held down by Cyprus, Israel, Portugal and Ireland.
+             "axis": {"tertiary_public": 80.0}},
             # Financial cut from 5.4. Free tuition behind a hard selection filter educates
             # far fewer people to the level that costs money, so it is genuinely the
             # cheapest of the five rather than the middle. Its price is the 45 political
             # and the 40 social of sorting children by examination.
+            # EMPTIED BY THE CANADA RECODE OF 02/09/2026 AND KEPT ANYWAY. Canada
+            # was its only holder and was moved to ed_market, because Canadian
+            # universities charge about CAD 7,734 a year and nothing in Canada
+            # selects at twelve. DO NOT DELETE THIS OPTION. The URL encodes an
+            # education choice by its position in this list, so removing an
+            # option renumbers every option after it and silently changes the
+            # policy behind every shared link. It joins UBI, absolute free
+            # speech, the car ban and the age cap as an option no country holds,
+            # which the reveal already says in as many words.
+            #
+            # A LATER PASS SHOULD ASK WHETHER THE MENU NEEDS BOTH THIS AND
+            # ed_vocational. "Free, and selective from twelve" and "Free, with an
+            # early vocational track" are the same policy read two ways: the
+            # countries that stream children early are exactly the countries that
+            # sort them by examination, and all nine of them sit in ed_vocational.
+            # Nothing in the file distinguishes the two beyond which sentence was
+            # written first. Merging them is a menu change and a URL change at
+            # once, so it is a decision rather than a tidy-up.
             {"id": "ed_free_selective", "label": "Free, and selective from twelve",
              "detail": "No tuition, and an exam at twelve decides which school you attend.", "financial": 4.0, "political": 45, "social": 40,
-             "axis": {"education_spend": 5.4}},
+             # THE ONLY ONE OF THE FIVE THAT REACHES THE PAGE. Canada was the
+             # sole holder and was recoded to ed_market on 02/09/2026, so this
+             # option has no countries and no median, and this number is what
+             # gets plotted. Free tuition behind a hard selection filter puts
+             # the state on the whole teaching bill for a smaller cohort, so it
+             # sits with the free options rather than between them and the fee
+             # ones.
+             "axis": {"tertiary_public": 80.0}},
         ],
     },
     {

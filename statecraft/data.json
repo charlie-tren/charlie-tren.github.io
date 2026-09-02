@@ -28,17 +28,17 @@
       "url": "https://data.who.int/indicators"
     },
     {
-      "id": "education_spend",
+      "id": "tertiary_public",
       "domain": "education",
-      "label": "Public education spend",
-      "unit": "% of GDP",
+      "label": "Public share of university funding",
+      "unit": "%",
       "direction": "neither",
       "bounds": [
-        1.8,
-        7.7
+        17,
+        96
       ],
-      "source": "World Bank",
-      "url": "https://data.worldbank.org/indicator/SE.XPD.TOTL.GD.ZS"
+      "source": "OECD Education at a Glance, UOE finance collection",
+      "url": "https://data-explorer.oecd.org/vis?df[ds]=DisseminateFinalDMZ&df[id]=DSD_EAG_UOE_FIN%40DF_UOE_FIN_SOURCE_GV_PR_NDOM&df[ag]=OECD.EDU.IMEP"
     },
     {
       "id": "social_housing",
@@ -491,7 +491,7 @@
     {
       "id": "education",
       "name": "Education",
-      "axis": "education_spend",
+      "axis": "tertiary_public",
       "options": [
         {
           "id": "ed_market",
@@ -501,14 +501,15 @@
           "political": 10,
           "social": 25,
           "axis": {
-            "education_spend": 4.3
+            "tertiary_public": 47.29
           },
           "axis_hand": {
-            "education_spend": 4.2
+            "tertiary_public": 45.0
           },
           "axis_basis": "derived from 7 countries",
           "holders": [
             "US",
+            "CA",
             "SG",
             "JP",
             "KR",
@@ -526,10 +527,10 @@
           "political": 20,
           "social": 22,
           "axis": {
-            "education_spend": 5.2
+            "tertiary_public": 33.95
           },
           "axis_hand": {
-            "education_spend": 4.8
+            "tertiary_public": 35.0
           },
           "axis_basis": "derived from 3 countries",
           "holders": [
@@ -546,12 +547,12 @@
           "political": 35,
           "social": 20,
           "axis": {
-            "education_spend": 4.9
+            "tertiary_public": 81.61
           },
           "axis_hand": {
-            "education_spend": 5.0
+            "tertiary_public": 82.0
           },
-          "axis_basis": "derived from 9 countries",
+          "axis_basis": "derived from 7 countries",
           "holders": [
             "DE",
             "NL",
@@ -572,12 +573,12 @@
           "political": 35,
           "social": 10,
           "axis": {
-            "education_spend": 4.7
+            "tertiary_public": 77.45
           },
           "axis_hand": {
-            "education_spend": 6.3
+            "tertiary_public": 80.0
           },
-          "axis_basis": "derived from 24 countries",
+          "axis_basis": "derived from 19 countries",
           "holders": [
             "FR",
             "DK",
@@ -613,15 +614,13 @@
           "political": 45,
           "social": 40,
           "axis": {
-            "education_spend": 4.8
+            "tertiary_public": 80.0
           },
           "axis_hand": {
-            "education_spend": 5.4
+            "tertiary_public": 80.0
           },
-          "axis_basis": "derived from 1 country",
-          "holders": [
-            "CA"
-          ]
+          "axis_basis": "hand",
+          "holders": []
         }
       ]
     },
@@ -2101,10 +2100,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.1,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 33.95,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 1.9,
@@ -2197,10 +2196,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.2,
-          "year": 2023,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 53.46,
+          "year": 2024,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 1.2,
@@ -2299,10 +2298,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.4,
-          "year": 2021,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 38.38,
+          "year": 2022,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 3.4,
@@ -2395,10 +2394,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.9,
-          "year": 2021,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 21.76,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 2.3,
@@ -2478,7 +2477,7 @@
       "choices": {
         "tax": "tax_anglo",
         "healthcare": "hc_public",
-        "education": "ed_free_selective",
+        "education": "ed_market",
         "housing": "ho_market",
         "retirement": "re_flat",
         "energy": "en_carbon_tax",
@@ -2496,10 +2495,10 @@
           "year": 2024,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.8,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 53.68,
+          "year": 2019,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 1.3,
@@ -2592,10 +2591,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.2,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 82.7,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 1.9,
@@ -2688,10 +2687,10 @@
           "year": 2024,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.3,
+        "tertiary_public": {
+          "value": 66.6,
           "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 2.1,
@@ -2784,10 +2783,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.2,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 71.73,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 1.9,
@@ -2880,10 +2879,10 @@
           "year": 2024,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 6.4,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 81.49,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 2.4,
@@ -2976,10 +2975,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 7.3,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 79.99,
+          "year": 2024,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 2.0,
@@ -3073,10 +3072,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.4,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 91.17,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 2.1,
@@ -3169,10 +3168,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 6.4,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 87.66,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 2.3,
@@ -3265,10 +3264,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.2,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 79.99,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 3.4,
@@ -3361,11 +3360,6 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.9,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
-        },
         "military_burden": {
           "value": 0.7,
           "year": 2024,
@@ -3457,11 +3451,6 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 2.2,
-          "year": 2024,
-          "source": "World Bank, government expenditure on education % of GDP"
-        },
         "military_burden": {
           "value": 2.8,
           "year": 2024,
@@ -3528,10 +3517,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 3.3,
-          "year": 2021,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 35.74,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 1.4,
@@ -3624,10 +3613,10 @@
           "year": 2024,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.4,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 47.29,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 2.6,
@@ -3720,10 +3709,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.9,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 41.44,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 8.8,
@@ -3816,10 +3805,10 @@
           "year": 2024,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.9,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 41.44,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "military_burden": {
           "value": 1.6,
@@ -3913,11 +3902,6 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 3.9,
-          "year": 2021,
-          "source": "World Bank, government expenditure on education % of GDP"
-        },
         "military_burden": {
           "value": 5.6,
           "year": 2014,
@@ -3985,10 +3969,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 2.9,
-          "year": 2021,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 57.86,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 12.7,
@@ -4081,10 +4065,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.1,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 62.58,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 2.4,
@@ -4178,10 +4162,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.6,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 63.96,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 1.1,
@@ -4276,10 +4260,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.6,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 55.38,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 1.1,
@@ -4372,10 +4356,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.3,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 87.7,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 23.6,
@@ -4468,10 +4452,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 6.3,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 82.2,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 4.2,
@@ -4564,10 +4548,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 3.4,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 76.38,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "pension_spend": {
           "value": 16.2,
@@ -4655,10 +4639,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.3,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 71.92,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 3.6,
@@ -4751,10 +4735,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.3,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 77.45,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 6.6,
@@ -4847,10 +4831,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.7,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 81.61,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 2.5,
@@ -4943,10 +4927,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 5.3,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 82.14,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 4.7,
@@ -5039,10 +5023,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.1,
-          "year": 2021,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 74.89,
+          "year": 2022,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "pension_spend": {
           "value": 8.9,
@@ -5125,10 +5109,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.3,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 71.93,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 0.8,
@@ -5221,10 +5205,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.3,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 48.14,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 1.9,
@@ -5317,10 +5301,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 7.3,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 87.91,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 11.1,
@@ -5413,10 +5397,10 @@
           "year": 2024,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 3.7,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 88.29,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 1.6,
@@ -5509,10 +5493,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 3.8,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 68.95,
+          "year": 2023,
+          "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"
         },
         "social_housing": {
           "value": 2.6,
@@ -5604,11 +5588,6 @@
           "value": 72.4,
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
-        },
-        "education_spend": {
-          "value": 4.8,
-          "year": 2023,
-          "source": "World Bank, government expenditure on education % of GDP"
         },
         "grid_carbon": {
           "value": 80.4,
@@ -5732,11 +5711,6 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.5,
-          "year": 2023,
-          "source": "World Bank, government expenditure on education % of GDP"
-        },
         "grid_carbon": {
           "value": 692.0,
           "year": 2024,
@@ -5799,11 +5773,6 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 3.2,
-          "year": 2020,
-          "source": "World Bank, government expenditure on education % of GDP"
-        },
         "grid_carbon": {
           "value": 581.5,
           "year": 2025,
@@ -5865,11 +5834,6 @@
           "value": 88.5,
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
-        },
-        "education_spend": {
-          "value": 6.4,
-          "year": 2024,
-          "source": "World Bank, government expenditure on education % of GDP"
         },
         "grid_carbon": {
           "value": 635.3,
@@ -5938,10 +5902,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.7,
+        "tertiary_public": {
+          "value": 78.3,
           "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+          "source": "Eurostat UOE education finance, government share of expenditure on tertiary educational institutions"
         },
         "social_housing": {
           "value": 5.5,
@@ -6015,10 +5979,10 @@
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
         },
-        "education_spend": {
-          "value": 4.7,
-          "year": 2022,
-          "source": "World Bank, government expenditure on education % of GDP"
+        "tertiary_public": {
+          "value": 43.76,
+          "year": 2023,
+          "source": "Eurostat UOE education finance, government share of expenditure on tertiary educational institutions"
         },
         "grid_carbon": {
           "value": 489.0,
@@ -6085,11 +6049,6 @@
           "value": 51.2,
           "year": 2023,
           "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"
-        },
-        "education_spend": {
-          "value": 2.5,
-          "year": 2023,
-          "source": "World Bank, government expenditure on education % of GDP"
         },
         "grid_carbon": {
           "value": 221.2,

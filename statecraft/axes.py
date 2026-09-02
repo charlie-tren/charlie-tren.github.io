@@ -61,10 +61,45 @@ AXES = [
      "unit": "%", "direction": "neither", "bounds": (29, 92),
      "source": "WHO Global Health Expenditure Database",
      "url": "https://data.who.int/indicators"},
-    {"id": "education_spend", "domain": "education", "label": "Public education spend",
-     "unit": "% of GDP", "direction": "neither", "bounds": (1.8, 7.7),
-     "source": "World Bank",
-     "url": "https://data.worldbank.org/indicator/SE.XPD.TOTL.GD.ZS"},
+    # REPLACED education_spend ON 02/09/2026, and the reason is that the old axis
+    # measured the wrong thing. Public education spend across all levels as a
+    # share of GDP is the size of the school system; every option in the
+    # education domain is about who pays for university. The five option medians
+    # sat between 4.30 and 5.20 on a track 5.9 wide, so the spoke travelled 15%,
+    # the thinnest of the thirteen and exactly on check_travel.py's floor, and
+    # it put "Free through university" BELOW "Free at school, deferred fees
+    # after". This measures the quantity the labels describe. The options
+    # separate by 47.66 points and the spoke travels 60%.
+    #
+    # THE SERIES IS THE AFTER-TRANSFERS COLUMN, which is why the United Kingdom
+    # reads 21.76 and looks at a glance like a fault. A government loan the
+    # student repays to the university is counted as private money, so a
+    # deferred-fee system books the whole bill to the household with the state
+    # acting as lender rather than payer. The same OECD table's initial-funds
+    # column reads the UK at 44.05. Adopting this column is an editorial choice
+    # about whether a student loan is the state paying or the student paying, and
+    # the method section on the page states which convention is in use.
+    #
+    # It costs ten cells: 36 of 45 against the old axis's 44. Switzerland is the
+    # real loss and its row says why it cannot be filled.
+    #
+    # (17, 96) from derive_bounds.py on 02/09/2026, run after the cells and the
+    # option values were swapped, on step 1 as for health_public. The occupants
+    # run 21.76 (UK) to 91.17 (NO), a span of 69.41, padded 6% and snapped
+    # outward. No other axis moved on the same run.
+    {"id": "tertiary_public", "domain": "education",
+     "label": "Public share of university funding",
+     "unit": "%", "direction": "neither", "bounds": (17, 96),
+     # `source` is printed in the axes table on the page, beside thirteen others
+     # that read "OECD Social Expenditure Database" and the like. It carried the
+     # SDMX key as well, which put EXP_SOURCE S13, EDUCATION_LEV ISCED11_5T8 and
+     # UNIT_MEASURE PT_EXP in front of a reader who wants to know where the
+     # number came from. The key is how the number is FETCHED and belongs in
+     # fetch_indicators.py and in this comment, which is where it now is:
+     #   EXP_SOURCE=S13, EDUCATION_LEV=ISCED11_5T8, UNIT_MEASURE=PT_EXP,
+     #   EXP_DESTINATION=INST_EDU, EXPENDITURE_TYPE=DIR_EXP
+     "source": "OECD Education at a Glance, UOE finance collection",
+     "url": "https://data-explorer.oecd.org/vis?df[ds]=DisseminateFinalDMZ&df[id]=DSD_EAG_UOE_FIN%40DF_UOE_FIN_SOURCE_GV_PR_NDOM&df[ag]=OECD.EDU.IMEP"},
     {"id": "social_housing", "domain": "housing", "label": "Social housing",
      "unit": "% of stock", "direction": "neither", "bounds": (0, 36.5),
      "source": "OECD Affordable Housing Database",

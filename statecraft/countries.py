@@ -234,6 +234,20 @@ needs before any low or middle income country is added.
   A MANDATORY FUNDED PILLAR BESIDE AN EARNINGS-RELATED PENSION, which the
   Central European block logged for Croatia and Latvia, and which Uruguay and
   Taiwan now join.
+
+  FREE OR NEAR-FREE UNIVERSITY WITH A STATUTORY CONTRIBUTION. Israel, Ireland
+  and Portugal are all coded ed_free and all three charge: a standard
+  undergraduate tuition of NIS 12,017 set nationally by the Council for Higher
+  Education, a EUR 2,500 student contribution owed on top of the Free Fees
+  Initiative, and a propina capped by law at EUR 697. None of them is a fee
+  market, because none of the three lets a university set its own price, so
+  ed_market's "Universities set their own prices" would describe them worse than
+  ed_free does. They stay on ed_free and the gap is recorded here instead. The
+  new tertiary axis is what made it visible: the three read 41.44, 57.86 and
+  55.38, well below the rest of their option.
+  https://en.studentsadmin.huji.ac.il/tuition-structure
+  https://hea.ie/funding-governance-performance/funding/student-finance/course-fees/
+  https://www.dges.gov.pt/pt/pagina/propinas
 """
 
 COUNTRIES = [
@@ -262,8 +276,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 73.7, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.1, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 33.95, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 1.9, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 30.4, "year": 2024,
@@ -309,8 +323,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 77.7, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.2, "year": 2023,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 53.46, "year": 2024,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 1.2, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 28.2, "year": 2024,
@@ -349,8 +363,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 54.0, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.4, "year": 2021,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 38.38, "year": 2022,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 3.4, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 15.2, "year": 2024,
@@ -387,8 +401,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 81.8, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.9, "year": 2021,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 21.76, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 2.3, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 17.1, "year": 2024,
@@ -430,7 +444,24 @@ COUNTRIES = [
                  # requirement. In the other four no such market has formed.
                  # https://www.iedm.org/improving-canadian-patients-access-to-care-the-role-of-duplicate-private-health-insurance/
                  "healthcare": "hc_public",
-                 "education": "ed_free_selective",
+                 # MOVED FROM ed_free_selective 02/09/2026, which was wrong on
+                 # both halves of its own label, "Free, and selective from
+                 # twelve". Canadian universities charge substantial tuition:
+                 # Statistics Canada puts the average domestic undergraduate fee
+                 # at CAD 7,734 for 2025/26, from CAD 3,746 in Newfoundland and
+                 # Labrador to CAD 9,988 in Nova Scotia. And no province runs an
+                 # examination at twelve that decides which school a child
+                 # attends. Federal and provincial loans repay on a fixed
+                 # schedule with hardship relief rather than income-contingently
+                 # through the tax system, so this is ed_market and not
+                 # ed_deferred. Canada reads 53.68 on the new tertiary axis,
+                 # the middle of the fee-charging pack, which is what a
+                 # fee-charging country should read.
+                 # https://www150.statcan.gc.ca/n1/daily-quotidien/250910/dq250910d-eng.pdf
+                 # Canada was the only holder of ed_free_selective, which is now
+                 # held by nobody. The option is kept rather than deleted; see
+                 # policies.py.
+                 "education": "ed_market",
                  "housing": "ho_market", "retirement": "re_flat", "energy": "en_carbon_tax",
                  "speech": "sp_hate_limits", "voting": "vo_fptp", "work": "wo_minimum",
                  "defence": "de_alliance", "immigration": "im_points", "justice": "ju_standard",
@@ -438,8 +469,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 70.2, "year": 2024,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.8, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 53.68, "year": 2019,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 1.3, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 22.2, "year": 2024,
@@ -476,8 +507,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 79.1, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.2, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 82.70, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 1.9, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 19.8, "year": 2024,
@@ -514,8 +545,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 68.4, "year": 2024,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.3, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 66.60, "year": 2022,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 2.1, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 13.8, "year": 2024,
@@ -556,8 +587,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 68.4, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.2, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 71.73, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 1.9, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 16.2, "year": 2024,
@@ -605,8 +636,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 83.4, "year": 2024,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 6.4, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 81.49, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 2.4, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 14.2, "year": 2024,
@@ -670,8 +701,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 86.1, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 7.3, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 79.99, "year": 2024,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 2.0, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 21.4, "year": 2024,
@@ -720,8 +751,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 86.1, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.4, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 91.17, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 2.1, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 18.2, "year": 2024,
@@ -787,8 +818,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 81.1, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 6.4, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 87.66, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 2.3, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 9.2, "year": 2024,
@@ -844,8 +875,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 75.8, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.2, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 79.99, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 3.4, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 14.9, "year": 2024,
@@ -894,8 +925,18 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 33.1, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.9, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         # NO EDUCATION CELL, AND SWITZERLAND IS THE ONE THAT HURTS. It reads on
+         # every other axis in the file. The OECD UOE series has a single Swiss
+         # tertiary observation, 2012 at exactly 100.0, which is the artefact of a
+         # missing private figure rather than a country that pays for all of it:
+         # Switzerland reports general government and international expenditure on
+         # tertiary institutions every year and reports no private figure at all,
+         # at any level of aggregation, so there is nothing to divide by. Eurostat
+         # carries the same hole. A substitute built from household TOTAL spending
+         # and other-private R&D was tested against the 25 countries where the
+         # answer is known: standard deviation 8.62, errors from -19.8 to +28.8,
+         # with Denmark's 81.49 coming out at 61.65. Unusable on a 79-point track,
+         # so the key is absent and the reveal omits the track.
          "military_burden": {"value": 0.7, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 31.1, "year": 2024,
@@ -939,8 +980,6 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 58.5, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 2.2, "year": 2024,
-                             "source": "World Bank, government expenditure on education % of GDP"},
          "military_burden": {"value": 2.8, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 48.7, "year": 2024,
@@ -975,8 +1014,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 84.8, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 3.3, "year": 2021,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 35.74, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 1.4, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 2.8, "year": 2024,
@@ -1020,8 +1059,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 56.6, "year": 2024,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.4, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 47.29, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 2.6, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 3.5, "year": 2024,
@@ -1058,8 +1097,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 65.2, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.9, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 41.44, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 8.8, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 22.3, "year": 2024,
@@ -1096,8 +1135,8 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 48.5, "year": 2024,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.9, "year": 2022,
-                             "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 41.44, "year": 2023,
+                             "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "military_burden": {"value": 1.6, "year": 2024,
                              "source": "World Bank / SIPRI, military expenditure % of GDP"},
          "foreign_born": {"value": 7.8, "year": 2024,
@@ -1165,8 +1204,6 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 66.8, "year": 2023,
                            "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 3.9, "year": 2021,
-                             "source": "World Bank, government expenditure on education % of GDP"},
          # THE SAME SHAPE AS PANAMA'S 1999 CELL AND TREATED THE SAME WAY: the
          # year is old because the SERIES ENDS THERE, and the reason now ships
          # in the source string rather than sitting in a comment. World Bank
@@ -1314,8 +1351,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 76.6, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 2.9, "year": 2021,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 57.86, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 12.7, "year": 2016,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 2.9, "year": 2021,
@@ -1418,8 +1455,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 73.1, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.1, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 62.58, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 2.4, "year": 2022,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 16.1, "year": 2021,
@@ -1498,8 +1535,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 73.2, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.6, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 63.96, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 1.1, "year": 2019,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; may also include other reduced-rent housing such as employer-provided dwellings"},
          "pension_spend": {"value": 12.3, "year": 2021,
@@ -1590,8 +1627,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 61.4, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.6, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 55.38, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 1.1, "year": 2021,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 12.9, "year": 2021,
@@ -1677,8 +1714,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 76.5, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.3, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 87.70, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 23.6, "year": 2019,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; main residence dwellings only"},
          "pension_spend": {"value": 14.0, "year": 2021,
@@ -1750,8 +1787,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 73.7, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 6.3, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 82.20, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 4.2, "year": 2018,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 10.7, "year": 2021,
@@ -1843,8 +1880,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 50.6, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 3.4, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 76.38, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "pension_spend": {"value": 16.2, "year": 2021,
                        "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"},
          "grid_carbon": {"value": 315.1, "year": 2025,
@@ -1934,8 +1971,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 84.3, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.3, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 71.92, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 3.6, "year": 2021,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; centrally provided dwellings only"},
          "pension_spend": {"value": 8.2, "year": 2021,
@@ -2044,8 +2081,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 77.1, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.3, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 77.45, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 6.6, "year": 2020,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 11.2, "year": 2021,
@@ -2133,8 +2170,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 78.9, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.7, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 81.61, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 2.5, "year": 2021,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 7.4, "year": 2021,
@@ -2214,8 +2251,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 73.2, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 5.3, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 82.14, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 4.7, "year": 2018,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 10.6, "year": 2021,
@@ -2304,8 +2341,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 84.0, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.1, "year": 2021,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 74.89, "year": 2022,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "pension_spend": {"value": 8.9, "year": 2021,
                        "source": "OECD SOCX, public expenditure on old age and survivors cash benefits % of GDP"},
          "grid_carbon": {"value": 158.5, "year": 2025,
@@ -2395,8 +2432,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 65.0, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.3, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 71.93, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 0.8, "year": 2020,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; share computed against the previous year's total dwelling stock"},
          "pension_spend": {"value": 6.5, "year": 2021,
@@ -2500,8 +2537,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 59.5, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.3, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 48.14, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 1.9, "year": 2016,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 7.5, "year": 2021,
@@ -2609,8 +2646,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 83.6, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 7.3, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 87.91, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 11.1, "year": 2016,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings; may also include student housing"},
          "pension_spend": {"value": 2.9, "year": 2021,
@@ -2713,8 +2750,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 86.9, "year": 2024,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 3.7, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 88.29, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 1.6, "year": 2011,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 8.6, "year": 2021,
@@ -2843,8 +2880,8 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 73.4, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 3.8, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         "tertiary_public": {"value": 68.95, "year": 2023,
+                       "source": "OECD Education at a Glance UOE finance collection, general government share of expenditure on tertiary educational institutions, after transfers"},
          "social_housing": {"value": 2.6, "year": 2018,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "pension_spend": {"value": 7.6, "year": 2021,
@@ -2976,8 +3013,6 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 72.4, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.8, "year": 2023,
-                       "source": "World Bank, government expenditure on education % of GDP"},
          "grid_carbon": {"value": 80.4, "year": 2025,
                        "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"},
          "expression": {"value": 0.931, "year": 2025,
@@ -3326,8 +3361,6 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 77.8, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.5, "year": 2023,
-                       "source": "World Bank, government expenditure on education % of GDP"},
          "grid_carbon": {"value": 692.0, "year": 2024,
                        "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"},
          "expression": {"value": 0.092, "year": 2025,
@@ -3439,8 +3472,6 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 83.0, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 3.2, "year": 2020,
-                       "source": "World Bank, government expenditure on education % of GDP"},
          "grid_carbon": {"value": 581.5, "year": 2025,
                        "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"},
          "expression": {"value": 0.055, "year": 2025,
@@ -3594,8 +3625,6 @@ COUNTRIES = [
      "indicators": {
          "health_public": {"value": 88.5, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 6.4, "year": 2024,
-                       "source": "World Bank, government expenditure on education % of GDP"},
          "grid_carbon": {"value": 635.3, "year": 2025,
                        "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"},
          "expression": {"value": 0.532, "year": 2025,
@@ -3713,8 +3742,22 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 66.0, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.7, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         # RECONSTRUCTED, NOT READ. The OECD UOE cut does not carry Malta, so this
+         # cell is built from the Eurostat UOE components on the same collection:
+         # government direct expenditure on tertiary institutions over that plus
+         # household and other-private payments to institutions plus international
+         # organisations. The construction was validated against the 21 countries
+         # where both exist. It reproduces the OECD figure exactly to two decimals
+         # on eleven, lands within 1.0 point on five more, and reads LOW by 2.5 to
+         # 7.6 on five Baltic and central European cases. So the error bar here is
+         # wider than on the other 34 cells, which are read straight from the OECD.
+         # THE YEAR IS 2022 ON PURPOSE. DO NOT UPDATE IT TO 2023. The 2023
+         # observation computes to 64.47, off a one-year collapse in reported
+         # capital expenditure (50.6 to 21.2 EUR million) and R&D (38.7 to 5.9)
+         # that Eurostat carries no flag on. 2013 to 2022 trends smoothly from
+         # 94.3 down to 78.3, so 2022 is the last trustworthy observation.
+         "tertiary_public": {"value": 78.30, "year": 2022,
+                       "source": "Eurostat UOE education finance, government share of expenditure on tertiary educational institutions"},
          "social_housing": {"value": 5.5, "year": 2011,
                        "source": "OECD Affordable Housing Database PH4.2, social rental dwellings % of total dwellings"},
          "grid_carbon": {"value": 484.0, "year": 2025,
@@ -3837,8 +3880,17 @@ COUNTRIES = [
                        "source": "Eurostat gov_10a_taxag, total receipts from taxes and compulsory social contributions net of amounts unlikely to be collected, general government (S13), % of GDP"},
          "health_public": {"value": 76.8, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 4.7, "year": 2022,
-                       "source": "World Bank, government expenditure on education % of GDP"},
+         # RECONSTRUCTED, NOT READ. The OECD UOE cut does not carry Cyprus, so this
+         # cell is built from the Eurostat UOE components on the same collection:
+         # government direct expenditure on tertiary institutions over that plus
+         # household and other-private payments to institutions plus international
+         # organisations. The construction was validated against the 21 countries
+         # where both exist. It reproduces the OECD figure exactly to two decimals
+         # on eleven, lands within 1.0 point on five more, and reads LOW by 2.5 to
+         # 7.6 on five Baltic and central European cases. So the error bar here is
+         # wider than on the other 34 cells, which are read straight from the OECD.
+         "tertiary_public": {"value": 43.76, "year": 2023,
+                       "source": "Eurostat UOE education finance, government share of expenditure on tertiary educational institutions"},
          "grid_carbon": {"value": 489.0, "year": 2025,
                        "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"},
          "expression": {"value": 0.812, "year": 2025,
@@ -3978,8 +4030,6 @@ COUNTRIES = [
                        "source": "OECD Global Revenue Statistics Database, total tax revenue (all levels of government) % of GDP"},
          "health_public": {"value": 51.2, "year": 2023,
                        "source": "WHO GHED, domestic general government health expenditure % of current health expenditure"},
-         "education_spend": {"value": 2.5, "year": 2023,
-                       "source": "World Bank, government expenditure on education % of GDP"},
          "grid_carbon": {"value": 221.2, "year": 2024,
                        "source": "Our World in Data / Ember, carbon intensity of electricity generation gCO2 per kWh"},
          "expression": {"value": 0.812, "year": 2025,
