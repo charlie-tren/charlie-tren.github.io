@@ -158,8 +158,8 @@
       });
     }
 
-    el("boardHead").textContent = playing ? "The Room" : "In The Room";
-    el("blnote").textContent = playing ? "Fewest wins" : "";
+    el("boardHead").textContent = "Leaderboard";
+    el("blnote").textContent = "";
 
     list.textContent = "";
     rows.forEach(function (q, idx) {
@@ -260,7 +260,19 @@
     var b = document.createElement("button");
     b.type = "button";
     b.className = "card" + (opts.cls ? " " + opts.cls : "");
-    b.appendChild(document.createTextNode(text));
+    /* The picture, above the words. A hand of ten short lines of text reads as a
+       list of radio buttons; a face on each one makes it a card you can pick out
+       across a table, which is the whole point of the thing. */
+    if (opts.art) {
+      var a = document.createElement("span");
+      a.className = "art";
+      a.textContent = opts.art;
+      b.appendChild(a);
+    }
+    var t = document.createElement("span");
+    t.className = "ctext";
+    t.textContent = text;
+    b.appendChild(t);
     if (opts.who) {
       var w = document.createElement("span");
       w.className = "who";
@@ -375,8 +387,8 @@
        the opposite of every other round, so it is the loud one. */
     var reverse = s.ask === "worst";
     el("ask").textContent = reverse
-      ? "REVERSE ROUND: play your BEST card. The room votes for the WORST."
-      : "Play your WORST card. The room votes for the best of a bad lot.";
+      ? "Reverse round \u00b7 play your BEST card"
+      : "Play your WORST card";
     el("ask").className = "ask" + (reverse ? " reverse" : "");
 
     el("modifier").hidden = !s.modifier || s.modifier === "reverse";
@@ -393,7 +405,10 @@
        after which the table names it as yours anyway. */
     var mine = you.playedText && s.phase !== "scored";
     el("yours").hidden = !mine;
-    if (mine) el("yours").textContent = "You played: " + you.playedText;
+    if (mine) {
+      el("yours").textContent =
+        (you.playedArt ? you.playedArt + "  " : "") + "You played: " + you.playedText;
+    }
 
     /* Your hand, while there is still something to do with it. */
     var showHand = s.phase === "playing" && you.playing;
@@ -410,6 +425,7 @@
       you.hand.forEach(function (text, i) {
         var idx = you.handCards[i];
         hand.appendChild(cardBtn(text, {
+          art: you.handArt ? you.handArt[i] : "",
           cls: you.played ? "spent" : (picked === idx ? "chosen" : "") + (swapping ? " swapping" : ""),
           onClick: you.played ? null : function () {
             if (swapping) { swapping = false; send({ t: "redraw", card: idx }); return; }
@@ -447,6 +463,7 @@
         if (picked === "v" + c.slot) cls.push("chosen");
         if (s.phase === "scored" && top > 0 && c.votes === top) cls.push("won");
         wrap.appendChild(cardBtn(c.text, {
+          art: c.art,
           cls: cls.join(" "),
           who: s.phase === "scored" ? ownerName(s, c.owner) : (mine ? "Yours" : null),
           votes: s.phase === "scored" ? c.votes : null,
@@ -774,10 +791,10 @@
         redrawUsed: false, mySlot: 1,
       },
       table: [
-        { slot: 0, text: "a bloke in a full morph suit", owner: "p2", votes: 1 },
-        { slot: 1, text: "a life-size cardboard cutout of yourself", owner: "p1", votes: 2 },
-        { slot: 2, text: "a nan who is 94 and deaf", owner: "p4", votes: 0 },
-        { slot: 3, text: "a friend who has just got back from Bali", owner: "p3", votes: 0 },
+        { slot: 0, text: "a bloke in a full morph suit", art: "\u{1F977}", owner: "p2", votes: 1 },
+        { slot: 1, text: "a life-size cardboard cutout of yourself", art: "\u{1F5BC}\uFE0F", owner: "p1", votes: 2 },
+        { slot: 2, text: "a nan who is 94 and deaf", art: "\u{1F475}", owner: "p4", votes: 0 },
+        { slot: 3, text: "a friend who has just got back from Bali", art: "\u{1F3DD}\uFE0F", owner: "p3", votes: 0 },
       ],
       ask: "best",
       last: { round: 4, reverse: false, ask: "best", double: false, sweep: null,

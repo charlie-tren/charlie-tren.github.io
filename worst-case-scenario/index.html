@@ -27,6 +27,9 @@
     } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
   })();
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
 <link rel="stylesheet" href="/assets/room.css">
 <link rel="stylesheet" href="/assets/worst-case-scenario.css">
 <script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */
@@ -35,20 +38,21 @@
 <body>
 <div class="page">
   <div class="bar">
-    <a class="home" href="/"><span class="back">&larr;</span>&nbsp;Other projects</a>
-    <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
-  </div>
-
-  <!-- The mark. A card with an alarm in it, which is the game in one shape: the
-       thing you are holding is the problem. It leans on hover, honouring
-       prefers-reduced-motion, the way Pendulum's cradle swings. -->
-  <div class="wordmark">
-    <svg class="mk" viewBox="0 0 90 120" width="30" height="40" aria-hidden="true">
-      <rect x="8" y="8" width="74" height="104" rx="12" fill="none" stroke="currentColor" stroke-width="7"/>
-      <path d="M45 32 L45 74" stroke="currentColor" stroke-width="10" stroke-linecap="round"/>
-      <circle cx="45" cy="92" r="6" fill="currentColor"/>
-    </svg>
-    <h1 class="wm">Worst Case Scenario</h1>
+    <!-- The title lives up here with the other chrome rather than taking a row
+         of its own: on a phone that row was a whole line of screen for a name
+         nobody needs twice. -->
+    <div class="wordmark">
+      <svg class="mk" viewBox="0 0 90 120" width="22" height="29" aria-hidden="true">
+        <rect x="8" y="8" width="74" height="104" rx="12" fill="none" stroke="currentColor" stroke-width="8"/>
+        <path d="M45 30 L45 74" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+        <circle cx="45" cy="93" r="6.5" fill="currentColor"/>
+      </svg>
+      <h1 class="wm">Worst Case Scenario</h1>
+    </div>
+    <div class="barright">
+      <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
+      <a class="home" href="/"><span class="back">&larr;</span>&nbsp;Other projects</a>
+    </div>
   </div>
 
   <section class="lobby" id="lobby">
@@ -124,10 +128,14 @@
            your best one, and it is the thing players missed. -->
       <!-- The premise: what game this is, before the prompt that varies. -->
       <p class="premise" id="premise"></p>
-      <p class="ask" id="ask"></p>
-      <p class="modifier" id="modifier" hidden></p>
-      <p class="sitlabel" id="sitlabel"></p>
-      <p class="statement" id="situation"></p>
+      <div class="asks">
+        <p class="ask" id="ask"></p>
+        <p class="modifier" id="modifier" hidden></p>
+      </div>
+      <div class="sitblock">
+        <p class="sitlabel" id="sitlabel"></p>
+        <p class="statement" id="situation"></p>
+      </div>
 
       <!-- What you played, kept on screen. The card leaves your hand when you
            play it, and with nothing in its place you could not remember what you
@@ -178,7 +186,7 @@
          a scoreboard. This replaced a row of small chips: the chips could not
          show a position changing, which is the whole point. -->
     <aside class="board" id="board">
-      <h3 class="sect" id="boardHead">In The Room</h3>
+      <h3 class="sect" id="boardHead">Leaderboard</h3>
       <ol class="bl" id="blist"></ol>
       <p class="blnote" id="blnote"></p>
     </aside>
