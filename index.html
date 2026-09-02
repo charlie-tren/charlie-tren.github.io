@@ -443,11 +443,8 @@
     <div class="also-head"><span class="also-name">Lighthouse</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A personal investment decision system - part analytical workbench, part decision journal.</p>
     <ul class="also-points">
-      <li>Screens and values a multi-asset universe - equities, macro, FX, crypto, super and CFDs - replacing an Excel workflow</li>
-      <li>Valuation lenses for DCF, fundamentals history, moat and quality, return-potential and drawdown</li>
-      <li>A buy-gate, kill-chain, sell-triggers and prohibitions govern each decision</li>
-      <li>A decision journal of theses, trades, outcomes and reviews, for backtesting the methodology behind them</li>
-      <li>Pure-Python core, a SQLite journal (alembic) with nightly backup, and a Bloomberg + Excel data layer</li>
+      <li>Every decision has to clear a buy-gate and a kill-chain before it is allowed, so the system can refuse a name and name the rule that stopped it.</li>
+      <li>It keeps the thesis alongside the trade and what actually happened, which makes the method backtestable rather than only the positions.</li>
     </ul>
     <p class="also-tech">Bloomberg · Python · Streamlit · SQLite</p>
   </div>
@@ -456,11 +453,8 @@
     <div class="also-head"><span class="also-name">Parallax</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A systematic momentum/trend system for equity CFDs.</p>
     <ul class="also-points">
-      <li>Breakout, compression, pullback and near-high screeners</li>
-      <li>A chart-quant score feeding a 14-gate risk "kill-chain"</li>
-      <li>Regime-aware position sizing, capped for correlation and concentration</li>
-      <li>Structural trailing stops with a break-even ratchet on exits</li>
-      <li>A point-in-time backtest with cost and friction modelling, plus a daily-review loop and decision log</li>
+      <li>Four screeners feed a chart-quant score, and a candidate then has to survive fourteen separate gates before it is sized at all.</li>
+      <li>The backtest is point-in-time and models cost and friction, because a momentum system that skips either one looks far better than it is.</li>
     </ul>
     <p class="also-tech">Bloomberg · TradingView · Yahoo · Python · Streamlit · SQLite</p>
   </div>
@@ -469,34 +463,28 @@
     <div class="also-head"><span class="also-name">All-Weather Allocator</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A risk-parity "all-weather" portfolio allocator.</p>
     <ul class="also-points">
-      <li>A rolling weight optimiser over a regime model</li>
-      <li>A signal ensemble of yield and drawdown-momentum</li>
-      <li>Sizing against a drawdown budget, with a precomputed contribution schedule</li>
-      <li>A backtest and stats harness, implemented over CFDs</li>
+      <li>Weights come from a rolling optimiser sitting on a regime model, rather than from a fixed risk-parity split.</li>
+      <li>Everything is sized against a drawdown budget, so the binding constraint is how much the account may lose, not how much it may wobble.</li>
     </ul>
     <p class="also-tech">Python · Streamlit</p>
   </div>
 
   <div class="also-item">
     <div class="also-head"><span class="also-name">BTC Analyser</span><span class="tag">Personal project</span></div>
-    <p class="also-lead">A Bitcoin accumulation model - scores where BTC sits in its cycle and sizes contributions accordingly.</p>
+    <p class="also-lead">A Bitcoin accumulation model: how much to buy, and when not to.</p>
     <ul class="also-points">
-      <li>On-chain and cycle signals - MVRV-Z, Mayer multiple, Puell, realised-price ratio, 2-year MA and Fear &amp; Greed</li>
-      <li>Blended into a composite score, then gated by a risk kill-chain</li>
-      <li>Leverage- and liquidation-aware contribution sizing</li>
+      <li>Cycle position read from the usual on-chain suspects: MVRV-Z, the Mayer multiple, Puell, realised-price ratio and the two-year moving average.</li>
+      <li>The score only decides the size of the next contribution, and the sizing is liquidation-aware, so a leveraged position cannot be talked into a level it could not survive.</li>
     </ul>
     <p class="also-tech">Binance · CoinMetrics · On-chain Data · Python</p>
   </div>
 
   <div class="also-item">
     <div class="also-head"><span class="also-name">Vantage</span><span class="tag">Personal project</span></div>
-    <p class="also-lead">A packaged Bloomberg-powered markets-analytics desktop app - ~20 modules.</p>
+    <p class="also-lead">A Bloomberg-powered markets desktop app, shipped as an installable Windows program.</p>
     <ul class="also-points">
-      <li>Yield-curve and global-rates monitors, rate futures and yield-curve shock</li>
-      <li>Implied-vol and FX-vol surfaces</li>
-      <li>Carry, historical-valuation, analyst-upside, return-potential and value-momentum screens, plus a pairs-trading backtester</li>
-      <li>A Monte-Carlo price simulator, a drawdown analyser, FX forecasts and G20/macro dashboards</li>
-      <li>A cached Bloomberg data layer feeding per-module calc engines, packaged to a standalone Windows app (PyInstaller) with auth/entitlements and a usage meter</li>
+      <li>Roughly twenty modules over a cached Bloomberg layer: implied-vol and FX-vol surfaces, yield-curve shocks, a pairs-trading backtester, a Monte-Carlo price simulator.</li>
+      <li>It installs like an ordinary Windows program, with its own auth, entitlements and a usage meter. Streamlit does not do that on its own, and getting it to was most of the work.</li>
     </ul>
     <p class="also-tech">Python · Streamlit</p>
   </div>
@@ -505,11 +493,8 @@
     <div class="also-head"><span class="also-name">Overlay &amp; Hedging Ops</span><span class="tag">Internal tool</span></div>
     <p class="also-lead">An operations platform for running hedges across institutional mandates.</p>
     <ul class="also-points">
-      <li>Ingests position and rate data from custodian/admin feeds and monitored inboxes</li>
-      <li>Computes daily revaluations and mark-to-market</li>
-      <li>Schedules rollovers and tracks hedge ratios and effectiveness</li>
-      <li>Tracks fund NAV, performance, flows, leverage and risk analytics</li>
-      <li>Reports off an operations dashboard, driven by parsers, a calc engine and scheduled daily/EOD jobs</li>
+      <li>Half its inputs still arrive as an emailed attachment, so it reads monitored inboxes alongside the custodian and admin feeds.</li>
+      <li>Daily revaluations, scheduled rollovers, and hedge ratios measured for effectiveness rather than just recorded.</li>
     </ul>
     <p class="also-tech">Python · Streamlit</p>
   </div>
@@ -518,10 +503,8 @@
     <div class="also-head"><span class="also-name">Signal Pipelines</span><span class="tag">Internal tool</span></div>
     <p class="also-lead">Scheduled pipelines that turn public sources into a ranked daily digest.</p>
     <ul class="also-points">
-      <li>Scrapes public filings and job/ATS feeds</li>
-      <li>Enriches and dedupes records, including PDF body-fetch</li>
-      <li>Scores for relevance against a configurable rule set</li>
-      <li>Pushes a ranked daily digest to Teams</li>
+      <li>Public filings and job feeds, deduped and scored against a rule set you can edit without touching the code.</li>
+      <li>It opens the PDFs rather than trusting the listing text, which is where the detail worth having usually is.</li>
     </ul>
     <p class="also-tech">Python</p>
   </div>
