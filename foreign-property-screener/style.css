@@ -17,8 +17,10 @@
      governments rather than two unrelated categories. */
   /* The untaxed bar is a ghost of the after-tax one: same family, no weight,
      so it reads as "what it would have been" rather than as a third result. */
-  --ghost: #cdd4dc;
-  --bench-bar: #8b939c;
+  --hover: #f2f5f8;
+  --dot: #6b8fb5;
+  --ease-fill: #2f6fb2;
+  --ease-track: #e6eaee;
   --max: 960px;
   /* The site's own serif stack. No webfont: nothing to request and nothing to
      swap in late. Title at 400, section headings at 600. */
@@ -212,11 +214,108 @@ footer a { color: var(--ink-faint); }
     /* Lifted off the dark ground. The terracotta and the mid-grey both sink
        into the panel at their light-mode values. */
     --over: #6ea8e0; --under: #e08a6f; --bench: #9aa2ac;
-    --ghost: #343a43; --bench-bar: #7c848e;
+    --hover: #202730;
+    --dot: #7ea9d4; --ease-fill: #6ea8e0; --ease-track: #2b3138;
   }
   .readout { background: rgba(26,29,34,.97); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
+}
+
+
+/* ---- filters ---- */
+.filters {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px 20px;
+}
+#filters-panel { padding-bottom: 14px; }
+.filter-count {
+  margin: 14px 0 0; font-size: .85rem; color: var(--ink-faint);
+}
+.axis-picks {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px 20px; margin-bottom: 16px;
+}
+
+/* ---- the grid ----
+   The table is the page. It scrolls inside its own box rather than pushing the
+   document sideways, and the market column is pinned so a row stays readable
+   once you are eight columns deep. */
+.table-scroll {
+  overflow-x: auto; margin: 0 -20px; padding: 0 20px;
+  scrollbar-width: thin;
+}
+table#grid { width: 100%; border-collapse: collapse; font-size: .86rem; white-space: nowrap; }
+table#grid th, table#grid td {
+  padding: 7px 12px 7px 0; text-align: right; border-bottom: 1px solid var(--rule);
+}
+table#grid th {
+  position: sticky; top: 0; z-index: 2; background: var(--panel);
+  font: 600 11px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint);
+  cursor: pointer; user-select: none; vertical-align: bottom;
+}
+table#grid th:hover { color: var(--ink); }
+table#grid th.sorted { color: var(--ink); }
+table#grid th.sorted::after { content: " ↓"; }
+table#grid th.sorted[data-dir="asc"]::after { content: " ↑"; }
+table#grid th.l, table#grid td.l { text-align: left; }
+table#grid td.l { font-weight: 600; }
+/* The market name stays put while the rest scrolls under it. */
+table#grid th:first-child, table#grid td:first-child {
+  position: sticky; left: 0; background: var(--panel); z-index: 1;
+  padding-right: 16px;
+}
+table#grid th:first-child { z-index: 3; }
+table#grid tbody tr { cursor: pointer; }
+table#grid tbody tr:hover td { background: var(--hover); }
+table#grid tbody tr:hover td:first-child { background: var(--hover); }
+table#grid tr.picked td, table#grid tr.picked td:first-child { background: var(--hover); }
+.tax-nil { color: var(--over); font-weight: 650; }
+.tax-unknown { color: var(--ink-faint); font-style: italic; }
+
+/* ---- ease ---- */
+.ease { display: inline-flex; align-items: center; gap: 7px; justify-content: flex-end; }
+.ease-bar {
+  width: 42px; height: 6px; border-radius: 3px; background: var(--ease-track);
+  overflow: hidden; flex: none;
+}
+.ease-bar i { display: block; height: 100%; background: var(--ease-fill); }
+
+/* ---- expanded row ---- */
+tr.detail td { padding: 0 0 18px; white-space: normal; }
+.detail-inner { padding: 14px 0 0; }
+.ease-parts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 8px 14px; margin-bottom: 16px;
+}
+.ease-part {
+  border-left: 3px solid var(--rule); padding: 3px 0 3px 9px;
+}
+.ease-part.s3 { border-left-color: var(--over); }
+.ease-part.s2 { border-left-color: var(--dot); }
+.ease-part.s1 { border-left-color: #c98a3f; }
+.ease-part.s0 { border-left-color: var(--under); }
+.ep-name {
+  display: block; font-size: 10.5px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-faint);
+}
+.ep-label { display: block; font-size: .86rem; }
+
+@media (max-width: 620px) {
+  .table-scroll { margin: 0 -15px; padding: 0 15px; }
+
+  /* Six filters stack into the whole of a 844px screen and the table starts
+     below the fold, so a phone opens on nothing but knobs. The table comes
+     first here and the filters sit under it, same as the desktop order is left
+     alone because at that width they cost two rows. */
+  main.wrap { display: flex; flex-direction: column; }
+  #table-panel    { order: 1; margin-top: 22px; }
+  #filters-panel  { order: 2; }
+  #scatter-panel  { order: 3; }
+  .notes          { order: 4; }
+  table#grid { font-size: .8rem; }
+  table#grid th, table#grid td { padding: 6px 9px 6px 0; }
 }

@@ -1,87 +1,72 @@
-"""Build data.json for Absentee from the source workbook.
+"""Build data.json for the Foreign Property Screener.
 
-The workbook carries a per-country ten-year growth column, most of it marked
-"Est." with no source behind it. None of it is used here. Growth is a reader
-input applied identically to every country, so the ranking on this page is
-driven only by the things that can be sourced: yield, transaction and holding
-costs, and the destination country's own tax rates.
+The page is a market screener for a foreign investor: one row per country, every
+factor a column, filterable. So this emits the whole workbook rather than the
+handful of fields the old after-tax calculator read.
+
+Two things are deliberately NOT carried through:
+
+* The workbook's per-country ten-year growth column. Twenty-three of the
+  thirty-four were "Est." with nothing behind them. Growth stays a reader input.
+* The workbook's own 1-5 "foreign-buyer friendliness" score. It was a weighted
+  composite of unsourced inputs with no working shown, which is exactly what a
+  reader cannot check. The `ease` block below replaces it: the same idea built
+  from six ordinals, each derived from a stated fact and each carried separately
+  so the page can show WHY a market scores what it does rather than asserting it.
+
+Destination tax rates come from rates_pwc.json where PwC has been read; the
+workbook fills the rest and those rows are flagged unverified.
 
 Run: python build_data.py
 """
-import json, re, unicodedata
+import json
+import re
+import sys
+import unicodedata
 from pathlib import Path
+
 import openpyxl
 
-SRC = Path(__file__).parent / "source" / "International Property.xlsx"
-OUT = Path(__file__).parent / "data.json"
+import classify
 
-# Comparison sheet, header on row 2 (1-indexed), data from row 3.
-C_NAME, C_PRICE_LOC, C_CCY, C_PRICE_AUD = 0, 1, 2, 3
-C_FXREG, C_GROSS_OUT = 4, 12
-C_POPGROWTH, C_RIGHTS = 15, 21
-C_OWNERSHIP, C_VISA, C_REPAT = 23, 24, 25
-C_PURCH, C_HOLD, C_CGT, C_RENTTAX = 27, 28, 29, 30
-C_DTA, C_WHT, C_ESTATE = 31, 32, 33
-C_FXVOL, C_LIQ, C_OBSTACLES = 34, 35, 36
+HERE = Path(__file__).parent
+SRC = HERE / "source" / "International Property.xlsx"
+OUT = HERE / "data.json"
+PWC_FILE = HERE / "rates_pwc.json"
 
-# AUD Return Scenarios sheet: the net yield actually modelled.
-S_NAME, S_NETYIELD, S_SALE = 0, 2, 5
+# Comparison sheet, header on row 2, data from row 3.
+COL = {
+    "country": 0, "price_local": 1, "currency": 2, "price_aud": 3, "fx_regime": 4,
+    "price_to_income": 10, "gross_yield_centre": 11, "gross_yield": 12, "net_yield": 13,
+    "population": 14, "pop_growth": 15, "urbanisation": 16, "gdp_per_capita": 17,
+    "gdp_growth": 18, "inflation": 19, "sp_rating": 20, "property_rights": 21,
+    "econ_freedom": 22, "ownership": 23, "visa": 24, "repatriation": 25,
+    "cpi_score": 26, "purchase_costs": 27, "holding_costs": 28,
+    "cgt_text": 29, "rental_tax_text": 30, "au_dta": 31, "wht_rent_text": 32,
+    "estate_text": 33, "fx_vol": 34, "liquidity": 35, "obstacles": 36,
+}
 
 
 def clean(v):
-    """Excel cells arrive with non-breaking spaces and stray whitespace."""
+    """Workbook cells carry non-breaking spaces and stray newlines."""
     if v is None:
         return ""
-    s = unicodedata.normalize("NFKC", str(v)).replace(" ", " ")
+    s = unicodedata.normalize("NFKC", str(v)).replace("\xa0", " ")
     return re.sub(r"\s+", " ", s).strip()
 
 
-def pct(v):
-    """Rate and basis from a free-text tax cell.
-
-    Returns (rate, basis). Basis is what the rate is charged ON, which is not
-    decorative: "2.5% of sale price" and "27% on net gain" are not comparable
-    numbers, and averaging them into one column is how a model ends up ranking
-    Egypt above Ireland. Only a rate on the gain or on rent is used in the
-    arithmetic; everything else is carried as text for the reader to see.
-
-    A range takes its midpoint. "25-50%" must be matched as a range before the
-    single-percentage pattern sees it, or the low end is silently dropped.
-    """
+def num(v):
+    """First number in a cell, or the midpoint of a range like '3-6 months'."""
+    if v is None:
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
     s = clean(v)
-    if not s:
-        return None, "unknown"
-    low = s.lower()
-    if low.startswith("exempt") or re.match(r"^(no|none)\b", low) or "no cgt" in low        or "no personal income" in low:
-        return 0.0, "exempt"
-
-    # A cell that offers a CHOICE of regimes, or a schedule that steps with the
-    # holding period, is not one rate and must not be averaged into one. The US
-    # rent cell reads "30% WHT on gross OR elect net basis (10-37% graduated)":
-    # averaging 10 and 37 returns 23.5, which is a number the source never
-    # states. Refusing these is the fix. Adding a rule per phrasing is not,
-    # because the next workbook will phrase it a way the rules do not cover.
-    if re.search(r"\bor\b|whichever|;|/", low) and len(re.findall(r"\d+(?:\.\d+)?\s*%", s)) > 1:
-        return None, "alternatives"
-
-    rng = re.search(r"(\d+(?:\.\d+)?)\s*(?:-|to)\s*(\d+(?:\.\d+)?)\s*%", s)
+    rng = re.search(r"(\d+(?:\.\d+)?)\s*(?:-|to)\s*(\d+(?:\.\d+)?)", s)
     if rng:
-        rate = round((float(rng.group(1)) + float(rng.group(2))) / 2, 2)
-    else:
-        one = re.search(r"(\d+(?:\.\d+)?)\s*%", s)
-        if not one:
-            return None, "unknown"
-        rate = float(one.group(1))
-
-    if re.search(r"of (the )?(gross|sale|selling) price|of gross|of sale|of fmv|sale price or fmv", low):
-        basis = "proceeds"
-    elif "deemed" in low or "cadastral" in low or "notional" in low:
-        basis = "deemed"
-    elif "gross" in low:
-        basis = "gross"
-    else:
-        basis = "gain"
-    return rate, basis
+        return round((float(rng.group(1)) + float(rng.group(2))) / 2, 2)
+    one = re.search(r"(\d+(?:\.\d+)?)", s)
+    return float(one.group(1)) if one else None
 
 
 def yes_no(v):
@@ -93,112 +78,113 @@ def yes_no(v):
     return None
 
 
-wb = openpyxl.load_workbook(SRC, data_only=True)
-comp = wb["Comparison"]
-scen = {clean(r[S_NAME]): r for r in wb["AUD Return Scenarios"].iter_rows(min_row=2, values_only=True) if r[S_NAME]}
-prof = {clean(r[0]): clean(r[1]) for r in wb["Country Profiles"].iter_rows(min_row=2, values_only=True) if r[0]}
+# Ease of investing is six ordinals, each 0 (hardest) to 3 (easiest), read off a
+# stated fact and carried separately as well as summed, so the page can show WHY
+# a market scores what it does. The prose-to-ordinal rules live in classify.py,
+# which exists because the first version of them read three columns backwards.
 
-# The thirteen fields app.js reads. Anything else in the workbook stays in the
-# workbook.
-KEEP = {
-    "country", "price_aud", "currency", "net_yield", "purchase_costs", "sale_costs",
-    "foreign_rental_tax", "foreign_rental_basis", "foreign_cgt", "foreign_cgt_basis",
-    "rental_tax_text", "cgt_text", "au_dta", "verified", "rate_note",
-}
+def main():
+    wb = openpyxl.load_workbook(SRC, data_only=True)
+    comp = wb["Comparison"]
+    pwc = json.loads(PWC_FILE.read_text(encoding="utf-8"))
+    profiles = {clean(r[0]): clean(r[1]) for r in wb["Country Profiles"].iter_rows(min_row=2, values_only=True) if r[0]}
 
-# PwC Worldwide Tax Summaries, read by hand on 31/08/2026 and merged over the
-# workbook. The workbook's tax columns were unsourced and several were wrong in
-# ways that changed the ranking: it had Georgia at 20% on rent where PwC says 5%
-# for residential lets, and it charged exit tax in Belgium, Italy and Poland,
-# all three of which exempt a gain once the property has been held five years.
-# This page models a TEN-year hold, so the long-hold rate is the right one.
-PWC = json.loads((Path(__file__).parent / "rates_pwc.json").read_text(encoding="utf-8"))
+    rows = []
+    for r in comp.iter_rows(min_row=3, values_only=True):
+        name = clean(r[COL["country"]])
+        if not name:
+            continue
+        g = lambda k: r[COL[k]]
 
-rows, skipped = [], []
-for r in comp.iter_rows(min_row=3, values_only=True):
-    name = clean(r[C_NAME])
-    if not name or name not in scen:
-        if name:
-            skipped.append(name)
-        continue
-    s = scen[name]
-    rent_rate, rent_basis = pct(r[C_RENTTAX])
-    cgt_rate, cgt_basis = pct(r[C_CGT])
-    net_yield = s[S_NETYIELD]
-    purch, sale = pct(r[C_PURCH])[0], s[S_SALE]
-    if net_yield is None or purch is None or sale is None:
-        skipped.append(name)
-        continue
-    pwc = PWC.get(name)
-    if pwc:
-        rent_rate, rent_basis = pwc["rent"]["rate"], pwc["rent"]["basis"]
-        cgt_rate, cgt_basis = pwc["cgt"]["rate"], pwc["cgt"]["basis"]
+        purchase = num(g("purchase_costs"))
+        months = num(g("liquidity"))
+        rights = num(g("property_rights"))
 
-    row = {
-        "country": name,
-        "price_aud": r[C_PRICE_AUD],
-        "price_local": clean(r[C_PRICE_LOC]),
-        "currency": clean(r[C_CCY]),
-        "fx_regime": clean(r[C_FXREG]),
-        "gross_yield": r[C_GROSS_OUT],
-        "net_yield": float(net_yield),
-        "purchase_costs": float(purch),
-        "sale_costs": float(sale),
-        "holding_costs": pct(r[C_HOLD])[0],
-        # Destination-country rates. The reader's OWN rates are inputs on the
-        # page; these are what the destination withholds before the reader's
-        # home country looks at the income at all.
-        "foreign_rental_tax": rent_rate,
-        "foreign_rental_basis": rent_basis,
-        "foreign_cgt": cgt_rate,
-        "foreign_cgt_basis": cgt_basis,
-        "rental_tax_text": clean(r[C_RENTTAX]),
-        "cgt_text": clean(r[C_CGT]),
-        "wht_rent_text": clean(r[C_WHT]),
-        "estate_text": clean(r[C_ESTATE]),
-        "au_dta": yes_no(r[C_DTA]),
-        "verified": bool(pwc),
-        "rate_note": (pwc["cgt"].get("note") if pwc else ""),
-        "au_dta_text": clean(r[C_DTA]),
-        "ownership": clean(r[C_OWNERSHIP]),
-        "visa": clean(r[C_VISA]),
-        "repatriation": clean(r[C_REPAT]),
-        "property_rights": r[C_RIGHTS],
-        "pop_growth": r[C_POPGROWTH],
-        "fx_vol": clean(r[C_FXVOL]),
-        "liquidity": clean(r[C_LIQ]),
-        "obstacles": clean(r[C_OBSTACLES]),
-        "profile": prof.get(name, ""),
+        parts = {
+            "ownership": classify.ownership(clean(g("ownership"))),
+            "visa": classify.visa(clean(g("visa"))),
+            "repatriation": classify.repatriation(clean(g("repatriation"))),
+            "liquidity": classify.liquidity(months),
+            "costs": classify.costs(purchase),
+            "rights": classify.rights(rights),
+        }
+
+        got = [p[0] for p in parts.values() if p[0] is not None]
+        ease = round(sum(got) / (3 * len(got)) * 100) if got else None
+
+        p = pwc.get(name) or {}
+        row = {
+            "country": name,
+            "currency": clean(g("currency")),
+            "price_aud": g("price_aud"),
+            "price_local": clean(g("price_local")),
+            "fx_regime": clean(g("fx_regime")),
+            "fx_vol": num(g("fx_vol")),
+            "gross_yield": num(g("gross_yield")),
+            "net_yield": num(g("net_yield")),
+            "price_to_income": num(g("price_to_income")),
+            "population": num(g("population")),
+            "pop_growth": num(g("pop_growth")),
+            "urbanisation": num(g("urbanisation")),
+            "gdp_per_capita": num(g("gdp_per_capita")),
+            "gdp_growth": num(g("gdp_growth")),
+            "inflation": num(g("inflation")),
+            "sp_rating": clean(g("sp_rating")),
+            "property_rights": rights,
+            "econ_freedom": num(g("econ_freedom")),
+            "cpi_score": num(g("cpi_score")),
+            "purchase_costs": purchase,
+            "holding_costs": num(g("holding_costs")),
+            "months_to_sell": months,
+            "rental_tax_text": clean(g("rental_tax_text")),
+            "cgt_text": clean(g("cgt_text")),
+            "estate_text": clean(g("estate_text")),
+            "wht_rent_text": clean(g("wht_rent_text")),
+            "au_dta": yes_no(g("au_dta")),
+            "ownership": clean(g("ownership")),
+            "visa": clean(g("visa")),
+            "repatriation": clean(g("repatriation")),
+            "obstacles": clean(g("obstacles")),
+            "profile": profiles.get(name, ""),
+            "ease": ease,
+            "ease_parts": {k: {"score": v[0], "label": v[1]} for k, v in parts.items()},
+            "verified": bool(p),
+            "rent_rate": (p.get("rent") or {}).get("rate"),
+            "rent_basis": (p.get("rent") or {}).get("basis"),
+            "rent_note": (p.get("rent") or {}).get("note", ""),
+            "cgt_rate": (p.get("cgt") or {}).get("rate"),
+            "cgt_basis": (p.get("cgt") or {}).get("basis"),
+            "cgt_note": (p.get("cgt") or {}).get("note", ""),
+        }
+        rows.append(row)
+
+    rows.sort(key=lambda d: d["country"])
+
+    USED = {
+        "Price-to-Income, Gross Rental Yields", "Price per sqm (city centre)",
+        "Converted Price (AUD)", "Non-Resident Tax Rates (CGT, Rental, WHT)",
+        "Australia Double Tax Agreements", "Purchase/Holding Costs",
+        "Property Rights Score", "Economic Freedom Score", "CPI Score (Corruption)",
+        "S&P Sovereign Rating", "GDP Growth Forecast",
+        "Population, Urbanisation, GDP/Capita PPP", "FX Regimes",
+        "Foreign Ownership Restrictions", "Golden Visa / Residency Pathways",
+        "Estate/Inheritance Tax",
     }
-    rows.append({k: v for k, v in row.items() if k in KEEP})
+    sources = []
+    for r in wb["Sources"].iter_rows(min_row=2, values_only=True):
+        if r[0] and clean(r[0]) in USED:
+            sources.append({
+                "measure": clean(r[0]), "name": clean(r[1]),
+                "url": clean(r[2]), "caveat": clean(r[4]) if len(r) > 4 else "",
+            })
 
-# Only the sources behind something the page actually shows. The workbook
-# cites eighteen, for columns like property rights, corruption score and
-# sovereign rating that this page does not display. Listing all eighteen
-# advertises a provenance the page does not have, and one of them was
-# "Expected 10yr Growth: author estimates" for a column deliberately removed.
-USED = {
-    "Price-to-Income, Gross Rental Yields",
-    "Price per sqm (city centre)",
-    "Converted Price (AUD)",
-    "Non-Resident Tax Rates (CGT, Rental, WHT)",
-    "Australia Double Tax Agreements",
-    "Purchase/Holding Costs",
-}
+    OUT.write_text(json.dumps({"countries": rows, "sources": sources}, indent=1, ensure_ascii=False), encoding="utf-8")
+    print(f"{len(rows)} markets, {len(sources)} sources -> {OUT.name} ({OUT.stat().st_size // 1024}KB)")
 
-sources = []
-for r in wb["Sources"].iter_rows(min_row=2, values_only=True):
-    if not r[0] or clean(r[0]) not in USED:
-        continue
-    sources.append({
-        "measure": clean(r[0]),
-        "name": clean(r[1]),
-        "url": clean(r[2]),
-        "caveat": clean(r[4]) if len(r) > 4 else "",
-    })
+    missing = [c["country"] for c in rows if c["ease"] is None]
+    if missing:
+        print("no ease score for:", ", ".join(missing), file=sys.stderr)
 
-rows.sort(key=lambda d: d["country"])
-OUT.write_text(json.dumps({"countries": rows, "sources": sources}, indent=1, ensure_ascii=False), encoding="utf-8")
-print(f"{len(rows)} countries and {len(sources)} sources written to {OUT.name}")
-if skipped:
-    print(f"skipped {len(skipped)}: {', '.join(skipped)}")
+
+if __name__ == "__main__":
+    main()
