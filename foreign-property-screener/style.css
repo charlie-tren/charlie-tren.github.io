@@ -18,6 +18,7 @@
   /* The untaxed bar is a ghost of the after-tax one: same family, no weight,
      so it reads as "what it would have been" rather than as a third result. */
   --hover: #f2f5f8;
+  --map-land: #e7ebef;
   --dot: #6b8fb5;
   --ease-fill: #2f6fb2;
   --ease-track: #e6eaee;
@@ -215,6 +216,7 @@ footer a { color: var(--ink-faint); }
        into the panel at their light-mode values. */
     --over: #6ea8e0; --under: #e08a6f; --bench: #9aa2ac;
     --hover: #202730;
+    --map-land: #262c34;
     --dot: #7ea9d4; --ease-fill: #6ea8e0; --ease-track: #2b3138;
   }
   .readout { background: rgba(26,29,34,.97); }
@@ -243,10 +245,22 @@ footer a { color: var(--ink-faint); }
    The table is the page. It scrolls inside its own box rather than pushing the
    document sideways, and the market column is pinned so a row stays readable
    once you are eight columns deep. */
+/* The table scrolls sideways but never shows a bar for it. A scrollbar under a
+   table is the widest, greyest thing on the page and it appears and disappears
+   as the window moves. The fade on the right edge is the affordance instead:
+   it says there is more without drawing a control. */
 .table-scroll {
   overflow-x: auto; margin: 0 -20px; padding: 0 20px;
-  scrollbar-width: thin;
+  scrollbar-width: none; -ms-overflow-style: none;
 }
+.table-scroll::-webkit-scrollbar { width: 0; height: 0; display: none; }
+.table-wrap { position: relative; }
+.table-wrap::after {
+  content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 46px;
+  pointer-events: none; opacity: 0; transition: opacity .2s;
+  background: linear-gradient(to right, transparent, var(--panel));
+}
+.table-wrap.more::after { opacity: 1; }
 table#grid { width: 100%; border-collapse: collapse; font-size: .86rem; white-space: nowrap; }
 table#grid th, table#grid td {
   padding: 7px 12px 7px 0; text-align: right; border-bottom: 1px solid var(--rule);
@@ -318,4 +332,26 @@ tr.detail td { padding: 0 0 18px; white-space: normal; }
   .notes          { order: 4; }
   table#grid { font-size: .8rem; }
   table#grid th, table#grid td { padding: 6px 9px 6px 0; }
+}
+
+
+/* ---- map ---- */
+#map { display: block; width: 100%; }
+.map-land { fill: var(--map-land); stroke: var(--panel); stroke-width: .5; }
+.map-mkt { stroke: var(--panel); stroke-width: .6; cursor: pointer; }
+.map-mkt:hover { stroke: var(--ink); stroke-width: 1.2; }
+.map-mkt.picked { stroke: var(--ink); stroke-width: 1.6; }
+.map-dot { cursor: pointer; stroke: var(--panel); stroke-width: 1.2; }
+
+.scale {
+  display: flex; align-items: center; gap: 9px; margin-top: 12px;
+  font-size: .8rem; color: var(--ink-faint); flex-wrap: wrap;
+}
+.scale .ramp {
+  display: flex; height: 9px; border-radius: 2px; overflow: hidden; flex: none;
+}
+.scale .ramp i { display: block; width: 26px; height: 100%; }
+.scale .none { display: inline-flex; align-items: center; gap: 5px; }
+.scale .none i {
+  width: 11px; height: 11px; border-radius: 2px; background: var(--map-land); flex: none;
 }

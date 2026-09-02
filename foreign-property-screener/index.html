@@ -73,6 +73,21 @@
     <p class="filter-count" id="count"></p>
   </section>
 
+  <section class="panel" id="map-panel">
+    <h2>Where They Are</h2>
+    <div class="axis-picks">
+      <div class="control">
+        <label for="map-metric">Shade by</label>
+        <select id="map-metric"></select>
+      </div>
+    </div>
+    <figure class="chart">
+      <svg id="map" role="img" aria-label="World map with the thirty-four markets shaded by the selected factor"></svg>
+      <div class="readout" id="map-readout" hidden></div>
+    </figure>
+    <div class="scale" id="map-scale"></div>
+  </section>
+
   <section class="panel" id="scatter-panel">
     <h2>Plot Any Two Factors</h2>
     <div class="axis-picks">
@@ -95,11 +110,13 @@
   <section class="panel" id="table-panel">
     <h2>Every Market</h2>
     <p class="sub">Click a column to sort. Click a row for the detail behind it.</p>
-    <div class="table-scroll">
+    <div class="table-wrap" id="table-wrap">
+    <div class="table-scroll" id="table-scroll">
       <table id="grid">
         <thead><tr id="grid-head"></tr></thead>
         <tbody id="grid-body"></tbody>
       </table>
+    </div>
     </div>
   </section>
 
