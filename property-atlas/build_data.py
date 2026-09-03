@@ -1,4 +1,4 @@
-"""Build data.json for the Foreign Property Screener.
+"""Build data.json for Property Atlas.
 
 The page is a market screener for a foreign investor: one row per country, every
 factor a column, filterable. So this emits the whole workbook rather than the
