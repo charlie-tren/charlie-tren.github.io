@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Property Atlas</title>
+<meta name="description" content="Thirty-four residential property markets compared for a foreign buyer: yields, costs, non-resident tax, ownership rules, residency pathways and how hard each one is to actually invest in.">
+<link rel="canonical" href="https://charlietrenorden.com/property-atlas/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Charlie Trenorden">
+<meta property="og:title" content="Thirty-four property markets, compared for a foreigner.">
+<meta property="og:description" content="Yields, costs, non-resident tax, ownership rules and residency pathways. Filter and sort by any of them.">
+<meta property="og:url" content="https://charlietrenorden.com/property-atlas/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="pin.svg" type="image/svg+xml">
+<script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
+</head>
+<body>
+<header class="wrap">
+  <nav class="topnav">
+    <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
+  </nav>
+  <h1>Property Atlas</h1>
+  <p class="standfirst">
+    Thirty-four residential markets, compared from the outside. What a foreigner
+    can buy, what it yields, what the local tax office takes, and how hard it is
+    to get in and back out again.
+  </p>
+</header>
+
+<main class="wrap">
+
+  <section class="panel" id="filters-panel">
+    <div class="filters" id="filters" aria-label="Filters">
+      <div class="control">
+        <label for="f-ease">Ease of investing, at least</label>
+        <div class="row"><input type="range" id="f-ease" min="0" max="100" step="1" value="0"><output id="f-ease-out"></output></div>
+      </div>
+      <div class="control">
+        <label for="f-yield">Net yield, at least</label>
+        <div class="row"><input type="range" id="f-yield" min="0" max="8" step="0.1" value="0"><output id="f-yield-out"></output></div>
+      </div>
+      <div class="control">
+        <label for="f-price">Entry price, at most</label>
+        <div class="row"><input type="range" id="f-price" min="75000" max="650000" step="5000" value="650000"><output id="f-price-out"></output></div>
+      </div>
+      <div class="control">
+        <label for="f-own">Who can own it</label>
+        <select id="f-own">
+          <option value="">Anyone, however restricted</option>
+          <option value="3">Foreigners, no restrictions</option>
+          <option value="2">Foreigners, with conditions</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="f-visa">Residency from buying</label>
+        <select id="f-visa">
+          <option value="">Doesn't matter</option>
+          <option value="3">Buying gets you residency</option>
+          <option value="2">Some investor route</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="f-repat">Getting money out</label>
+        <select id="f-repat">
+          <option value="">Doesn't matter</option>
+          <option value="3">Free</option>
+          <option value="2">Free or on registration</option>
+        </select>
+      </div>
+    </div>
+    <p class="filter-count" id="count"></p>
+  </section>
+
+  <section class="panel" id="map-panel">
+    <h2>Where They Are</h2>
+    <p class="sub" id="map-sub"></p>
+    <div class="axis-picks">
+      <div class="control">
+        <label for="map-metric">Shade by</label>
+        <select id="map-metric"></select>
+      </div>
+    </div>
+    <figure class="chart">
+      <svg id="map" role="img" aria-label="World map with the thirty-four markets shaded by the selected factor"></svg>
+      <div class="readout" id="map-readout" hidden></div>
+    </figure>
+    <div class="scale" id="map-scale"></div>
+  </section>
+
+  <section class="panel" id="table-panel">
+    <h2>Every Market</h2>
+    <p class="sub">Click a column to sort. Click a row for the detail behind it.</p>
+    <div class="table-wrap" id="table-wrap">
+    <div class="table-scroll" id="table-scroll">
+      <table id="grid">
+        <thead><tr id="grid-head"></tr></thead>
+        <tbody id="grid-body"></tbody>
+      </table>
+    </div>
+    </div>
+  </section>
+
+  <section class="panel notes">
+    <h2>Notes</h2>
+    <ul>
+      <li><strong>Ease of investing</strong> scores six things a foreign buyer runs into: who may own, whether buying brings residency, whether money can leave, time to sell, cost to buy, property rights. Open a row to see all six. The parts matter more than the total.</li>
+      <li id="note-tax"></li>
+      <li>Yields are Numbeo's, user-contributed and the weakest figures here. Global Property Guide is better sourced but serves one page and then blocks, so it cannot be used. General information, not advice.</li>
+    </ul>
+    <h3>Sources</h3>
+    <table class="src"><tbody id="sources"></tbody></table>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <a href="https://charlietrenorden.com/">charlietrenorden.com</a>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

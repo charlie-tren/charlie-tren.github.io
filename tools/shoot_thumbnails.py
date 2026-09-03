@@ -50,7 +50,7 @@ SITES = {
     "photocopy": "https://charlietrenorden.com/photocopy/",
     "consensus-drift": "https://charlietrenorden.com/consensus-drift/",
     "lindy-effect": "https://charlietrenorden.com/lindy-effect/",
-    "foreign-property-screener": "https://charlietrenorden.com/foreign-property-screener/",
+    "property-atlas": "https://charlietrenorden.com/property-atlas/",
     "crowdwise": "https://crowdwise.charlietrenorden.com/",
     "dcf-studio": "https://dcf.charlietrenorden.com/GOOGL",
     # a country page, not the picker - the landing page is three pills and a
@@ -105,15 +105,16 @@ READY = {
     # have waited 30s, skipped, and failed the run. A range input is the thing
     # that only exists once the data has arrived.
     "statecraft": "#domains input[type=range]",
-    # Absentee ranks thirty-four countries from data.json after load, so without
-    # this the shot lands on an empty panel. A bar is the first thing that only
-    # exists once the data has arrived.
+    # Property Atlas builds its table from data.json after load, so without this
+    # the shot lands on an empty panel. A row is the first thing that only
+    # exists once the data has arrived. (Named Absentee, then Foreign Property
+    # Screener, before this - the comment had outlived two of them.)
     # Was "#rank rect" until 02/09/2026. The page was redesigned from an SVG
     # ranking chart to a table, so the selector waited 30s for an element that
     # no longer exists and failed the whole run - taking seven good thumbnails
     # with it. A READY selector is coupled to the page's markup; when a page is
     # redesigned, this is the second place to look.
-    "foreign-property-screener": "table tbody tr",
+    "property-atlas": "table tbody tr",
 }
 READY_TIMEOUT = 30000
 
@@ -236,7 +237,7 @@ ANCHOR = {
     # truncated table is not, so the card shows the map with the masthead above
     # it. (Before that it was "#rank-panel", an element deleted two redesigns
     # earlier - ANCHOR is coupled to the markup exactly like READY is.)
-    "foreign-property-screener": {"selector": "#map-panel", "context_above": 0.22},
+    "property-atlas": {"selector": "#map-panel", "context_above": 0.22},
     # The top of the page is the hero and a scatter that is currently just a sorted
     # curve. The cards, with real company names and per-flag scores, are the product.
     #

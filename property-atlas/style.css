@@ -3,7 +3,8 @@
      a second palette to keep in step for no reader who asked. */
   color-scheme: light;
   /* Financial press. Salmon paper, navy ink, teal accent - the palette of a
-     printed markets page, which is what a screener of thirty-four markets is.
+     printed markets page, which is what thirty-four markets in a sortable
+     table is.
      The accent is deliberately NOT a blue: on this paper a blue reads as a
      hyperlink, and the teal is the only hue here that stays distinct from both
      the paper and the ink at 6px, which is the height of the ease bar. */

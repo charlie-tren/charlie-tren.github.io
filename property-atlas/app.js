@@ -1,4 +1,4 @@
-/* Foreign Property Screener.
+/* Property Atlas.
 
    One row per market, every factor a column, filter and sort by any of them.
 
