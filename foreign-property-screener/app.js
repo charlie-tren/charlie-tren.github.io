@@ -36,8 +36,8 @@ const COLS = [
   { key: "ease", label: "Ease", num: true, show: c => easeCell(c) },
   { key: "price_aud", label: "Entry", num: true, group: true, show: c => fmtK(c.price_aud), unit: "A$" },
   { key: "purchase_costs", label: "To buy", num: true, show: c => pc(c.purchase_costs), unit: "%" },
-  { key: "gross_yield", label: "Gross yield", num: true, group: true, show: c => pc(c.gross_yield), unit: "%" },
-  { key: "net_yield", label: "Net yield", num: true, show: c => pc(c.net_yield), unit: "%" },
+  { key: "gross_yield", label: "Gross yield", num: true, group: true, soft: true, show: c => pc(c.gross_yield), unit: "%" },
+  { key: "net_yield", label: "Net yield", num: true, soft: true, show: c => pc(c.net_yield), unit: "%" },
   { key: "rent_tax", label: "Tax on rent", num: true, group: true, show: c => taxCell(c, "rent"), unit: "%" },
   { key: "gain_tax", label: "Tax on gain", num: true, show: c => taxCell(c, "cgt"), unit: "%" },
   { key: "months_to_sell", label: "Months to sell", num: true, group: true, show: c => c.months_text || (c.months_to_sell ?? "") },
@@ -321,7 +321,12 @@ function drawTable(shown) {
   COLS.forEach(col => {
     const th = document.createElement("th");
     th.textContent = col.label;
-    th.className = [col.align === "left" ? "l" : "", col.group ? "grp" : "", SORT.key === col.key ? "sorted" : ""].filter(Boolean).join(" ");
+    th.className = [col.align === "left" ? "l" : "", col.group ? "grp" : "",
+                    col.soft ? "soft" : "", SORT.key === col.key ? "sorted" : ""].filter(Boolean).join(" ");
+    // Say which columns are the weak ones IN the header, where a reader deciding
+    // whether to trust a number is already looking. The note at the bottom is
+    // read by nobody who is mid-comparison.
+    if (col.soft) th.title = "Numbeo, user-contributed. The weakest figures here: no agency publishes rental yields across countries, so there is nothing official to check them against.";
     if (SORT.key === col.key) th.dataset.dir = SORT.dir < 0 ? "desc" : "asc";
     th.tabIndex = 0;
     const sort = () => {
