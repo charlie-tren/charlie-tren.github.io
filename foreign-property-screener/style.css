@@ -368,3 +368,9 @@ h2 { font-size: 1.42rem; margin-bottom: 6px; }
 tr.detail td { background: var(--hover); padding: 0 14px 20px; }
 .detail-inner { padding-top: 16px; }
 .facts dd { font-size: .9rem; line-height: 1.45; }
+
+/* The two yield columns are the only ones with no authoritative source behind
+   them, so the header says so where a reader comparing numbers is looking.
+   A dotted rule rather than a colour: it should read as a footnote, not as a
+   warning about the number being wrong. */
+table#grid th.soft { text-decoration: underline dotted var(--ink-faint); text-underline-offset: 3px; cursor: help; }

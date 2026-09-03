@@ -130,13 +130,13 @@
      "label": "Property rights 65/100"
     }
    },
-   "verified": false,
-   "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
-   "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "verified": true,
+   "rent_rate": 0.0,
+   "rent_basis": "exempt",
+   "rent_note": "no personal income tax",
+   "cgt_rate": 0.0,
+   "cgt_basis": "exempt",
+   "cgt_note": "no personal income tax"
   },
   {
    "country": "Belgium",
@@ -268,13 +268,13 @@
      "label": "Property rights 52/100"
     }
    },
-   "verified": false,
+   "verified": true,
    "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
+   "rent_basis": "schedule",
+   "rent_note": "not stated for non-residents on PwC",
    "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "cgt_basis": "schedule",
+   "cgt_note": "not stated for non-residents on PwC"
   },
   {
    "country": "Colombia",
@@ -337,13 +337,13 @@
      "label": "Property rights 50/100"
     }
    },
-   "verified": false,
+   "verified": true,
    "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
-   "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "rent_basis": "schedule",
+   "rent_note": "not stated for non-residents on PwC",
+   "cgt_rate": 15.0,
+   "cgt_basis": "gain",
+   "cgt_note": "general capital gains rate"
   },
   {
    "country": "Costa Rica",
@@ -613,13 +613,13 @@
      "label": "Property rights 45/100"
     }
    },
-   "verified": false,
+   "verified": true,
    "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
+   "rent_basis": "schedule",
+   "rent_note": "normal progressive brackets on the rent after a flat 50% deduction for costs",
    "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "cgt_basis": "schedule",
+   "cgt_note": "disposal of built property not covered on PwC's individual pages"
   },
   {
    "country": "Georgia",
@@ -1165,13 +1165,13 @@
      "label": "Property rights 70/100"
     }
    },
-   "verified": false,
+   "verified": true,
    "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
-   "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "rent_basis": "schedule",
+   "rent_note": "not stated for non-residents on PwC",
+   "cgt_rate": 0.0,
+   "cgt_basis": "none",
+   "cgt_note": "no capital gains tax at all"
   },
   {
    "country": "Mexico",
@@ -1303,13 +1303,13 @@
      "label": "Property rights 55/100"
     }
    },
-   "verified": false,
-   "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
-   "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "verified": true,
+   "rent_rate": 15.0,
+   "rent_basis": "net",
+   "rent_note": "15% after documented costs or a 30% standard deduction",
+   "cgt_rate": 15.0,
+   "cgt_basis": "gain",
+   "cgt_note": "15% on the difference between sale and purchase price"
   },
   {
    "country": "Morocco",
@@ -1372,13 +1372,13 @@
      "label": "Property rights 55/100"
     }
    },
-   "verified": false,
-   "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
-   "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "verified": true,
+   "rent_rate": 15.0,
+   "rent_basis": "gross",
+   "rent_note": "15% on gross above MAD 120,000, 10% below",
+   "cgt_rate": 20.0,
+   "cgt_basis": "gain",
+   "cgt_note": "20% of the gain, with a floor of 3% of the sale price"
   },
   {
    "country": "Netherlands",
@@ -1510,13 +1510,13 @@
      "label": "Property rights 55/100"
     }
    },
-   "verified": false,
-   "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
-   "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "verified": true,
+   "rent_rate": 10.0,
+   "rent_basis": "net",
+   "rent_note": "10%, with a 10% deduction for an unfurnished let",
+   "cgt_rate": 0.0,
+   "cgt_basis": "exempt",
+   "cgt_note": "exempt once the property has been held five years, which a ten-year hold clears"
   },
   {
    "country": "Oman",
@@ -1579,13 +1579,13 @@
      "label": "Property rights 75/100"
     }
    },
-   "verified": false,
+   "verified": true,
    "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
+   "rent_basis": "schedule",
+   "rent_note": "a personal income tax is being introduced and the rate is not yet set; the workbook's 0% is going stale",
    "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "cgt_basis": "schedule",
+   "cgt_note": "disposal of real estate listed as taxable, no rate stated yet"
   },
   {
    "country": "Panama",
@@ -1924,13 +1924,13 @@
      "label": "Property rights 58/100"
     }
    },
-   "verified": false,
-   "rent_rate": null,
-   "rent_basis": null,
-   "rent_note": "",
-   "cgt_rate": null,
-   "cgt_basis": null,
-   "cgt_note": ""
+   "verified": true,
+   "rent_rate": 20.0,
+   "rent_basis": "gross",
+   "rent_note": "20% on real estate income",
+   "cgt_rate": 15.0,
+   "cgt_basis": "gain",
+   "cgt_note": "15%; the ten-year exemption is for residents only, so a foreign owner pays it"
   },
   {
    "country": "Spain",
