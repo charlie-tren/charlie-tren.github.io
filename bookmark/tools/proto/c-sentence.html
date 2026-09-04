@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>C</title>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#faf8f4;--ink:#15140f;--soft:#7c7566;--line:#e2ddd0;--accent:#b3421f}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Hanken Grotesk',sans-serif;font-size:15px}
+.wrap{max-width:900px;margin:0 auto;padding:26px 30px}
+.bar{display:flex;justify-content:space-between;align-items:baseline}
+.brand{font-family:Spectral,serif;font-size:20px;font-weight:600}
+.home{font-size:14px;color:var(--soft);text-decoration:none}
+.sentence{font-family:Spectral,serif;font-size:27px;line-height:1.62;margin:46px 0 40px;
+  max-width:30ch;color:var(--soft)}
+.pick-word{color:var(--ink);border-bottom:2px solid var(--accent);cursor:pointer;white-space:nowrap}
+.rule{height:1px;background:var(--line);margin:0 0 34px}
+.month{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.title{font-family:Spectral,serif;font-size:62px;line-height:1;font-weight:500;
+  letter-spacing:-.035em;margin:14px 0 10px;max-width:16ch}
+.author{font-family:Spectral,serif;font-style:italic;font-size:20px;color:var(--soft);margin-bottom:26px}
+.why{font-size:17px;line-height:1.6;max-width:48ch;color:var(--ink);margin:0 0 30px}
+.acts{display:flex;gap:22px;align-items:center}
+.b1{color:var(--accent);text-decoration:none;font-size:15px;font-weight:600;
+  border-bottom:2px solid var(--accent);padding-bottom:2px}
+.b2{color:var(--soft);text-decoration:none;font-size:15px;border-bottom:1px solid var(--line);padding-bottom:2px}
+</style></head><body>
+<div class="wrap">
+  <div class="bar"><span class="brand">Bookmark.</span><a class="home" href="#">Other projects</a></div>
+  <p class="sentence">I want something <span class="pick-word">that teaches me something</span>,
+    <span class="pick-word">true</span>, <span class="pick-word">any length</span>, about
+    <span class="pick-word">money and markets</span>, and I <span class="pick-word">don't mind hard work</span>.</p>
+  <div class="rule"></div>
+  <div class="month">Your book for September</div>
+  <div class="title" id="ti"></div>
+  <div class="author" id="au"></div>
+  <p class="why" id="wy"></p>
+  <div class="acts"><a class="b1" href="#">Buy it</a><a class="b2" href="#">Booktopia</a><a class="b2" href="#">Find a library copy</a><a class="b2" href="#">Read it already</a></div>
+</div>
+<script src="../../books.js"></script>
+<script>
+var b = window.SHELF.find(function(x){ return x.t==="Trust"; });
+document.getElementById("ti").textContent = b.t;
+document.getElementById("au").textContent = b.a + ", " + b.y;
+document.getElementById("wy").textContent = b.why;
+</script>
+</body></html>
