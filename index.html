@@ -458,8 +458,9 @@
     <div class="also-head"><span class="also-name">Lighthouse</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A personal investment decision system - part analytical workbench, part decision journal.</p>
     <ul class="also-points">
-      <li>Every decision has to clear a buy-gate and a kill-chain before it is allowed, so the system can refuse a name and name the rule that stopped it.</li>
-      <li>It keeps the thesis alongside the trade and what actually happened, which makes the method backtestable rather than only the positions.</li>
+      <li>Screening, DCF, reverse DCF and moat scoring across six asset classes.</li>
+      <li>Runs locally against a Bloomberg terminal, with every pull cached.</li>
+      <li>A decision journal holding the thesis, the trade, the outcome and the review.</li>
     </ul>
     <p class="also-tech">Bloomberg · Python · Streamlit · SQLite</p>
   </div>
@@ -468,8 +469,9 @@
     <div class="also-head"><span class="also-name">Parallax</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A systematic momentum/trend system for equity CFDs.</p>
     <ul class="also-points">
-      <li>Four screeners feed a chart-quant score, and a candidate then has to survive fourteen separate gates before it is sized at all.</li>
-      <li>The backtest is point-in-time and models cost and friction, because a momentum system that skips either one looks far better than it is.</li>
+      <li>Five scanners produce candidates; twenty-two kill-chain gates decide which get sized.</li>
+      <li>Valuation p-value from P/FCF, P/E, P/S and P/B, each ranked against a decade of the company&rsquo;s own history.</li>
+      <li>1,027 tests, most of them over the gates and position health.</li>
     </ul>
     <p class="also-tech">Bloomberg · TradingView · Yahoo · Python · Streamlit · SQLite</p>
   </div>
@@ -478,8 +480,9 @@
     <div class="also-head"><span class="also-name">All-Weather Allocator</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A risk-parity "all-weather" portfolio allocator.</p>
     <ul class="also-points">
-      <li>Weights come from a rolling optimiser sitting on a regime model, rather than from a fixed risk-parity split.</li>
-      <li>Everything is sized against a drawdown budget, so the binding constraint is how much the account may lose, not how much it may wobble.</li>
+      <li>An inflation-and-rates regime model splitting history into four states, with a different allocation in each.</li>
+      <li>Twenty-six assets across five groups.</li>
+      <li>Ten objectives, from max Sharpe to hierarchical risk parity to minimising the worst drawdown.</li>
     </ul>
     <p class="also-tech">Python · Streamlit</p>
   </div>
@@ -488,8 +491,9 @@
     <div class="also-head"><span class="also-name">BTC Analyser</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A Bitcoin accumulation model: how much to buy, and when not to.</p>
     <ul class="also-points">
-      <li>Cycle position read from the usual on-chain suspects: MVRV-Z, the Mayer multiple, Puell, realised-price ratio and the two-year moving average.</li>
-      <li>The score only decides the size of the next contribution, and the sizing is liquidation-aware, so a leveraged position cannot be talked into a level it could not survive.</li>
+      <li>Seven on-chain measures: MVRV-Z, Mayer multiple, drawdown, fear and greed, realised-price ratio, two-year moving average, Puell.</li>
+      <li>Backtested 2013 to 2026 against a straight dollar-cost average.</li>
+      <li>Leverage capped by liquidation distance.</li>
     </ul>
     <p class="also-tech">Binance · CoinMetrics · On-chain Data · Python</p>
   </div>
@@ -498,8 +502,9 @@
     <div class="also-head"><span class="also-name">Vantage</span><span class="tag">Personal project</span></div>
     <p class="also-lead">A Bloomberg-powered markets desktop app, shipped as an installable Windows program.</p>
     <ul class="also-points">
-      <li>Roughly twenty modules over a cached Bloomberg layer: implied-vol and FX-vol surfaces, yield-curve shocks, a pairs-trading backtester, a Monte-Carlo price simulator.</li>
-      <li>It installs like an ordinary Windows program, with its own auth, entitlements and a usage meter. Streamlit does not do that on its own, and getting it to was most of the work.</li>
+      <li>Twenty-one modules across rates, FX, vol, macro and equities.</li>
+      <li>Live Bloomberg terminal data behind every screen.</li>
+      <li>Installable Windows program with its own auth, entitlements and usage metering.</li>
     </ul>
     <p class="also-tech">Python · Streamlit</p>
   </div>
@@ -508,8 +513,9 @@
     <div class="also-head"><span class="also-name">Overlay &amp; Hedging Ops</span><span class="tag">Internal tool</span></div>
     <p class="also-lead">An operations platform for running hedges across institutional mandates.</p>
     <ul class="also-points">
-      <li>Half its inputs still arrive as an emailed attachment, so it reads monitored inboxes alongside the custodian and admin feeds.</li>
-      <li>Daily revaluations, scheduled rollovers, and hedge ratios measured for effectiveness rather than just recorded.</li>
+      <li>An operations platform for hedging programs across institutional mandates.</li>
+      <li>Daily revaluation of FX forwards, swaps and options, marked by counterparty.</li>
+      <li>Hedge effectiveness tested each period against the designated ratio.</li>
     </ul>
     <p class="also-tech">Python · Streamlit</p>
   </div>
@@ -518,8 +524,9 @@
     <div class="also-head"><span class="also-name">Signal Pipelines</span><span class="tag">Internal tool</span></div>
     <p class="also-lead">Scheduled pipelines that turn public sources into a ranked daily digest.</p>
     <ul class="also-points">
-      <li>Public filings and job feeds, deduped and scored against a rule set you can edit without touching the code.</li>
-      <li>It opens the PDFs rather than trusting the listing text, which is where the detail worth having usually is.</li>
+      <li>Public filings and news articles feed into one ranked digest each morning.</li>
+      <li>Scored on relevance to Rochford&rsquo;s advisory mandates, into hot, warm and cool bands above hard exclusion gates.</li>
+      <li>Sector and market capitalisation added to every entity.</li>
     </ul>
     <p class="also-tech">Python</p>
   </div>
