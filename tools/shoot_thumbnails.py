@@ -72,7 +72,7 @@ SITES = {
     # exists to avoid. The demo renders a worked round through the page's own
     # render path, so the card cannot show something the game does not do.
     "worst-case-scenario": "https://charlietrenorden.com/worst-case-scenario/?demo=1",
-    "book-club": "https://charlietrenorden.com/book-club/",
+    "bookmark": "https://charlietrenorden.com/bookmark/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -102,7 +102,7 @@ READY = {
     "cfa-companion": "#banksize",
     # The match chips only exist once the shelf has been scored and a book chosen,
     # and unlike #title they are not in the markup beforehand.
-    "book-club": ".mchip",
+    "bookmark": ".mchip",
     # Statecraft paints its thirteen domains from data.json after load, so the
     # shot lands on an empty column without this. WAS ".opt", which stopped
     # existing on 30/08/2026 when the option cards became sliders: the job would
