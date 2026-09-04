@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Club</title>
+<meta name="description" content="Seven questions about what you want from a book, and one recommendation a month. 162 books, picked by hand, no accounts.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Book Club">
+<meta property="og:description" content="Seven questions about what you want from a book, and one recommendation a month.">
+<meta property="og:url" content="https://charlietrenorden.com/book-club/">
+<meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/book-club/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/book-club/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/book-club/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f0e6; --paper2:#ebe5d6; --card:#fbf8f1;
+  --ink:#211f1a; --ink-soft:#6a6354; --line:#ddd4c0; --line2:#cfc4ad;
+  --accent:#7a2e2e; --accent-soft:#f0e2df;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#181713; --paper2:#211f1a; --card:#22201b;
+    --ink:#ece7db; --ink-soft:#a49b88; --line:#39352c; --line2:#4b4539;
+    --accent:#d08a6e; --accent-soft:#33261f;
+  }
+}
+html[data-theme="light"]{
+  --paper:#f4f0e6; --paper2:#ebe5d6; --card:#fbf8f1;
+  --ink:#211f1a; --ink-soft:#6a6354; --line:#ddd4c0; --line2:#cfc4ad;
+  --accent:#7a2e2e; --accent-soft:#f0e2df;
+}
+html[data-theme="dark"]{
+  --paper:#181713; --paper2:#211f1a; --card:#22201b;
+  --ink:#ece7db; --ink-soft:#a49b88; --line:#39352c; --line2:#4b4539;
+  --accent:#d08a6e; --accent-soft:#33261f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  color:var(--ink); background:var(--paper); min-height:100vh; font-size:15px;
+}
+.serif{font-family:'Spectral',Georgia,'Times New Roman',serif}
+a{color:inherit}
+.wrap{max-width:820px;margin:0 auto;padding:0 24px}
+.bar{display:flex;justify-content:space-between;align-items:baseline;padding:22px 0 0}
+.brand{font-family:'Spectral',Georgia,serif;font-size:20px;font-weight:600;letter-spacing:-.01em}
+.brand .dot{color:var(--accent)}
+.home{font-size:14px;color:var(--ink-soft);text-decoration:none}
+.home:hover{color:var(--ink)}
+.lede{font-family:'Spectral',Georgia,serif;font-size:17px;color:var(--ink-soft);margin:26px 0 22px;max-width:46ch;line-height:1.5}
+
+/* the pick */
+.pick{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:30px 32px 26px;
+      box-shadow:0 1px 0 var(--line2),0 24px 44px -34px rgba(40,25,10,.4)}
+.month{font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.title{font-family:'Spectral',Georgia,serif;font-size:34px;line-height:1.12;font-weight:500;letter-spacing:-.02em;margin:12px 0 6px}
+.byline{font-size:15px;color:var(--ink-soft);margin:0 0 18px}
+.why{font-family:'Spectral',Georgia,serif;font-size:18px;line-height:1.55;margin:0 0 20px;max-width:52ch}
+.match{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+.mchip{font-size:12px;color:var(--ink-soft);background:var(--paper2);border:1px solid var(--line);
+       border-radius:20px;padding:4px 11px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:18px}
+.buy{font-size:14px;font-weight:600;text-decoration:none;color:var(--card);background:var(--accent);
+     border:1px solid var(--accent);border-radius:9px;padding:10px 17px}
+.buy:hover{filter:brightness(1.08)}
+.alt{font-size:14px;text-decoration:none;color:var(--ink);background:none;border:1px solid var(--line2);
+     border-radius:9px;padding:10px 15px;font-family:inherit;cursor:pointer}
+.alt:hover{background:var(--paper2)}
+.swap{margin-left:auto;font-size:13px;color:var(--ink-soft);background:none;border:none;
+      font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px 0}
+.swap:hover{color:var(--ink)}
+
+/* questions */
+h2.sec{font-family:'Spectral',Georgia,serif;font-size:22px;font-weight:600;margin:44px 0 20px}
+.q{border-top:1px solid var(--line);padding:18px 0}
+.q:first-of-type{border-top:none}
+.qlabel{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
+        font-weight:600;margin-bottom:11px}
+.opts{display:flex;flex-wrap:wrap;gap:7px}
+.opt{font:inherit;font-size:14px;color:var(--ink);background:var(--card);border:1px solid var(--line2);
+     border-radius:9px;padding:9px 14px;cursor:pointer;transition:.12s}
+.opt:hover{background:var(--paper2)}
+.opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--card);font-weight:600}
+.opt.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.pick.empty .actions{display:none}
+footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
+       font-size:13px;color:var(--ink-soft);line-height:1.6}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  .pick{padding:24px 20px 20px}
+  .title{font-size:28px}
+  .why{font-size:17px}
+  .actions{gap:7px}
+  .swap{margin-left:0;width:100%}
+}
+</style>
+<script>
+  /* theme before paint, same key as the hub */
+  (function(){try{var s=localStorage.getItem("theme");if(s)document.documentElement.setAttribute("data-theme",s);}catch(e){}})();
+</script>
+<script>/* Analytics, gated. Opt out with ?nostats=1; automation excluded via navigator.webdriver. */
+(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <span class="brand serif">Book Club<span class="dot">.</span></span>
+    <a class="home" href="/">Other projects</a>
+  </div>
+
+  <p class="lede">Seven questions about what you want from a book. A new recommendation on the first of each month.</p>
+
+  <section class="pick" id="pick" aria-live="polite">
+    <div class="month" id="month">&nbsp;</div>
+    <h1 class="title" id="title">&nbsp;</h1>
+    <p class="byline" id="byline">&nbsp;</p>
+    <p class="why serif" id="whytext">&nbsp;</p>
+    <div class="match" id="match"></div>
+    <div class="actions">
+      <a class="buy" id="buyAmz" href="#" target="_blank" rel="noopener nofollow">Buy it</a>
+      <a class="alt" id="buyBkt" href="#" target="_blank" rel="noopener nofollow">Booktopia</a>
+      <a class="alt" id="findLib" href="#" target="_blank" rel="noopener">Find a library copy</a>
+      <button class="swap" id="swapBtn" type="button">Read it already</button>
+    </div>
+  </section>
+
+  <h2 class="sec">What are you after</h2>
+
+  <div id="questions"></div>
+
+  <footer>
+    <div id="shelfcount"></div>
+    <div>Buying links are searches, not stock checks.</div>
+  </footer>
+</div>
+
+<script src="books.js"></script>
+<script>
+/* Amazon Associates tag. Empty until there is one; the links work either way. */
+var AFFIL_TAG = "";
+
+var TAGS = ["literary","crime","speculative","history","war","politics","markets","science",
+            "technology","ideas","nature","travel","memoir","family","art","sport"];
+var TAGNAME = {literary:"Literary fiction",crime:"Crime and spies",speculative:"Speculative",
+  history:"History",war:"War",politics:"Politics",markets:"Money and markets",science:"Science",
+  technology:"Technology",ideas:"Ideas",nature:"Nature",travel:"Travel",memoir:"Memoir",
+  family:"Family",art:"Art and music",sport:"Sport"};
+
+var QS = [
+  {id:"mood", label:"What do you want it to do", multi:true,
+   opts:[["absorb","Absorb me"],["learn","Teach me something"],["unsettle","Unsettle me"],["laugh","Make me laugh"]]},
+  {id:"form", label:"Fiction or not", multi:false,
+   opts:[["any","Either"],["fic","Fiction"],["non","Nonfiction"]]},
+  {id:"len", label:"How long", multi:false,
+   opts:[["any","Any"],["s","Short"],["m","Middling"],["l","The longer the better"]]},
+  {id:"era", label:"How old", multi:false,
+   opts:[["any","Any"],["contemporary","Last twenty years"],["modern","Postwar"],["older","Older than that"]]},
+  {id:"sty", label:"Prose", multi:false,
+   opts:[["any","No preference"],["plain","Plain and fast"],["rich","Rich and slow"],["funny","Funny and sharp"]]},
+  {id:"dem", label:"How much work", multi:false,
+   opts:[["1","Easy company"],["2","Some work"],["3","Hard is fine"]]},
+  {id:"tags", label:"Subjects", multi:true, chips:true,
+   opts:TAGS.map(function(t){return [t,TAGNAME[t]];})}
+];
+
+var DEFAULTS = {mood:["absorb"],form:"any",len:"any",era:"any",sty:"any",dem:"2",tags:[]};
+var state = JSON.parse(JSON.stringify(DEFAULTS));
+var offset = 0;
+
+function era(b){ return b.y>=2005?"contemporary":(b.y>=1945?"modern":"older"); }
+var LENORD = {s:0,m:1,l:2};
+
+function score(b){
+  var s = 0;
+  if(state.mood.length){ var hits=0; state.mood.forEach(function(m){ if(b.mood.indexOf(m)>-1) hits++; });
+    s += hits*3; if(!hits) s -= 3; }
+  if(state.len!=="any") s += (b.len===state.len) ? 3 : (Math.abs(LENORD[b.len]-LENORD[state.len])===1 ? -1.5 : -4);
+  if(state.era!=="any") s += (era(b)===state.era) ? 3 : -3;
+  if(state.sty!=="any") s += (b.sty===state.sty) ? 3 : -1;
+  s -= Math.abs(b.dem - Number(state.dem)) * 1.6;
+  if(state.tags.length){ var th=0; state.tags.forEach(function(t){ if(b.tags.indexOf(t)>-1) th++; });
+    s += th*2.5; }
+  return s;
+}
+
+function key(){
+  return [state.mood.slice().sort().join("+"),state.form,state.len,state.era,state.sty,state.dem,
+          state.tags.slice().sort().join("+")].join("|");
+}
+function hash(str){ var h=2166136261>>>0; for(var i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h>>>0; }
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; var t=Math.imul(seed^seed>>>15,1|seed);
+  t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+/* Form and subject are FILTERS, the rest are scores. Scoring them instead let a
+   novel with no crime in it win a fiction-and-crime answer on its other axes, and
+   padding a thin result out to twelve made that worse. A narrow answer gets a short
+   rotation, which repeats sooner and is at least true. */
+function eligible(){
+  return window.SHELF.filter(function(b){
+    if(state.form!=="any" && b.f!==state.form) return false;
+    if(state.tags.length && !state.tags.some(function(t){ return b.tags.indexOf(t)>-1; })) return false;
+    return true;
+  });
+}
+function shortlist(){
+  var pool = eligible();
+  if(!pool.length) return [];
+  var ranked = pool.map(function(b,i){ return {b:b,s:score(b),i:i}; })
+    .sort(function(x,y){ return y.s-x.s || x.i-y.i; });
+  var best = ranked[0].s;
+  /* Wide enough that a rotation has somewhere to go. Safe now the pool is already
+     filtered on form and subject: the worst a low-scoring survivor can be is the
+     wrong length or era, never the wrong kind of book. */
+  var band = ranked.filter(function(r){ return r.s >= best - 6; });
+  if(band.length < 6) band = ranked.slice(0, 6);
+  var top = band.slice(0,36).map(function(r){ return r.b; });
+  var r = rng(hash(key())), out = top.slice();
+  for(var i=out.length-1;i>0;i--){ var j=Math.floor(r()*(i+1)); var t=out[i]; out[i]=out[j]; out[j]=t; }
+  return out;
+}
+
+function monthIndex(d){ return d.getFullYear()*12 + d.getMonth(); }
+
+function matchChips(b){
+  var out = [];
+  state.mood.forEach(function(m){ if(b.mood.indexOf(m)>-1)
+    out.push({absorb:"Absorbing",learn:"Teaches you something",unsettle:"Unsettling",laugh:"Funny"}[m]); });
+  if(state.form!=="any" && b.f===state.form) out.push(b.f==="fic"?"Fiction":"Nonfiction");
+  if(state.len!=="any" && b.len===state.len) out.push({s:"Short",m:"Middling",l:"Long"}[b.len]);
+  if(state.era!=="any" && era(b)===state.era) out.push({contemporary:"Last twenty years",modern:"Postwar",older:"Older"}[era(b)]);
+  if(state.sty!=="any" && b.sty===state.sty) out.push({plain:"Plain prose",rich:"Rich prose",funny:"Sharp and funny"}[b.sty]);
+  state.tags.forEach(function(t){ if(b.tags.indexOf(t)>-1) out.push(TAGNAME[t]); });
+  return out;
+}
+
+function render(){
+  var list = shortlist();
+  var d = new Date();
+  if(!list.length){ renderEmpty(); return; }
+  document.getElementById("pick").classList.remove("empty");
+  var idx = (monthIndex(d) + offset) % list.length;
+  var b = list[idx];
+  var q = encodeURIComponent(b.t + " " + b.a);
+
+  document.getElementById("month").textContent =
+    d.toLocaleString("en-AU",{month:"long"}) + " " + d.getFullYear();
+  document.getElementById("title").textContent = b.t;
+  document.getElementById("byline").textContent = b.a + ", " + (b.y<1000 ? b.y + " CE" : b.y);
+  document.getElementById("whytext").textContent = b.why;
+
+  var m = document.getElementById("match");
+  while(m.firstChild) m.removeChild(m.firstChild);
+  matchChips(b).forEach(function(c){
+    var el = document.createElement("span"); el.className = "mchip"; el.textContent = c; m.appendChild(el);
+  });
+
+  document.getElementById("buyAmz").href =
+    "https://www.amazon.com.au/s?k=" + q + (AFFIL_TAG ? "&tag=" + AFFIL_TAG : "");
+  document.getElementById("buyBkt").href = "https://www.booktopia.com.au/search?keywords=" + q;
+  document.getElementById("findLib").href = "https://search.worldcat.org/search?q=" + q;
+  document.getElementById("shelfcount").textContent =
+    window.SHELF.length + " books, picked by hand. " + list.length +
+    (list.length===1 ? " fits these answers." : " fit these answers, and the pick rotates through them.");
+  writeUrl();
+}
+
+function renderEmpty(){
+  document.getElementById("pick").classList.add("empty");
+  document.getElementById("month").textContent = "";
+  document.getElementById("title").textContent = "Nothing on the shelf fits";
+  document.getElementById("byline").textContent = "";
+  document.getElementById("whytext").textContent = "Drop a subject or take fiction back to either.";
+  var m = document.getElementById("match");
+  while(m.firstChild) m.removeChild(m.firstChild);
+  document.getElementById("shelfcount").textContent =
+    window.SHELF.length + " books, picked by hand. None of them fit these answers.";
+  writeUrl();
+}
+
+function build(){
+  var host = document.getElementById("questions");
+  QS.forEach(function(q){
+    var wrap = document.createElement("div"); wrap.className = "q";
+    var lab = document.createElement("div"); lab.className = "qlabel"; lab.textContent = q.label;
+    var opts = document.createElement("div"); opts.className = "opts";
+    opts.setAttribute("data-q", q.id);
+    q.opts.forEach(function(o){
+      var btn = document.createElement("button");
+      btn.type = "button"; btn.className = "opt" + (q.chips ? " chip" : "");
+      btn.textContent = o[1]; btn.setAttribute("data-v", o[0]);
+      btn.addEventListener("click", function(){ choose(q, o[0]); });
+      opts.appendChild(btn);
+    });
+    wrap.appendChild(lab); wrap.appendChild(opts); host.appendChild(wrap);
+  });
+  paint();
+}
+
+function choose(q, v){
+  if(q.multi){
+    var arr = state[q.id], at = arr.indexOf(v);
+    if(at > -1){ arr.splice(at,1); } else { arr.push(v); }
+  } else {
+    state[q.id] = v;
+  }
+  offset = 0;
+  paint(); render();
+}
+
+function paint(){
+  document.querySelectorAll(".opts").forEach(function(g){
+    var id = g.getAttribute("data-q"), val = state[id];
+    g.querySelectorAll(".opt").forEach(function(btn){
+      var v = btn.getAttribute("data-v");
+      var on = Array.isArray(val) ? val.indexOf(v) > -1 : val === v;
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  });
+}
+
+/* The URL carries the answers only once they differ from the defaults, so a first
+   visit has a clean address and a shared one reproduces the same shelf. */
+function writeUrl(){
+  var same = JSON.stringify(state) === JSON.stringify(DEFAULTS);
+  var url = location.pathname + (same ? "" : "?p=" + encodeURIComponent(key()));
+  history.replaceState(null, "", url);
+}
+function readUrl(){
+  var p = new URLSearchParams(location.search).get("p");
+  if(!p) return;
+  var f = p.split("|"); if(f.length !== 7) return;
+  state.mood = f[0] ? f[0].split("+") : [];
+  state.form = f[1]; state.len = f[2]; state.era = f[3]; state.sty = f[4]; state.dem = f[5];
+  state.tags = f[6] ? f[6].split("+").filter(function(t){ return TAGS.indexOf(t) > -1; }) : [];
+}
+
+document.getElementById("swapBtn").addEventListener("click", function(){ offset++; render(); });
+
+readUrl();
+build();
+render();
+</script>
+</body>
+</html>
