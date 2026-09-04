@@ -18,27 +18,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* The shelf is a dark room by design, in both themes: a wall of cloth spines on a
+   pale ground reads as swatches rather than books. */
 :root{
-  --paper:#f4f0e6; --paper2:#ebe5d6; --card:#fbf8f1;
-  --ink:#211f1a; --ink-soft:#6a6354; --line:#ddd4c0; --line2:#cfc4ad;
-  --accent:#7a2e2e; --accent-soft:#f0e2df;
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --paper:#181713; --paper2:#211f1a; --card:#22201b;
-    --ink:#ece7db; --ink-soft:#a49b88; --line:#39352c; --line2:#4b4539;
-    --accent:#d08a6e; --accent-soft:#33261f;
-  }
-}
-html[data-theme="light"]{
-  --paper:#f4f0e6; --paper2:#ebe5d6; --card:#fbf8f1;
-  --ink:#211f1a; --ink-soft:#6a6354; --line:#ddd4c0; --line2:#cfc4ad;
-  --accent:#7a2e2e; --accent-soft:#f0e2df;
-}
-html[data-theme="dark"]{
-  --paper:#181713; --paper2:#211f1a; --card:#22201b;
-  --ink:#ece7db; --ink-soft:#a49b88; --line:#39352c; --line2:#4b4539;
-  --accent:#d08a6e; --accent-soft:#33261f;
+  --paper:#1a1916; --paper2:#232019; --ink:#efe9dc; --ink-soft:#9a9384;
+  --line:#33302a; --line2:#474135; --accent:#d9a441; --wood:#4b3a28;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -48,63 +32,102 @@ body{
 }
 .serif{font-family:'Spectral',Georgia,'Times New Roman',serif}
 a{color:inherit}
-.wrap{max-width:820px;margin:0 auto;padding:0 24px}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px}
 .bar{display:flex;justify-content:space-between;align-items:baseline;padding:22px 0 0}
 .brand{font-family:'Spectral',Georgia,serif;font-size:20px;font-weight:600;letter-spacing:-.01em}
 .brand .dot{color:var(--accent)}
 .home{font-size:14px;color:var(--ink-soft);text-decoration:none}
 .home:hover{color:var(--ink)}
-.lede{font-family:'Spectral',Georgia,serif;font-size:17px;color:var(--ink-soft);margin:26px 0 22px;max-width:46ch;line-height:1.5}
+.lede{font-family:'Spectral',Georgia,serif;font-size:17px;color:var(--ink-soft);
+      margin:24px 0 26px;max-width:46ch;line-height:1.5}
 
-/* the pick */
-.pick{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:30px 32px 26px;
-      box-shadow:0 1px 0 var(--line2),0 24px 44px -34px rgba(40,25,10,.4)}
-.month{font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--accent);font-weight:600}
-.title{font-family:'Spectral',Georgia,serif;font-size:34px;line-height:1.12;font-weight:500;letter-spacing:-.02em;margin:12px 0 6px}
-.byline{font-size:15px;color:var(--ink-soft);margin:0 0 18px}
-.why{font-family:'Spectral',Georgia,serif;font-size:18px;line-height:1.55;margin:0 0 20px;max-width:52ch}
+/* the shelf */
+.shelfbox{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none}
+.shelfbox::-webkit-scrollbar{display:none}
+.shelf{display:flex;align-items:flex-end;gap:5px;min-height:210px;
+       border-bottom:9px solid var(--wood);padding:0 2px;width:max-content;min-width:100%}
+.spine{position:relative;text-overflow:ellipsis;border:1px solid rgba(0,0,0,.4);border-radius:2px 2px 0 0;
+  color:#f3eee1;font-family:'Spectral',Georgia,serif;font-size:13px;letter-spacing:.01em;
+  writing-mode:vertical-rl;transform:rotate(180deg);padding:14px 0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;
+  flex:0 0 auto;transition:margin-bottom .12s}
+.spine:hover{margin-bottom:8px}
+.spine[aria-current="true"]{outline:2px solid var(--accent);outline-offset:2px;margin-bottom:12px}
+.shelfnote{display:flex;justify-content:space-between;gap:12px;align-items:baseline;
+  font-size:13px;color:var(--ink-soft);margin:12px 0 0}
+.shelfnote button{font:inherit;font-size:13px;color:var(--ink-soft);background:none;border:none;
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0}
+.shelfnote button:hover{color:var(--ink)}
+.shelfnote button[hidden]{display:none}
+
+/* the pulled book */
+.pulled{display:grid;grid-template-columns:170px 1fr;gap:32px;align-items:start;margin-top:34px}
+.cover{height:250px;border-radius:2px 6px 6px 2px;border-left:11px solid rgba(0,0,0,.42);
+  display:flex;flex-direction:column;justify-content:space-between;padding:18px 16px;
+  font-family:'Spectral',Georgia,serif;color:#f6f1e4;
+  box-shadow:0 26px 46px -28px #000}
+.cover .ct{font-size:19px;line-height:1.15;font-weight:600}
+.cover .ca{font-size:12px;opacity:.85}
+.month{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.title{font-family:'Spectral',Georgia,serif;font-size:37px;line-height:1.1;font-weight:500;
+  letter-spacing:-.02em;margin:12px 0 5px}
+.byline{color:var(--ink-soft);margin:0 0 18px}
+.why{font-family:'Spectral',Georgia,serif;font-size:19px;line-height:1.55;margin:0 0 20px;max-width:46ch}
 .match{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
 .mchip{font-size:12px;color:var(--ink-soft);background:var(--paper2);border:1px solid var(--line);
        border-radius:20px;padding:4px 11px}
 .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:18px}
-.buy{font-size:14px;font-weight:600;text-decoration:none;color:var(--card);background:var(--accent);
-     border:1px solid var(--accent);border-radius:9px;padding:10px 17px}
+.buy{font-size:14px;font-weight:600;text-decoration:none;color:#211d16;background:var(--accent);
+     border:1px solid var(--accent);border-radius:8px;padding:10px 17px}
 .buy:hover{filter:brightness(1.08)}
 .alt{font-size:14px;text-decoration:none;color:var(--ink);background:none;border:1px solid var(--line2);
-     border-radius:9px;padding:10px 15px;font-family:inherit;cursor:pointer}
+     border-radius:8px;padding:10px 15px}
 .alt:hover{background:var(--paper2)}
 .swap{margin-left:auto;font-size:13px;color:var(--ink-soft);background:none;border:none;
       font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px 0}
 .swap:hover{color:var(--ink)}
+.pulled.empty .cover,.pulled.empty .actions{display:none}
 
 /* questions */
-h2.sec{font-family:'Spectral',Georgia,serif;font-size:22px;font-weight:600;margin:44px 0 20px}
+h2.sec{font-family:'Spectral',Georgia,serif;font-size:22px;font-weight:600;margin:46px 0 20px}
 .q{border-top:1px solid var(--line);padding:18px 0}
 .q:first-of-type{border-top:none}
 .qlabel{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
         font-weight:600;margin-bottom:11px}
 .opts{display:flex;flex-wrap:wrap;gap:7px}
-.opt{font:inherit;font-size:14px;color:var(--ink);background:var(--card);border:1px solid var(--line2);
-     border-radius:9px;padding:9px 14px;cursor:pointer;transition:.12s}
-.opt:hover{background:var(--paper2)}
-.opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--card);font-weight:600}
-.opt.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
-.pick.empty .actions{display:none}
+.opt{font:inherit;font-size:14px;color:var(--ink);background:var(--paper2);border:1px solid var(--line2);
+     border-radius:8px;padding:9px 14px;cursor:pointer;transition:.12s}
+.opt:hover{background:var(--line)}
+.opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#211d16;font-weight:600}
+.opt.chip[aria-pressed="true"]{background:#3a2f18;border-color:var(--accent);color:var(--ink)}
+/* books you liked */
+.liked{margin-top:30px}
+.likedrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.likedin{font:inherit;font-size:14px;color:var(--ink);background:var(--paper2);
+  border:1px solid var(--line2);border-radius:8px;padding:10px 13px;min-width:260px;flex:1 1 260px}
+.likedin::placeholder{color:var(--ink-soft)}
+.import{font:inherit;font-size:14px;color:var(--ink);background:none;border:1px solid var(--line2);
+  border-radius:8px;padding:10px 15px;cursor:pointer}
+.import:hover{background:var(--paper2)}
+.import input{display:none}
+.likedlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.lchip{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);
+  background:var(--paper2);border:1px solid var(--line2);border-radius:20px;padding:5px 6px 5px 13px}
+.lchip button{font:inherit;font-size:15px;line-height:1;color:var(--ink-soft);background:none;
+  border:none;cursor:pointer;padding:0 6px}
+.lchip button:hover{color:var(--ink)}
+.likednote{font-size:13px;color:var(--ink-soft);margin-top:12px}
 footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
        font-size:13px;color:var(--ink-soft);line-height:1.6}
-@media (max-width:560px){
+@media (max-width:620px){
   .wrap{padding:0 16px}
-  .pick{padding:24px 20px 20px}
-  .title{font-size:28px}
+  .pulled{grid-template-columns:1fr;gap:22px}
+  .cover{height:200px;max-width:150px}
+  .title{font-size:29px}
   .why{font-size:17px}
-  .actions{gap:7px}
   .swap{margin-left:0;width:100%}
 }
 </style>
-<script>
-  /* theme before paint, same key as the hub */
-  (function(){try{var s=localStorage.getItem("theme");if(s)document.documentElement.setAttribute("data-theme",s);}catch(e){}})();
-</script>
 <script>/* Analytics, gated. Opt out with ?nostats=1; automation excluded via navigator.webdriver. */
 (function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
 </head>
@@ -115,29 +138,53 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
     <a class="home" href="/">Other projects</a>
   </div>
 
-  <p class="lede">Seven questions about what you want from a book. A new recommendation on the first of each month.</p>
+  <p class="lede">Seven questions about what you want from a book. One comes off the shelf on the first of each month.</p>
 
-  <section class="pick" id="pick" aria-live="polite">
-    <div class="month" id="month">&nbsp;</div>
-    <h1 class="title" id="title">&nbsp;</h1>
-    <p class="byline" id="byline">&nbsp;</p>
-    <p class="why serif" id="whytext">&nbsp;</p>
-    <div class="match" id="match"></div>
-    <div class="actions">
-      <a class="buy" id="buyAmz" href="#" target="_blank" rel="noopener nofollow">Buy it</a>
-      <a class="alt" id="buyBkt" href="#" target="_blank" rel="noopener nofollow">Booktopia</a>
-      <a class="alt" id="findLib" href="#" target="_blank" rel="noopener">Find a library copy</a>
-      <button class="swap" id="swapBtn" type="button">Read it already</button>
+  <div class="shelfbox">
+    <div class="shelf" id="shelf" role="list" aria-label="Books matching your answers"></div>
+  </div>
+  <div class="shelfnote">
+    <span id="shelfcount"></span>
+    <button type="button" id="backBtn" hidden>Back to this month</button>
+  </div>
+
+  <section class="pulled" id="pulled" aria-live="polite">
+    <div class="cover" id="cover"><div class="ct" id="coverT"></div><div class="ca" id="coverA"></div></div>
+    <div>
+      <div class="month" id="month">&nbsp;</div>
+      <h1 class="title" id="title">&nbsp;</h1>
+      <p class="byline" id="byline">&nbsp;</p>
+      <p class="why serif" id="whytext">&nbsp;</p>
+      <div class="match" id="match"></div>
+      <div class="actions">
+        <a class="buy" id="buyAmz" href="#" target="_blank" rel="noopener nofollow">Buy it</a>
+        <a class="alt" id="buyBkt" href="#" target="_blank" rel="noopener nofollow">Booktopia</a>
+        <a class="alt" id="findLib" href="#" target="_blank" rel="noopener">Find a library copy</a>
+        <button class="swap" id="swapBtn" type="button">Read it already</button>
+      </div>
     </div>
   </section>
 
   <h2 class="sec">What are you after</h2>
-
   <div id="questions"></div>
 
+  <section class="liked">
+    <h2 class="sec">Books you liked</h2>
+    <div class="likedrow">
+      <input class="likedin" id="likeIn" list="shelflist" autocomplete="off"
+             placeholder="Start typing a title" aria-label="Add a book you liked">
+      <datalist id="shelflist"></datalist>
+      <label class="import">Import a Goodreads export
+        <input type="file" id="csvIn" accept=".csv,text/csv"></label>
+    </div>
+    <div class="likedlist" id="likedList"></div>
+    <div class="likednote" id="likedNote"></div>
+  </section>
+
   <footer>
-    <div id="shelfcount"></div>
-    <div>Buying links are searches, not stock checks.</div>
+    <div id="shelffoot"></div>
+    <div>Spine width is the length of the book. Buying links are searches, not stock checks.
+      A Goodreads export is read in your browser and never uploaded.</div>
   </footer>
 </div>
 
@@ -172,10 +219,63 @@ var QS = [
 
 var DEFAULTS = {mood:["absorb"],form:"any",len:"any",era:"any",sty:"any",dem:"2",tags:[]};
 var state = JSON.parse(JSON.stringify(DEFAULTS));
-var offset = 0;
+var offset = 0;      /* "Read it already", counted in months forward */
+var browsing = null; /* a spine the reader pulled out, which is not this month's */
+
+/* Book cloth. Decorative, and deliberately not carrying data: width is the honest
+   channel here and it maps to length. */
+var CLOTH = ["#2f4858","#7a2e2e","#3d5a45","#6b4f36","#44405e","#7d5b2b","#2b4d4d","#5d3a4a",
+             "#43536b","#6a3b2e","#365243","#584a2f"];
+var WIDTH = {s:26, m:34, l:44};
 
 function era(b){ return b.y>=2005?"contemporary":(b.y>=1945?"modern":"older"); }
 var LENORD = {s:0,m:1,l:2};
+
+/* Books you liked. Per device, in localStorage rather than the URL: the URL is the
+   share link and a reading history is not the thing being shared. */
+var liked = [];       /* titles, matched to the shelf */
+var likedNote = "";   /* what the last Goodreads import actually matched */
+
+function loadLiked(){
+  try{
+    var raw = localStorage.getItem("bookmark.liked");
+    if(raw) liked = JSON.parse(raw).filter(function(t){ return byTitle(t); });
+  }catch(e){}
+}
+function saveLiked(){ try{ localStorage.setItem("bookmark.liked", JSON.stringify(liked)); }catch(e){} }
+function byTitle(t){
+  return window.SHELF.find(function(b){ return b.t === t; });
+}
+
+/* What the liked books have in common, as weights in 0..1. */
+function taste(){
+  var books = liked.map(byTitle).filter(Boolean);
+  if(!books.length) return null;
+  var tg = {}, md = {}, st = {}, dem = 0;
+  books.forEach(function(b){
+    b.tags.forEach(function(t){ tg[t] = (tg[t]||0) + 1; });
+    b.mood.forEach(function(m){ md[m] = (md[m]||0) + 1; });
+    st[b.sty] = (st[b.sty]||0) + 1;
+    dem += b.dem;
+  });
+  var n = books.length;
+  Object.keys(tg).forEach(function(k){ tg[k] /= n; });
+  Object.keys(md).forEach(function(k){ md[k] /= n; });
+  Object.keys(st).forEach(function(k){ st[k] /= n; });
+  return {tg:tg, md:md, st:st, dem:dem/n, n:n};
+}
+
+/* Capped deliberately: the answers above are what the reader actually said, and a
+   reading history should tilt the shelf, not overrule it. */
+function affinity(b, ta){
+  if(!ta) return 0;
+  var s = 0;
+  b.tags.forEach(function(t){ s += (ta.tg[t]||0) * 3; });
+  b.mood.forEach(function(m){ s += (ta.md[m]||0) * 1.5; });
+  s += (ta.st[b.sty]||0) * 1.5;
+  s -= Math.abs(b.dem - ta.dem) * 0.6;
+  return Math.max(-2, Math.min(4, s));
+}
 
 function score(b){
   var s = 0;
@@ -194,14 +294,16 @@ function key(){
   return [state.mood.slice().sort().join("+"),state.form,state.len,state.era,state.sty,state.dem,
           state.tags.slice().sort().join("+")].join("|");
 }
+/* The shuffle seed includes the reading history; the shareable ?p= does not. */
+function seedKey(){
+  return key() + "#" + liked.slice().sort().join("+");
+}
 function hash(str){ var h=2166136261>>>0; for(var i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h>>>0; }
 function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; var t=Math.imul(seed^seed>>>15,1|seed);
   t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 
 /* Form and subject are FILTERS, the rest are scores. Scoring them instead let a
-   novel with no crime in it win a fiction-and-crime answer on its other axes, and
-   padding a thin result out to twelve made that worse. A narrow answer gets a short
-   rotation, which repeats sooner and is at least true. */
+   novel with no crime in it win a fiction-and-crime answer on its other axes. */
 function eligible(){
   return window.SHELF.filter(function(b){
     if(state.form!=="any" && b.f!==state.form) return false;
@@ -210,23 +312,22 @@ function eligible(){
   });
 }
 function shortlist(){
-  var pool = eligible();
+  var pool = eligible().filter(function(b){ return liked.indexOf(b.t) === -1; });
   if(!pool.length) return [];
-  var ranked = pool.map(function(b,i){ return {b:b,s:score(b),i:i}; })
+  var ta = taste();
+  var ranked = pool.map(function(b,i){ return {b:b,s:score(b)+affinity(b,ta),i:i}; })
     .sort(function(x,y){ return y.s-x.s || x.i-y.i; });
   var best = ranked[0].s;
-  /* Wide enough that a rotation has somewhere to go. Safe now the pool is already
-     filtered on form and subject: the worst a low-scoring survivor can be is the
-     wrong length or era, never the wrong kind of book. */
   var band = ranked.filter(function(r){ return r.s >= best - 6; });
   if(band.length < 6) band = ranked.slice(0, 6);
-  var top = band.slice(0,36).map(function(r){ return r.b; });
-  var r = rng(hash(key())), out = top.slice();
+  var top = band.slice(0,30).map(function(r){ return r.b; });
+  var r = rng(hash(seedKey())), out = top.slice();
   for(var i=out.length-1;i>0;i--){ var j=Math.floor(r()*(i+1)); var t=out[i]; out[i]=out[j]; out[j]=t; }
   return out;
 }
 
 function monthIndex(d){ return d.getFullYear()*12 + d.getMonth(); }
+function cloth(b){ return CLOTH[hash(b.t + b.a) % CLOTH.length]; }
 
 function matchChips(b){
   var out = [];
@@ -240,20 +341,87 @@ function matchChips(b){
   return out;
 }
 
+/* The shelf is ordered by author, the ROTATION is the shuffled order, and the two
+   are deliberately different: if the spines sat in month order, the book to the
+   right of this month's would be next month's, and there would be nothing to come
+   back for on the first. */
+function surname(a){
+  var parts = a.split(" and ")[0].trim().split(/\s+/);
+  return parts[parts.length-1];
+}
+function displayOrder(list){
+  return list.slice().sort(function(x,y){
+    return surname(x.a).localeCompare(surname(y.a)) || x.t.localeCompare(y.t);
+  });
+}
+
+function drawShelf(list, currentIdx){
+  var shelf = document.getElementById("shelf");
+  while(shelf.firstChild) shelf.removeChild(shelf.firstChild);
+  list.forEach(function(b, i){
+    var s = document.createElement("button");
+    s.type = "button"; s.className = "spine"; s.setAttribute("role","listitem");
+    s.style.background = cloth(b);
+    s.style.width = WIDTH[b.len] + "px";
+    /* tall enough for the title to sit on the spine, which is why length drives
+       height rather than a random jitter: a cut-off title reads as a bug. */
+    s.style.height = (146 + Math.min(b.t.length, 42) * 2.6 + (hash(b.t) % 4) * 4) + "px";
+    s.textContent = b.t;
+    s.setAttribute("aria-label", b.t + " by " + b.a);
+    s.setAttribute("aria-current", i === currentIdx ? "true" : "false");
+    s.addEventListener("click", function(){ pick(b); });
+    shelf.appendChild(s);
+  });
+}
+
+/* Scroll the shelf box, never the page: on a phone the month's book is often off
+   to the right, and a spine nobody can see is not a pick. */
+var lastShown = 0;
+function centreSpine(){
+  var box = document.querySelector(".shelfbox");
+  var el = box.querySelectorAll(".spine")[lastShown];
+  if(!el) return;
+  /* rects, not offsetLeft: the spines' offsetParent is the page wrapper rather than
+     the scroll box, so offset arithmetic is out by the page padding. */
+  var br = box.getBoundingClientRect(), cr = el.getBoundingClientRect();
+  var want = box.scrollLeft + (cr.left - br.left) - (br.width - cr.width) / 2;
+  box.scrollLeft = Math.max(0, want);
+}
+/* Three times, and it needs all three: after a frame for the spines just appended,
+   again once Spectral has loaded because the shelf is 400px wider in the real face
+   than in the fallback, and again on resize. */
+function scrollSpineIntoView(i){
+  lastShown = i;
+  requestAnimationFrame(centreSpine);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(centreSpine);
+}
+window.addEventListener("resize", function(){ requestAnimationFrame(centreSpine); });
+
 function render(){
   var list = shortlist();
   var d = new Date();
   if(!list.length){ renderEmpty(); return; }
-  document.getElementById("pick").classList.remove("empty");
-  var idx = (monthIndex(d) + offset) % list.length;
+  document.getElementById("pulled").classList.remove("empty");
+  var monthIdx = (monthIndex(d) + offset) % list.length;
+  var idx = browsing === null ? monthIdx : browsing;
   var b = list[idx];
   var q = encodeURIComponent(b.t + " " + b.a);
 
-  document.getElementById("month").textContent =
-    d.toLocaleString("en-AU",{month:"long"}) + " " + d.getFullYear();
+  var shown = displayOrder(list);
+  var shownIdx = shown.indexOf(b);
+  drawShelf(shown, shownIdx);
+  scrollSpineIntoView(shownIdx);
+  document.getElementById("backBtn").hidden = (browsing === null);
+
+  document.getElementById("month").textContent = browsing === null
+    ? d.toLocaleString("en-AU",{month:"long"}) + " " + d.getFullYear()
+    : "From your shelf";
   document.getElementById("title").textContent = b.t;
   document.getElementById("byline").textContent = b.a + ", " + (b.y<1000 ? b.y + " CE" : b.y);
   document.getElementById("whytext").textContent = b.why;
+  document.getElementById("cover").style.background = cloth(b);
+  document.getElementById("coverT").textContent = b.t;
+  document.getElementById("coverA").textContent = b.a;
 
   var m = document.getElementById("match");
   while(m.firstChild) m.removeChild(m.firstChild);
@@ -266,21 +434,33 @@ function render(){
   document.getElementById("buyBkt").href = "https://www.booktopia.com.au/search?keywords=" + q;
   document.getElementById("findLib").href = "https://search.worldcat.org/search?q=" + q;
   document.getElementById("shelfcount").textContent =
-    window.SHELF.length + " books, picked by hand. " + list.length +
-    (list.length===1 ? " fits these answers." : " fit these answers, and the pick rotates through them.");
+    list.length === 1 ? "One book fits these answers." : list.length + " books fit these answers.";
+  document.getElementById("shelffoot").textContent = window.SHELF.length + " books, picked by hand.";
   writeUrl();
 }
 
+/* A spine click browses; clicking the one already pulled out puts it back. */
+function pick(b){
+  var list = shortlist();
+  var i = list.indexOf(b);
+  var monthIdx = (monthIndex(new Date()) + offset) % list.length;
+  browsing = (i === monthIdx || i === browsing) ? null : i;
+  render();
+}
+
 function renderEmpty(){
-  document.getElementById("pick").classList.add("empty");
+  document.getElementById("pulled").classList.add("empty");
+  var shelf = document.getElementById("shelf");
+  while(shelf.firstChild) shelf.removeChild(shelf.firstChild);
+  document.getElementById("backBtn").hidden = true;
   document.getElementById("month").textContent = "";
   document.getElementById("title").textContent = "Nothing on the shelf fits";
   document.getElementById("byline").textContent = "";
   document.getElementById("whytext").textContent = "Drop a subject or take fiction back to either.";
   var m = document.getElementById("match");
   while(m.firstChild) m.removeChild(m.firstChild);
-  document.getElementById("shelfcount").textContent =
-    window.SHELF.length + " books, picked by hand. None of them fit these answers.";
+  document.getElementById("shelfcount").textContent = "No books fit these answers.";
+  document.getElementById("shelffoot").textContent = window.SHELF.length + " books, picked by hand.";
   writeUrl();
 }
 
@@ -310,7 +490,7 @@ function choose(q, v){
   } else {
     state[q.id] = v;
   }
-  offset = 0;
+  offset = 0; browsing = null;
   paint(); render();
 }
 
@@ -341,10 +521,133 @@ function readUrl(){
   state.tags = f[6] ? f[6].split("+").filter(function(t){ return TAGS.indexOf(t) > -1; }) : [];
 }
 
-document.getElementById("swapBtn").addEventListener("click", function(){ offset++; render(); });
+document.getElementById("swapBtn").addEventListener("click", function(){
+  offset++; browsing = null; render();
+});
+document.getElementById("backBtn").addEventListener("click", function(){
+  browsing = null; render();
+});
+
+/* ---- books you liked: type-ahead, chips, and the Goodreads import ---- */
+
+function buildDatalist(){
+  var dl = document.getElementById("shelflist");
+  window.SHELF.slice().sort(function(x,y){ return x.t.localeCompare(y.t); }).forEach(function(b){
+    var o = document.createElement("option");
+    o.value = b.t; o.label = b.a; dl.appendChild(o);
+  });
+}
+
+function drawLiked(){
+  var host = document.getElementById("likedList");
+  while(host.firstChild) host.removeChild(host.firstChild);
+  liked.forEach(function(t){
+    var b = byTitle(t); if(!b) return;
+    var chip = document.createElement("span"); chip.className = "lchip";
+    chip.appendChild(document.createTextNode(b.t + " - " + b.a));
+    var x = document.createElement("button");
+    x.type = "button"; x.textContent = "×";
+    x.setAttribute("aria-label", "Remove " + b.t);
+    x.addEventListener("click", function(){
+      liked = liked.filter(function(v){ return v !== t; });
+      saveLiked(); drawLiked(); render();
+    });
+    chip.appendChild(x); host.appendChild(chip);
+  });
+  var note = document.getElementById("likedNote");
+  note.textContent = likedNote ? likedNote
+    : (liked.length ? liked.length + (liked.length===1 ? " book is" : " books are")
+        + " tilting the shelf, and none of them will be recommended back to you."
+      : "Add a few and the shelf leans towards what they have in common.");
+}
+
+function addLiked(title){
+  var b = byTitle(title);
+  if(!b || liked.indexOf(b.t) > -1) return false;
+  liked.push(b.t); saveLiked(); return true;
+}
+
+document.getElementById("likeIn").addEventListener("change", function(e){
+  if(addLiked(e.target.value)){ likedNote = ""; e.target.value = ""; drawLiked(); render(); }
+});
+document.getElementById("likeIn").addEventListener("keydown", function(e){
+  if(e.key !== "Enter") return;
+  if(addLiked(e.target.value)){ likedNote = ""; e.target.value = ""; drawLiked(); render(); }
+});
+
+/* Goodreads export. Parsed here in the page: the file never leaves the browser.
+   Only rows on the shelf can teach it anything, so the count is reported rather
+   than implied - matching 20 of 400 is a different claim from reading the lot. */
+function norm(t){
+  return t.toLowerCase()
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/^(the|a|an) /, "")
+    .trim();
+}
+function parseCsv(text){
+  var rows = [], row = [], cell = "", q = false;
+  for(var i=0;i<text.length;i++){
+    var c = text[i];
+    if(q){
+      if(c === '"' && text[i+1] === '"'){ cell += '"'; i++; }
+      else if(c === '"'){ q = false; }
+      else cell += c;
+    } else if(c === '"'){ q = true; }
+    else if(c === ","){ row.push(cell); cell = ""; }
+    else if(c === "\n"){ row.push(cell); rows.push(row); row = []; cell = ""; }
+    else if(c !== "\r"){ cell += c; }
+  }
+  if(cell.length || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+function importGoodreads(text){
+  var rows = parseCsv(text);
+  if(!rows.length) return;
+  var head = rows[0].map(function(h){ return h.trim().toLowerCase(); });
+  var iT = head.indexOf("title"), iR = head.indexOf("my rating"), iS = head.indexOf("exclusive shelf");
+  if(iT < 0){ likedNote = "That file has no Title column, so it is probably not a Goodreads export."; drawLiked(); return; }
+  /* Goodreads titles carry subtitles and series names that this shelf does not, so
+     both forms are indexed and both are tried. Exact after normalising, never fuzzy:
+     a wrong match silently teaches it the wrong taste. */
+  var index = {};
+  window.SHELF.forEach(function(b){
+    index[norm(b.t)] = b.t;
+    var short = norm(b.t.split(":")[0]);
+    if(!(short in index)) index[short] = b.t;
+  });
+  var read = 0, rated = 0, added = 0;
+  rows.slice(1).forEach(function(r){
+    if(!r[iT]) return;
+    if(iS > -1 && r[iS] && r[iS].trim() !== "read") return;
+    read++;
+    var stars = iR > -1 ? Number(r[iR]) : 0;
+    if(stars && stars < 4) return;
+    if(stars >= 4) rated++;
+    var raw = r[iT];
+    var hit = index[norm(raw)] || index[norm(raw.split(":")[0])];
+    if(hit && addLiked(hit)) added++;
+  });
+  likedNote = added
+    ? "Matched " + added + " of the " + read + " books you have read. Only books already on this shelf can teach it anything."
+    : "None of the " + read + " books you have read are on this shelf, so nothing changed.";
+  drawLiked(); render();
+}
+document.getElementById("csvIn").addEventListener("change", function(e){
+  var f = e.target.files && e.target.files[0];
+  if(!f) return;
+  var fr = new FileReader();
+  fr.onload = function(){ importGoodreads(String(fr.result)); };
+  fr.onerror = function(){ likedNote = "That file could not be read."; drawLiked(); };
+  fr.readAsText(f);
+  e.target.value = "";
+});
 
 readUrl();
+loadLiked();
+buildDatalist();
 build();
+drawLiked();
 render();
 </script>
 </body>
