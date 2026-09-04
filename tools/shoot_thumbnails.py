@@ -207,6 +207,9 @@ PREPARE = {
 # unless told otherwise.
 SCHEME = {
     "cfa-companion": "dark",
+    # Bookmark has no light mode at all: a wall of cloth spines on a pale ground
+    # reads as swatches. The emulation is set anyway so the shot cannot drift.
+    "bookmark": "dark",
     "beyond-small-talk": "dark",
     # Same family as Beyond Small Talk: a room you open on a phone in a dark pub.
     "worst-case-scenario": "dark",
