@@ -242,9 +242,11 @@ table#grid th {
   cursor: pointer; user-select: none; vertical-align: bottom;
   padding-bottom: 8px; border-bottom: 1.5px solid var(--ink);
 }
+table#grid th::after { content: " ↓"; opacity: .3; font-size: 11px; }
 table#grid th:hover { color: var(--ink); }
+table#grid th:hover::after { opacity: .75; }
 table#grid th.sorted { color: var(--ink); }
-table#grid th.sorted::after { content: " ↓"; }
+table#grid th.sorted::after { opacity: 1; }
 table#grid th.sorted[data-dir="asc"]::after { content: " ↑"; }
 table#grid th.l, table#grid td.l { text-align: left; }
 table#grid td.l { font-weight: 600; letter-spacing: -.005em; }
@@ -375,3 +377,13 @@ tr.detail td { background: var(--hover); padding: 0 14px 20px; }
    A dotted rule rather than a colour: it should read as a footnote, not as a
    warning about the number being wrong. */
 table#grid th.soft { text-decoration: underline dotted var(--ink-faint); text-underline-offset: 3px; cursor: help; }
+
+
+/* The table breaks out of the prose column. 100% here is main.wrap's content box,
+   so the margin goes negative on a wide window and back to zero on a narrow one,
+   which is why there is no media query. No transform: it would create a containing
+   block and the sticky header row would stop sticking. */
+#table-panel {
+  width: min(1340px, calc(100vw - 48px));
+  margin-left: calc((100% - min(1340px, 100vw - 48px)) / 2);
+}

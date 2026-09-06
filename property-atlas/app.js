@@ -327,7 +327,13 @@ function drawTable(shown) {
     // whether to trust a number is already looking. The note at the bottom is
     // read by nobody who is mid-comparison.
     if (col.soft) th.title = "Numbeo, user-contributed. The weakest figures here: no agency publishes rental yields across countries, so there is nothing official to check them against.";
-    if (SORT.key === col.key) th.dataset.dir = SORT.dir < 0 ? "desc" : "asc";
+    if (SORT.key === col.key) {
+      th.dataset.dir = SORT.dir < 0 ? "desc" : "asc";
+      th.setAttribute("aria-sort", SORT.dir < 0 ? "descending" : "ascending");
+    } else {
+      th.setAttribute("aria-sort", "none");
+    }
+    th.setAttribute("role", "columnheader");
     th.tabIndex = 0;
     const sort = () => {
       SORT = SORT.key === col.key ? { key: col.key, dir: -SORT.dir } : { key: col.key, dir: col.key === "country" ? 1 : -1 };
@@ -435,9 +441,9 @@ function fadeHint() {
 
 function render() {
   const f = filters();
-  $("f-ease-out").textContent = f.ease ? f.ease : "any";
-  $("f-yield-out").textContent = f.yield ? f.yield.toFixed(1) + "%" : "any";
-  $("f-price-out").textContent = f.price >= 650000 ? "any" : fmtK(f.price);
+  $("f-ease-out").textContent = f.ease ? "≥ " + f.ease + "/100" : "any";
+  $("f-yield-out").textContent = f.yield ? "≥ " + f.yield.toFixed(1) + "%" : "any";
+  $("f-price-out").textContent = f.price >= 650000 ? "any" : "≤ " + fmtK(f.price);
 
   const shown = DATA.countries.filter(c => passes(c, f));
 
@@ -465,12 +471,12 @@ function render() {
   fadeHint();
 
   const verified = DATA.countries.filter(c => c.verified).length;
-  $("note-tax").textContent =
-    `Tax on rent and on the gain is what the destination charges a non-resident, read off PwC's country guides for `
-    + `${verified} of the ${DATA.countries.length} markets and taken for a ten-year hold. That is not the headline rate: `
-    + `Belgium, Italy and Poland stop taxing the gain once a property has been held five years, and the Netherlands `
-    + `does not tax it at all. Where the source gives a schedule or a choice of regimes rather than one number, the `
-    + `column says so instead of picking one.`;
+  $("note-tax").innerHTML =
+    `<strong>Tax</strong> is what the destination charges a non-resident, from PwC's country `
+    + `guides for ${verified} of ${DATA.countries.length} markets, on a ten-year hold. Not the `
+    + `headline rate: Belgium, Italy and Poland stop taxing the gain after five years, and the `
+    + `Netherlands never does. Where the source gives a schedule rather than one number, the `
+    + `column says so.`;
 }
 
 /* ---------- boot ---------- */
@@ -496,7 +502,14 @@ Promise.all([
     const tb = $("sources");
     (d.sources || []).forEach(s => {
       const tr = document.createElement("tr");
-      const a = s.url ? `<a href="${s.url.startsWith("http") ? s.url : "https://" + s.url}" rel="noopener">${s.name}</a>` : s.name;
+      // Four of these rows say "Various" rather than naming one page, because the
+      // column really was assembled from several. Linkifying that produced
+      // href="https://Various" - five source links on the page that went nowhere,
+      // on a page whose whole claim is that the numbers were checked. A citation
+      // that cannot be followed is worse than an honest "several sources".
+      const linkable = /^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+([\/?#]|$)/i.test(s.url || "");
+      const href = s.url && s.url.startsWith("http") ? s.url : "https://" + s.url;
+      const a = linkable ? `<a href="${href}" rel="noopener">${s.name}</a>` : s.name;
       tr.innerHTML = `<td>${s.measure}</td><td>${a}</td><td></td>`;
       tr.lastElementChild.textContent = s.caveat || "";
       tb.appendChild(tr);

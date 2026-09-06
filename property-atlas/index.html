@@ -34,19 +34,19 @@
   <section class="panel" id="filters-panel">
     <div class="filters" id="filters" aria-label="Filters">
       <div class="control">
-        <label for="f-ease">Ease of investing, at least</label>
+        <label for="f-ease">Ease of investing</label>
         <div class="row"><input type="range" id="f-ease" min="0" max="100" step="1" value="0"><output id="f-ease-out"></output></div>
       </div>
       <div class="control">
-        <label for="f-yield">Net yield, at least</label>
+        <label for="f-yield">Net yield</label>
         <div class="row"><input type="range" id="f-yield" min="0" max="8" step="0.1" value="0"><output id="f-yield-out"></output></div>
       </div>
       <div class="control">
-        <label for="f-price">Entry price, at most</label>
+        <label for="f-price">Entry price</label>
         <div class="row"><input type="range" id="f-price" min="75000" max="650000" step="5000" value="650000"><output id="f-price-out"></output></div>
       </div>
       <div class="control">
-        <label for="f-own">Who can own it</label>
+        <label for="f-own">Foreign ownership</label>
         <select id="f-own">
           <option value="">Anyone, however restricted</option>
           <option value="3">Foreigners, no restrictions</option>
@@ -90,8 +90,8 @@
   </section>
 
   <section class="panel" id="table-panel">
-    <h2>Every Market</h2>
-    <p class="sub">Click a column to sort. Click a row for the detail behind it.</p>
+    <h2>The Markets</h2>
+    <p class="sub">Click any column heading to sort it, highest first. Click again to flip it. Click a row for the detail behind it.</p>
     <div class="table-wrap" id="table-wrap">
     <div class="table-scroll" id="table-scroll">
       <table id="grid">
@@ -105,9 +105,9 @@
   <section class="panel notes">
     <h2>Notes</h2>
     <ul>
-      <li><strong>Ease of investing</strong> scores six things a foreign buyer runs into: who may own, whether buying brings residency, whether money can leave, time to sell, cost to buy, property rights. Open a row to see all six. The parts matter more than the total.</li>
+      <li><strong>Ease of investing</strong> is six things scored out of 100: who may own, whether buying brings residency, whether money can leave, time to sell, cost to buy, property rights. Open a row for the parts, which matter more than the total.</li>
       <li id="note-tax"></li>
-      <li>Yields are Numbeo's, user-contributed and the weakest figures here. Global Property Guide is better sourced but serves one page and then blocks, so it cannot be used. General information, not advice.</li>
+      <li><strong>Yields</strong> are Numbeo's, user-contributed and the weakest figures here. Global Property Guide is better sourced but blocks after one page. General information, not advice.</li>
     </ul>
     <h3>Sources</h3>
     <table class="src"><tbody id="sources"></tbody></table>
@@ -115,9 +115,6 @@
 
 </main>
 
-<footer class="wrap">
-  <a href="https://charlietrenorden.com/">charlietrenorden.com</a>
-</footer>
 
 <script src="app.js"></script>
 </body>

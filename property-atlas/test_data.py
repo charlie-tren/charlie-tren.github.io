@@ -85,9 +85,27 @@ for c in countries:
           f"{c.get('country')}: ease is {c.get('ease')!r}, not a 0-100 score")
 
 # --- every source the page cites has somewhere to point --------------------------
+# Four rows carry "Various" rather than one page, and the renderer used to linkify
+# that into href="https://Various" - five dead links on a page whose whole claim is
+# that the numbers were checked. It now only linkifies something hostname-shaped, so
+# what has to hold is that a row is EITHER followable OR honestly unlinked, never a
+# link that goes nowhere. A fifth row was worse: two hosts in one field, semicolon
+# separated, which could never have resolved.
+import re
+
+HOSTLIKE = re.compile(r"^(https?://)?[a-z0-9-]+(\.[a-z0-9-]+)+([/?#]|$)", re.I)
+UNLINKED_OK = {"Various"}
+
 for s in data["sources"]:
     for f in ("measure", "name", "url"):
         check(s.get(f), f"a source row is missing {f}: {s}")
+    u = s.get("url", "")
+    check(HOSTLIKE.match(u) or u in UNLINKED_OK,
+          f"{s['measure']}: url is {u!r} - not a hostname the page can link to, and "
+          f"not the plain 'Various' the renderer knows to leave as text")
+    check(";" not in u and " " not in u.strip(),
+          f"{s['measure']}: url {u!r} has more than one destination in it, so it "
+          f"cannot resolve to anything")
 
 if fails:
     print(f"FAILED ({len(fails)})")
