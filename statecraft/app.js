@@ -199,8 +199,9 @@ function paintDomains() {
 
   host.innerHTML = data.domains.map((domain, i) => {
     const isTax = domain.id === TAX_DOMAIN;
-    // Only the first section spells the padlock out. Thirteen copies of the
-    // word would be noise; none at all and nobody finds the feature.
+    // The first section carries a one-line note pointing at its padlock, and no
+    // other one does. A padlock on its own is a control nobody has a reason to
+    // press, and the same sentence thirteen times is furniture.
     const first = i === 0;
     const rungs = isTax ? [] : ladder(data, domain.id);
     const rangeAttrs = isTax
@@ -245,8 +246,12 @@ function paintDomains() {
         <p class="d-ends"><span>${esc(ends[0])}</span><span>${esc(ends[1])}</span></p>
       </div>
       <p class="d-val" id="val_${esc(domain.id)}"></p>
-      <p class="d-detail" id="det_${esc(domain.id)}"></p>
-      <p class="d-where" id="who_${esc(domain.id)}"></p>
+      ${first ? `<p class="lk-tip">Lock a policy and the cuts fall somewhere else.<span class="lk-arrow" aria-hidden="true">&#8599;</span></p>` : ''}
+      <div class="d-rows">
+        <div><span class="d-cap">Costs</span><span class="d-fact" id="cost_${esc(domain.id)}"></span></div>
+        <div><span class="d-cap">What it is</span><span class="d-fact d-detail" id="det_${esc(domain.id)}"></span></div>
+        <div><span class="d-cap">Who runs it</span><span class="d-fact d-where" id="who_${esc(domain.id)}"></span></div>
+      </div>
       <p class="d-cut" id="cut_${esc(domain.id)}" hidden></p>
     </section>`;
   }).join('');
@@ -612,17 +617,15 @@ function render(change) {
 
       document.getElementById(`val_${id}`).innerHTML = `
         <span class="d-big">${esc(one(rate))}%</span>
-        <span class="d-opt">${esc(stop ? stop.label : '')}</span>
-        <span class="d-cost">political capital ${esc(Math.round(reformCost(stop ? stop.political : 0)))}, public patience ${esc(Math.round(reformCost(stop ? stop.social : 0)))}</span>
-        `;
-      // The tax panel used to carry a marginal-revenue line here ("Raises 24.4%
-      // of GDP. The next point of tax adds 1.0..."). Cut 06/09/2026: it explains
-      // the concave realisation curve, which is implementation, and the budget
-      // meter beside it already says what the rate raises.
-      document.getElementById(`det_${id}`).textContent = '';
-      document.getElementById(`who_${id}`).textContent = stop
-        ? `${stop.detail} ${whereLine(stop.holders)}`
-        : '';
+        <span class="d-opt">${esc(stop ? stop.label : '')}</span>`;
+      // TAX HAS NO MONEY COST. The rate IS the budget, so a "% of GDP" here
+      // would print the same number twice, once as the headline and once as
+      // what it costs.
+      document.getElementById(`cost_${id}`).textContent =
+        `${Math.round(reformCost(stop ? stop.political : 0))} political capital`
+        + ` · ${Math.round(reformCost(stop ? stop.social : 0))} public patience`;
+      document.getElementById(`det_${id}`).textContent = stop ? stop.detail : '';
+      document.getElementById(`who_${id}`).textContent = stop ? whereLine(stop.holders) : '';
       continue;
     }
 
@@ -644,10 +647,12 @@ function render(change) {
     const rung = Math.round(index);
     input.setAttribute('aria-valuetext', `${option ? option.label : ''}, ${one(here ? here.financial : 0)} per cent of GDP, step ${rung + 1} of ${rungs.length}`);
 
-    document.getElementById(`val_${id}`).innerHTML = `
-      <span class="d-opt">${esc(option ? option.label : '')}</span>
-      <span class="d-cost">${esc(one(here ? here.financial : 0))}% of GDP, political capital ${esc(Math.round(reformCost(here ? here.political : 0)))}, public patience ${esc(Math.round(reformCost(here ? here.social : 0)))}</span>
-      `;
+    document.getElementById(`val_${id}`).innerHTML =
+      `<span class="d-opt">${esc(option ? option.label : '')}</span>`;
+    document.getElementById(`cost_${id}`).textContent =
+      `${one(here ? here.financial : 0)}% of GDP`
+      + ` · ${Math.round(reformCost(here ? here.political : 0))} political capital`
+      + ` · ${Math.round(reformCost(here ? here.social : 0))} public patience`;
     document.getElementById(`det_${id}`).textContent = option ? `${option.detail}${between}` : '';
     document.getElementById(`who_${id}`).textContent = option ? whereLine(option.holders) : '';
 

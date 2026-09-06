@@ -798,18 +798,83 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   white-space: nowrap;
 }
 
-.d-detail {
-  margin: 0.1rem 0 0;
-  color: var(--soft);
-  font-size: 0.9rem;
-  line-height: 1.5;
+/* THE LABELLED RAIL. Chosen 06/09/2026 from ten rendered layouts.
+ *
+ * The three facts under a slider used to be three loose lines of prose in three
+ * different greys, which read as one paragraph that trailed off. They are rows
+ * now, each with a caption in its own column, so the eye can go to the one it
+ * wants. Hairlines rather than boxes on purpose: thirteen of these stack down
+ * the page, and at that repetition a border per fact turns the furniture into
+ * the content. */
+.d-rows {
+  margin: 0.55rem 0 0;
 }
 
-.d-where {
-  margin: 0.05rem 0 0;
+.d-rows > div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.9rem;
+  align-items: start;
+  padding: 0.45rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+.d-rows > div:last-child { border-bottom: 1px solid var(--rule); }
+
+/* A row with nothing in it draws two hairlines and a gap, which reads as a
+   missing value rather than as an absent one. */
+.d-rows > div:has(.d-fact:empty) { display: none; }
+
+.d-cap {
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
   color: var(--faint);
-  font-size: 0.8rem;
-  line-height: 1.45;
+  padding-top: 0.15rem;
+  white-space: nowrap;
+}
+
+.d-fact {
+  min-width: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.d-fact.d-detail { color: var(--soft); }
+
+.d-fact.d-where {
+  color: var(--faint);
+  font-size: 0.82rem;
+}
+
+/* Costs are the row people compare between domains, so they get tabular figures
+   and stay on one line where they fit. */
+#domains .d-rows .d-fact[id^="cost_"] {
+  font-variant-numeric: tabular-nums;
+  color: var(--soft);
+}
+
+/* The padlock is the one control on the page with no label, and it appears
+   thirteen times. The note runs once, under the first section, and points back
+   up at the button rather than sitting beside it, so it does not widen the
+   heading row on a phone. */
+.lk-tip {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  margin: 0.3rem 0 0;
+  color: var(--faint);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.lk-arrow {
+  color: var(--dom);
+  font-size: 0.95rem;
+  line-height: 1;
 }
 
 .d-cut {
@@ -1329,6 +1394,14 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 @media (max-width: 34rem) {
   body { font-size: 1rem; }
   .wrap { padding: 0 1rem; }
+
+  /* The caption column keeps its two-column shape on a phone rather than
+     stacking, because the captions are what make the rows scannable and a
+     stacked label doubles the height of every one of thirteen sections. It just
+     gives up some width: 5.2rem still holds "WHO RUNS IT" on one line, measured
+     at 390, and hands the rest back to the fact. */
+  .d-rows > div { grid-template-columns: 5.2rem 1fr; gap: 0.7rem; }
+  .d-cap { font-size: 0.62rem; letter-spacing: 0.07em; }
 
   /* Once the header wraps, the back-link needs telling again. */
   .home { align-self: flex-end; }
