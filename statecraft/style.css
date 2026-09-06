@@ -185,12 +185,16 @@ header.wrap { padding-top: 1rem; }
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 0.7rem;
+  /* The toggle and the back-link are two separate controls and read as one
+     cluster at 0.7rem. The wordmark absorbs the slack through margin-left:auto
+     on the toggle, so this gap only ever sits between those two. */
+  gap: 1.5rem;
   margin: 0.2rem 0 0.5rem;
 }
 
 .toggle {
   flex: 0 0 auto;
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -216,7 +220,6 @@ header.wrap { padding-top: 1rem; }
    element is only right of what shares its LINE, so the moment this header
    wraps on a phone it would snap back to the left. */
 .home {
-  margin-left: auto;
   color: var(--soft);
   font-size: 0.9rem;
   text-decoration: none;
@@ -243,7 +246,7 @@ h1 {
   flex: 1 1 auto;
   min-width: 0;
   margin: 0;
-  font-size: clamp(1.5rem, 4.6vw, 2.05rem);
+  font-size: clamp(1.7rem, 5.4vw, 2.45rem);
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
@@ -1288,9 +1291,22 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 }
 
 #method h2 {
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.9rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--rule);
   font-size: 1.6rem;
 }
+
+/* A measure, so the two paragraphs do not run the full 48rem column. Prose at
+   that width is hard to track back from the end of a line to the start of the
+   next. */
+#method > p {
+  max-width: 58ch;
+  color: var(--soft);
+  line-height: 1.6;
+}
+
+#method > p:last-of-type { margin-bottom: 1.6rem; }
 
 #method h3 {
   margin: 1.6rem 0 0.3rem;
@@ -1304,21 +1320,7 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   line-height: 1.6;
 }
 
-.mdet {
-  margin: 1rem 0 0;
-  padding: 0.6rem 0.9rem;
-  border: 1px solid var(--rule);
-  border-radius: 0.5rem;
-  background: var(--panel);
 }
-
-.mdet > summary {
-  color: var(--accent);
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.mdet[open] > summary { margin-bottom: 0.4rem; }
 
 #method .mnote {
   margin: 0 0 0.6rem;
@@ -1554,28 +1556,59 @@ h1 { font-weight: 700; letter-spacing: -0.028em; }
   white-space: nowrap;
 }
 
-/* The method section is four separate things and read as one wall. Each
-   disclosure is now a block with its own edge, and the summary is the heading
-   rather than a line of body text with a triangle on it. */
+/* THE DISCLOSURES ARE ROWS, in the same language as the rail under every
+   slider. They were panels with their own border, a 4px left edge and a filled
+   background, which made two pieces of furniture the loudest thing in a section
+   that is mostly prose, and the left edge read as a domain colour from the
+   sliders above. A hairline and a chevron do the same job.
+
+   THERE WAS A SECOND `.mdet` BLOCK EARLIER IN THIS FILE and this one silently
+   outranked it on source order, so a change made up there did nothing. Deleted;
+   this is the only one. */
 .method > p { max-width: 42em; }
 
 .mdet {
-  margin: 0.7rem 0 0;
-  border: 1px solid var(--rule);
-  border-left: 4px solid var(--rule);
-  background: var(--panel);
+  margin: 0;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--rule);
 }
 
+.mdet:last-of-type { border-bottom: 1px solid var(--rule); }
+
 .mdet > summary {
-  padding: 0.7rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--ink);
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
+  list-style: none;
 }
 
-.mdet[open] > summary { border-bottom: 1px solid var(--rule); }
-.mdet > *:not(summary) { padding: 0 0.9rem 0.9rem; }
-.mdet .scroller { padding-top: 0.7rem; }
+.mdet > summary::-webkit-details-marker { display: none; }
+
+/* A drawn chevron rather than the browser's triangle, which is a different
+   shape and weight in every engine. */
+.mdet > summary::before {
+  content: "";
+  flex: none;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 1.6px solid var(--faint);
+  border-bottom: 1.6px solid var(--faint);
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.mdet[open] > summary::before { transform: rotate(45deg); }
+.mdet > summary:hover::before { border-color: var(--ink); }
+.mdet[open] > summary { margin-bottom: 0.7rem; }
+.mdet > *:not(summary) { padding: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mdet > summary::before { transition: none; }
+}
 
 /* The reveal sits in the content column, and the button is sized to its label
    rather than to the window. Full width across the page is what made it read as
@@ -1632,11 +1665,11 @@ main.wrap > .finish { grid-column: 1; }
 }
 
 .rules h2 {
-  margin: 0 0 0.5rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.11em;
+  margin: 0 0 0.7rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--soft);
 }
 
 .rules ul {
@@ -1666,4 +1699,33 @@ main.wrap > .finish { grid-column: 1; }
   height: 0.32rem;
   border-radius: 50%;
   background: var(--accent);
+}
+
+/* The domain mark, beside its heading -------------------------------------
+ *
+ * Takes the section's own hue through currentColor, so there is no second
+ * palette to keep in step with the thirteen. Sized off the heading rather than
+ * fixed, so it tracks the clamp instead of needing its own breakpoints. */
+.d-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.d-ico {
+  flex: none;
+  width: 1.02em;
+  height: 1.02em;
+  /* The strokes are drawn on a 24 grid and land near 18px here, where a 1.9
+     stroke reads. Anything finer disappears at this size. */
+  opacity: 0.9;
+}
+
+/* The note sits immediately left of the padlock, so the arrow points straight
+   at it along the same line. A north-east arrow was tried while the note lived
+   under the value line and was the tell that the note was in the wrong place. */
+.lk-tip .lk-arrow {
+  margin-left: 0.4rem;
+  color: var(--dom);
+  font-size: 0.95rem;
 }
