@@ -12,6 +12,11 @@
 <meta property="og:description" content="Yields, costs, non-resident tax, ownership rules and residency pathways. Filter and sort by any of them.">
 <meta property="og:url" content="https://charlietrenorden.com/property-atlas/">
 <meta name="twitter:card" content="summary">
+<script>/* Before paint, or a dark reader gets a salmon flash on every load. Defaults to
+   LIGHT and only follows a saved choice: the paper is the design, so dark is opted
+   into rather than inherited from an OS setting the reader may not have meant. */
+(function(){try{var t=localStorage.getItem("pa-theme");if(t==="dark"||t==="light")
+document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="pin.svg" type="image/svg+xml">
 <script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
@@ -20,8 +25,21 @@
 <header class="wrap">
   <nav class="topnav">
     <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
+    <button id="theme" type="button" class="theme" aria-pressed="false">
+      <span class="theme-dot" aria-hidden="true"></span><span id="theme-label">Dark</span>
+    </button>
   </nav>
-  <h1>Property Atlas</h1>
+  <h1 class="masthead">
+    <svg class="mark" viewBox="0 0 64 74" aria-hidden="true" focusable="false">
+      <clipPath id="scanclip"><rect x="0" y="-76" width="64" height="76"/></clipPath>
+      <path class="pin-base" d="M32 6 C42 6 50 14 50 24 C50 37 32 58 32 58 C32 58 14 37 14 24 C14 14 22 6 32 6 Z"/>
+      <circle class="pin-hole" cx="32" cy="23" r="7"/>
+      <g clip-path="url(#scanclip)">
+        <path class="pin-lit" d="M32 6 C42 6 50 14 50 24 C50 37 32 58 32 58 C32 58 14 37 14 24 C14 14 22 6 32 6 Z"/>
+        <circle class="pin-hole" cx="32" cy="23" r="7"/>
+      </g>
+      <line class="scanline" x1="2" y1="0" x2="62" y2="0"/>
+    </svg>Property Atlas</h1>
   <p class="standfirst">
     Thirty-four residential markets, compared from the outside. What a foreigner
     can buy, what it yields, what the local tax office takes, and how hard it is
@@ -74,7 +92,7 @@
   </section>
 
   <section class="panel" id="map-panel">
-    <h2>Where They Are</h2>
+    <h2>The Map</h2>
     <p class="sub" id="map-sub"></p>
     <div class="axis-picks">
       <div class="control">

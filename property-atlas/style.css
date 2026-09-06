@@ -1,6 +1,8 @@
 :root {
-  /* Light only. The salmon paper IS the design; a night edition of it was
-     a second palette to keep in step for no reader who asked. */
+  /* Light by default. The salmon paper IS the design, so dark is opted into
+     rather than inherited: [data-theme="dark"] below, set by the switch in the
+     masthead and remembered in localStorage. There is deliberately no
+     prefers-color-scheme rule - an OS setting is not a request for this page. */
   color-scheme: light;
   /* Financial press. Salmon paper, navy ink, teal accent - the palette of a
      printed markets page, which is what thirty-four markets in a sortable
@@ -32,7 +34,7 @@
      colours. app.js reads these six at render time. */
   --ramp1: #d5e6e5; --ramp2: #a8cfd2; --ramp3: #74b3b8;
   --ramp4: #3f9aa2; --ramp5: #17808a; --ramp6: #0a5b66;
-  --max: 960px;
+  --max: 1340px;
   /* System serif, no webfont: nothing to request and nothing to swap in late.
      A markets page that reflows its headline after 300ms is a markets page
      nobody trusts. */
@@ -224,10 +226,25 @@ footer a { color: var(--ink-faint); }@media (max-width: 620px) {
   background: linear-gradient(to right, transparent, var(--panel));
 }
 .table-wrap.more::after { opacity: 1; }
+/* FIXED layout with declared widths, because auto layout distributes the slack
+   proportionally: at 1300px that put ~95px of nothing between a market's name and
+   its score, and stranded "months to sell" against the right edge. Fixed also means
+   the columns do not shift as you sort, which auto layout does whenever the widest
+   value in a column changes. The nine add to 100. */
 table#grid {
   width: 100%; border-collapse: collapse; white-space: nowrap;
+  table-layout: fixed;
   font-size: .92rem; font-variant-numeric: tabular-nums;
 }
+table#grid th:nth-child(1) { width: 17%; }   /* Market */
+table#grid th:nth-child(2) { width: 12%; }   /* Ease */
+table#grid th:nth-child(3) { width: 9.5%; }  /* Entry */
+table#grid th:nth-child(4) { width: 8%; }    /* To buy */
+table#grid th:nth-child(5) { width: 10%; }   /* Gross yield */
+table#grid th:nth-child(6) { width: 10%; }   /* Net yield */
+table#grid th:nth-child(7) { width: 11.5%; } /* Tax on rent */
+table#grid th:nth-child(8) { width: 11%; }   /* Tax on gain */
+table#grid th:nth-child(9) { width: 11%; }   /* Months to sell */
 /* Room to breathe. At 7px of vertical padding thirty-four rows were a block of
    digits; the eye needs a row to be taller than the type in it. */
 table#grid th, table#grid td { padding: 10px 14px 10px 0; text-align: right; }
@@ -265,10 +282,10 @@ table#grid tr.picked td, table#grid tr.picked td:first-child { background: var(-
    it and in italics at full size they were the loudest thing in the table. */
 /* Quiet by size, not by opacity: at .75 the blend against the paper came out
    at 2.98:1, and a word nobody can read is not a subtle word. */
-.tax-unknown { color: var(--ink-faint); font-size: .84em; }
+.tax-unknown { color: var(--ink-faint); font-size: .82em; font-style: italic; opacity: .75; }
 
 /* ---- ease ---- */
-.ease { display: inline-flex; align-items: center; gap: 7px; justify-content: flex-end; }
+.ease { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-start; }
 .ease-bar {
   width: 42px; height: 6px; border-radius: 3px; background: var(--ease-track);
   overflow: hidden; flex: none;
@@ -379,11 +396,88 @@ tr.detail td { background: var(--hover); padding: 0 14px 20px; }
 table#grid th.soft { text-decoration: underline dotted var(--ink-faint); text-underline-offset: 3px; cursor: help; }
 
 
-/* The table breaks out of the prose column. 100% here is main.wrap's content box,
-   so the margin goes negative on a wide window and back to zero on a narrow one,
-   which is why there is no media query. No transform: it would create a containing
-   block and the sticky header row would stop sticking. */
-#table-panel {
-  width: min(1340px, calc(100vw - 48px));
-  margin-left: calc((100% - min(1340px, 100vw - 48px)) / 2);
+
+/* ---- dark ----------------------------------------------------------------
+   Terminal: black ground, amber signal. Not an inversion of the salmon - the
+   register changes on purpose, from a printed markets page to the machine you
+   read numbers off. Every token the light theme defines is redefined here, so
+   nothing falls through to a salmon value on a black ground.
+   NOTE: app.js reads --ramp1..6 at draw time, so the switch has to re-render the
+   map, not just swap the CSS. It does. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #e8e8e8;
+  --ink-soft: #a0a0a0;
+  --ink-faint: #8a8a8a;
+  --rule: #242424;
+  --bg: #000000;
+  --panel: #0b0b0b;
+  --accent: #ffa028;
+  --over: #ffa028;
+  --under: #ff5f45;
+  --bench: #8a8a8a;
+  --hover: #191919;
+  --map-land: #1a1a1a;
+  --map-line: #2e2e2e;
+  --map-sea: #0a0a0a;
+  --dot: #ffa028;
+  --ease-fill: #ffa028;
+  --ease-track: #242424;
+  --ramp1: #2b2214; --ramp2: #4a3818; --ramp3: #6d4f1a;
+  --ramp4: #946817; --ramp5: #c3840f; --ramp6: #ffa028;
+}
+
+/* ---- the switch ----
+   A word and a dot, not an icon. An icon here would be a sun or a moon, which
+   are the two most over-used glyphs on the web and say nothing this word does
+   not. It names what you GET, not what you are in. */
+.topnav { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.theme {
+  appearance: none; background: transparent; cursor: pointer;
+  border: 1px solid var(--rule); border-radius: 999px; padding: 5px 12px 5px 10px;
+  font: 600 11.5px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint);
+  display: inline-flex; align-items: center; gap: 7px;
+  transition: color .18s, border-color .18s;
+}
+.theme:hover { color: var(--ink); border-color: var(--accent); }
+.theme-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+
+/* ---- the mark ----
+   Option 8, the scan: a line sweeps down and the pin turns accent under it. It
+   runs once on load and again on hover. It does NOT loop - a mark that never
+   stops moving is a loading spinner, and this page is not loading. */
+.masthead { display: flex; align-items: center; gap: 14px; }
+.mark { width: .78em; height: .9em; flex: none; overflow: visible; }
+.pin-base { fill: var(--ink); }
+.pin-lit  { fill: var(--accent); }
+.pin-hole { fill: var(--bg); }
+.scanline { stroke: var(--accent); stroke-width: 2.4; opacity: 0; }
+.mark #scanclip rect, .mark .scanline { transform: translateY(0); }
+@keyframes pa-scan {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(76px); }
+}
+@keyframes pa-scanline {
+  0%, 100% { opacity: 0; }
+  8%, 88%  { opacity: .95; }
+}
+.masthead .mark clipPath rect { animation: pa-scan 1.15s cubic-bezier(.4,0,.2,1) .35s 1 both; }
+.masthead .mark .scanline {
+  animation: pa-scan 1.15s cubic-bezier(.4,0,.2,1) .35s 1 both,
+             pa-scanline 1.15s linear .35s 1 both;
+}
+.masthead:hover .mark clipPath rect { animation: pa-scan 1.15s cubic-bezier(.4,0,.2,1) 1 both; }
+.masthead:hover .mark .scanline {
+  animation: pa-scan 1.15s cubic-bezier(.4,0,.2,1) 1 both,
+             pa-scanline 1.15s linear 1 both;
+}
+/* Someone who has asked their machine to stop moving things means it. */
+@media (prefers-reduced-motion: reduce) {
+  .masthead .mark clipPath rect, .masthead .mark .scanline,
+  .masthead:hover .mark clipPath rect, .masthead:hover .mark .scanline {
+    animation: none;
+  }
+  .mark clipPath rect { transform: translateY(76px); }
+  .scanline { opacity: 0; }
 }
