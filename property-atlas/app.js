@@ -33,7 +33,7 @@ let DATA = null, MAP = null, PICKED = null, SORT = { key: "ease", dir: -1 };
    undifferentiated run of numbers. */
 const COLS = [
   { key: "country", label: "Market", show: c => c.country, align: "left" },
-  { key: "ease", label: "Ease", num: true, show: c => easeCell(c) },
+  { key: "ease", label: "Ease", num: true, align: "left", show: c => easeCell(c) },
   { key: "price_aud", label: "Entry", num: true, group: true, show: c => fmtK(c.price_aud), unit: "A$" },
   { key: "purchase_costs", label: "To buy", num: true, show: c => pc(c.purchase_costs), unit: "%" },
   { key: "gross_yield", label: "Gross yield", num: true, group: true, soft: true, show: c => pc(c.gross_yield), unit: "%" },
@@ -306,9 +306,15 @@ function bindMarket(node, c, col, box, fig) {
   const v = val(c, col.key);
   const shownVal = v == null || v === "" ? "no figure" :
     (col.unit === "A$" ? fmtK(v) : (Math.abs(v) >= 100 ? Math.round(v) : (+v).toFixed(1)) + (col.unit === "%" ? "%" : ""));
+  // Never the same figure twice. The second line is a fixed companion - ease, unless
+  // ease is already what the map is shaded by, in which case net yield, because a
+  // readout that repeats itself is worse than a readout with one line.
+  const second = col.key === "ease"
+    ? { label: "Net yield", text: c.net_yield == null ? "no figure" : (+c.net_yield).toFixed(1) + "%" }
+    : { label: "Ease", text: c.ease == null ? "no figure" : c.ease + "/100" };
   node.addEventListener("mousemove", ev => showReadout(box, fig, ev,
     `<strong>${c.country}</strong><span class="num">${col.label}: ${shownVal}</span><br>
-     <span class="num">Ease ${c.ease}</span>`));
+     <span class="num">${second.label}: ${second.text}</span>`));
   node.addEventListener("mouseleave", () => { box.hidden = true; });
   node.addEventListener("click", () => { PICKED = c.country === PICKED ? null : c.country; render(); });
 }
@@ -517,6 +523,22 @@ Promise.all([
 
     ["f-ease", "f-yield", "f-price", "f-own", "f-visa", "f-repat"]
       .forEach(id => $(id).addEventListener("input", render));
+
+    const root = document.documentElement, btn = $("theme");
+    const paint = () => {
+      const dark = root.getAttribute("data-theme") === "dark";
+      $("theme-label").textContent = dark ? "Light" : "Dark";
+      btn.setAttribute("aria-pressed", dark ? "true" : "false");
+      btn.setAttribute("aria-label", dark ? "Switch to the light theme" : "Switch to the dark theme");
+    };
+    btn.addEventListener("click", () => {
+      const dark = root.getAttribute("data-theme") === "dark";
+      root.setAttribute("data-theme", dark ? "light" : "dark");
+      try { localStorage.setItem("pa-theme", dark ? "light" : "dark"); } catch (e) {}
+      paint();
+      render();
+    });
+    paint();
 
     const want = new URL(location).searchParams.get("c");
     if (want && d.countries.some(c => c.country === want)) PICKED = want;
