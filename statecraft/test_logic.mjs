@@ -1392,13 +1392,17 @@ test('the tax spoke and the tax axis row both print the slider rate', () => {
     startCode: 'SE', selection: state.selection, pos: state.pos, rate: RATE,
   };
 
-  // The chart, read back off the spoke's own bounds into the axis unit.
+  // THE SPOKE IS READ BACK THROUGH THE SLIDER'S ENDS, not the axis's.
+  //
+  // It used to be the axis bounds, because the ring plotted the measured value
+  // normalised to them. From 06/09/2026 the ring plots where each slider SITS,
+  // so the tax spoke runs TAX.MIN to TAX.MAX and the axis's own (8.5, 58) is no
+  // longer the scale it is drawn on. The thing being checked is unchanged: the
+  // shape and the reveal must print one rate, not two.
   const base = chartBase(data);
   const i = base.spokes.findIndex((s) => s.id === 'tax');
-  const spoke = base.spokes[i];
-  assert.equal(spoke.axisId, 'tax_take');
   const fp = fingerprint(data, base, view);
-  const spokeValue = spoke.lo + fp.you[i] * (spoke.hi - spoke.lo);
+  const spokeValue = TAX.MIN + fp.you[i] * (TAX.MAX - TAX.MIN);
   assert.ok(Math.abs(spokeValue - RATE) < 1e-9, `the spoke plots ${spokeValue}, not ${RATE}`);
 
   // The reveal, read out of the rendered panel rather than recomputed, because
@@ -1422,7 +1426,7 @@ test('the tax spoke and the tax axis row both print the slider rate', () => {
   // option, which is the whole reason the slider is continuous.
   for (const rate of [TAX.MIN, 20, 31.5, 43.7, TAX.MAX]) {
     const shape = fingerprint(data, base, { ...view, rate });
-    const at = spoke.lo + shape.you[i] * (spoke.hi - spoke.lo);
+    const at = TAX.MIN + shape.you[i] * (TAX.MAX - TAX.MIN);
     const panel = renderReveal(
       data, rank(data, state.selection, rate), state.selection, state.pos, rate,
     );
