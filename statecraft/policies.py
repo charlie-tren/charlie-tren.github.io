@@ -62,6 +62,18 @@ holds this open, and it caps the count at six rather than zero because a genuine
 outlier is allowed. Two remain, both on `en_car_free`, and the reason is in the
 comment beside it.
 
+A SECOND PASS ON 2026-09-06 FOUND THREE PLACES THE 29/08 READING HAD NOT
+REACHED, and changed nine numbers. Tax was still a ladder, correlating at
++0.96 with its do-nothing option priced cheapest on two budgets of three and
+five of its six options strictly dominated; justice correlated at +0.74 because
+both of its hard-to-pass options had that controversy charged again as a cost of
+living with them; and two of the five options no country holds were priced below
+policies that thirteen and two countries respectively have finished, which is
+backwards. Domain correlations now run -0.98 to +0.61. The three that sit near
+-0.95, housing, work and family, are the model working rather than the fault:
+in those the more the state does, the harder it is to pass and the softer it is
+to live under, all the way up the domain.
+
 `axis` is the value this option implies on its domain's axis, in that axis's own
 unit. IT IS A FALLBACK: build_data.py overwrites the domain's own axis with the
 median of the countries the matrix says hold the option, and the hand value
@@ -120,8 +132,16 @@ DOMAINS = [
             # disagree, are non-tax revenue and are recorded as such. AE carries
             # no measured tax_take cell, so this hand value is what the page
             # plots.
+            # Social raised from 20 to 50 on 2026-09-06. This is the tax domain's
+            # do-nothing option and it was priced as one of the cheapest things
+            # here to live under as well as the cheapest to fund, which is the
+            # artefact the 29/08 reading was meant to clear out and never reached
+            # in this domain. A state that raises 16% of GDP leaves health, the
+            # university bill and old age with the household, and the consumption
+            # taxes that replace the income tax fall hardest at the bottom. What
+            # it saves on the ledger it charges to the citizen.
             {"id": "tax_minimal", "label": "Minimal state",
-             "detail": "No income tax. Revenue from resources and consumption.", "rate": 16.0, "political": 25, "social": 20,
+             "detail": "No income tax. Revenue from resources and consumption.", "rate": 16.0, "political": 25, "social": 50,
              "axis": {"tax_take": 16.0, "redistribution": 0.01}},
             # EE verified 2026-08-29: still a genuine flat rate, 22% for 2026. The
             # legislated rise to 24% was reversed in December 2025, and the
@@ -131,15 +151,33 @@ DOMAINS = [
             {"id": "tax_flat", "label": "Flat income tax",
              "detail": "One rate on all income, few deductions.", "rate": 33.0, "political": 30, "social": 15,
              "axis": {"tax_take": 33.0, "redistribution": 0.08}},
+            # Social raised from 8 to 22 on 2026-09-06. At 8 it was the cheapest
+            # option in the domain on BOTH reform budgets at once, which made it
+            # strictly dominate the continental and Nordic options and turned the
+            # domain into the ladder the 29/08 pass removed everywhere else. It
+            # is genuinely the cheapest to enact, because it is the consensus 19
+            # of the countries here already hold, but a middling take with broad
+            # exemptions buys thinner services than the continental payroll model
+            # does, so more is charged at the point of use and more of it is
+            # means tested. That is what it costs to live with, and it is a
+            # little above tax_continental rather than a quarter of it.
             {"id": "tax_anglo", "label": "Moderate progressive",
              "detail": "Progressive rates, a middling take, broad exemptions.",
-             "rate": 34.0, "political": 10, "social": 8,
+             "rate": 34.0, "political": 10, "social": 22,
              "axis": {"tax_take": 34.0, "redistribution": 0.11}},
             {"id": "tax_continental", "label": "High, funded by payroll",
              "detail": "Heavy social contributions on wages alongside income tax.", "rate": 43.0, "political": 25, "social": 20,
              "axis": {"tax_take": 43.0, "redistribution": 0.18}},
+            # Social cut from 30 to 12 on 2026-09-06. The 40 political is right:
+            # twelve points of GDP more take than the Anglo option is the hardest
+            # thing in the domain to legislate. The 30 was the same number read a
+            # second time. A high broad-based take is what pays for the free
+            # university, the cheap childcare and the pension that this file
+            # already prices as the lowest-friction options in their own domains,
+            # and the countries that run it report the highest social trust in
+            # the set. It costs money and political capital, not cohesion.
             {"id": "tax_nordic", "label": "Nordic take",
-             "detail": "High broad-based income tax and a high VAT.", "rate": 46.0, "political": 40, "social": 30,
+             "detail": "High broad-based income tax and a high VAT.", "rate": 46.0, "political": 40, "social": 12,
              "axis": {"tax_take": 46.0, "redistribution": 0.24}},
             # Untagged on purpose. Exit taxes on unrealised gains are real, in
             # Norway and the US among others, but no country runs one as a headline
@@ -148,8 +186,16 @@ DOMAINS = [
             # Task 2 for failing a test that required a tag; the TEST was the thing
             # that was wrong, since four more untagged options land in Tasks 3 and 4
             # and they are the aspirational half of the menu.
+            # Political raised from 60 to 78 on 2026-09-06. This is one of the five
+            # options no country holds, and at 60 it was priced level with
+            # decriminalising drugs and below open borders within a bloc, which
+            # thirteen countries here run. Taxing residents on the way out means
+            # breaking a right of exit most constitutions protect and most tax
+            # treaties assume, and nobody has managed it as a headline regime, so
+            # it belongs with the other four rather than among the things a
+            # government could pass in a term.
             {"id": "tax_departure", "label": "Nordic take plus a departure tax",
-             "detail": "A high broad-based take, and residents pay to leave, subsidising arrivals.", "rate": 47.0, "political": 60, "social": 55,
+             "detail": "A high broad-based take, and residents pay to leave, subsidising arrivals.", "rate": 47.0, "political": 78, "social": 55,
              "axis": {"tax_take": 47.0, "redistribution": 0.25}},
         ],
     },
@@ -559,8 +605,16 @@ DOMAINS = [
         "name": "Speech and Information",
         "axis": "expression",
         "options": [
+            # Political raised from 60 to 72 on 2026-09-06. Another of the five
+            # nobody holds, and 60 put it level with a departure tax and below
+            # building a nuclear fleet or a Singaporean housing system, both of
+            # which real countries have finished. No state has ever given up
+            # defamation and incitement law together; even the closest holder
+            # keeps a list of exceptions, which is what sp_first_amendment is.
+            # Abolishing that list is a constitutional amendment nobody has
+            # passed, so it prices above everything anyone has.
             {"id": "sp_absolute", "label": "Absolute freedom of speech",
-             "detail": "No legal limit on what may be said, including hatred and defamation.", "financial": 0.0, "political": 60, "social": 65,
+             "detail": "No legal limit on what may be said, including hatred and defamation.", "financial": 0.0, "political": 72, "social": 65,
              "axis": {"expression": 0.97}},
             # Political cut from 25. A near-absolute protection is one constitutional
             # clause and, once written, needs no standing apparatus to enforce. What it
@@ -754,17 +808,32 @@ DOMAINS = [
             # system here to run: no settlement services, no citizenship pathway, no
             # language programmes, and employers carry the rest. The cost is the 60 social
             # of a permanent underclass.
+            # Political cut from 55 to 25 on 2026-09-06. The 55 was the social cost
+            # counted twice. A guest-worker regime is the easiest immigration
+            # system here to enact, because everybody it burdens is disenfranchised
+            # by the policy itself and everybody who benefits from it is an
+            # employer: the Gulf states, Singapore and post-war western Europe all
+            # legislated it without constitutional change or an organised
+            # opposition. Same reading as ju_tough and sp_order, which are cheap to
+            # impose and dear to live under.
             {"id": "im_guest", "label": "Very high intake, no path to citizenship",
-             "detail": "Most residents are foreign workers on visas that never lead anywhere.", "financial": 0.05, "political": 55, "social": 60,
+             "detail": "Most residents are foreign workers on visas that never lead anywhere.", "financial": 0.05, "political": 25, "social": 60,
              "axis": {"foreign_born": 85.0}},
             # Social cut from 45. Movement inside a union of peer states is the least
             # disruptive intake in the set where it exists: arrivals hold the same rights
             # as everyone else and many return. The cost is the 65 political of
             # surrendering the border.
+            # Political cut from 65 to 50 on 2026-09-06. Thirteen of the countries
+            # here run it, which is the third largest holding in the file, and at
+            # 65 it was dearer to enact than anything else any of them has done and
+            # dearer than absolute free speech, which nobody has. Joining a
+            # free-movement bloc is still a treaty and still hard, so it stays well
+            # above a points system at 30, but it is a thing states finish rather
+            # than a constitutional crisis.
             {"id": "im_open", "label": "Open borders within a bloc",
              "detail": "Anyone from the union may live and work without a visa.",
              # DK, FR and SE removed 2026-08-29: all three sit on a third-country cell.
-             "financial": 0.4, "political": 65, "social": 18,
+             "financial": 0.4, "political": 50, "social": 18,
              "axis": {"foreign_born": 20.0}},
         ],
     },
@@ -773,9 +842,16 @@ DOMAINS = [
         "name": "Justice and Policing",
         "axis": "incarceration",
         "options": [
+            # Social cut from 30 to 18 on 2026-09-06. Justice was the last domain
+            # still reading as one axis twice, and this was half of it. Short
+            # sentences are a hard sell, which is the 40 political, but the eight
+            # countries that run this have the lowest crime and the lowest prison
+            # populations in the set, so what it costs to live under is a fear of
+            # impunity rather than a measured harm. It should not be triple the
+            # cohesion cost of the moderate option next to it.
             {"id": "ju_rehab", "label": "Rehabilitation, short sentences",
              "detail": "Prison is a last resort and the maximum term is low. Few people are inside.",
-             "financial": 0.4, "political": 40, "social": 30,
+             "financial": 0.4, "political": 40, "social": 18,
              "axis": {"incarceration": 60.0}},
             {"id": "ju_standard", "label": "Mixed, moderate sentences",
              "detail": "Prison for serious crime, community sentences below it.",
@@ -798,9 +874,16 @@ DOMAINS = [
             # Financial cut from 0.5. Treating possession as health rather than crime
             # removes the prosecutions and the prison places; Portugal's dissuasion panels
             # cost less than the court time they replaced.
+            # Social cut from 45 to 25 on 2026-09-06, the other half of the justice
+            # correlation. The 60 political is the honest number and it stands:
+            # decriminalisation is one of the hardest things in this file to
+            # legislate and one country here has done it. The 45 beside it was that
+            # controversy counted a second time as a cost of living with the policy,
+            # which is not what Portugal reports. What is left is the visible street
+            # use that follows, which is a real amenity cost and not a large one.
             {"id": "ju_decriminalised", "label": "Rehabilitation, drugs decriminalised",
              "detail": "Short sentences and a small prison population, and possessing any drug "
-                       "is treated as a health matter rather than a crime.", "financial": 0.3, "political": 60, "social": 45,
+                       "is treated as a health matter rather than a crime.", "financial": 0.3, "political": 60, "social": 25,
              "axis": {"incarceration": 90.0}},
         ],
     },

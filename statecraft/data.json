@@ -197,7 +197,7 @@
           "detail": "No income tax. Revenue from resources and consumption.",
           "rate": 16.0,
           "political": 25,
-          "social": 20,
+          "social": 50,
           "axis": {
             "tax_take": 16.0,
             "redistribution": 0.0066
@@ -241,7 +241,7 @@
           "detail": "Progressive rates, a middling take, broad exemptions.",
           "rate": 34.0,
           "political": 10,
-          "social": 8,
+          "social": 22,
           "axis": {
             "tax_take": 34.0,
             "redistribution": 0.0729
@@ -314,7 +314,7 @@
           "detail": "High broad-based income tax and a high VAT.",
           "rate": 46.0,
           "political": 40,
-          "social": 30,
+          "social": 12,
           "axis": {
             "tax_take": 46.0,
             "redistribution": 0.1591
@@ -336,7 +336,7 @@
           "label": "Nordic take plus a departure tax",
           "detail": "A high broad-based take, and residents pay to leave, subsidising arrivals.",
           "rate": 47.0,
-          "political": 60,
+          "political": 78,
           "social": 55,
           "axis": {
             "tax_take": 47.0,
@@ -1061,7 +1061,7 @@
           "label": "Absolute freedom of speech",
           "detail": "No legal limit on what may be said, including hatred and defamation.",
           "financial": 0.0,
-          "political": 60,
+          "political": 72,
           "social": 65,
           "axis": {
             "expression": 0.97
@@ -1731,7 +1731,7 @@
           "label": "Very high intake, no path to citizenship",
           "detail": "Most residents are foreign workers on visas that never lead anywhere.",
           "financial": 0.05,
-          "political": 55,
+          "political": 25,
           "social": 60,
           "axis": {
             "foreign_born": 70.65
@@ -1752,7 +1752,7 @@
           "label": "Open borders within a bloc",
           "detail": "Anyone from the union may live and work without a visa.",
           "financial": 0.4,
-          "political": 65,
+          "political": 50,
           "social": 18,
           "axis": {
             "foreign_born": 18.5
@@ -1790,7 +1790,7 @@
           "detail": "Prison is a last resort and the maximum term is low. Few people are inside.",
           "financial": 0.4,
           "political": 40,
-          "social": 30,
+          "social": 18,
           "axis": {
             "incarceration": 63.5
           },
@@ -1902,7 +1902,7 @@
           "detail": "Short sentences and a small prison population, and possessing any drug is treated as a health matter rather than a crime.",
           "financial": 0.3,
           "political": 60,
-          "social": 45,
+          "social": 25,
           "axis": {
             "incarceration": 120.0
           },
