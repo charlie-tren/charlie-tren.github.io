@@ -226,7 +226,7 @@ function paintDomains() {
       <div class="d-head">
         <h2 id="h_${esc(domain.id)}">${domainIcon(domain.id)}${esc(domain.name)}</h2>
         <span class="chip" id="chip_${esc(domain.id)}" hidden>Changed</span>
-        ${first ? `<span class="lk-tip">Lock a policy and the cuts fall somewhere else<span class="lk-arrow" aria-hidden="true">&rarr;</span></span>` : ''}
+        ${first ? `<span class="lk-tip">Locked policies are never cut to balance the books<span class="lk-arrow" aria-hidden="true">&rarr;</span></span>` : ''}
         ${`<button class="lock" type="button" id="lock_${esc(domain.id)}"
                 data-lock="${esc(domain.id)}" aria-pressed="false">
           <svg class="lk" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
