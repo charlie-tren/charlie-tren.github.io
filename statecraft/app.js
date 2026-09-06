@@ -193,35 +193,6 @@ function paintKey(startCode, gaps, differs) {
     ${gapNote}`;
 }
 
-/** What this domain was when you arrived, and what moving it has cost.
- *
- * Unchanged it says so. Changed, it names the policy you left and the money the
- * move costs, signed, so a slider carries its own before and after rather than
- * only its current state. */
-function sinceStart(id, live) {
-  const from = baseline()[id];
-  const to = live.selection[id];
-  if (from === to) return '<span class="d-home">Where you started</span>';
-
-  const a = optionOf(id, from);
-  const b = optionOf(id, to);
-  if (!a || !b) return '';
-
-  if (id === TAX_DOMAIN) {
-    const was = rateForOption(data, from);
-    const now = Number(live.taxRate);
-    const d = now - was;
-    return `<span class="d-was">Was ${esc(one(was))}%, now ${esc(one(now))}%`
-      + `<b>${d >= 0 ? '+' : ''}${esc(one(d))} points</b></span>`;
-  }
-
-  const d = (b.financial || 0) - (a.financial || 0);
-  const money = Math.abs(d) < 0.05
-    ? 'about the same money'
-    : `${d > 0 ? '+' : ''}${one(d)}% of GDP`;
-  return `<span class="d-was">Was ${esc(a.label)}<b>${esc(money)}</b></span>`;
-}
-
 /** One slider per domain, painted once. Values are written by render(). */
 function paintDomains() {
   const host = document.getElementById('domains');
@@ -263,7 +234,7 @@ function paintDomains() {
           <svg class="lk" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
             <rect class="lk-body" x="3" y="7" width="10" height="7" rx="1.6"/>
             <path class="lk-shackle" fill="none" stroke-width="1.7" stroke-linecap="round"/>
-          </svg><span class="lk-hint">Lock</span>
+          </svg>
         </button>`}
       </div>
       <div class="d-slide">
@@ -335,9 +306,14 @@ function paintDomains() {
 
 /** Signed, so one column can hold both what an option raises and what it spends. */
 function budgetEffect(o) {
-  if (typeof o.rate === 'number') return `${o.rate}% take`;
-  const v = -(o.financial || 0);
-  return `${one(v)}`;
+  // ONE COLUMN, ONE TYPE. The tax rows used to print "16.0% take" while every
+  // other row printed a bare number, so a column headed "% of GDP" and set in
+  // tabular figures held five strings that left-aligned against forty-odd
+  // numbers, and the reader had to work out that a tax rate and a spend were
+  // being shown in the same place. Both are now signed: tax adds to the budget,
+  // everything else draws it down.
+  const v = typeof o.rate === 'number' ? o.rate : -(o.financial || 0);
+  return `${v > 0 ? '+' : ''}${one(v)}`;
 }
 
 function costTable() {
@@ -361,7 +337,7 @@ function costTable() {
         <tr>
           <th scope="col">Domain</th>
           <th scope="col">Option</th>
-          <th scope="col" class="num">Budget, % of GDP</th>
+          <th scope="col" class="num">Budget effect, % of GDP</th>
           <th scope="col" class="num">Political capital</th>
           <th scope="col" class="num">Public patience</th>
         </tr>
@@ -413,11 +389,11 @@ function paintMethod() {
   document.getElementById('method').innerHTML = `
   <h2>Method</h2>
 
-  <p>Your match is a count. One point for every domain where you picked the policy that country actually runs. Countries level on that count are separated by how far your settings sit from theirs on the measured axes.</p>
+  <p>Your match is a count. One point per domain where your choice is the policy that country actually runs. Ties break on the measured axes.</p>
 
-  <p>Budget is in per cent of GDP and the tax rate sets how much of it you have. Political capital and public patience are pools of 100 points, and both are charged only on the domains you move away from where you started.</p>
+  <p>Budget is a share of GDP and your tax rate sets it. Political capital and public patience are pools of 100, charged only where you move away from the country you started on.</p>
 
-  <p>${derived} of the ${options} option figures are the median of the countries running that policy. The ${slider} tax figures are just the rate you set. I set the last ${hand.length} by hand, along with every cost in the table below.</p>
+  <p>${derived} of the ${options} option figures are the median of the countries running that policy. ${slider} are the tax rate itself. I estimated the last ${hand.length}, and every cost in the table below.</p>
 
   <details class="mdet">
     <summary>Every option and what it costs</summary>
@@ -632,18 +608,18 @@ function render(change) {
         if (cutIds.has(id)) tweenRange(input, rate); else input.value = target;
       }
       const stop = optionOf(id, live.selection[id]);
-      const nextPoint = rate >= TAX.MAX
-        ? realisedRevenue(TAX.MAX) - realisedRevenue(TAX.MAX - 1)
-        : realisedRevenue(Math.min(TAX.MAX, rate + 1)) - realisedRevenue(rate);
       input.setAttribute('aria-valuetext', `${one(rate)} per cent of GDP, ${stop ? stop.label : ''}`);
 
       document.getElementById(`val_${id}`).innerHTML = `
         <span class="d-big">${esc(one(rate))}%</span>
         <span class="d-opt">${esc(stop ? stop.label : '')}</span>
         <span class="d-cost">political capital ${esc(Math.round(reformCost(stop ? stop.political : 0)))}, public patience ${esc(Math.round(reformCost(stop ? stop.social : 0)))}</span>
-        ${sinceStart(id, live)}`;
-      document.getElementById(`det_${id}`).textContent =
-        `Raises ${one(b.financial.realisedTax)}% of GDP. The next point of tax adds ${one(nextPoint)}, and at ${TAX.MAX} a point would add only ${one(realisedRevenue(TAX.MAX) - realisedRevenue(TAX.MAX - 1))}.`;
+        `;
+      // The tax panel used to carry a marginal-revenue line here ("Raises 24.4%
+      // of GDP. The next point of tax adds 1.0..."). Cut 06/09/2026: it explains
+      // the concave realisation curve, which is implementation, and the budget
+      // meter beside it already says what the rate raises.
+      document.getElementById(`det_${id}`).textContent = '';
       document.getElementById(`who_${id}`).textContent = stop
         ? `${stop.detail} ${whereLine(stop.holders)}`
         : '';
@@ -671,7 +647,7 @@ function render(change) {
     document.getElementById(`val_${id}`).innerHTML = `
       <span class="d-opt">${esc(option ? option.label : '')}</span>
       <span class="d-cost">${esc(one(here ? here.financial : 0))}% of GDP, political capital ${esc(Math.round(reformCost(here ? here.political : 0)))}, public patience ${esc(Math.round(reformCost(here ? here.social : 0)))}</span>
-      ${sinceStart(id, live)}`;
+      `;
     document.getElementById(`det_${id}`).textContent = option ? `${option.detail}${between}` : '';
     document.getElementById(`who_${id}`).textContent = option ? whereLine(option.holders) : '';
 
