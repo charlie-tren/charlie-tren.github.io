@@ -450,6 +450,25 @@ export function capacityOf(data, state) {
  * @param {object} data parsed data.json
  * @param {{start: string, taxRate: number, selection: object, locked?: string[]}} state
  */
+/** What a domain bills, with the option you started on priced at nothing.
+ *
+ * Interpolated between the two neighbouring options exactly as `financial` is,
+ * so the pools move as smoothly as the budget does. Tax has no ladder, so `v`
+ * is null there and the option's own cost is billed unless it is the one you
+ * started on.
+ */
+function chargeAt(v, chosen, homeId) {
+  const of = (option) => (!option || option.id === homeId ? 0 : reformCost(option.political));
+  const ofSocial = (option) => (!option || option.id === homeId ? 0 : reformCost(option.social));
+  if (!v) {
+    return { political: of(chosen), social: ofSocial(chosen) };
+  }
+  return {
+    political: lerp(of(v.lo), of(v.hi), v.t),
+    social: lerp(ofSocial(v.lo), ofSocial(v.hi), v.t),
+  };
+}
+
 export function budgets(data, state) {
   const country = countryOf(data, state.start);
   const base = country ? country.choices : {};
@@ -472,18 +491,33 @@ export function budgets(data, state) {
     const financial = v ? v.financial : (typeof chosen.financial === 'number' ? chosen.financial : 0);
     spend += financial;
 
-    // WHAT COUNTS AS CHANGED IS THE IDENTITY, NOT THE POSITION, and that is
-    // deliberate. The cost model charges you the price of the option you moved
-    // TO rather than a difference, so leaving your own system is an inherently
-    // discrete decision and there is one step in the political and social
-    // meters wherever that rule is put. Putting it at the identity boundary
-    // means a domain drifting inside its own option is still free, which is
-    // what "a country spends nothing on its own status quo" says, and every
-    // other part of the drag is continuous because the interpolated cost is.
-    if (base[domain.id] !== undefined && base[domain.id] !== chosen.id) {
-      changed.push({ domain: domain.id, domainName: domain.name, from: base[domain.id], to: chosen.id });
-      political += reformCost(v ? v.political : chosen.political);
-      social += reformCost(v ? v.social : chosen.social);
+    // THE CHIP IS THE IDENTITY. THE CHARGE IS THE POSITION.
+    //
+    // These used to be the same test, and that is what made the two pools jump
+    // as a slider was dragged. The cost was interpolated between the two
+    // neighbouring options, and then the whole charge was switched on or off by
+    // whether the SNAPPED identity still matched the starting country. Walking
+    // Australia's healthcare slider in 0.1 steps, political capital went
+    // 16 -> 0 at position 0.5 and 0 -> 10 at 1.5: two cliffs per domain, at the
+    // edges of the option you began on.
+    //
+    // The charge is interpolated now, with the starting option priced at zero.
+    // Sitting exactly on where you began still costs nothing, which is the rule
+    // "a country spends nothing on its own status quo". Dragging a third of the
+    // way towards the next policy costs a third of it, which is what the MONEY
+    // has always done. The two meters and the budget now behave the same way,
+    // and there is no step anywhere.
+    //
+    // `changed`, and so the chip and the cascade, stay on the identity: those
+    // answer "which policy is this now", which is a discrete question.
+    const home = base[domain.id];
+    if (home !== undefined && home !== chosen.id) {
+      changed.push({ domain: domain.id, domainName: domain.name, from: home, to: chosen.id });
+    }
+    if (home !== undefined) {
+      const bill = chargeAt(v, chosen, home);
+      political += bill.political;
+      social += bill.social;
     }
   }
 
@@ -518,7 +552,7 @@ export function budgets(data, state) {
       used: Math.round(political),
       left: Math.round(REFORM_POOL - political),
       over: political > REFORM_POOL + 1e-9,
-      unit: 'points',
+      unit: '%',
       exact: { used: political, left: REFORM_POOL - political },
     },
     social: {
@@ -526,7 +560,7 @@ export function budgets(data, state) {
       used: Math.round(social),
       left: Math.round(REFORM_POOL - social),
       over: social > REFORM_POOL + 1e-9,
-      unit: 'points',
+      unit: '%',
       exact: { used: social, left: REFORM_POOL - social },
     },
     changed,

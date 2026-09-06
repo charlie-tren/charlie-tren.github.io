@@ -19,6 +19,7 @@ import { rank, matchable } from './match.js';
 import { renderReveal } from './reveal.js';
 import { encode, decode, countryForTimezone, detectTimezone } from './state.js';
 import { chartBase, drawChart } from './chart.js';
+import { domainIcon } from './icons.js';
 
 const THEME_KEY = 'sc-theme';
 // 0.1, not 0.5. A 43 point range in half-point steps is 86 stops and the thumb
@@ -223,9 +224,9 @@ function paintDomains() {
     return `
     <section class="domain${isTax ? ' tax' : ''}" id="dom_${esc(domain.id)}" data-domain="${esc(domain.id)}">
       <div class="d-head">
-        <h2 id="h_${esc(domain.id)}">${esc(domain.name)}</h2>
+        <h2 id="h_${esc(domain.id)}">${domainIcon(domain.id)}${esc(domain.name)}</h2>
         <span class="chip" id="chip_${esc(domain.id)}" hidden>Changed</span>
-        ${first ? `<span class="lk-tip">Lock a policy and the cuts fall somewhere else.</span>` : ''}
+        ${first ? `<span class="lk-tip">Lock a policy and the cuts fall somewhere else<span class="lk-arrow" aria-hidden="true">&rarr;</span></span>` : ''}
         ${`<button class="lock" type="button" id="lock_${esc(domain.id)}"
                 data-lock="${esc(domain.id)}" aria-pressed="false">
           <svg class="lk" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -337,8 +338,8 @@ function costTable() {
           <th scope="col">Domain</th>
           <th scope="col">Option</th>
           <th scope="col" class="num">Budget effect, % of GDP</th>
-          <th scope="col" class="num">Political capital</th>
-          <th scope="col" class="num">Public patience</th>
+          <th scope="col" class="num">Political capital, %</th>
+          <th scope="col" class="num">Public patience, %</th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
@@ -388,11 +389,9 @@ function paintMethod() {
   document.getElementById('method').innerHTML = `
   <h2>Method</h2>
 
-  <p>Your match is a count. One point per domain where your choice is the policy that country actually runs. Ties break on the measured axes.</p>
+  <p>The match is a count. One point for every domain where you picked what that country actually does, and ties go to whoever is closest on the measured axes.</p>
 
-  <p>Budget is a share of GDP and your tax rate sets it. Political capital and public patience are pools of 100, charged only where you move away from the country you started on.</p>
-
-  <p>${derived} of the ${options} option figures are the median of the countries running that policy. ${slider} are the tax rate itself. I estimated the last ${hand.length}, and every cost in the table below.</p>
+  <p>${derived} of the ${options} option figures are the median of the countries running that policy, and ${slider} are the tax rate. The other ${hand.length} are my estimates. So are the costs.</p>
 
   <details class="mdet">
     <summary>Every option and what it costs</summary>
@@ -556,8 +555,11 @@ function render(change) {
   const cutIds = new Set((change && change.cuts ? change.cuts : []).map((c) => c.domain));
 
   paintMeter('financial', b.financial, `${one(b.financial.used)} of ${one(b.financial.capacity)}`);
-  paintMeter('political', b.political, `${b.political.used} of ${b.political.capacity}`);
-  paintMeter('social', b.social, `${b.social.used} of ${b.social.capacity}`);
+  // BOTH POOLS ARE SHOWN AS PERCENTAGES. They are pools of exactly 100, so
+  // "12 of 100" was a percentage wearing the word "points", and the two meters
+  // beside the budget were quoting a unit the page never explained.
+  paintMeter('political', b.political, `${b.political.used}% used`);
+  paintMeter('social', b.social, `${b.social.used}% used`);
 
   const changed = new Set(b.changed.map((c) => c.domain));
 
@@ -607,8 +609,8 @@ function render(change) {
       // would print the same number twice, once as the headline and once as
       // what it costs.
       document.getElementById(`cost_${id}`).textContent =
-        `${Math.round(reformCost(stop ? stop.political : 0))} political capital`
-        + ` · ${Math.round(reformCost(stop ? stop.social : 0))} public patience`;
+        `${Math.round(reformCost(stop ? stop.political : 0))}% political capital`
+        + ` · ${Math.round(reformCost(stop ? stop.social : 0))}% public patience`;
       document.getElementById(`det_${id}`).textContent = stop ? stop.detail : '';
       document.getElementById(`who_${id}`).textContent = stop ? whereLine(stop.holders) : '';
       continue;
@@ -636,8 +638,8 @@ function render(change) {
       `<span class="d-opt">${esc(option ? option.label : '')}</span>`;
     document.getElementById(`cost_${id}`).textContent =
       `${one(here ? here.financial : 0)}% of GDP`
-      + ` · ${Math.round(reformCost(here ? here.political : 0))} political capital`
-      + ` · ${Math.round(reformCost(here ? here.social : 0))} public patience`;
+      + ` · ${Math.round(reformCost(here ? here.political : 0))}% political capital`
+      + ` · ${Math.round(reformCost(here ? here.social : 0))}% public patience`;
     document.getElementById(`det_${id}`).textContent = option ? `${option.detail}${between}` : '';
     document.getElementById(`who_${id}`).textContent = option ? whereLine(option.holders) : '';
 

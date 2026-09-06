@@ -1153,6 +1153,49 @@ test('every country can still afford to be itself at its own positions', () => {
 // fails this test rather than merely looking worse.
 const STEP_THRESHOLD = 0.07;
 
+test('the two pools move in small steps too, with no cliff at the home option', () => {
+  // THE CLIFF THIS CATCHES. The charge used to be interpolated between the two
+  // neighbouring options and then switched on or off by whether the snapped
+  // identity still matched the starting country, so every slider had two cliffs:
+  // walking Australia's healthcare in 0.1 steps, political capital went 16 to 0
+  // at position 0.5 and 0 to 10 at 1.5. Charging the interpolated position, with
+  // the starting option priced at zero, removes both.
+  const au = startingState(data, 'AU');
+  let worst = 0;
+  let worstAt = '';
+  for (const domain of data.domains) {
+    if (domain.id === 'tax') continue;
+    const rungs = ladder(data, domain.id);
+    let prev = null;
+    for (let x = 0; x <= rungs.length - 1 + 1e-9; x += 0.02) {
+      const held = valuesAt(data, domain.id, x);
+      const live = {
+        ...au,
+        pos: { ...positionsOf(data, au), [domain.id]: held.pos },
+        selection: { ...au.selection, [domain.id]: held.optionId },
+      };
+      const b = budgets(data, live);
+      const now = b.political.exact.used + b.social.exact.used;
+      if (prev !== null) {
+        const jump = Math.abs(now - prev);
+        if (jump > worst) { worst = jump; worstAt = `${domain.id} at ${x.toFixed(2)}`; }
+      }
+      prev = now;
+    }
+  }
+  // A 0.02 step is a fiftieth of one option's span, so anything above a point is
+  // a discontinuity rather than a slope.
+  assert.ok(worst < 1, `the pools jump ${worst.toFixed(2)} points in one 0.02 step (${worstAt})`);
+
+  // And sitting exactly where you started is still free, which is the rule the
+  // identity test used to enforce.
+  for (const country of MATCHABLE) {
+    const b = budgets(data, startingState(data, country.code));
+    assert.equal(b.political.used, 0, `${country.code} pays political capital to be itself`);
+    assert.equal(b.social.used, 0, `${country.code} pays public patience to be itself`);
+  }
+});
+
 test('the budget moves monotonically and in small steps across a whole slider', () => {
   const start = startingState(data, 'AU');
   let worst = { domain: null, step: 0 };
