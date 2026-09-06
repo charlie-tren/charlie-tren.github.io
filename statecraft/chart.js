@@ -42,8 +42,7 @@
 // A tier is taken whole or not at all, so the ring never ends up with nine names
 // and four gaps.
 
-import { startingRate } from './budget.js';
-import { axisValues } from './match.js';
+import { TAX, TAX_DOMAIN, startingRate, ladder, clampRate } from './budget.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -86,11 +85,53 @@ export function chartBase(data) {
 }
 
 /** A value on an axis as 0 to 1 of its own bounds, or null where it does not apply. */
-function norm(spoke, value) {
-  if (value === null || value === undefined || !Number.isFinite(value)) return null;
-  const span = spoke.hi - spoke.lo;
-  if (!span) return null;
-  return Math.max(0, Math.min(1, (value - spoke.lo) / span));
+/* WHERE EACH SLIDER SITS, 0 to 1. This is what the ring plots.
+ *
+ * It used to plot the MEASURED axis value normalised to that axis's bounds, and
+ * that is why the shape did not follow the sliders. Measured across the twelve
+ * non-tax domains on 06/09/2026, six spokes did not simply grow as their slider
+ * moved right:
+ *
+ *   energy       0.69 -> 0.45   spending more buys a CLEANER grid, so the
+ *                               spoke shrank as the slider went right
+ *   speech       0.97 -> 0.06   the dearest options are the restrictive ones
+ *   immigration  0.86 -> 0.27   same shape
+ *   education    0.80 -> 0.77   flat
+ *   housing      0.07 -> 0.11   flat
+ *   voting       null -> 0.14   no reading at one end
+ *
+ * Half the chart, so this is not a per-axis flip: three of the six are wrong in
+ * a way flipping cannot fix. Plotting the slider's own position makes every
+ * spoke run the full ring, monotonically, by construction, and it is the honest
+ * description of the graphic anyway. It is a picture of your thirteen choices,
+ * beside the same thirteen for the country you started from.
+ *
+ * THE MEASURED AXES ARE NOT LOST. The reveal plots all fourteen of them on their
+ * real scales, with the answer country's figure, its year and its source, which
+ * is the place a number belongs. A ring with no numbers on it was the wrong
+ * place to carry them.
+ */
+function positions(data, selection, pos, rate) {
+  const out = {};
+  for (const domain of data.domains) {
+    if (domain.id === TAX_DOMAIN) {
+      const r = Number(rate);
+      out[domain.id] = Number.isFinite(r)
+        ? (clampRate(r) - TAX.MIN) / (TAX.MAX - TAX.MIN)
+        : null;
+      continue;
+    }
+    const rungs = ladder(data, domain.id);
+    if (rungs.length < 2) { out[domain.id] = 0; continue; }
+    // Mid-drag the continuous position wins, so the shape follows the thumb
+    // rather than jumping between stops.
+    const held = pos ? Number(pos[domain.id]) : NaN;
+    const at = Number.isFinite(held)
+      ? held
+      : rungs.findIndex((o) => o.id === selection[domain.id]);
+    out[domain.id] = at < 0 ? null : Math.max(0, Math.min(1, at / (rungs.length - 1)));
+  }
+  return out;
 }
 
 /**
@@ -101,17 +142,17 @@ export function fingerprint(data, base, view) {
   const country = data.countries.find((c) => c.code === view.startCode) || null;
   // Each side's tax rate goes in as the fourth argument, so the tax spoke needs
   // no special case out here. axisValues clamps it to the slider's own ends.
-  const mine = axisValues(data, view.selection, view.pos, view.rate);
+  const mine = positions(data, view.selection, view.pos, view.rate);
   const theirs = country
-    ? axisValues(data, country.choices, undefined, startingRate(data, country))
+    ? positions(data, country.choices, undefined, startingRate(data, country))
     : {};
 
   const you = [];
   const them = [];
   const gaps = [];
   for (const spoke of base.spokes) {
-    const a = norm(spoke, mine[spoke.axisId]);
-    const b = norm(spoke, theirs[spoke.axisId]);
+    const a = mine[spoke.id] === undefined ? null : mine[spoke.id];
+    const b = theirs[spoke.id] === undefined ? null : theirs[spoke.id];
     you.push(a);
     them.push(b);
     if (a === null || b === null) gaps.push(spoke.name);
@@ -382,7 +423,9 @@ export function drawChart(host, data, base, view) {
   base.spokes.forEach((spoke, i) => {
     const [x, y] = point(cx, cy, angs[i], outer * (HUB + (1 - HUB) * (you[i] === null ? 0.5 : you[i])));
     const hit = el('circle', { class: 'fp-hit', cx: x.toFixed(2), cy: y.toFixed(2), r: 9 });
-    const mine = you[i] === null ? 'does not apply' : `${Math.round(you[i] * 100)} of the way up the ${spoke.label.toLowerCase()} range`;
+    const mine = you[i] === null
+      ? 'not set'
+      : `${Math.round(you[i] * 100)}% of the way along the ${spoke.name.toLowerCase()} slider`;
     hit.appendChild(el('title', {}, `${spoke.name}: ${mine}`));
     svg.appendChild(hit);
   });

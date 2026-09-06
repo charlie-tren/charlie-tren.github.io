@@ -214,22 +214,18 @@ function paintDomains() {
       ? [`Taxes least, ${TAX.MIN}%`, `Taxes most, ${TAX.MAX}%`]
       : ['Spends least', 'Spends most'];
 
-    // A tick per stop, so a slider with five settings looks like a slider with
-    // five settings. On tax the ticks are the six coded regimes, which is the
-    // only thing about a continuous rate that is not continuous.
-    const stops = isTax
-      ? (domain.options || []).slice().sort((a, b) => a.rate - b.rate)
-        .map((o) => ({ id: o.id, at: (o.rate - TAX.MIN) / (TAX.MAX - TAX.MIN) }))
-      : rungs.map((o, i) => ({ id: o.id, at: rungs.length > 1 ? i / (rungs.length - 1) : 0 }));
-    const ticks = stops
-      .map((s) => `<i data-stop="${esc(s.id)}" style="left:${(s.at * 100).toFixed(3)}%"></i>`)
-      .join('');
+    // NO TICKS ON THE TRACK. There were stop marks once, cut on 02/09/2026 when
+    // the sliders went continuous, leaving only a green "where you started"
+    // line. That went too on 06/09/2026. A mark the visitor cannot act on is
+    // decoration, and it was the one green thing on twelve differently coloured
+    // sliders.
 
     return `
     <section class="domain${isTax ? ' tax' : ''}" id="dom_${esc(domain.id)}" data-domain="${esc(domain.id)}">
       <div class="d-head">
         <h2 id="h_${esc(domain.id)}">${esc(domain.name)}</h2>
         <span class="chip" id="chip_${esc(domain.id)}" hidden>Changed</span>
+        ${first ? `<span class="lk-tip">Lock a policy and the cuts fall somewhere else.</span>` : ''}
         ${`<button class="lock" type="button" id="lock_${esc(domain.id)}"
                 data-lock="${esc(domain.id)}" aria-pressed="false">
           <svg class="lk" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -240,13 +236,11 @@ function paintDomains() {
       </div>
       <div class="d-slide">
         <span class="d-rail" aria-hidden="true"></span>
-        <span class="d-ticks" id="tk_${esc(domain.id)}" aria-hidden="true">${ticks}</span>
         <input class="rng" type="range" id="rng_${esc(domain.id)}" data-range="${esc(domain.id)}"
                ${rangeAttrs} aria-labelledby="h_${esc(domain.id)}" aria-describedby="val_${esc(domain.id)}">
         <p class="d-ends"><span>${esc(ends[0])}</span><span>${esc(ends[1])}</span></p>
       </div>
       <p class="d-val" id="val_${esc(domain.id)}"></p>
-      ${first ? `<p class="lk-tip">Lock a policy and the cuts fall somewhere else.<span class="lk-arrow" aria-hidden="true">&#8599;</span></p>` : ''}
       <div class="d-rows">
         <div><span class="d-cap">Costs</span><span class="d-fact" id="cost_${esc(domain.id)}"></span></div>
         <div><span class="d-cap">What it is</span><span class="d-fact d-detail" id="det_${esc(domain.id)}"></span></div>
@@ -559,7 +553,6 @@ function render(change) {
   const live = liveState();
   const livePos = positionsOf(data, live);
   const b = budgets(data, live);
-  const startChoices = baseline();
   const cutIds = new Set((change && change.cuts ? change.cuts : []).map((c) => c.domain));
 
   paintMeter('financial', b.financial, `${one(b.financial.used)} of ${one(b.financial.capacity)}`);
@@ -597,14 +590,6 @@ function render(change) {
         : 'Hold this policy where it is when the budget has to find money';
     }
     input.disabled = locked;
-
-    // The tick the starting country sits on, so the slider says where you began.
-    const ticks = document.getElementById(`tk_${id}`);
-    if (ticks) {
-      ticks.querySelectorAll('i').forEach((tick) => {
-        tick.classList.toggle('home', tick.dataset.stop === startChoices[id]);
-      });
-    }
 
     if (id === TAX_DOMAIN) {
       const rate = b.financial.taxRate;

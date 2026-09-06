@@ -183,12 +183,14 @@ header.wrap { padding-top: 1rem; }
 
 .topline {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 0.6rem 1rem;
+  gap: 0.7rem;
+  margin: 0.2rem 0 0.5rem;
 }
 
 .toggle {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -227,13 +229,23 @@ header.wrap { padding-top: 1rem; }
    is the brightest thing on the page and it points away from it. */
 .home .back { color: var(--faint); }
 
+/* The wordmark now SHARES the top line with the theme toggle and the back-link,
+   so it no longer gets a row and a 1.4rem margin to itself. It is the item that
+   shrinks when the row is tight: `flex` lets it give way, `min-width: 0` is what
+   actually permits that (a flex child refuses to go under its content width
+   without it), and the clamp stops it wrapping internally instead. Sized down
+   from 2.7rem because a 2.7rem title beside a 0.85rem pill reads as two
+   unrelated things rather than one line. */
 h1 {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin: 1.4rem 0 0.35rem;
-  font-size: clamp(2rem, 6vw, 2.7rem);
+  gap: 0.55rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: clamp(1.5rem, 4.6vw, 2.05rem);
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 /* The fader mark. Sized off the type so it scales with the clamped h1 rather
@@ -660,42 +672,15 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   pointer-events: none;
 }
 
-.d-ticks {
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  top: 13px;
-  height: 0;
-  pointer-events: none;
-}
-
 /* THE STOPS. One per policy the slider can land on, so the thumb comes to rest
    on a tick every time and the marks explain themselves by being where it goes.
    They were --rule at 8px, faint enough that the question they raised was "what
    are these lines" rather than "those are the settings". Now the domain's own
    colour at a low alpha, and tall enough to sit either side of the track. */
-/* THE STOP TICKS ARE GONE. One per option, they were the lines Charlie asked
-   about and then asked to remove: with the sliders now continuous they marked
-   where the LABEL changes rather than where anything lands, so they were
-   answering a question nobody had. The "where you started" mark stays, and is
-   now the only line on the track, which is what makes it legible. */
-.d-ticks i:not(.home) { display: none; }
-
-.d-ticks i {
-  position: absolute;
-  top: -5px;
-  width: 2px;
-  height: 10px;
-  margin-left: -1px;
-  border-radius: 1px;
-  background: color-mix(in srgb, var(--dom, var(--faint)) 45%, transparent);
-}
-
-.d-ticks i.home {
-  top: -7px;
-  height: 14px;
-  background: var(--agree);
-}
+/* The track carries no marks at all. Stop ticks went on 02/09/2026 when the
+   sliders became continuous; the green "where you started" line went on
+   06/09/2026. It was the one green element on twelve differently coloured
+   sliders and nothing could be done with it. */
 
 .rng {
   -webkit-appearance: none;
@@ -855,27 +840,20 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   color: var(--soft);
 }
 
-/* The padlock is the one control on the page with no label, and it appears
-   thirteen times. The note runs once, under the first section, and points back
-   up at the button rather than sitting beside it, so it does not widen the
-   heading row on a phone. */
+/* The padlock is the only control on the page with no label, and it repeats
+   thirteen times. The note runs once, in the first section's heading row and
+   immediately before the button it describes, so the two read as one thing.
+   It is the flex item that gives way when the row is tight. */
 .lk-tip {
-  display: flex;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 0.35rem;
-  margin: 0.3rem 0 0;
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-left: auto;
   color: var(--faint);
-  font-size: 0.78rem;
-  line-height: 1.4;
+  font-size: 0.76rem;
+  line-height: 1.35;
   text-align: right;
 }
 
-.lk-arrow {
-  color: var(--dom);
-  font-size: 0.95rem;
-  line-height: 1;
-}
 
 .d-cut {
   margin: 0.25rem 0 0;
@@ -1639,4 +1617,53 @@ main.wrap > .finish { grid-column: 1; }
   margin-left: 0.4rem;
   color: var(--dom);
   font-weight: 600;
+}
+
+/* The rules, above the sliders --------------------------------------------
+ *
+ * This was a paragraph of prose and read as scene-setting, which nobody
+ * finishes. Three lines a visitor can check back against while playing. */
+.rules {
+  margin: 1.4rem 0 1.8rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--panel);
+}
+
+.rules h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.rules ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.42rem;
+}
+
+.rules li {
+  position: relative;
+  padding-left: 1.05rem;
+  color: var(--soft);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+/* A drawn marker rather than a list bullet, so it takes the accent and lines up
+   with the text's first line at any wrap. */
+.rules li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.58em;
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 50%;
+  background: var(--accent);
 }
