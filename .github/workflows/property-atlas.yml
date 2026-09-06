@@ -1,0 +1,44 @@
+# Property Atlas ships 32 classifier checks and nothing ran them - the same gap the
+# CFA Companion had, where 624 lines of end-to-end checks sat in the repo referenced by
+# nothing but their own docstring.
+#
+# It matters more here than the count suggests. classify.py turns the workbook's prose
+# into the ordinals the filters and the ease score are built on, and it read three
+# columns BACKWARDS when it was written: "Free. No capital controls." became capital
+# controls, "No property-based golden visa." became has one, and "Foreigners cannot own
+# land. Can own condo freehold" became closed. Every one of those looked like a normal
+# row on the page. They were found by printing all 34 markets and reading them, not by
+# anything automatic, and the fix - a negation window with clause-boundary detection -
+# is exactly the kind of rule that breaks quietly when someone widens a keyword list.
+name: Check Property Atlas
+
+on:
+  push:
+    paths:
+      - "property-atlas/**"
+      - ".github/workflows/property-atlas.yml"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # Both directions per rule. A negation rule that ignores negation passes every
+      # positive case, so the positives alone prove nothing.
+      - name: The prose-to-ordinal rules, both directions
+        working-directory: property-atlas
+        run: python test_classify.py
+
+      # build_data.py reads a gitignored workbook, so CI cannot rebuild data.json and
+      # diff it. It can check the half that has a second copy in the repo: every tax
+      # figure on the page comes from rates_pwc.json, and a drifted merge shows a wrong
+      # percentage that looks exactly like a right one.
+      - name: The shipped data against the rates it was built from
+        working-directory: property-atlas
+        run: python test_data.py
