@@ -21,6 +21,7 @@
   --over: #9c3a2c;
   --agree: #1f5c3d;
   --them: #5f5a52;
+  --you: #5b3fd4;
   --dom-tax: #276037;
   --dom-healthcare: #606fa9;
   --dom-education: #764b23;
@@ -55,6 +56,7 @@
   --over: #9c3a2c;
   --agree: #1f5c3d;
   --them: #5f5a52;
+  --you: #5b3fd4;
   --dom-tax: #276037;
   --dom-healthcare: #606fa9;
   --dom-education: #764b23;
@@ -89,6 +91,7 @@
   --over: #dc8b76;
   --agree: #63bf8f;
   --them: #a9a49a;
+  --you: #a48cff;
   --dom-tax: #81b48b;
   --dom-healthcare: #bcc6ff;
   --dom-education: #cf9f78;
@@ -124,6 +127,7 @@
     --over: #dc8b76;
     --agree: #63bf8f;
     --them: #a9a49a;
+    --you: #a48cff;
   --dom-tax: #81b48b;
   --dom-healthcare: #bcc6ff;
   --dom-education: #cf9f78;
@@ -469,11 +473,11 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   stroke-linecap: round;
 }
 
-.fp-you-fill { fill: var(--accent); fill-opacity: 0.16; stroke: none; }
+.fp-you-fill { fill: var(--you); fill-opacity: 0.16; stroke: none; }
 
 .fp-you-line {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--you);
   stroke-width: 2.5;
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -506,8 +510,8 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 }
 
 .ck-you {
-  background: color-mix(in srgb, var(--accent) 16%, transparent);
-  border: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--you) 16%, transparent);
+  border: 2px solid var(--you);
 }
 
 .ck-them {
@@ -538,8 +542,13 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
   border-left: 3px solid var(--rule);
 }
 
-.domain.changed { border-left-color: var(--accent); }
-.domain.locked { border-left-color: var(--held); }
+/* NOTHING RECOLOURS THE LEFT EDGE. There used to be a `.domain.changed` rule
+   here painting it the accent green and a `.domain.locked` one painting it grey.
+   Both were meant to have gone when the section became one colour, and both
+   survived because they outscore the later `.domain { border-left-color:
+   var(--dom) }` on specificity: two classes beats one, whatever the source
+   order. So a changed healthcare block wore a green edge under a purple heading
+   and a purple thumb. The edge is the domain's hue and only that. */
 
 /* The tax slider sets the budget every other slider spends, so it is the one
    control on the page that gets a panel of its own. */
