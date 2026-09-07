@@ -17,12 +17,35 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<script>/* Ahead of the stylesheet on purpose: reading the choice after first paint
+   flashes the other theme for a frame. No stored choice means follow the system. */
+(function(){try{var t=localStorage.getItem("bookmark.theme");
+if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <style>
-/* The shelf is a dark room by design, in both themes: a wall of cloth spines on a
-   pale ground reads as swatches rather than books. */
+/* THE CASE STAYS DARK IN BOTH THEMES. The original build was dark-only for a
+   reason that still holds - a wall of cloth spines on a pale ground reads as
+   paint swatches, not books - so light mode lights the ROOM and leaves the
+   bookcase a recess, which is what a bookcase looks like anyway. --case and
+   --wood are therefore the only two tokens that do not flip. */
 :root{
   --paper:#1a1916; --paper2:#232019; --ink:#efe9dc; --ink-soft:#9a9384;
-  --line:#33302a; --line2:#474135; --accent:#d9a441; --wood:#4b3a28;
+  --line:#33302a; --line2:#474135; --accent:#d9a441;
+  --case:#141310; --wood:#4b3a28; --shadow:.55;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --paper:#f7f3ea; --paper2:#efe8da; --ink:#231f1a; --ink-soft:#6d6558;
+    --line:#ddd4c2; --line2:#c8bda6; --accent:#9a6b12;
+    --case:#191712; --wood:#4b3a28; --shadow:.22;
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --paper:#f7f3ea; --paper2:#efe8da; --ink:#231f1a; --ink-soft:#6d6558;
+  --line:#ddd4c2; --line2:#c8bda6; --accent:#9a6b12;
+  --case:#191712; --wood:#4b3a28; --shadow:.22;
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -33,26 +56,71 @@ body{
 .serif{font-family:'Spectral',Georgia,'Times New Roman',serif}
 a{color:inherit}
 .wrap{max-width:900px;margin:0 auto;padding:0 24px}
-.bar{display:flex;justify-content:space-between;align-items:baseline;padding:22px 0 0}
-.brand{font-family:'Spectral',Georgia,serif;font-size:20px;font-weight:600;letter-spacing:-.01em}
+.bar{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:22px 0 0}
+.brand{font-family:'Spectral',Georgia,serif;font-size:38px;font-weight:600;letter-spacing:-.025em;line-height:1}
 .brand .dot{color:var(--accent)}
-.home{font-size:14px;color:var(--ink-soft);text-decoration:none}
+.barright{display:flex;align-items:baseline;gap:16px}
+.home{font-size:14px;color:var(--ink-soft);text-decoration:none;white-space:nowrap}
 .home:hover{color:var(--ink)}
+/* The arrow is a span so the gap can grow on hover without moving the words. */
+.home .arw{display:inline-block;transition:transform .14s}
+.home:hover .arw{transform:translateX(3px)}
+.theme{font:inherit;font-size:14px;color:var(--ink-soft);background:none;border:none;
+  cursor:pointer;padding:0;line-height:1}
+.theme:hover{color:var(--ink)}
 .lede{font-family:'Spectral',Georgia,serif;font-size:17px;color:var(--ink-soft);
       margin:24px 0 26px;max-width:46ch;line-height:1.5}
 
 /* the shelf */
-.shelfbox{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none}
+.shelfbox{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;
+  background:var(--case);border-radius:4px;padding:16px 12px 0;
+  box-shadow:inset 0 14px 26px -18px #000, inset 0 0 0 1px rgba(255,255,255,.04);
+  scroll-behavior:smooth}
 .shelfbox::-webkit-scrollbar{display:none}
-.shelf{display:flex;align-items:flex-end;gap:5px;min-height:210px;
+.shelf{display:flex;align-items:flex-end;gap:4px;min-height:210px;
        border-bottom:9px solid var(--wood);padding:0 2px;width:max-content;min-width:100%}
-.spine{position:relative;text-overflow:ellipsis;border:1px solid rgba(0,0,0,.4);border-radius:2px 2px 0 0;
-  color:#f3eee1;font-family:'Spectral',Georgia,serif;font-size:13px;letter-spacing:.01em;
-  writing-mode:vertical-rl;transform:rotate(180deg);padding:14px 0;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;
-  flex:0 0 auto;transition:margin-bottom .12s}
-.spine:hover{margin-bottom:8px}
-.spine[aria-current="true"]{outline:2px solid var(--accent);outline-offset:2px;margin-bottom:12px}
+
+/* A SPINE IS FIVE PARTS, not a coloured rectangle: cloth, a gilt rule at head and
+   tail, a label panel the title sits in, a bumped top edge, and a weave. Flat
+   colour plus vertical text read as a swatch with words on it - which is the same
+   failure the pale-ground palettes had, arriving from the other direction. */
+.spine{position:relative;border-radius:3px 3px 0 0;cursor:pointer;flex:0 0 auto;
+  background:
+    /* the weave: fine vertical threads, set per book by --weave */
+    repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px var(--weave,3px)),
+    /* cloth is darker at the hinge and catches light along the face */
+    linear-gradient(90deg, rgba(0,0,0,.42) 0 3px, rgba(255,255,255,.10) 4px 7px,
+                    transparent 20%, transparent 78%, rgba(0,0,0,.34) 100%),
+    var(--cloth,#3d5a45);
+  border:1px solid rgba(0,0,0,.5);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.13), 0 6px 12px -8px #000;
+  transition:transform .16s cubic-bezier(.2,.7,.3,1), box-shadow .16s;
+  transform-origin:bottom center; will-change:transform}
+/* head and tail bands, in the book's own gilt */
+.spine::before,.spine::after{content:"";position:absolute;left:5%;right:5%;height:0;
+  border-top:1px solid var(--gilt,rgba(226,199,140,.62));
+  border-bottom:1px solid var(--gilt,rgba(226,199,140,.30));
+  padding-top:3px;pointer-events:none}
+.spine::before{top:13px}
+.spine::after{bottom:15px}
+.spine .lab{position:absolute;inset:26px 3px 30px;border-radius:2px;
+  background:rgba(0,0,0,.20);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.spine .t{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;
+  color:#f6f1e4;font-family:'Spectral',Georgia,serif;font-size:13px;letter-spacing:.02em;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);max-height:100%;overflow:hidden;text-overflow:ellipsis}
+/* the author's initial, foil-blocked at the tail the way a real spine carries the
+   publisher's mark */
+.spine .in{position:absolute;left:0;right:0;bottom:4px;text-align:center;
+  font-family:'Spectral',Georgia,serif;font-size:9px;letter-spacing:.06em;
+  color:var(--gilt,rgba(226,199,140,.62));pointer-events:none}
+.spine:hover{transform:translateY(-9px)}
+.spine[aria-current="true"]{transform:translateY(-15px);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.2), 0 0 0 2px var(--accent), 0 14px 22px -12px #000}
+@media (prefers-reduced-motion: reduce){
+  .spine{transition:none}
+  .shelfbox{scroll-behavior:auto}
+}
 .shelfnote{display:flex;justify-content:space-between;gap:12px;align-items:baseline;
   font-size:13px;color:var(--ink-soft);margin:12px 0 0}
 .shelfnote button{font:inherit;font-size:13px;color:var(--ink-soft);background:none;border:none;
@@ -62,10 +130,22 @@ a{color:inherit}
 
 /* the pulled book */
 .pulled{display:grid;grid-template-columns:170px 1fr;gap:32px;align-items:start;margin-top:34px}
-.cover{height:250px;border-radius:2px 6px 6px 2px;border-left:11px solid rgba(0,0,0,.42);
-  display:flex;flex-direction:column;justify-content:space-between;padding:18px 16px;
-  font-family:'Spectral',Georgia,serif;color:#f6f1e4;
+/* Same cloth, same weave, same foil as that book's spine - once the spines carry
+   a treatment, a flat panel beside them stops reading as the same object. */
+.cover{position:relative;height:250px;border-radius:2px 6px 6px 2px;
+  border-left:11px solid rgba(0,0,0,.42);
+  display:flex;flex-direction:column;justify-content:space-between;padding:22px 18px;
+  font-family:'Spectral',Georgia,serif;color:#f6f1e4;overflow:hidden;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px var(--weave,3px)),
+    linear-gradient(115deg, rgba(255,255,255,.09), transparent 42%),
+    var(--cloth,#3d5a45);
   box-shadow:0 26px 46px -28px #000}
+.cover::before,.cover::after{content:"";position:absolute;left:16px;right:16px;height:0;
+  border-top:1px solid var(--gilt,rgba(226,199,140,.62));
+  border-bottom:1px solid var(--gilt,rgba(226,199,140,.28));padding-top:4px}
+.cover::before{top:12px}
+.cover::after{bottom:14px}
 .cover .ct{font-size:19px;line-height:1.15;font-weight:600}
 .cover .ca{font-size:12px;opacity:.85}
 .month{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600}
@@ -90,6 +170,7 @@ a{color:inherit}
 
 /* questions */
 h2.sec{font-family:'Spectral',Georgia,serif;font-size:22px;font-weight:600;margin:46px 0 20px}
+h2.sec.first{margin-top:26px}
 .q{border-top:1px solid var(--line);padding:18px 0}
 .q:first-of-type{border-top:none}
 .qlabel{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
@@ -99,7 +180,41 @@ h2.sec{font-family:'Spectral',Georgia,serif;font-size:22px;font-weight:600;margi
      border-radius:8px;padding:9px 14px;cursor:pointer;transition:.12s}
 .opt:hover{background:var(--line)}
 .opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#211d16;font-weight:600}
-.opt.chip[aria-pressed="true"]{background:#3a2f18;border-color:var(--accent);color:var(--ink)}
+.opt.chip[aria-pressed="true"]{background:color-mix(in srgb, var(--accent) 22%, var(--paper2));
+  border-color:var(--accent);color:var(--ink)}
+
+/* SLIDERS for the three ordinal questions. Length, age and effort are points on a
+   line, and a row of buttons hid that - "Short / Middling / Long" is one axis
+   pretending to be three choices. Fiction-or-not, prose and subject are genuinely
+   categorical and stay buttons: a slider between crime and nature means nothing. */
+.slider{padding-top:2px}
+.slider input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;
+  background:none;margin:0;cursor:pointer;display:block}
+.slider input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:3px;
+  background:linear-gradient(90deg,var(--accent) 0 var(--fill,0%),var(--line2) var(--fill,0%) 100%)}
+.slider input[type=range]::-moz-range-track{height:5px;border-radius:3px;background:var(--line2)}
+.slider input[type=range]::-moz-range-progress{height:5px;border-radius:3px;background:var(--accent)}
+.slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:19px;height:19px;border-radius:50%;background:var(--accent);border:2px solid var(--paper);
+  box-shadow:0 1px 4px rgba(0,0,0,.4);margin-top:-7px}
+.slider input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;
+  background:var(--accent);border:2px solid var(--paper);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.slider input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:6px;border-radius:4px}
+/* Ticks are labels, not decoration: a slider whose positions are unnamed is a
+   guess. The chosen one is the one that goes solid. */
+/* Positioned, not space-between. The thumb centre travels from 9.5px to
+   width-9.5px, so an evenly-spaced flex row puts "Short" a few percent left of
+   the notch it names - close enough to look like a rendering fault rather than a
+   choice. --p is the tick's fraction of the axis. */
+.ticks{position:relative;height:17px;margin-top:3px}
+.ticks span{position:absolute;top:0;font-size:12px;color:var(--ink-soft);line-height:1.25;
+  white-space:nowrap;left:calc(9.5px + (100% - 19px) * var(--p));transform:translateX(-50%)}
+.ticks span:first-child{transform:translateX(0)}
+.ticks span:last-child{transform:translateX(-100%)}
+.ticks span[data-on="1"]{color:var(--ink);font-weight:600}
+/* "Any" sits at position zero on Length and Age because it is the absence of a
+   preference, not a value on the axis - so the track reads empty until you move. */
+.ticks span.any{font-style:italic}
 /* books you liked */
 .liked{margin-top:30px}
 .likedrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -121,6 +236,8 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
        font-size:13px;color:var(--ink-soft);line-height:1.6}
 @media (max-width:620px){
   .wrap{padding:0 16px}
+  .brand{font-size:30px}
+  .ticks span{font-size:11px}
   .pulled{grid-template-columns:1fr;gap:22px}
   .cover{height:200px;max-width:150px}
   .title{font-size:29px}
@@ -135,10 +252,16 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
 <div class="wrap">
   <div class="bar">
     <span class="brand serif">Bookmark<span class="dot">.</span></span>
-    <a class="home" href="/">Other projects</a>
+    <span class="barright">
+      <button class="theme" id="themeBtn" type="button" aria-live="polite"></button>
+      <a class="home" href="/">Other projects <span class="arw" aria-hidden="true">&rarr;</span></a>
+    </span>
   </div>
 
   <p class="lede">Seven questions about what you want from a book. One comes off the shelf on the first of each month.</p>
+
+  <h2 class="sec first">What are you after</h2>
+  <div id="questions"></div>
 
   <div class="shelfbox">
     <div class="shelf" id="shelf" role="list" aria-label="Books matching your answers"></div>
@@ -165,9 +288,6 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
     </div>
   </section>
 
-  <h2 class="sec">What are you after</h2>
-  <div id="questions"></div>
-
   <section class="liked">
     <h2 class="sec">Books you liked</h2>
     <div class="likedrow">
@@ -183,8 +303,7 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
 
   <footer>
     <div id="shelffoot"></div>
-    <div>Spine width is the length of the book. Buying links are searches, not stock checks.
-      A Goodreads export is read in your browser and never uploaded.</div>
+    <div>Spine width is the length of the book.</div>
   </footer>
 </div>
 
@@ -205,13 +324,16 @@ var QS = [
    opts:[["absorb","Absorb me"],["learn","Teach me something"],["unsettle","Unsettle me"],["laugh","Make me laugh"]]},
   {id:"form", label:"Fiction or not", multi:false,
    opts:[["any","Either"],["fic","Fiction"],["non","Nonfiction"]]},
-  {id:"len", label:"How long", multi:false,
-   opts:[["any","Any"],["s","Short"],["m","Middling"],["l","The longer the better"]]},
-  {id:"era", label:"How old", multi:false,
-   opts:[["any","Any"],["contemporary","Last twenty years"],["modern","Postwar"],["older","Older than that"]]},
+  /* slider:true where the options are POINTS ON A LINE. "Any" holds position zero
+     on the two that have it, because no preference is the absence of a value on
+     the axis rather than a value in the middle of it. */
+  {id:"len", label:"How long", multi:false, slider:true,
+   opts:[["any","Any"],["s","Short"],["m","Middling"],["l","Long"]]},
+  {id:"era", label:"How old", multi:false, slider:true,
+   opts:[["any","Any"],["contemporary","Last 20 years"],["modern","Postwar"],["older","Older"]]},
   {id:"sty", label:"Prose", multi:false,
    opts:[["any","No preference"],["plain","Plain and fast"],["rich","Rich and slow"],["funny","Funny and sharp"]]},
-  {id:"dem", label:"How much work", multi:false,
+  {id:"dem", label:"How much work", multi:false, slider:true,
    opts:[["1","Easy company"],["2","Some work"],["3","Hard is fine"]]},
   {id:"tags", label:"Subjects", multi:true, chips:true,
    opts:TAGS.map(function(t){return [t,TAGNAME[t]];})}
@@ -355,47 +477,84 @@ function displayOrder(list){
   });
 }
 
+/* REBUILD ONLY WHEN THE SHELF ITSELF CHANGED. Every click used to tear down all
+   thirty spines and append thirty new ones, then force a scroll, so choosing a
+   book made the whole row flicker and jump - the glitch. Selecting is now an
+   attribute change on nodes that never left the page, which is also what lets the
+   spine animate out of the shelf instead of being replaced mid-transition. */
+var shelfSig = null;
+
 function drawShelf(list, currentIdx){
   var shelf = document.getElementById("shelf");
-  while(shelf.firstChild) shelf.removeChild(shelf.firstChild);
-  list.forEach(function(b, i){
-    var s = document.createElement("button");
-    s.type = "button"; s.className = "spine"; s.setAttribute("role","listitem");
-    s.style.background = cloth(b);
-    s.style.width = WIDTH[b.len] + "px";
-    /* tall enough for the title to sit on the spine, which is why length drives
-       height rather than a random jitter: a cut-off title reads as a bug. */
-    s.style.height = (146 + Math.min(b.t.length, 42) * 2.6 + (hash(b.t) % 4) * 4) + "px";
-    s.textContent = b.t;
-    s.setAttribute("aria-label", b.t + " by " + b.a);
-    s.setAttribute("aria-current", i === currentIdx ? "true" : "false");
-    s.addEventListener("click", function(){ pick(b); });
-    shelf.appendChild(s);
-  });
+  var sig = list.map(function(b){ return b.t; }).join("");
+  var rebuilt = sig !== shelfSig;
+  if(rebuilt){
+    shelfSig = sig;
+    while(shelf.firstChild) shelf.removeChild(shelf.firstChild);
+    list.forEach(function(b){ shelf.appendChild(spineEl(b)); });
+  }
+  var nodes = shelf.children;
+  for(var i = 0; i < nodes.length; i++){
+    nodes[i].setAttribute("aria-current", i === currentIdx ? "true" : "false");
+  }
+  return rebuilt;
+}
+
+/* Foil comes in two finishes because a shelf where every book is stamped in the
+   same gold reads as a set rather than a shelf. */
+var FOIL = ["rgba(226,199,140,.68)","rgba(226,199,140,.68)","rgba(226,199,140,.68)",
+            "rgba(228,226,220,.60)"];
+
+function spineEl(b){
+  var h = hash(b.t + b.a);
+  var s = document.createElement("button");
+  s.type = "button"; s.className = "spine"; s.setAttribute("role","listitem");
+  s.style.setProperty("--cloth", cloth(b));
+  s.style.setProperty("--weave", (3 + h % 4) + "px");
+  s.style.setProperty("--gilt", FOIL[(h >>> 3) % FOIL.length]);
+  s.style.width = WIDTH[b.len] + "px";
+  /* tall enough for the title to sit on the spine, which is why length drives
+     height rather than a random jitter: a cut-off title reads as a bug. */
+  s.style.height = (146 + Math.min(b.t.length, 42) * 2.6 + (h % 4) * 4) + "px";
+  var lab = document.createElement("span"); lab.className = "lab";
+  var t = document.createElement("span"); t.className = "t"; t.textContent = b.t;
+  lab.appendChild(t);
+  var ini = document.createElement("span"); ini.className = "in";
+  ini.textContent = surname(b.a).charAt(0).toUpperCase();
+  s.appendChild(lab); s.appendChild(ini);
+  s.setAttribute("aria-label", b.t + " by " + b.a);
+  s.addEventListener("click", function(){ pick(b); });
+  return s;
 }
 
 /* Scroll the shelf box, never the page: on a phone the month's book is often off
    to the right, and a spine nobody can see is not a pick. */
 var lastShown = 0;
-function centreSpine(){
+function centreSpine(force){
   var box = document.querySelector(".shelfbox");
   var el = box.querySelectorAll(".spine")[lastShown];
   if(!el) return;
   /* rects, not offsetLeft: the spines' offsetParent is the page wrapper rather than
      the scroll box, so offset arithmetic is out by the page padding. */
   var br = box.getBoundingClientRect(), cr = el.getBoundingClientRect();
+  /* DON'T MOVE A SHELF THAT IS ALREADY SHOWING THE BOOK. Re-centring on every
+     render yanked the row sideways when the reader clicked a spine they could
+     plainly see, which read as the page fighting them. */
+  if(!force && cr.left >= br.left + 8 && cr.right <= br.right - 8) return;
   var want = box.scrollLeft + (cr.left - br.left) - (br.width - cr.width) / 2;
   box.scrollLeft = Math.max(0, want);
 }
 /* Three times, and it needs all three: after a frame for the spines just appended,
    again once Spectral has loaded because the shelf is 400px wider in the real face
    than in the fallback, and again on resize. */
-function scrollSpineIntoView(i){
+function scrollSpineIntoView(i, force){
   lastShown = i;
-  requestAnimationFrame(centreSpine);
-  if(document.fonts && document.fonts.ready) document.fonts.ready.then(centreSpine);
+  requestAnimationFrame(function(){ centreSpine(force); });
+  if(force && document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){ centreSpine(true); });
+  }
 }
-window.addEventListener("resize", function(){ requestAnimationFrame(centreSpine); });
+window.addEventListener("resize", function(){ requestAnimationFrame(function(){ centreSpine(true); }); });
 
 function render(){
   var list = shortlist();
@@ -409,8 +568,10 @@ function render(){
 
   var shown = displayOrder(list);
   var shownIdx = shown.indexOf(b);
-  drawShelf(shown, shownIdx);
-  scrollSpineIntoView(shownIdx);
+  var rebuilt = drawShelf(shown, shownIdx);
+  /* Forced only when the row itself changed, so a new shelf still centres its pick
+     and a plain selection does not. */
+  scrollSpineIntoView(shownIdx, rebuilt);
   document.getElementById("backBtn").hidden = (browsing === null);
 
   document.getElementById("month").textContent = browsing === null
@@ -419,7 +580,10 @@ function render(){
   document.getElementById("title").textContent = b.t;
   document.getElementById("byline").textContent = b.a + ", " + (b.y<1000 ? b.y + " CE" : b.y);
   document.getElementById("whytext").textContent = b.why;
-  document.getElementById("cover").style.background = cloth(b);
+  var cv = document.getElementById("cover"), ch = hash(b.t + b.a);
+  cv.style.setProperty("--cloth", cloth(b));
+  cv.style.setProperty("--weave", (3 + ch % 4) + "px");
+  cv.style.setProperty("--gilt", FOIL[(ch >>> 3) % FOIL.length]);
   document.getElementById("coverT").textContent = b.t;
   document.getElementById("coverA").textContent = b.a;
 
@@ -452,6 +616,7 @@ function renderEmpty(){
   document.getElementById("pulled").classList.add("empty");
   var shelf = document.getElementById("shelf");
   while(shelf.firstChild) shelf.removeChild(shelf.firstChild);
+  shelfSig = null;   /* or the next non-empty render sees a matching signature and draws nothing */
   document.getElementById("backBtn").hidden = true;
   document.getElementById("month").textContent = "";
   document.getElementById("title").textContent = "Nothing on the shelf fits";
@@ -469,18 +634,52 @@ function build(){
   QS.forEach(function(q){
     var wrap = document.createElement("div"); wrap.className = "q";
     var lab = document.createElement("div"); lab.className = "qlabel"; lab.textContent = q.label;
-    var opts = document.createElement("div"); opts.className = "opts";
-    opts.setAttribute("data-q", q.id);
-    q.opts.forEach(function(o){
-      var btn = document.createElement("button");
-      btn.type = "button"; btn.className = "opt" + (q.chips ? " chip" : "");
-      btn.textContent = o[1]; btn.setAttribute("data-v", o[0]);
-      btn.addEventListener("click", function(){ choose(q, o[0]); });
-      opts.appendChild(btn);
-    });
-    wrap.appendChild(lab); wrap.appendChild(opts); host.appendChild(wrap);
+    wrap.appendChild(lab);
+    wrap.appendChild(q.slider ? buildSlider(q) : buildButtons(q));
+    host.appendChild(wrap);
   });
   paint();
+}
+
+function buildButtons(q){
+  var opts = document.createElement("div"); opts.className = "opts";
+  opts.setAttribute("data-q", q.id);
+  q.opts.forEach(function(o){
+    var btn = document.createElement("button");
+    btn.type = "button"; btn.className = "opt" + (q.chips ? " chip" : "");
+    btn.textContent = o[1]; btn.setAttribute("data-v", o[0]);
+    btn.addEventListener("click", function(){ choose(q, o[0]); });
+    opts.appendChild(btn);
+  });
+  return opts;
+}
+
+function buildSlider(q){
+  var box = document.createElement("div"); box.className = "slider";
+  box.setAttribute("data-q", q.id);
+  var r = document.createElement("input");
+  r.type = "range"; r.min = 0; r.max = q.opts.length - 1; r.step = 1;
+  r.setAttribute("aria-label", q.label);
+  /* The thumb is on a number, but what the reader is choosing is a WORD, so the
+     screen reader gets the word. Without this it announces "2 of 3". */
+  r.addEventListener("input", function(){ choose(q, q.opts[Number(r.value)][0]); });
+  box.appendChild(r);
+  var ticks = document.createElement("div"); ticks.className = "ticks";
+  q.opts.forEach(function(o){
+    var t = document.createElement("span");
+    t.textContent = o[1]; t.setAttribute("data-v", o[0]);
+    if(o[0] === "any") t.className = "any";
+    /* A tick is a label AND a target: on a phone the words are easier to hit than
+       a 19px thumb, and someone who reads "Postwar" will try to tap it. */
+    t.addEventListener("click", function(){ choose(q, o[0]); });
+    t.style.cursor = "pointer";
+    ticks.appendChild(t);
+  });
+  ticks.querySelectorAll("span").forEach(function(t, i, all){
+    t.style.setProperty("--p", (i / (all.length - 1)).toFixed(4));
+  });
+  box.appendChild(ticks);
+  return box;
 }
 
 function choose(q, v){
@@ -503,6 +702,22 @@ function paint(){
       btn.setAttribute("aria-pressed", on ? "true" : "false");
     });
   });
+  document.querySelectorAll(".slider").forEach(function(g){
+    var id = g.getAttribute("data-q");
+    var q = QS.find(function(x){ return x.id === id; });
+    var i = q.opts.findIndex(function(o){ return o[0] === state[id]; });
+    if(i < 0) i = 0;
+    var r = g.querySelector("input");
+    r.value = i;
+    r.setAttribute("aria-valuetext", q.opts[i][1]);
+    /* Chrome cannot fill a range track from CSS alone, so the filled fraction is
+       handed to the gradient as a variable. Firefox uses ::-moz-range-progress and
+       ignores this. */
+    g.style.setProperty("--fill", (i / (q.opts.length - 1) * 100) + "%");
+    g.querySelectorAll(".ticks span").forEach(function(t){
+      t.setAttribute("data-on", t.getAttribute("data-v") === state[id] ? "1" : "0");
+    });
+  });
 }
 
 /* The URL carries the answers only once they differ from the defaults, so a first
@@ -520,6 +735,35 @@ function readUrl(){
   state.form = f[1]; state.len = f[2]; state.era = f[3]; state.sty = f[4]; state.dem = f[5];
   state.tags = f[6] ? f[6].split("+").filter(function(t){ return TAGS.indexOf(t) > -1; }) : [];
 }
+
+/* ---- light and dark ----
+   With no stored choice the page follows the system, so the button has to label
+   itself from WHAT IS ON SCREEN rather than from what is stored. A first version
+   cycled system -> light -> dark and read "Light" while already showing light,
+   where pressing it appeared to do nothing. */
+function showingDark(){
+  var t = document.documentElement.getAttribute("data-theme");
+  if(t) return t === "dark";
+  return !window.matchMedia || !window.matchMedia("(prefers-color-scheme: light)").matches;
+}
+function labelTheme(){
+  var next = showingDark() ? "light" : "dark";
+  var btn = document.getElementById("themeBtn");
+  btn.textContent = next.charAt(0).toUpperCase() + next.slice(1);
+  btn.setAttribute("aria-label", "Switch to the " + next + " theme");
+}
+document.getElementById("themeBtn").addEventListener("click", function(){
+  var next = showingDark() ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try{ localStorage.setItem("bookmark.theme", next); }catch(e){}
+  labelTheme();
+});
+/* Someone who never pressed the button is still following the system, so the
+   label has to move when the system does. */
+if(window.matchMedia){
+  window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", labelTheme);
+}
+labelTheme();
 
 document.getElementById("swapBtn").addEventListener("click", function(){
   offset++; browsing = null; render();
