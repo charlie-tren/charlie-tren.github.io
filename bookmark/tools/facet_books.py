@@ -29,6 +29,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import urllib.parse
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -150,37 +151,53 @@ def describe() -> int:
     the page I asked for, is its title the book's title, is it a film adaptation -
     exists only because that one starts from a title and has to find the article.
     """
-    import time
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     sys.path.insert(0, str(HERE))
     import fetch_descriptions as F
+    import redescribe as R
 
     recs = json.loads(NEW.read_text(encoding="utf-8"))
     todo = [r for r in recs if not r.get("why")]
-    print(f"{len(todo)} of {len(recs)} need a description")
-    for i, r in enumerate(todo, 1):
+    print(f"{len(todo)} of {len(recs)} need a description", flush=True)
+
+    def one(r):
         try:
             w = F.best_description(r["page"], r["t"])
         except Exception as exc:                                   # noqa: BLE001
-            w = ""
-            print(f"  ! {r['t']}: {type(exc).__name__}")
-        # Same refusal as the other pipeline: a bad line is worse than none, and
-        # here "none" means the book simply does not join the shelf.
-        if w and F.DANGLING.match(w):
-            w = ""
-        if w and (chr(10) in w or not w[:1].isupper()
-                  or any(j in w.lower() for j in F.JUNK) or len(w) < 55):
-            w = ""
-        r["why"] = w
-        r["src"] = "https://en.wikipedia.org/wiki/" + r["page"].replace(" ", "_")
-        if i % 25 == 0 or i == len(todo):
-            NEW.write_text(json.dumps(recs, indent=1, ensure_ascii=False),
-                           encoding="utf-8")
-            print(f"  {i}/{len(todo)}  described "
-                  f"{sum(1 for x in recs if x.get('why'))}")
-        time.sleep(0.1)
+            return r, "", type(exc).__name__
+        # Same refusal as everywhere else, and it lives in ONE function now:
+        # three copies of this test had already drifted apart on the ellipsis.
+        return r, (w if R.usable(w) else ""), None
+
+    #: Four, not eight. Wikipedia returns 429 above that and the throttle in
+    #: fetch_descriptions.get is what keeps this inside the limit.
+    errs = 0
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futs = [pool.submit(one, r) for r in todo]
+        for i, fut in enumerate(as_completed(futs), 1):
+            r, w, err = fut.result()
+            if err:
+                errs += 1
+            r["why"] = w
+            # PERCENT-ENCODED. A page title can contain a double quote -
+            # Sue Grafton's '"B" Is for Burglar' does - and an unencoded one
+            # closed the JS string in books.js 1400 records in.
+            r["src"] = ("https://en.wikipedia.org/wiki/"
+                        + urllib.parse.quote(r["page"].replace(" ", "_"),
+                                             safe="_(),'!$&+;=@~*-."))
+            if i % 50 == 0 or i == len(todo):
+                NEW.write_text(json.dumps(recs, indent=1, ensure_ascii=False),
+                               encoding="utf-8")
+                print(f"  {i}/{len(todo)}  described "
+                      f"{sum(1 for x in recs if x.get('why'))}", flush=True)
     NEW.write_text(json.dumps(recs, indent=1, ensure_ascii=False), encoding="utf-8")
     ok = sum(1 for r in recs if r.get("why"))
     print(f"{ok}/{len(recs)} have a usable description; the rest are dropped")
+    # A run where a tenth of the calls THREW is a rate-limit or an outage, not a
+    # shelf of books without summaries, and saying so is the difference between
+    # rerunning it and shipping 400 silent refusals.
+    print(f"requests that failed outright: {errs}"
+          + ("   <-- rerun, this is not a real result" if errs > len(todo) / 20 else ""))
     return 0
 
 
@@ -211,7 +228,7 @@ def merge() -> int:
                 esc(r["t"]), esc(r["a"]), r["y"], r["f"],
                 ",".join('"%s"' % t for t in r["tags"]),
                 ",".join('"%s"' % m for m in r["mood"]),
-                r["len"], r["sty"], r["dem"], esc(r["why"]), r["src"]))
+                r["len"], r["sty"], r["dem"], esc(r["why"]), esc(r["src"])))
     body = ("\n\n/* ---- Added from prize lists. Title, author, year, length and\n"
             "   subject are read from Wikipedia and Open Library; mood, prose and\n"
             "   effort are inferred by rule and carry soft:1, which halves the\n"
