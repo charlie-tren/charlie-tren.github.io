@@ -1,0 +1,6996 @@
+{
+ "A Fine Balance": {
+  "places": [
+   "India",
+   "Mumbai",
+   "Himalays",
+   "Dubai",
+   "Family Planning Centre",
+   "Bombay"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Gilead": {
+  "places": [
+   "Kansas",
+   "United States",
+   "Iowa"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Blood Meridian": {
+  "places": [
+   "Mexican-American Border Region",
+   "Mexican- American Border Region"
+  ],
+  "set": []
+ },
+ "The Road": {
+  "places": [
+   "United States",
+   "the South",
+   "Appalachia"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Beloved": {
+  "places": [
+   "Ohio",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Never Let Me Go": {
+  "places": [
+   "England",
+   "Norfolk"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Stoner": {
+  "places": [
+   "American Midwest",
+   "Columbia",
+   "University of Missouri"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Remains of the Day": {
+  "places": [
+   "England",
+   "Angleterre"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "A Gentleman in Moscow": {
+  "places": [
+   "Moscow",
+   "The Kremlin",
+   "The Metropol Hotel",
+   "Moscow (Russia)",
+   "Russia"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Cloud Atlas": {
+  "places": [],
+  "set": []
+ },
+ "Normal People": {
+  "places": [
+   "Sligo (Ireland)",
+   "Dublin (Ireland)",
+   "Trieste (Italy)",
+   "Lund (Sweden)"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "Lincoln in the Bardo": {
+  "places": [
+   "United States",
+   "Georgetown (Washington, D.C.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Wolf Hall": {
+  "places": [
+   "Great Britain",
+   "England",
+   "Putney",
+   "Austin Friars",
+   "Westminster",
+   "Chelsea",
+   "Calais",
+   "Hatfield",
+   "Wolf Hall",
+   "York"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Overstory": {
+  "places": [],
+  "set": []
+ },
+ "My Brilliant Friend": {
+  "places": [
+   "Italy",
+   "Naples",
+   "Naples (Italy)"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Crime and Punishment": {
+  "places": [
+   "Russia",
+   "Russia (Federation)",
+   "Saint Petersburg",
+   "Saint Petersburg (Russia)",
+   "San Petersburgo (Rusia)",
+   "St. Petersburg Russia",
+   "Russian Empire",
+   "Siberia (Russian Federation)",
+   "St. Petersburg (Russian Federation)",
+   "Israel"
+  ],
+  "set": [
+   "europe",
+   "asia",
+   "mideast"
+  ]
+ },
+ "One Hundred Years of Solitude": {
+  "places": [
+   "Latin America",
+   "Macondo",
+   "America Latina",
+   "Amérique latine"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "The Master and Margarita": {
+  "places": [
+   "Russia",
+   "Soviet Union",
+   "Jerusalem",
+   "Moscow",
+   "Patriarch's Ponds",
+   "Griboyedov's house"
+  ],
+  "set": [
+   "europe",
+   "mideast"
+  ]
+ },
+ "The Great Gatsby": {
+  "places": [
+   "Long Island",
+   "New York",
+   "United States",
+   "East Egg",
+   "West Egg",
+   "Long Island (N.Y.)",
+   "New York (State)",
+   "America",
+   "New York (État)",
+   "Mei guo"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Disgrace": {
+  "places": [
+   "South Africa",
+   "Cape Town",
+   "Eastern Cape",
+   "nan fei"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "East of Eden": {
+  "places": [
+   "California",
+   "Salinas River Valley",
+   "Salinas, Valle del Río (California)",
+   "Salinas",
+   "Connecticut",
+   "Massachusetts",
+   "Northern California",
+   "Stanford University",
+   "San Francisco",
+   "Salinas River Valley (Calif.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Things Fall Apart": {
+  "places": [
+   "Umuofia",
+   "Nigeria",
+   "Mbanta"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "A Confederacy of Dunces": {
+  "places": [
+   "New Orleans (La.)",
+   "New Orleans",
+   "Louisiana",
+   "French Quarter",
+   "Canal Street",
+   "Mississippi River",
+   "D.H. Holmes",
+   "Werlein's Music Store",
+   "Prytania Theater"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Sellout": {
+  "places": [],
+  "set": []
+ },
+ "Lucky Jim": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Hitchhiker's Guide to the Galaxy": {
+  "places": [
+   "Galaxy",
+   "Earth",
+   "Heart of Gold",
+   "Magrathea",
+   "The Restaurant at the End of the Universe"
+  ],
+  "set": []
+ },
+ "Catch-22": {
+  "places": [
+   "Italy"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Good Omens": {
+  "places": [
+   "Lower Tadfield",
+   "Slough",
+   "Manchester",
+   "London"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Three Men in a Boat": {
+  "places": [
+   "Thames River (England)",
+   "Black Forest (Germany)",
+   "Thames River",
+   "Great Britain",
+   "England",
+   "Kingston",
+   "Oxford",
+   "Germany",
+   "Black Forest",
+   "Themse"
+  ],
+  "set": [
+   "britain",
+   "europe",
+   "mideast"
+  ]
+ },
+ "The Left Hand of Darkness": {
+  "places": [
+   "Winter (fictional planet)"
+  ],
+  "set": []
+ },
+ "Pride and Prejudice": {
+  "places": [],
+  "set": []
+ },
+ "Middlemarch": {
+  "places": [],
+  "set": []
+ },
+ "Cold Comfort Farm": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Dispossessed": {
+  "places": [],
+  "set": []
+ },
+ "Station Eleven": {
+  "places": [
+   "St. Deborah by the Water"
+  ],
+  "set": []
+ },
+ "Solaris": {
+  "places": [
+   "Planet Solaris"
+  ],
+  "set": []
+ },
+ "Project Hail Mary": {
+  "places": [
+   "Epsilon Eridani",
+   "Earth",
+   "Tau Ceti",
+   "San Francisco (Calif.)",
+   "Pasadena (Calif.)",
+   "Antarctica",
+   "40 Eridani",
+   "Baikonur (Kazakhstan)",
+   "South China Sea region",
+   "Sahara Desert (Africa)"
+  ],
+  "set": [
+   "america",
+   "asia",
+   "africa"
+  ]
+ },
+ "Klara and the Sun": {
+  "places": [],
+  "set": []
+ },
+ "Snow Crash": {
+  "places": [
+   "Future America"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Lonesome Dove": {
+  "places": [
+   "West United States",
+   "West (U.S.)",
+   "Texas",
+   "Lonesome Dove",
+   "Fort Smith",
+   "Arkansas",
+   "Montana",
+   "Yellowstone River",
+   "Platte River",
+   "Ogallala"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "The Talented Mr Ripley": {
+  "places": [
+   "Italy",
+   "Great Britain"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "Piranesi": {
+  "places": [],
+  "set": []
+ },
+ "The Big Sleep": {
+  "places": [
+   "Los Angeles (Calif.)",
+   "California",
+   "Los Angeles"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Gone Girl": {
+  "places": [
+   "North Carthage",
+   "Missouri",
+   "Mississippi River",
+   "Margo",
+   "New York City",
+   "mei guo"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Guards! Guards!": {
+  "places": [],
+  "set": []
+ },
+ "The Secret History": {
+  "places": [
+   "Vermont"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Spy Who Came in from the Cold": {
+  "places": [
+   "Great Britain",
+   "Berlin (Germany)",
+   "Ying guo",
+   "England",
+   "Angleterre",
+   "Germany",
+   "Berlin",
+   "Berlín (Alemania)"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "Tinker Tailor Soldier Spy": {
+  "places": [
+   "Great Britain"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Dry": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Dune": {
+  "places": [],
+  "set": []
+ },
+ "Say Nothing": {
+  "places": [
+   "Northern Ireland",
+   "Belfast",
+   "Ireland",
+   "London",
+   "John J. Burns Library",
+   "Boston College",
+   "Europe"
+  ],
+  "set": [
+   "britain",
+   "america",
+   "europe"
+  ]
+ },
+ "Empire of Pain": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Slaughterhouse-Five": {
+  "places": [
+   "Dresden",
+   "Germany"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Bad Blood": {
+  "places": [
+   "United States",
+   "Silicon Valley"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Big Short": {
+  "places": [
+   "United States",
+   "États-Unis",
+   "Estados Unidos"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Liar's Poker": {
+  "places": [
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "When Genius Failed": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Thinking, Fast and Slow": {
+  "places": [],
+  "set": []
+ },
+ "The Three-Body Problem": {
+  "places": [],
+  "set": []
+ },
+ "In Cold Blood": {
+  "places": [
+   "Holcomb",
+   "Kansas",
+   "Holcomb Kansas"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Man Who Solved the Market": {
+  "places": [],
+  "set": []
+ },
+ "Where Are the Customers' Yachts?": {
+  "places": [
+   "N.Y.) Wall Street (New York",
+   "Wall Street (New York, N.Y.)",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Against the Gods": {
+  "places": [],
+  "set": []
+ },
+ "The Psychology of Money": {
+  "places": [],
+  "set": []
+ },
+ "Lords of Finance": {
+  "places": [],
+  "set": []
+ },
+ "Barbarians at the Gate": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Sapiens": {
+  "places": [
+   "America",
+   "Australia",
+   "India"
+  ],
+  "set": [
+   "america",
+   "asia",
+   "oceania"
+  ]
+ },
+ "The Guns of August": {
+  "places": [
+   "Western Front",
+   "Europe"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "SPQR": {
+  "places": [],
+  "set": []
+ },
+ "Guns, Germs, and Steel": {
+  "places": [],
+  "set": []
+ },
+ "Mystic River": {
+  "places": [],
+  "set": []
+ },
+ "The Rise and Fall of the Third Reich": {
+  "places": [
+   "Germany"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Making of the Atomic Bomb": {
+  "places": [],
+  "set": []
+ },
+ "Dark Emu": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Team of Rivals": {
+  "places": [
+   "United States",
+   "Ohio",
+   "New York",
+   "Missouri",
+   "Illinois",
+   "Chicago",
+   "Fort Sumter",
+   "North Carolina",
+   "Washington D. C.",
+   "Pennsylvania"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "1491": {
+  "places": [
+   "America",
+   "América Latina"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Bury My Heart at Wounded Knee": {
+  "places": [
+   "West (U.S.)",
+   "The West",
+   "West United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Salt": {
+  "places": [],
+  "set": []
+ },
+ "The Fatal Shore": {
+  "places": [
+   "Australia",
+   "Australie"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Immortal Life of Henrietta Lacks": {
+  "places": [
+   "United States",
+   "Förenta staterna",
+   "USA",
+   "Virginia"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Selfish Gene": {
+  "places": [],
+  "set": []
+ },
+ "Fooled by Randomness": {
+  "places": [],
+  "set": []
+ },
+ "The Emperor of All Maladies": {
+  "places": [
+   "Boston",
+   "Geneva",
+   "London"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "Ordinary Men": {
+  "places": [
+   "Polen",
+   "Poland",
+   "Germany"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Sixth Extinction": {
+  "places": [
+   "mei guo"
+  ],
+  "set": []
+ },
+ "The Order of Time": {
+  "places": [],
+  "set": []
+ },
+ "Why We Sleep": {
+  "places": [],
+  "set": []
+ },
+ "Braiding Sweetgrass": {
+  "places": [
+   "Onondaga Lake (N.Y.)",
+   "Region Michigan, Lake",
+   "The Great Lakes Region",
+   "Northern Forests",
+   "Pacific Northwest",
+   "Northwest Pacific",
+   "Turtle Island",
+   "Los Andes",
+   "Andes Region",
+   "Andes"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "H is for Hawk": {
+  "places": [],
+  "set": []
+ },
+ "Entangled Life": {
+  "places": [],
+  "set": []
+ },
+ "The Peregrine": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Into Thin Air": {
+  "places": [
+   "Everest, Mount (China and Nepal)",
+   "Everest",
+   "Mount Everest",
+   "Asia"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "The Beginning of Infinity": {
+  "places": [],
+  "set": []
+ },
+ "Into the Wild": {
+  "places": [
+   "Alaska",
+   "United States",
+   "West (U.S.)",
+   "Washington D.C."
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Seven Brief Lessons on Physics": {
+  "places": [],
+  "set": []
+ },
+ "The Snow Leopard": {
+  "places": [
+   "Himalaya Mountains",
+   "United States",
+   "Tibet",
+   "Nepal"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "In Patagonia": {
+  "places": [
+   "Patagonia (Argentina and Chile)",
+   "Patagonie (Argentine et Chili) dans la littérature",
+   "Patagonie"
+  ],
+  "set": [
+   "latam"
+  ]
+ },
+ "Homage to Catalonia": {
+  "places": [
+   "Catalonia",
+   "Aragon",
+   "Spain",
+   "Espagne",
+   "España",
+   "Catalonia (Spain)",
+   "Cataluña"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Looming Tower": {
+  "places": [
+   "United States",
+   "USA"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Power Broker": {
+  "places": [],
+  "set": []
+ },
+ "Black Hawk Down": {
+  "places": [
+   "Estados Unidos",
+   "Mogadishu (Somalia)",
+   "Somalia",
+   "United States",
+   "Mogadishu",
+   "Mogadiscio (Somalie)",
+   "Somalie"
+  ],
+  "set": [
+   "america",
+   "africa"
+  ]
+ },
+ "The Hare with Amber Eyes": {
+  "places": [
+   "Europe",
+   "England",
+   "London"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "The Year of Magical Thinking": {
+  "places": [
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Educated": {
+  "places": [
+   "United States",
+   "Idaho"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Dispatches": {
+  "places": [
+   "Vietnam"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Just Kids": {
+  "places": [
+   "United States",
+   "New York (State)",
+   "New York (N.Y.)",
+   "New York"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Open": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Moneyball": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "When Breath Becomes Air": {
+  "places": [
+   "United States",
+   "Arizona",
+   "California",
+   "New Haven CT",
+   "Yale University",
+   "Stanford University"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Born a Crime": {
+  "places": [
+   "South Africa",
+   "Soweto"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "The Boys in the Boat": {
+  "places": [
+   "United States",
+   "Estados Unidos"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Down and Out in Paris and London": {
+  "places": [
+   "London (England)",
+   "Paris (France)",
+   "England",
+   "Paris",
+   "London",
+   "France",
+   "Europe",
+   "París (Francia)",
+   "Londres (Inglaterra)",
+   "Francia"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "Endurance": {
+  "places": [
+   "Antarctica"
+  ],
+  "set": []
+ },
+ "The Everything Store": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Chip War": {
+  "places": [],
+  "set": []
+ },
+ "Empire of the Summer Moon": {
+  "places": [
+   "West (U.S.)"
+  ],
+  "set": []
+ },
+ "Nothing to Envy": {
+  "places": [
+   "Korea (North)",
+   "North Korea"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "The Gulag Archipelago": {
+  "places": [
+   "Soviet Union",
+   "Russia"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Letters from a Stoic": {
+  "places": [],
+  "set": []
+ },
+ "The Death of Ivan Ilyich": {
+  "places": [
+   "Russia"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Soul of a New Machine": {
+  "places": [],
+  "set": []
+ },
+ "Sophie's World": {
+  "places": [
+   "Norway"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Meditations": {
+  "places": [],
+  "set": []
+ },
+ "Man's Search for Meaning": {
+  "places": [
+   "Austria",
+   "Germany",
+   "Deutschland"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Structure of Scientific Revolutions": {
+  "places": [],
+  "set": []
+ },
+ "The Design of Everyday Things": {
+  "places": [],
+  "set": []
+ },
+ "Zen and the Art of Motorcycle Maintenance": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Bird by Bird": {
+  "places": [],
+  "set": []
+ },
+ "Seeing Like a State": {
+  "places": [
+   "Tanzania",
+   "Soviet Russia",
+   "Brasilia"
+  ],
+  "set": [
+   "europe",
+   "africa"
+  ]
+ },
+ "This Is Your Brain on Music": {
+  "places": [],
+  "set": []
+ },
+ "The Story of Art": {
+  "places": [],
+  "set": []
+ },
+ "Nineteen Eighty-Four": {
+  "places": [
+   "England",
+   "London",
+   "Londres (Inglaterra)",
+   "Airstrip One",
+   "Oceania",
+   "Eastasia",
+   "Ministry of Truth",
+   "Ministry of Love",
+   "Ministry of Plenty",
+   "Ministry of Peace"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "On the Shortness of Life": {
+  "places": [],
+  "set": []
+ },
+ "Brave New World": {
+  "places": [
+   "Central London Hatchery",
+   "London",
+   "United Kingdom"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Elephant Vanishes": {
+  "places": [
+   "Japan"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "The Handmaid's Tale": {
+  "places": [
+   "Republic of Gilead",
+   "New England",
+   "United States of America",
+   "Canada",
+   "Jezebel's",
+   "Colonies"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "Do Androids Dream of Electric Sheep?": {
+  "places": [],
+  "set": []
+ },
+ "Days at the Morisaki Bookshop": {
+  "places": [
+   "Tokyo (Japan)",
+   "Jinbochō (Tokyo, Japan)"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Kitchen": {
+  "places": [
+   "Japan"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Shoe Dog": {
+  "places": [],
+  "set": []
+ },
+ "Norwegian Wood": {
+  "places": [
+   "Japan"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Small Things Like These": {
+  "places": [
+   "Ireland"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Foster": {
+  "places": [
+   "Ireland"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Flowers for Algernon": {
+  "places": [
+   "United States",
+   "Beekman College Center for Retarded Adults",
+   "Brooklyn",
+   "Warren Home School"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Of Mice and Men": {
+  "places": [
+   "California",
+   "Salinas River Valley",
+   "Salinas, Valle del Río (California)",
+   "Soledad CA",
+   "Salinas River Valley (Calif.)",
+   "Salinas, Vallée du (Calif.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Old Man and the Sea": {
+  "places": [
+   "Cuba",
+   "Gulf Stream",
+   "Straits of Florida",
+   "Swahili"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "Factfulness": {
+  "places": [],
+  "set": []
+ },
+ "The Bell Jar": {
+  "places": [
+   "New York City",
+   "Adirondacks",
+   "Boston",
+   "United States",
+   "Belsize"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Uninhabitable Earth": {
+  "places": [],
+  "set": []
+ },
+ "On Writing": {
+  "places": [],
+  "set": []
+ },
+ "How to Avoid a Climate Disaster": {
+  "places": [],
+  "set": []
+ },
+ "A Room of One's Own": {
+  "places": [
+   "Grande-Bretagne",
+   "Great Britain",
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Debt: The First 5000 Years": {
+  "places": [],
+  "set": []
+ },
+ "Capital in the Twenty-First Century": {
+  "places": [],
+  "set": []
+ },
+ "Ways of Seeing": {
+  "places": [],
+  "set": []
+ },
+ "Reminiscences of a Stock Operator": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Great Crash 1929": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Trillions": {
+  "places": [],
+  "set": []
+ },
+ "Convenience Store Woman": {
+  "places": [
+   "Japan"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "More Money Than God": {
+  "places": [],
+  "set": []
+ },
+ "Devil Take the Hindmost": {
+  "places": [],
+  "set": []
+ },
+ "Seabiscuit": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Barbarian Days": {
+  "places": [],
+  "set": []
+ },
+ "Born to Run": {
+  "places": [
+   "Copper Canyon Region",
+   "Mexico",
+   "United States"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "Friday Night Lights": {
+  "places": [
+   "Odessa",
+   "Texas",
+   "Odessa (Tex.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Rider": {
+  "places": [],
+  "set": []
+ },
+ "The Art of Fielding": {
+  "places": [
+   "Region Michigan, Lake",
+   "Lake Michigan",
+   "Great Lakes Region (North America)",
+   "Michigan",
+   "Westish College"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Unbroken": {
+  "places": [
+   "United States",
+   "Japan",
+   "Pacific Area",
+   "Japón"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "Life": {
+  "places": [],
+  "set": []
+ },
+ "The Secret Race": {
+  "places": [],
+  "set": []
+ },
+ "Chronicles: Volume One": {
+  "places": [
+   "United States",
+   "USA"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "How Music Works": {
+  "places": [
+   "Scotland"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Beyond a Boundary": {
+  "places": [
+   "West Indies",
+   "British West Indies"
+  ],
+  "set": [
+   "latam"
+  ]
+ },
+ "Meet Me in the Bathroom": {
+  "places": [],
+  "set": []
+ },
+ "The Rest Is Noise": {
+  "places": [],
+  "set": []
+ },
+ "Heart of Darkness": {
+  "places": [],
+  "set": []
+ },
+ "The Innovators": {
+  "places": [],
+  "set": []
+ },
+ "Hackers": {
+  "places": [],
+  "set": []
+ },
+ "Seven Days in the Art World": {
+  "places": [],
+  "set": []
+ },
+ "The Master Switch": {
+  "places": [],
+  "set": []
+ },
+ "Where Wizards Stay Up Late": {
+  "places": [],
+  "set": []
+ },
+ "Genius Makers": {
+  "places": [],
+  "set": []
+ },
+ "Fever Pitch": {
+  "places": [
+   "England",
+   "Great Britain"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Age of Surveillance Capitalism": {
+  "places": [],
+  "set": []
+ },
+ "Countdown to Zero Day": {
+  "places": [],
+  "set": []
+ },
+ "Masters of Doom": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Weapons of Math Destruction": {
+  "places": [],
+  "set": []
+ },
+ "Arabian Sands": {
+  "places": [
+   "Arabian Peninsula",
+   "Arabia",
+   "Rub  al Khali"
+  ],
+  "set": [
+   "mideast"
+  ]
+ },
+ "The Great Railway Bazaar": {
+  "places": [
+   "Asia",
+   "Asie"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Leonardo da Vinci": {
+  "places": [
+   "Italy"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Console Wars": {
+  "places": [
+   "Barcelona",
+   "Hawaii",
+   "Japan",
+   "Tucson",
+   "San Francisco"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "A Time of Gifts": {
+  "places": [
+   "Europe",
+   "Central Europe"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Tracks": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Songlines": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "A Walk in the Woods": {
+  "places": [
+   "Appalachian Trail",
+   "Gatlinburg",
+   "Tennessee",
+   "Centralia",
+   "Roanoke",
+   "Virginia",
+   "Milo",
+   "Maine"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Old Ways": {
+  "places": [
+   "England",
+   "Scotland"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Wild": {
+  "places": [
+   "Pacific Crest Trail",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Silent Spring": {
+  "places": [],
+  "set": []
+ },
+ "Underland": {
+  "places": [],
+  "set": []
+ },
+ "Desert Solitaire": {
+  "places": [
+   "Arches National Park",
+   "Arches National Park (Utah)",
+   "United States",
+   "Utah"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Notes from a Small Island": {
+  "places": [
+   "England",
+   "Great Britain",
+   "United Kingdom",
+   "Wales",
+   "Scotland"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Wilding": {
+  "places": [
+   "Klondike River Valley (Yukon)",
+   "Yukon",
+   "Canada",
+   "Yukon Territory",
+   "Klondike, Valle del Río (Yukon)",
+   "Klondike River Valley",
+   "Alaska",
+   "Canadian Northwest"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Hidden Life of Trees": {
+  "places": [
+   "Hümmel (Germany)"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Shock of the New": {
+  "places": [],
+  "set": []
+ },
+ "The Corrections": {
+  "places": [
+   "St. Louis",
+   "Missouri",
+   "Philadelphia",
+   "Pennsylvania",
+   "New York",
+   "Queens",
+   "Manhattan",
+   "Lithuania",
+   "America",
+   "East Coast"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Little Life": {
+  "places": [
+   "New York City",
+   "Lispenard Street",
+   "Chinatown",
+   "Upper East Side",
+   "SoHo",
+   "Queens",
+   "Brooklyn",
+   "the Bronx",
+   "Manhattan",
+   "Haiti"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "Pachinko": {
+  "places": [
+   "Korea",
+   "Japan",
+   "Corée",
+   "Japon"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "The Outrun": {
+  "places": [
+   "Orkney (Scotland)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "White Teeth": {
+  "places": [
+   "Great Britain",
+   "London (England)",
+   "England",
+   "London",
+   "Jamaica",
+   "India"
+  ],
+  "set": [
+   "britain",
+   "asia",
+   "latam"
+  ]
+ },
+ "Homegoing": {
+  "places": [
+   "Fanteland",
+   "Ghana",
+   "America",
+   "Gold Coast",
+   "Cape Coast Castle",
+   "Baltimore",
+   "Pratt City",
+   "Birmingham AL",
+   "Alabama",
+   "Harlem"
+  ],
+  "set": [
+   "america",
+   "africa"
+  ]
+ },
+ "The Goldfinch": {
+  "places": [
+   "Amsterdam (Netherlands)",
+   "Las Vegas",
+   "Nevada (United States)",
+   "New York City",
+   "New York (United States)",
+   "Upper East Side",
+   "New York (N.Y.)"
+  ],
+  "set": [
+   "america",
+   "europe"
+  ]
+ },
+ "Interpreter of Maladies": {
+  "places": [
+   "Inde"
+  ],
+  "set": []
+ },
+ "Shuggie Bain": {
+  "places": [],
+  "set": []
+ },
+ "Americanah": {
+  "places": [
+   "United States",
+   "Nigeria",
+   "England",
+   "New York",
+   "Philadelphia",
+   "Lagos",
+   "London"
+  ],
+  "set": [
+   "britain",
+   "america",
+   "africa"
+  ]
+ },
+ "Demon Copperhead": {
+  "places": [
+   "Appalachian region",
+   "Lee County (Va.)"
+  ],
+  "set": []
+ },
+ "Girl, Woman, Other": {
+  "places": [
+   "london"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Tomorrow, and Tomorrow, and Tomorrow": {
+  "places": [],
+  "set": []
+ },
+ "Atonement": {
+  "places": [
+   "England",
+   "Great Britain",
+   "University of Cambridge"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Vanishing Half": {
+  "places": [
+   "Louisiana",
+   "New Orleans",
+   "Washington",
+   "D.C.",
+   "Los Angeles",
+   "UCLA"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Hamnet": {
+  "places": [],
+  "set": []
+ },
+ "The Song of Achilles": {
+  "places": [
+   "Troy",
+   "Phthia",
+   "Turkey",
+   "Troy (Extinct city)",
+   "Greece"
+  ],
+  "set": [
+   "europe",
+   "mideast"
+  ]
+ },
+ "Cloudstreet": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "A Sand County Almanac": {
+  "places": [],
+  "set": []
+ },
+ "Boy Swallows Universe": {
+  "places": [
+   "Brisbane Metropolitan Area (Qld.)",
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Trust": {
+  "places": [
+   "New York"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Living Mountain": {
+  "places": [],
+  "set": []
+ },
+ "The Secret River": {
+  "places": [
+   "Australia",
+   "New South Wales"
+  ],
+  "set": [
+   "britain",
+   "oceania"
+  ]
+ },
+ "Too Much Lip": {
+  "places": [],
+  "set": []
+ },
+ "The Narrow Road to the Deep North": {
+  "places": [
+   "Burma"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "True History of the Kelly Gang": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Silence of the Lambs": {
+  "places": [
+   "United States",
+   "Quantico",
+   "Maryland",
+   "Kansas City",
+   "West Virginia",
+   "Smithsonian Institution",
+   "Tennessee"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Devil in a Blue Dress": {
+  "places": [
+   "California",
+   "Los Angeles",
+   "Los Angeles (Calif.)",
+   "Los Angeles (California)",
+   "Calif Los Angeles",
+   "Schwarze"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Half of a Yellow Sun": {
+  "places": [],
+  "set": []
+ },
+ "Picnic at Hanging Rock": {
+  "places": [],
+  "set": []
+ },
+ "The Wager": {
+  "places": [],
+  "set": []
+ },
+ "Killers of the Flower Moon": {
+  "places": [
+   "Oklahoma",
+   "Osage County",
+   "Osage County (Okla.)",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Devil in the White City": {
+  "places": [
+   "Illinois",
+   "Chicago",
+   "Chicago (Ill.)",
+   "mei guo"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Carpentaria": {
+  "places": [
+   "Queensland",
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "I'll Be Gone in the Dark": {
+  "places": [],
+  "set": []
+ },
+ "The Girl with the Dragon Tattoo": {
+  "places": [
+   "Sweden",
+   "Stockholm",
+   "Hedeby Island",
+   "Australia",
+   "Miami",
+   "Marbella",
+   "Spain",
+   "Stockholm (Sweden)"
+  ],
+  "set": [
+   "europe",
+   "oceania"
+  ]
+ },
+ "Circe": {
+  "places": [],
+  "set": []
+ },
+ "L.A. Confidential": {
+  "places": [],
+  "set": []
+ },
+ "Hyperion": {
+  "places": [],
+  "set": []
+ },
+ "Neuromancer": {
+  "places": [
+   "Japan",
+   "Earth Orbit",
+   "Chiba",
+   "Istanbul",
+   "BAMA",
+   "Boston Atlanta Metropolitan Axis",
+   "Chiba City",
+   "Freeside"
+  ],
+  "set": [
+   "america",
+   "europe",
+   "asia"
+  ]
+ },
+ "Childhood's End": {
+  "places": [],
+  "set": []
+ },
+ "Foundation": {
+  "places": [],
+  "set": []
+ },
+ "Rendezvous with Rama": {
+  "places": [],
+  "set": []
+ },
+ "The Fifth Season": {
+  "places": [
+   "Castrima",
+   "Dibars",
+   "Arcara",
+   "Allia",
+   "Tirimo",
+   "Palela",
+   "Meov",
+   "Fulcrum",
+   "Yumenes"
+  ],
+  "set": []
+ },
+ "The Yield": {
+  "places": [],
+  "set": []
+ },
+ "The Martian": {
+  "places": [
+   "Mars (Planet)",
+   "Earth",
+   "Acidalia Planitia (Mars)",
+   "Schiaparelli (Mars)",
+   "Houston (Tex.)",
+   "Cape Canaveral (Fla.)",
+   "Chicago (Ill.)",
+   "Marte (Planeta)",
+   "Mars (Planète)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Canticle for Leibowitz": {
+  "places": [],
+  "set": []
+ },
+ "Children of Time": {
+  "places": [],
+  "set": []
+ },
+ "Annihilation": {
+  "places": [],
+  "set": []
+ },
+ "Roadside Picnic": {
+  "places": [],
+  "set": []
+ },
+ "Kindred": {
+  "places": [
+   "Los Angeles (Calif.)",
+   "Southern States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Long Goodbye": {
+  "places": [],
+  "set": []
+ },
+ "Blindness": {
+  "places": [],
+  "set": []
+ },
+ "Ancillary Justice": {
+  "places": [],
+  "set": []
+ },
+ "Parable of the Sower": {
+  "places": [
+   "Southern California",
+   "California"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Wind-Up Bird Chronicle": {
+  "places": [],
+  "set": []
+ },
+ "We": {
+  "places": [
+   "Soviet Union",
+   "Wallsend",
+   "Tyneside"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Postwar": {
+  "places": [
+   "Europe"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Stories of Your Life and Others": {
+  "places": [
+   "Babylon",
+   "Mei guo"
+  ],
+  "set": []
+ },
+ "Stalingrad": {
+  "places": [
+   "Volgograd",
+   "Russia"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Silk Roads": {
+  "places": [
+   "Silk Road"
+  ],
+  "set": []
+ },
+ "The Thursday Murder Club": {
+  "places": [],
+  "set": []
+ },
+ "King Leopold's Ghost": {
+  "places": [
+   "Congo (Democratic Republic)",
+   "Congo (République démocratique)",
+   "(Congo) (Democratic Republic)",
+   "Belgia",
+   "Demokratyczna Republika Konga",
+   "Kongo",
+   "Afryka"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "The Warmth of Other Suns": {
+  "places": [
+   "United States",
+   "Mississippi",
+   "Chicago",
+   "Illinois",
+   "Florida",
+   "Harlem",
+   "Louisiana"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Midnight in Chernobyl": {
+  "places": [
+   "Ukraine",
+   "Chornobyl",
+   "Russia",
+   "Soviet Union",
+   "Soviet Republics",
+   "Chernobyl Nuclear power plant",
+   "exclusion zone",
+   "Pripyat",
+   "Paramilitary Fire Station Number Two",
+   "Paramilitary Fire Station Number Six"
+  ],
+  "set": [
+   "america",
+   "europe"
+  ]
+ },
+ "Hiroshima": {
+  "places": [
+   "Hiroshima-shi",
+   "Japan",
+   "Hiroshima-shi (Japan)",
+   "Hiroshima (Japón)",
+   "Japón",
+   "Hiroshima"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "A Distant Mirror": {
+  "places": [
+   "France",
+   "França"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Splendid and the Vile": {
+  "places": [],
+  "set": []
+ },
+ "Genghis Khan and the Making of the Modern World": {
+  "places": [],
+  "set": []
+ },
+ "Why Nations Fail": {
+  "places": [
+   "Developing countries"
+  ],
+  "set": []
+ },
+ "Prisoners of Geography": {
+  "places": [],
+  "set": []
+ },
+ "Between the World and Me": {
+  "places": [],
+  "set": []
+ },
+ "The Dawn of Everything": {
+  "places": [
+   "Europe",
+   "Eurasia",
+   "China",
+   "India",
+   "Indian Subcontinent",
+   "California"
+  ],
+  "set": [
+   "america",
+   "europe",
+   "asia"
+  ]
+ },
+ "Exhalation": {
+  "places": [],
+  "set": []
+ },
+ "The Body Keeps the Score": {
+  "places": [],
+  "set": []
+ },
+ "The Checklist Manifesto": {
+  "places": [],
+  "set": []
+ },
+ "Four Thousand Weeks": {
+  "places": [],
+  "set": []
+ },
+ "The Righteous Mind": {
+  "places": [],
+  "set": []
+ },
+ "Range": {
+  "places": [],
+  "set": []
+ },
+ "Deep Work": {
+  "places": [],
+  "set": []
+ },
+ "Quiet": {
+  "places": [],
+  "set": []
+ },
+ "Atomic Habits": {
+  "places": [],
+  "set": []
+ },
+ "Superforecasting": {
+  "places": [],
+  "set": []
+ },
+ "Justice": {
+  "places": [],
+  "set": []
+ },
+ "The Black Swan": {
+  "places": [],
+  "set": []
+ },
+ "The Intelligent Investor": {
+  "places": [],
+  "set": []
+ },
+ "One Up on Wall Street": {
+  "places": [],
+  "set": []
+ },
+ "Antifragile": {
+  "places": [],
+  "set": []
+ },
+ "Caste": {
+  "places": [],
+  "set": []
+ },
+ "A Random Walk Down Wall Street": {
+  "places": [],
+  "set": []
+ },
+ "The Consolations of Philosophy": {
+  "places": [],
+  "set": []
+ },
+ "Poor Charlie's Almanack": {
+  "places": [],
+  "set": []
+ },
+ "The Outsiders": {
+  "places": [],
+  "set": []
+ },
+ "Being Mortal": {
+  "places": [],
+  "set": []
+ },
+ "Too Big to Fail": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Snowball": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Billion Dollar Whale": {
+  "places": [
+   "United States",
+   "Wall Street (New York, N.Y.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Behave": {
+  "places": [],
+  "set": []
+ },
+ "Flash Boys": {
+  "places": [],
+  "set": []
+ },
+ "Number Go Up": {
+  "places": [],
+  "set": []
+ },
+ "Steve Jobs": {
+  "places": [
+   "United States",
+   "Estados Unidos",
+   "San Francisco"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Black Edge": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Wild Swans": {
+  "places": [
+   "China",
+   "America and Britain",
+   "Chine"
+  ],
+  "set": [
+   "britain",
+   "america",
+   "asia"
+  ]
+ },
+ "Angela's Ashes": {
+  "places": [
+   "Ireland",
+   "Limerick (Limerick, Ireland)",
+   "Limerick (Limerick)",
+   "Limerick",
+   "Limerick (Limerick, Irlanda)",
+   "Limerick (Ireland : County)",
+   "Limerick (Irlande)",
+   "Irlande"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "I Know Why the Caged Bird Sings": {
+  "places": [
+   "Arkansas",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Long Walk to Freedom": {
+  "places": [
+   "South Africa",
+   "Zululand",
+   "Mozambique",
+   "Nigeria",
+   "Cape Town",
+   "Britain",
+   "África del Sur",
+   "Afrique du Sud",
+   "nan fei ( a zha ni ya )."
+  ],
+  "set": [
+   "britain",
+   "africa"
+  ]
+ },
+ "The Smartest Guys in the Room": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Speak, Memory": {
+  "places": [],
+  "set": []
+ },
+ "How to Change Your Mind": {
+  "places": [],
+  "set": []
+ },
+ "Maus": {
+  "places": [
+   "Europe",
+   "Germany",
+   "Poland",
+   "USA",
+   "France",
+   "United States",
+   "États-Unis",
+   "Pologne",
+   "Nazi Germany"
+  ],
+  "set": [
+   "america",
+   "europe"
+  ]
+ },
+ "A Moveable Feast": {
+  "places": [
+   "France",
+   "Paris",
+   "Paris (France)",
+   "París (Francia)"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Persepolis": {
+  "places": [
+   "Iran",
+   "Tehran",
+   "Vienna",
+   "Irán"
+  ],
+  "set": [
+   "europe",
+   "mideast"
+  ]
+ },
+ "I Feel Bad About My Neck": {
+  "places": [
+   "New York"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "This Is Going to Hurt": {
+  "places": [
+   "Great Britain"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Me Talk Pretty One Day": {
+  "places": [
+   "Paris",
+   "France",
+   "Normandy",
+   "Raleigh",
+   "North Carolina",
+   "New York City",
+   "Asia",
+   "Africa"
+  ],
+  "set": [
+   "america",
+   "europe",
+   "asia",
+   "africa"
+  ]
+ },
+ "The Diary of a Nobody": {
+  "places": [],
+  "set": []
+ },
+ "Bridget Jones's Diary": {
+  "places": [
+   "England",
+   "Inglaterra",
+   "London"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Straight Man": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Code of the Woosters": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Kite Runner": {
+  "places": [
+   "Afghanistan",
+   "Kabul (Afganistán)",
+   "Kabul (Afghanistan)",
+   "Kābol (Afghanistan)",
+   "Kabul",
+   "Hazarajat",
+   "Soviet Union",
+   "Peshawar",
+   "Pakistan",
+   "America"
+  ],
+  "set": [
+   "america",
+   "europe",
+   "asia"
+  ]
+ },
+ "Life After Life": {
+  "places": [
+   "Great Britain"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Citadel": {
+  "places": [
+   "London (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Den of Thieves": {
+  "places": [
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Brooklyn": {
+  "places": [
+   "Brooklyn (New York, N.Y.)",
+   "Ireland",
+   "United States",
+   "Brooklyn",
+   "New York",
+   "New York (State)"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "Where'd You Go, Bernadette": {
+  "places": [],
+  "set": []
+ },
+ "Money": {
+  "places": [
+   "New York",
+   "New York (State)",
+   "England",
+   "London (England)",
+   "London",
+   "New York (N.Y.)",
+   "United States"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "Day": {
+  "places": [],
+  "set": []
+ },
+ "The Diary of a Young Girl": {
+  "places": [
+   "Netherlands",
+   "Amsterdam (Netherlands)",
+   "Amsterdam",
+   "De guo",
+   "Europe",
+   "Pays-Bas"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "May We Be Forgiven": {
+  "places": [],
+  "set": []
+ },
+ "Possession": {
+  "places": [
+   "England",
+   "France",
+   "Brittany",
+   "Yorkshire",
+   "Boggle Hole",
+   "ying guo"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "Fortune Smiles": {
+  "places": [],
+  "set": []
+ },
+ "Cuba: An American History": {
+  "places": [],
+  "set": []
+ },
+ "The Line of Beauty": {
+  "places": [
+   "England",
+   "Notting Hill",
+   "London",
+   "University of Oxford"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Namesake": {
+  "places": [
+   "Massachusetts"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Orphan Master's Son": {
+  "places": [
+   "North Korea",
+   "Pyongyang"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Black Rock White City": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Internal Enemy": {
+  "places": [],
+  "set": []
+ },
+ "Poor Things": {
+  "places": [
+   "Glasgow",
+   "Glasgow (Scotland)",
+   "Scotland"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "William Cooper's Town": {
+  "places": [
+   "Cooperstown (N.Y.)",
+   "Cooperstown"
+  ],
+  "set": []
+ },
+ "Journey to the Stone Country": {
+  "places": [
+   "Bowen Basin (Qld.)",
+   "Melbourne (Vic.)"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Roots: The Saga of an American Family": {
+  "places": [
+   "Southern states"
+  ],
+  "set": []
+ },
+ "Alfred Hitchcock Presents": {
+  "places": [],
+  "set": []
+ },
+ "The Demolished Man": {
+  "places": [],
+  "set": []
+ },
+ "How to Be Both": {
+  "places": [],
+  "set": []
+ },
+ "The Color Purple": {
+  "places": [
+   "Southern States",
+   "United States",
+   "Georgia",
+   "Africa",
+   "Tennessee"
+  ],
+  "set": [
+   "america",
+   "africa"
+  ]
+ },
+ "That Night": {
+  "places": [],
+  "set": []
+ },
+ "Falling Awake": {
+  "places": [],
+  "set": []
+ },
+ "Foreign Affairs": {
+  "places": [
+   "London (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Advise and Consent": {
+  "places": [],
+  "set": []
+ },
+ "The Labyrinth": {
+  "places": [],
+  "set": []
+ },
+ "Ordeal of the Union": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Everlasting": {
+  "places": [],
+  "set": []
+ },
+ "Charming Billy": {
+  "places": [
+   "Bronx (New York, N.Y.)",
+   "N.Y.) Bronx (New York",
+   "New York",
+   "New York (State)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Subtle Is the Lord": {
+  "places": [],
+  "set": []
+ },
+ "The Collected Stories of Amy Hempel": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Invisible Child: Poverty, Survival & Hope in an American City": {
+  "places": [],
+  "set": []
+ },
+ "A Constitutional History of the United States": {
+  "places": [],
+  "set": []
+ },
+ "Small Island": {
+  "places": [
+   "England",
+   "London",
+   "London (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Pure": {
+  "places": [],
+  "set": []
+ },
+ "Less": {
+  "places": [
+   "San Francisco",
+   "New York City",
+   "Mexico City",
+   "Turin, Italy",
+   "Berlin",
+   "Paris",
+   "Morocco",
+   "India",
+   "Japan"
+  ],
+  "set": [
+   "america",
+   "europe",
+   "asia",
+   "africa",
+   "latam"
+  ]
+ },
+ "The Noonday Demon": {
+  "places": [],
+  "set": []
+ },
+ "The Ancestor Game": {
+  "places": [
+   "Australia",
+   "Melbourne (Vic.)"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Hotel du Lac": {
+  "places": [
+   "Switzerland"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Milkman": {
+  "places": [],
+  "set": []
+ },
+ "Gulag: A History": {
+  "places": [
+   "Soviet Union"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Bel Canto": {
+  "places": [
+   "South America"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "All That I Am": {
+  "places": [],
+  "set": []
+ },
+ "Night Games": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Gathering": {
+  "places": [
+   "Dublin (Ireland)",
+   "Ireland"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Praiseworthy": {
+  "places": [],
+  "set": []
+ },
+ "Breathing Lessons": {
+  "places": [
+   "Baltimore (Md.)",
+   "Pennsylvania",
+   "Maryland",
+   "Baltimore"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Fugitive Pieces": {
+  "places": [],
+  "set": []
+ },
+ "Listen! The Wind": {
+  "places": [
+   "Bathurst (Gambia)",
+   "Natal (Brazil)"
+  ],
+  "set": [
+   "latam"
+  ]
+ },
+ "Madame Doubtfire": {
+  "places": [],
+  "set": []
+ },
+ "The Hemingses of Monticello": {
+  "places": [],
+  "set": []
+ },
+ "Pilgrim at Tinker Creek": {
+  "places": [],
+  "set": []
+ },
+ "A Desolation Called Peace": {
+  "places": [
+   "Lsel Station",
+   "Peloa-2"
+  ],
+  "set": []
+ },
+ "All the Light We Cannot See": {
+  "places": [
+   "Paris",
+   "Saint-Malo",
+   "Germany",
+   "Russia",
+   "France",
+   "Saint-Malo (France)",
+   "Francia"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Dinner at the Homesick Restaurant": {
+  "places": [
+   "Baltimore (Md.)",
+   "Maryland",
+   "Baltimore"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "North to the Orient": {
+  "places": [],
+  "set": []
+ },
+ "Postcards": {
+  "places": [
+   "New England",
+   "United States"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "The Age of Jackson": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The God of Small Things": {
+  "places": [
+   "India",
+   "Inde",
+   "Kerala",
+   "Ayemenem",
+   "Calcutta",
+   "England",
+   "America"
+  ],
+  "set": [
+   "britain",
+   "america",
+   "asia"
+  ]
+ },
+ "The Fountains of Paradise": {
+  "places": [],
+  "set": []
+ },
+ "Preparation for the Next Life": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Memory Called Empire": {
+  "places": [
+   "Lsel Station",
+   "Teixcalaan"
+  ],
+  "set": []
+ },
+ "The White Tiger": {
+  "places": [],
+  "set": []
+ },
+ "Bluebird, Bluebird": {
+  "places": [
+   "East Texas"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Kids": {
+  "places": [],
+  "set": []
+ },
+ "The Lacuna": {
+  "places": [
+   "Mexico",
+   "North Carolina",
+   "México"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "The Poisonwood Bible": {
+  "places": [
+   "Congo (Democratic Republic)",
+   "Belgian Congo"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "The Proud Tower": {
+  "places": [
+   "Europe",
+   "United States"
+  ],
+  "set": [
+   "america",
+   "europe"
+  ]
+ },
+ "Stilwell and the American Experience in China, 1911–45": {
+  "places": [],
+  "set": []
+ },
+ "Arctic Dreams": {
+  "places": [
+   "Arctic regions",
+   "Regiones árticas",
+   "Bering Strait",
+   "Davis Strait",
+   "Northern Canada",
+   "Polo Nord - Descrizioni e viaggi"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Famished Road": {
+  "places": [
+   "Africa",
+   "Nigeria",
+   "Nigerian fiction"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "Sacred Hunger": {
+  "places": [],
+  "set": []
+ },
+ "The Course of Empire": {
+  "places": [
+   "United States",
+   "North America",
+   "America"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Ideological Origins of the American Revolution": {
+  "places": [
+   "United States",
+   "États-Unis",
+   "EE.UU"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Everything Begins and Ends at the Kentucky Club": {
+  "places": [],
+  "set": []
+ },
+ "Across the Wide Missouri": {
+  "places": [
+   "West (U.S.)",
+   "Missouri (États-Unis)",
+   "États-Unis (Ouest)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Magic Barrel": {
+  "places": [
+   "Italy",
+   "New York (N.Y.)"
+  ],
+  "set": [
+   "america",
+   "europe"
+  ]
+ },
+ "The Fixer": {
+  "places": [
+   "Ukraine",
+   "Kiev (Ukraine)",
+   "Russia (Federation)"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Elected Member": {
+  "places": [],
+  "set": []
+ },
+ "Chasing Vermeer": {
+  "places": [],
+  "set": []
+ },
+ "Shiloh and Other Stories": {
+  "places": [
+   "Kentucky"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Stillness at Appomattox": {
+  "places": [
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Broken Dreams: Vanity, Greed and the Souring of British Football": {
+  "places": [],
+  "set": []
+ },
+ "Banks and Politics in America": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "On the Black Hill": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Downbelow Station": {
+  "places": [],
+  "set": []
+ },
+ "Blue Heaven": {
+  "places": [],
+  "set": []
+ },
+ "Cyteen": {
+  "places": [],
+  "set": []
+ },
+ "Mary Chesnut's Civil War": {
+  "places": [
+   "Confederate States of America",
+   "Southern States",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Call Me Zebra": {
+  "places": [],
+  "set": []
+ },
+ "Waiting for Snow in Havana": {
+  "places": [],
+  "set": []
+ },
+ "Abraham Lincoln: The War Years": {
+  "places": [
+   "United States",
+   "États-Unis",
+   "EE. UU"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Dragons of Eden": {
+  "places": [],
+  "set": []
+ },
+ "Fin-de-siècle Vienna": {
+  "places": [],
+  "set": []
+ },
+ "Larry's Party": {
+  "places": [],
+  "set": []
+ },
+ "The Stone Diaries": {
+  "places": [],
+  "set": []
+ },
+ "Destiny of the Republic": {
+  "places": [
+   "United States",
+   "Washington DC",
+   "Mentor OH",
+   "Philadelphia PA"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Imperial Reckoning": {
+  "places": [
+   "Kenya"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "Cold Mountain": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The American Revolution: A Constitutional Interpretation": {
+  "places": [],
+  "set": []
+ },
+ "A Distant Shore": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Coming Back to Me": {
+  "places": [],
+  "set": []
+ },
+ "Beat Not the Bones": {
+  "places": [
+   "Papua New Guinea"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Middle Passage": {
+  "places": [],
+  "set": []
+ },
+ "Interior Chinatown": {
+  "places": [],
+  "set": []
+ },
+ "Dick Tracy": {
+  "places": [],
+  "set": []
+ },
+ "The City & the City": {
+  "places": [],
+  "set": []
+ },
+ "Citizen X": {
+  "places": [],
+  "set": []
+ },
+ "Highways to a War": {
+  "places": [
+   "Cambodia",
+   "Australia"
+  ],
+  "set": [
+   "asia",
+   "oceania"
+  ]
+ },
+ "The Doubleman": {
+  "places": [],
+  "set": []
+ },
+ "Unsettled Ground": {
+  "places": [],
+  "set": []
+ },
+ "Unworthy Republic": {
+  "places": [],
+  "set": []
+ },
+ "The Ants": {
+  "places": [],
+  "set": []
+ },
+ "The Nickel Boys": {
+  "places": [],
+  "set": []
+ },
+ "Sag Harbor": {
+  "places": [
+   "Sag Harbor (N.Y.)"
+  ],
+  "set": []
+ },
+ "The Berlin Memorandum": {
+  "places": [],
+  "set": []
+ },
+ "The Underground Railroad": {
+  "places": [
+   "United States",
+   "Georgia",
+   "South Carolina",
+   "Estados Unidos"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Pulitzer Prize for History": {
+  "places": [],
+  "set": []
+ },
+ "Blackout/All Clear": {
+  "places": [],
+  "set": []
+ },
+ "Doomsday Book": {
+  "places": [
+   "Europe"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Let the Great World Spin": {
+  "places": [
+   "New York (State)",
+   "New York (N.Y.)",
+   "New York",
+   "New York City"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Vernon God Little": {
+  "places": [
+   "Texas"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "All the Pretty Horses": {
+  "places": [
+   "Mexican-American Border Region",
+   "Texas",
+   "Mexico"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "A Horse of Air": {
+  "places": [],
+  "set": []
+ },
+ "And Their Children After Them": {
+  "places": [
+   "Alabama"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Promise": {
+  "places": [],
+  "set": []
+ },
+ "True Blue: The Oxford Boat Race Mutiny": {
+  "places": [],
+  "set": []
+ },
+ "The Americans: The Democratic Experience": {
+  "places": [
+   "United States",
+   "États-Unis",
+   "EE. UU"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Angel Down": {
+  "places": [],
+  "set": []
+ },
+ "Age of Fracture": {
+  "places": [],
+  "set": []
+ },
+ "The Prize: The Epic Quest for Oil, Money, and Power": {
+  "places": [],
+  "set": []
+ },
+ "Rebecca": {
+  "places": [
+   "Cornwall (County)",
+   "Cornwall (England : County)",
+   "England",
+   "Great Britain",
+   "Corwall (COunty)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Adventures of Sam Spade": {
+  "places": [],
+  "set": []
+ },
+ "The Chaneysville Incident": {
+  "places": [],
+  "set": []
+ },
+ "The Problem of Slavery in Western Culture": {
+  "places": [],
+  "set": []
+ },
+ "The Glade Within the Grove": {
+  "places": [],
+  "set": []
+ },
+ "Snow Falling on Cedars": {
+  "places": [
+   "Washington (State)",
+   "San Piedro",
+   "Washington",
+   "Puget Sound",
+   "Tarawa",
+   "Horace Whaley",
+   "Ole Jurgensen",
+   "Manzanar",
+   "California",
+   "Point White lighthouse station"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Glass Canoe": {
+  "places": [],
+  "set": []
+ },
+ "The Dead Hand": {
+  "places": [],
+  "set": []
+ },
+ "Arab and Jew: Wounded Spirits in a Promised Land": {
+  "places": [
+   "Israel",
+   "West Bank",
+   "Gaza Strip",
+   "Cisjordanie",
+   "Bande de Gaza",
+   "Israël",
+   "West bank"
+  ],
+  "set": [
+   "mideast"
+  ]
+ },
+ "How Far Can You Go?": {
+  "places": [],
+  "set": []
+ },
+ "The Impending Crisis, 1848–1861": {
+  "places": [],
+  "set": []
+ },
+ "W. E. B. Du Bois: Biography of a Race, 1868–1919": {
+  "places": [],
+  "set": []
+ },
+ "The Great World": {
+  "places": [],
+  "set": []
+ },
+ "Freedom from Fear: The American People in Depression and War, 1929–1945": {
+  "places": [],
+  "set": []
+ },
+ "Saville": {
+  "places": [
+   "Yorkshire (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Lenin's Tomb: The Last Days of the Soviet Empire": {
+  "places": [],
+  "set": []
+ },
+ "Flesh": {
+  "places": [
+   "Hungary",
+   "London (England)"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "The Secret Lives of Church Ladies": {
+  "places": [],
+  "set": []
+ },
+ "The Angel Esmeralda": {
+  "places": [
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Frederick Douglass: Prophet of Freedom": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Mao II": {
+  "places": [],
+  "set": []
+ },
+ "Carry Me Home": {
+  "places": [
+   "Birmingham (Ala.)",
+   "Alabama",
+   "Birmingham"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Djinn Patrol on the Purple Line": {
+  "places": [],
+  "set": []
+ },
+ "Slavery by Another Name": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Gödel, Escher, Bach": {
+  "places": [],
+  "set": []
+ },
+ "Jefferson and His Time": {
+  "places": [
+   "Virginia",
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Billy Bathgate": {
+  "places": [
+   "New York",
+   "New York (N.Y.)",
+   "New York (State)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Shipping News": {
+  "places": [
+   "Newfoundland",
+   "Newfoundland and Labrador",
+   "upstate",
+   "New York",
+   "Killick-Claw",
+   "Brooklyn"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Sixty Stories": {
+  "places": [],
+  "set": []
+ },
+ "On Human Nature": {
+  "places": [],
+  "set": []
+ },
+ "All Aunt Hagar's Children": {
+  "places": [
+   "Washington (D.C.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Dred Scott Case: Its Significance in American Law and Politics": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Edge of Sadness": {
+  "places": [
+   "Boston (Mass.)",
+   "Boston",
+   "Massachusetts"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Known World": {
+  "places": [
+   "Virginia",
+   "Manchester <NH>",
+   "Schwarze",
+   "NH Manchester"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "A Girl Is a Half-formed Thing": {
+  "places": [],
+  "set": []
+ },
+ "Amity and Prosperity": {
+  "places": [
+   "Pennsylvania",
+   "Prosperity",
+   "Amity (Washington County : Township)",
+   "Amity (Washington County, Pa. : Township)",
+   "Prosperity (Pa.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Counterfeit Son": {
+  "places": [],
+  "set": []
+ },
+ "Encounters at the Heart of the World": {
+  "places": [],
+  "set": []
+ },
+ "The March": {
+  "places": [
+   "Georgia",
+   "South Carolina",
+   "North Carolina",
+   "Géorgie (État)",
+   "Caroline du Sud",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Luminaries": {
+  "places": [
+   "New Zealand",
+   "Hokitika",
+   "Nouvelle-Zélande"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Sixth Extinction: An Unnatural History": {
+  "places": [
+   "mei guo"
+  ],
+  "set": []
+ },
+ "Olive Kitteridge": {
+  "places": [
+   "Maine"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Irishman": {
+  "places": [
+   "California",
+   "Truckee",
+   "Nevada",
+   "Sierras"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Some Desperate Glory": {
+  "places": [],
+  "set": []
+ },
+ "Code Name Verity": {
+  "places": [
+   "Great Britain",
+   "France"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "The Fiery Trial": {
+  "places": [
+   "United States",
+   "Illinois"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "America Is Elsewhere": {
+  "places": [],
+  "set": []
+ },
+ "The Denial of Death": {
+  "places": [],
+  "set": []
+ },
+ "The Optimist's Daughter": {
+  "places": [
+   "Mississippi"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Collected Stories of Eudora Welty": {
+  "places": [
+   "Southern States"
+  ],
+  "set": []
+ },
+ "Age of Ambition": {
+  "places": [],
+  "set": []
+ },
+ "Gandhi's Truth": {
+  "places": [
+   "India"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "The Complete Stories": {
+  "places": [
+   "Southern States"
+  ],
+  "set": []
+ },
+ "All the Birds, Singing": {
+  "places": [],
+  "set": []
+ },
+ "Combee: Harriet Tubman, the Combahee River Raid, and Black Freedom During the Civil War": {
+  "places": [],
+  "set": []
+ },
+ "Fire in the Lake": {
+  "places": [
+   "Vietnam",
+   "United States"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "The Lie Tree": {
+  "places": [
+   "Great Britain"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Dark Palace": {
+  "places": [
+   "Australia",
+   "Geneva (Switzerland)",
+   "Switzerland"
+  ],
+  "set": [
+   "europe",
+   "oceania"
+  ]
+ },
+ "Dovey Coe": {
+  "places": [],
+  "set": []
+ },
+ "The Day of the Jackal": {
+  "places": [
+   "France"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "History of the American Frontier": {
+  "places": [],
+  "set": []
+ },
+ "The Big Heat": {
+  "places": [],
+  "set": []
+ },
+ "Embers of War": {
+  "places": [],
+  "set": []
+ },
+ "Slaves in the Family": {
+  "places": [],
+  "set": []
+ },
+ "A History of American Magazines": {
+  "places": [],
+  "set": []
+ },
+ "Gateway": {
+  "places": [],
+  "set": []
+ },
+ "Wind, Sand and Stars": {
+  "places": [
+   "France",
+   "Morocco",
+   "Libya",
+   "The Sahara",
+   "The Andes"
+  ],
+  "set": [
+   "europe",
+   "africa",
+   "latam"
+  ]
+ },
+ "The Big Time": {
+  "places": [],
+  "set": []
+ },
+ "Lincoln at Gettysburg": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "My Brother Jack": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Russia Leaves the War": {
+  "places": [],
+  "set": []
+ },
+ "The Portage to San Cristobal of A.H.": {
+  "places": [],
+  "set": []
+ },
+ "The Unwinding": {
+  "places": [],
+  "set": []
+ },
+ "March": {
+  "places": [
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Clean Straw for Nothing": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Armada": {
+  "places": [
+   "Great Britain",
+   "Spain"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "The Cupboard Under the Stairs": {
+  "places": [],
+  "set": []
+ },
+ "Devil in the Grove": {
+  "places": [
+   "Florida",
+   "Groveland (Fla.)",
+   "Groveland"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Not the End of the World": {
+  "places": [],
+  "set": []
+ },
+ "Dancing on Coral": {
+  "places": [
+   "Australia",
+   "United States"
+  ],
+  "set": [
+   "america",
+   "oceania"
+  ]
+ },
+ "Last Orders": {
+  "places": [
+   "Fens, The (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Cracker": {
+  "places": [],
+  "set": []
+ },
+ "The Last King of Scotland": {
+  "places": [
+   "Uganda"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "The End of the Myth": {
+  "places": [],
+  "set": []
+ },
+ "Waiting": {
+  "places": [
+   "China"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Confess, Fletch": {
+  "places": [
+   "Boston",
+   "Boston (Mass.)",
+   "Massachusetts"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "War Trash": {
+  "places": [
+   "Korea"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Blood in the Water: The Attica Prison Uprising of 1971 and Its Legacy": {
+  "places": [
+   "N.Y. Attica"
+  ],
+  "set": []
+ },
+ "The Hand That Signed the Paper": {
+  "places": [],
+  "set": []
+ },
+ "A Spell of Winter": {
+  "places": [
+   "England",
+   "Great Britain"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Pulitzer Prize for General Nonfiction": {
+  "places": [
+   "United States",
+   "Boston"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Call Northside 777": {
+  "places": [],
+  "set": []
+ },
+ "Hirohito and the Making of Modern Japan": {
+  "places": [
+   "Japan",
+   "Japón"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "The Caine Mutiny": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Buddha of Suburbia": {
+  "places": [
+   "England",
+   "London (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Bring Up the Bodies": {
+  "places": [
+   "London",
+   "Whitehall Palace",
+   "Wiltshire",
+   "Great Britain",
+   "Kimbolton",
+   "Norfolk",
+   "Surrey",
+   "Jersey",
+   "Suffolk",
+   "Northumberland"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Saffy's Angel": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "O Strange New World": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Amsterdam": {
+  "places": [
+   "England",
+   "Great Britain",
+   "London",
+   "London (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Stay True": {
+  "places": [],
+  "set": []
+ },
+ "Hilary Spurling": {
+  "places": [
+   "France"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Finkler Question": {
+  "places": [],
+  "set": []
+ },
+ "The Child in Time": {
+  "places": [
+   "Turkey"
+  ],
+  "set": [
+   "mideast"
+  ]
+ },
+ "Benang: From the Heart": {
+  "places": [],
+  "set": []
+ },
+ "The Sea, the Sea": {
+  "places": [
+   "London (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Greenback Era": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Foundation's Edge": {
+  "places": [
+   "Trantor (Fictitious place)",
+   "Terminus (Fictitious place)",
+   "Earth",
+   "Xian dai"
+  ],
+  "set": []
+ },
+ "Foundation and Empire": {
+  "places": [],
+  "set": []
+ },
+ "A Crown of Feathers and Other Stories": {
+  "places": [],
+  "set": []
+ },
+ "The Gods Themselves": {
+  "places": [],
+  "set": []
+ },
+ "Cutter's Way": {
+  "places": [],
+  "set": []
+ },
+ "Common Ground": {
+  "places": [
+   "Boston",
+   "Massachusetts",
+   "Boston (Mass.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Morte d'Urban": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Harry Potter and the Goblet of Fire": {
+  "places": [
+   "England",
+   "Angleterre",
+   "Hogwarts School of Witchcraft and Wizardry",
+   "Privet Drive"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Troubles": {
+  "places": [
+   "Ireland. Wexford"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Harry Potter and the Prisoner of Azkaban": {
+  "places": [
+   "England",
+   "Azkaban",
+   "Hogwarts School of Witchcraft and Wizardry (Imaginary place)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Lord of Misrule": {
+  "places": [],
+  "set": []
+ },
+ "Life & Times of Michael K": {
+  "places": [],
+  "set": []
+ },
+ "At the Bottom of the River": {
+  "places": [
+   "Caribbean Area"
+  ],
+  "set": [
+   "latam"
+  ]
+ },
+ "Elbow Room": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Death in the Family": {
+  "places": [
+   "Knoxville (Tenn.)",
+   "Knoxville",
+   "Tennessee"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Siege of Krishnapur": {
+  "places": [
+   "India"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "A Case of Conscience": {
+  "places": [],
+  "set": []
+ },
+ "Locking Up Our Own": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A History of the Civil War, 1861–1865": {
+  "places": [],
+  "set": []
+ },
+ "The City of Your Final Destination": {
+  "places": [],
+  "set": []
+ },
+ "From Here to Eternity": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "How Late It Was, How Late": {
+  "places": [
+   "Glascow (Scotland)",
+   "Glasgow (Scotland)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Guard of Honor": {
+  "places": [],
+  "set": []
+ },
+ "Battle Cry of Freedom: The Civil War Era": {
+  "places": [
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Good Lord Bird": {
+  "places": [
+   "United States",
+   "Harpers Ferry (W. Va.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Founding of New England": {
+  "places": [
+   "New England"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "Coram Boy": {
+  "places": [
+   "Great Britain",
+   "England",
+   "Inglaterra"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Hell of a Book": {
+  "places": [],
+  "set": []
+ },
+ "The Art of Secrets": {
+  "places": [
+   "Chicago",
+   "Pakistan"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "Out of Shadows": {
+  "places": [
+   "Zimbabwe"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "Soldiers and Kings": {
+  "places": [],
+  "set": []
+ },
+ "Night Watch": {
+  "places": [],
+  "set": []
+ },
+ "The Collected Stories of Jean Stafford": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Oranges Are Not the Only Fruit": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The New Negro: The Life of Alain Locke": {
+  "places": [],
+  "set": []
+ },
+ "A Visit from the Goon Squad": {
+  "places": [
+   "New York",
+   "San Francisco",
+   "Naples",
+   "Africa",
+   "New York City"
+  ],
+  "set": [
+   "america",
+   "europe",
+   "africa"
+  ]
+ },
+ "The Impersonators": {
+  "places": [
+   "Australia",
+   "Sydney (N.S.W.)"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Tirra Lirra by the River": {
+  "places": [
+   "Australia",
+   "Sydney (N.S.W.)"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Middlesex": {
+  "places": [
+   "Detroit (Mich.)",
+   "Grosse Pointe (Mich.)",
+   "Detroit <Mich.>"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Bodies of Light": {
+  "places": [],
+  "set": []
+ },
+ "Quarantine": {
+  "places": [],
+  "set": []
+ },
+ "Theory of War": {
+  "places": [
+   "Middle West",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Among Others": {
+  "places": [
+   "England",
+   "Wales"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Black Flags: The Rise of ISIS": {
+  "places": [
+   "Syria",
+   "Iraq",
+   "Middle East"
+  ],
+  "set": [
+   "mideast"
+  ]
+ },
+ "The Snow Queen": {
+  "places": [],
+  "set": []
+ },
+ "The Forever War": {
+  "places": [],
+  "set": []
+ },
+ "The Bottoms": {
+  "places": [
+   "East Texas"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Sea": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Forever Peace": {
+  "places": [],
+  "set": []
+ },
+ "Chimera": {
+  "places": [],
+  "set": []
+ },
+ "G.": {
+  "places": [
+   "Trieste (Italy)",
+   "Europe"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Stories of John Cheever": {
+  "places": [
+   "United States",
+   "Siglo XX",
+   "Estados Unidos"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Caxton Private Lending Library & Book Depository": {
+  "places": [],
+  "set": []
+ },
+ "Sent for You Yesterday": {
+  "places": [
+   "Homewood (Pittsburgh, Pa.)",
+   "Pittsburgh (Pa.)"
+  ],
+  "set": []
+ },
+ "The Asphalt Jungle": {
+  "places": [],
+  "set": []
+ },
+ "Redshirts": {
+  "places": [
+   "Los Angeles",
+   "Burbank"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Rabbit Is Rich": {
+  "places": [
+   "Pennsylvania",
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Grapes of Wrath": {
+  "places": [
+   "California",
+   "Oklahoma",
+   "West (U.S.)",
+   "Israel"
+  ],
+  "set": [
+   "america",
+   "mideast"
+  ]
+ },
+ "Annals of the Former World": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Rabbit at Rest": {
+  "places": [],
+  "set": []
+ },
+ "The Rising Sun": {
+  "places": [
+   "Japan",
+   "Japon"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "American Sphinx": {
+  "places": [],
+  "set": []
+ },
+ "Embracing Defeat": {
+  "places": [
+   "Japan"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "5 Fingers": {
+  "places": [],
+  "set": []
+ },
+ "Founding Brothers": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Stand on Zanzibar": {
+  "places": [],
+  "set": []
+ },
+ "Augustus": {
+  "places": [
+   "Rome"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Netanyahus": {
+  "places": [],
+  "set": []
+ },
+ "Move Your Shadow": {
+  "places": [
+   "South Africa",
+   "Afrique du Sud"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "A Separate Peace": {
+  "places": [],
+  "set": []
+ },
+ "Extinctions": {
+  "places": [],
+  "set": []
+ },
+ "Dragnet": {
+  "places": [],
+  "set": []
+ },
+ "Home Fire": {
+  "places": [],
+  "set": []
+ },
+ "The Brief Wondrous Life of Oscar Wao": {
+  "places": [
+   "Dominican Republic",
+   "Santo Domingo",
+   "New Jersey",
+   "République dominicaine"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "The Centaur": {
+  "places": [],
+  "set": []
+ },
+ "The Beak of the Finch": {
+  "places": [],
+  "set": []
+ },
+ "Behind the Scenes at the Museum": {
+  "places": [
+   "England",
+   "Yorkshire",
+   "Yorkshire (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Great Man": {
+  "places": [
+   "New York (State)",
+   "New York (N.Y.)",
+   "New York"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The New Policeman": {
+  "places": [],
+  "set": []
+ },
+ "The Collected Stories of Katherine Anne Porter": {
+  "places": [
+   "Southern States"
+  ],
+  "set": []
+ },
+ "Netherland": {
+  "places": [],
+  "set": []
+ },
+ "The Idea of Perfection": {
+  "places": [
+   "New South Wales"
+  ],
+  "set": [
+   "britain",
+   "oceania"
+  ]
+ },
+ "Behind the Beautiful Forevers": {
+  "places": [
+   "India",
+   "Mumbai"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Native Nations": {
+  "places": [],
+  "set": []
+ },
+ "The Book of Mercy": {
+  "places": [],
+  "set": []
+ },
+ "Crabgrass Frontier": {
+  "places": [
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "That Deadman Dance": {
+  "places": [
+   "Western Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Sense of an Ending": {
+  "places": [],
+  "set": []
+ },
+ "An Artist of the Floating World": {
+  "places": [
+   "Japan"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "The Buddha in the Attic": {
+  "places": [],
+  "set": []
+ },
+ "Blackouts": {
+  "places": [],
+  "set": []
+ },
+ "Green Mars": {
+  "places": [
+   "Mars (Planet)",
+   "Mars"
+  ],
+  "set": []
+ },
+ "The Bone People": {
+  "places": [
+   "New Zealand"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Old Devils": {
+  "places": [],
+  "set": []
+ },
+ "The Inheritance of Loss": {
+  "places": [
+   "Himalaya Mountains",
+   "Kānchenjunga (Nepal and India)"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Ringworld": {
+  "places": [],
+  "set": []
+ },
+ "Paco's Story": {
+  "places": [
+   "Texas"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "It's Not About the Bike": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Seabiscuit: An American Legend": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Early Stories: 1953–1975": {
+  "places": [],
+  "set": []
+ },
+ "Imagining Argentina": {
+  "places": [
+   "Argentina"
+  ],
+  "set": [
+   "latam"
+  ]
+ },
+ "The Transformation of the School": {
+  "places": [],
+  "set": []
+ },
+ "We Need to Talk About Kevin": {
+  "places": [
+   "New York (State)",
+   "United States",
+   "USA"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "No Compromise": {
+  "places": [],
+  "set": []
+ },
+ "American Education": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Remembrance of Earth's Past": {
+  "places": [],
+  "set": []
+ },
+ "Barrayar": {
+  "places": [],
+  "set": []
+ },
+ "Been in the Storm So Long": {
+  "places": [
+   "Southern States"
+  ],
+  "set": []
+ },
+ "The Dead Are Arising": {
+  "places": [],
+  "set": []
+ },
+ "The Glorious Heresies": {
+  "places": [],
+  "set": []
+ },
+ "The News from Paraguay": {
+  "places": [
+   "Paraguay"
+  ],
+  "set": [
+   "latam"
+  ]
+ },
+ "When I Lived in Modern Times": {
+  "places": [
+   "Palestine",
+   "Tel Aviv (Israel)"
+  ],
+  "set": [
+   "mideast"
+  ]
+ },
+ "Blue Mars": {
+  "places": [],
+  "set": []
+ },
+ "Mirror Dance": {
+  "places": [],
+  "set": []
+ },
+ "The Night Watchman": {
+  "places": [],
+  "set": []
+ },
+ "The Round House": {
+  "places": [
+   "North Dakota"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Andersonville": {
+  "places": [
+   "Andersonville (Ga.)",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Malcolm X: A Life of Reinvention": {
+  "places": [],
+  "set": []
+ },
+ "Franchise: The Golden Arches in Black America": {
+  "places": [],
+  "set": []
+ },
+ "The Atlantic Migration, 1607–1860": {
+  "places": [],
+  "set": []
+ },
+ "Bent Road": {
+  "places": [
+   "Kansas"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Hand That First Held Mine": {
+  "places": [],
+  "set": []
+ },
+ "The Blind Assassin": {
+  "places": [],
+  "set": []
+ },
+ "Between War and Peace: The Potsdam Conference": {
+  "places": [],
+  "set": []
+ },
+ "Beast in View": {
+  "places": [],
+  "set": []
+ },
+ "The Testaments": {
+  "places": [],
+  "set": []
+ },
+ "Home": {
+  "places": [
+   "Iowa"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Curious Incident of the Dog in the Night-Time": {
+  "places": [
+   "Dogs",
+   "England",
+   "Swindon",
+   "Paris",
+   "UK",
+   "Angleterre"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "The Fate of Liberty": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Network Effect": {
+  "places": [],
+  "set": []
+ },
+ "Housekeeping": {
+  "places": [
+   "Northwestern States",
+   "Idaho"
+  ],
+  "set": []
+ },
+ "The Departed": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Gone with the Wind": {
+  "places": [
+   "Estados Unidos",
+   "Georgia",
+   "United States",
+   "Clayton County",
+   "Atlanta",
+   "Tara",
+   "USA"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "In the Days of McKinley": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Blood Tie": {
+  "places": [
+   "Turkey"
+  ],
+  "set": [
+   "mideast"
+  ]
+ },
+ "Closed for the Season": {
+  "places": [
+   "Virginia"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Paladin of Souls": {
+  "places": [],
+  "set": []
+ },
+ "Evicted: Poverty and Profit in the American City": {
+  "places": [
+   "Milwaukee",
+   "Wisconsin",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Calculating Stars": {
+  "places": [],
+  "set": []
+ },
+ "Dotter of Her Father's Eyes": {
+  "places": [],
+  "set": []
+ },
+ "Bootlegger's Daughter": {
+  "places": [],
+  "set": []
+ },
+ "Arming America": {
+  "places": [
+   "United States",
+   "États-Unis",
+   "USA"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "China Men": {
+  "places": [
+   "California",
+   "China",
+   "United States"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "The Black Echo": {
+  "places": [
+   "Los Angeles (Calif.)",
+   "California",
+   "Los Angeles"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "English Passengers": {
+  "places": [
+   "Tasmania"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Silver's City": {
+  "places": [],
+  "set": []
+ },
+ "The English Patient": {
+  "places": [
+   "Italy",
+   "Toskana",
+   "Florence"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "A Brief History of Seven Killings": {
+  "places": [],
+  "set": []
+ },
+ "The Hours": {
+  "places": [
+   "New York (State)",
+   "New York",
+   "New York (N.Y.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Spies": {
+  "places": [],
+  "set": []
+ },
+ "The Life to Come": {
+  "places": [],
+  "set": []
+ },
+ "Gotham: A History of New York City to 1898": {
+  "places": [],
+  "set": []
+ },
+ "Blood Red Road": {
+  "places": [],
+  "set": []
+ },
+ "Questions of Travel": {
+  "places": [
+   "Sydney (N.S.W.)",
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Mermaid of Black Conch": {
+  "places": [
+   "Lesser Antilles",
+   "Carribean Sea"
+  ],
+  "set": []
+ },
+ "Eucalyptus": {
+  "places": [
+   "Australia",
+   "New South Wales"
+  ],
+  "set": [
+   "britain",
+   "oceania"
+  ]
+ },
+ "A Case of Need": {
+  "places": [
+   "United States",
+   "Boston (Mass.)",
+   "Boston",
+   "California",
+   "Massachusetts",
+   "Estados Unidos"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Obelisk Gate": {
+  "places": [],
+  "set": []
+ },
+ "Burn Notice": {
+  "places": [],
+  "set": []
+ },
+ "The Killer Angels": {
+  "places": [
+   "Gettysburg",
+   "Pennsylvania",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Edgar Awards": {
+  "places": [],
+  "set": []
+ },
+ "House Made of Dawn": {
+  "places": [
+   "Southwestern States"
+  ],
+  "set": []
+ },
+ "The Conservationist": {
+  "places": [
+   "South Africa"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "In the Heart of the Sea": {
+  "places": [
+   "Pacific Ocean",
+   "Massachusetts",
+   "Nantucket Island"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Power": {
+  "places": [],
+  "set": []
+ },
+ "The Graveyard Book": {
+  "places": [],
+  "set": []
+ },
+ "The Amazing Adventures of Kavalier & Clay": {
+  "places": [],
+  "set": []
+ },
+ "American Gods": {
+  "places": [
+   "Chicago",
+   "Illinois (United States)",
+   "Chattanooga",
+   "Tennessee (United States)",
+   "Minnesota (United States)",
+   "Wisconsin (United States)",
+   "Rock City"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Armies of the Night": {
+  "places": [
+   "USA"
+  ],
+  "set": []
+ },
+ "The Man with the Golden Arm": {
+  "places": [
+   "Chicago (Ill.)",
+   "Illinois",
+   "Chicago"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Executioner's Song": {
+  "places": [
+   "Utah"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Coraline": {
+  "places": [
+   "London",
+   "London (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Mating": {
+  "places": [
+   "Botswana"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "Art and Life in America": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "One Day, Everyone Will Have Always Been Against This": {
+  "places": [],
+  "set": []
+ },
+ "A Bright Shining Lie": {
+  "places": [
+   "United States",
+   "États-Unis",
+   "Vietnam"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "Fierceland": {
+  "places": [],
+  "set": []
+ },
+ "Ender's Game": {
+  "places": [
+   "Terre",
+   "Earth",
+   "Battle School"
+  ],
+  "set": []
+ },
+ "Something to Answer For": {
+  "places": [],
+  "set": []
+ },
+ "Riders in the Chariot": {
+  "places": [
+   "Sydney (N.S.W.)"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Ghost Road": {
+  "places": [
+   "Great Britain"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Music of Chance": {
+  "places": [],
+  "set": []
+ },
+ "Great River: The Rio Grande in North American History": {
+  "places": [],
+  "set": []
+ },
+ "Prophet Song": {
+  "places": [],
+  "set": []
+ },
+ "Speaker for the Dead": {
+  "places": [
+   "Mei guo"
+  ],
+  "set": []
+ },
+ "The Ventriloquist's Tale": {
+  "places": [
+   "South America"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Lamy of Santa Fe": {
+  "places": [],
+  "set": []
+ },
+ "Staying On": {
+  "places": [
+   "India"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "James": {
+  "places": [
+   "Missouri"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Social Transformation of American Medicine": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Moon Tiger": {
+  "places": [
+   "Egypt"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "The Diamond Age": {
+  "places": [],
+  "set": []
+ },
+ "Bliss": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Oscar and Lucinda": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Jack Maggs": {
+  "places": [
+   "Great Britain",
+   "London (England)",
+   "England",
+   "London",
+   "Australia"
+  ],
+  "set": [
+   "britain",
+   "oceania"
+  ]
+ },
+ "The Enlightenment: An Interpretation": {
+  "places": [
+   "Europe"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Trap": {
+  "places": [],
+  "set": []
+ },
+ "The Mambo Kings Play Songs of Love": {
+  "places": [
+   "United States",
+   "New York (N.Y.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Summons to Memphis": {
+  "places": [
+   "Memphis (Tenn.)",
+   "Tennessee",
+   "Memphis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Offshore": {
+  "places": [
+   "Battersea (London, England)",
+   "Great Britain",
+   "London (England)",
+   "Russia",
+   "Thames River (England)"
+  ],
+  "set": [
+   "britain",
+   "europe"
+  ]
+ },
+ "Bullitt": {
+  "places": [],
+  "set": []
+ },
+ "The Life of the Mind in America": {
+  "places": [
+   "United States",
+   "Pennsylvania",
+   "Philadelphia",
+   "France",
+   "Statesmen",
+   "United States of America"
+  ],
+  "set": [
+   "america",
+   "europe"
+  ]
+ },
+ "The Amber Spyglass": {
+  "places": [
+   "Ying guo"
+  ],
+  "set": []
+ },
+ "Redeployment": {
+  "places": [],
+  "set": []
+ },
+ "The Man in the High Castle": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "American Pastoral": {
+  "places": [
+   "United States",
+   "Newark",
+   "New Jersey",
+   "Weequahic",
+   "Elizabeth",
+   "Old Rimrock",
+   "Princeton University"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Everyman": {
+  "places": [
+   "New York (State)",
+   "New York"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Goodbye, Columbus": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Operation Shylock": {
+  "places": [
+   "Israel"
+  ],
+  "set": [
+   "mideast"
+  ]
+ },
+ "Sabbath's Theater": {
+  "places": [],
+  "set": []
+ },
+ "The Human Stain": {
+  "places": [
+   "Newark (N.J.)"
+  ],
+  "set": []
+ },
+ "Rough Ride": {
+  "places": [],
+  "set": []
+ },
+ "The Sea Around Us": {
+  "places": [],
+  "set": []
+ },
+ "Casey, Crime Photographer": {
+  "places": [],
+  "set": []
+ },
+ "Invisible Man": {
+  "places": [
+   "United States",
+   "New York (State)",
+   "New York",
+   "Harlem"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Bear Comes Home": {
+  "places": [
+   "New York (State)",
+   "New York",
+   "New York (N.Y.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "To the Islands": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Fahrenheit 451": {
+  "places": [
+   "Mei guo"
+  ],
+  "set": []
+ },
+ "The Sportswriter": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Anti-intellectualism in American Life": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "So Human an Animal": {
+  "places": [],
+  "set": []
+ },
+ "The Age of Reform": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Ashes to Ashes": {
+  "places": [
+   "United States",
+   "USA"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Independence Day": {
+  "places": [
+   "New Jersey"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Echo Maker": {
+  "places": [
+   "Nebraska"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Soldiers in Hiding": {
+  "places": [],
+  "set": []
+ },
+ "Empire Falls": {
+  "places": [
+   "Maine"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "An Army at Dawn": {
+  "places": [
+   "North Africa"
+  ],
+  "set": [
+   "africa"
+  ]
+ },
+ "Chicago": {
+  "places": [],
+  "set": []
+ },
+ "The Witches": {
+  "places": [],
+  "set": []
+ },
+ "Deathwatch": {
+  "places": [],
+  "set": []
+ },
+ "Starship Troopers": {
+  "places": [],
+  "set": []
+ },
+ "The Moon Is a Harsh Mistress": {
+  "places": [
+   "Moon",
+   "Luna City",
+   "Chad",
+   "Hong Kong Luna"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Master of the Senate": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Passage of Power": {
+  "places": [
+   "Texas",
+   "United States",
+   "Washington D.C."
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Spin": {
+  "places": [],
+  "set": []
+ },
+ "How Green Was My Valley": {
+  "places": [
+   "Pembrokeshire (Wales) Rhondda (Wales) Gilfach Goch (Wales)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Company Man": {
+  "places": [],
+  "set": []
+ },
+ "A Good Scent from a Strange Mountain": {
+  "places": [
+   "Louisiana",
+   "Louisiana--Fiction"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Children of Crisis": {
+  "places": [
+   "United States",
+   "Etats du Sud (Etats-Unis)",
+   "Southern States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Dog Soldiers": {
+  "places": [
+   "Vietnam",
+   "California"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "The Launching of Modern American Science, 1846–1876": {
+  "places": [],
+  "set": []
+ },
+ "Time on the Cross: The Economics of American Negro Slavery": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Paddy Clarke Ha Ha Ha": {
+  "places": [
+   "Dublin (Ireland)",
+   "Ireland"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Neanderthal Parallax": {
+  "places": [],
+  "set": []
+ },
+ "The Ballad of Desmond Kale": {
+  "places": [
+   "Australia",
+   "Australie"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Just Relations": {
+  "places": [
+   "Australia",
+   "New South Wales"
+  ],
+  "set": [
+   "britain",
+   "oceania"
+  ]
+ },
+ "Double Star": {
+  "places": [],
+  "set": []
+ },
+ "Lord of Light": {
+  "places": [],
+  "set": []
+ },
+ "The Grisly Wife": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Lush Life": {
+  "places": [],
+  "set": []
+ },
+ "Chinatown": {
+  "places": [],
+  "set": []
+ },
+ "The House of Morgan": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Assassination of Jesse James by the Coward Robert Ford": {
+  "places": [],
+  "set": []
+ },
+ "The Years of Lyndon Johnson": {
+  "places": [
+   "Texas",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Life Too Short": {
+  "places": [],
+  "set": []
+ },
+ "Serena": {
+  "places": [
+   "North Carolina"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Oklahoma!": {
+  "places": [],
+  "set": []
+ },
+ "The Road Home": {
+  "places": [
+   "England",
+   "London",
+   "London (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Mango Tree": {
+  "places": [],
+  "set": []
+ },
+ "The Disruption of American Democracy": {
+  "places": [],
+  "set": []
+ },
+ "The Caprices": {
+  "places": [
+   "Pacific Area"
+  ],
+  "set": []
+ },
+ "The Book of Form and Emptiness": {
+  "places": [],
+  "set": []
+ },
+ "Swords and Crowns and Rings": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Heat and Dust": {
+  "places": [
+   "India"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "A Dark-Adapted Eye": {
+  "places": [],
+  "set": []
+ },
+ "Midnight's Children": {
+  "places": [
+   "India",
+   "Kashmir",
+   "Agra",
+   "Bombay",
+   "Lahore",
+   "Dhaka",
+   "Indien"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "The Satanic Verses": {
+  "places": [
+   "India",
+   "England",
+   "London",
+   "Arabian Sea",
+   "Bombay",
+   "Brickhall",
+   "Everest",
+   "Yathrib",
+   "Spring of Zamzam"
+  ],
+  "set": [
+   "britain",
+   "asia"
+  ]
+ },
+ "The Moor's Last Sigh": {
+  "places": [
+   "India",
+   "Inde"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Orbital": {
+  "places": [],
+  "set": []
+ },
+ "The Yellow House": {
+  "places": [],
+  "set": []
+ },
+ "The Confessions of Frannie Langton": {
+  "places": [],
+  "set": []
+ },
+ "A Problem from Hell": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Humboldt's Gift": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Mr. Sammler's Planet": {
+  "places": [
+   "New York (N.Y.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Herzog": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Adventures of Augie March": {
+  "places": [
+   "Chicago (Ill.)",
+   "Mexico",
+   "Illinois",
+   "Chicago"
+  ],
+  "set": [
+   "america",
+   "latam"
+  ]
+ },
+ "The Secret Scripture": {
+  "places": [
+   "Ireland",
+   "Sligo (Ireland : County)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Bimbos of the Death Sun": {
+  "places": [],
+  "set": []
+ },
+ "The Spirit Level": {
+  "places": [],
+  "set": []
+ },
+ "Chai Time at Cinnamon Gardens": {
+  "places": [],
+  "set": []
+ },
+ "Days Without End": {
+  "places": [],
+  "set": []
+ },
+ "The Seven Moons of Maali Almeida": {
+  "places": [],
+  "set": []
+ },
+ "War Dances": {
+  "places": [],
+  "set": []
+ },
+ "The Keepers of the House": {
+  "places": [
+   "Mississippi"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Ghost Cities": {
+  "places": [],
+  "set": []
+ },
+ "The Great Fire": {
+  "places": [
+   "Asia",
+   "England",
+   "Hong Kong (China)",
+   "Japan"
+  ],
+  "set": [
+   "britain",
+   "asia"
+  ]
+ },
+ "The Diddakoi": {
+  "places": [
+   "England"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Transit of Venus": {
+  "places": [
+   "United States",
+   "Australia",
+   "England"
+  ],
+  "set": [
+   "britain",
+   "america",
+   "oceania"
+  ]
+ },
+ "The Eye of the Sheep": {
+  "places": [],
+  "set": []
+ },
+ "Charade": {
+  "places": [
+   "Paris (France)"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Defiant Ones": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Holiday": {
+  "places": [],
+  "set": []
+ },
+ "In Our Image: America's Empire in the Philippines": {
+  "places": [
+   "Philippines"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "The Swerve": {
+  "places": [],
+  "set": []
+ },
+ "12 Angry Men": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Tenderness of Wolves": {
+  "places": [
+   "Canada"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Outcast": {
+  "places": [],
+  "set": []
+ },
+ "The Time We Have Taken": {
+  "places": [
+   "Melbourne",
+   "Melbourne (Vic.)",
+   "Victoria"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "A Nation Under Our Feet": {
+  "places": [
+   "États-Unis (Sud)",
+   "USA / Südstaaten",
+   "Southern States"
+  ],
+  "set": []
+ },
+ "The Barnum Museum": {
+  "places": [],
+  "set": []
+ },
+ "Ghost Wars": {
+  "places": [
+   "Afghanistan",
+   "Afghtanistan",
+   "Pakistan",
+   "Saudi Arabia",
+   "Peshawar",
+   "Kabul"
+  ],
+  "set": [
+   "asia",
+   "mideast"
+  ]
+ },
+ "Martin Dressler": {
+  "places": [
+   "New York (State)",
+   "New York (N.Y.)",
+   "New York"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Amazing Stories": {
+  "places": [],
+  "set": []
+ },
+ "Careful, He Might Hear You": {
+  "places": [],
+  "set": []
+ },
+ "The Bird of Night": {
+  "places": [],
+  "set": []
+ },
+ "The Good War": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Is There No Place on Earth for Me?": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Jonathan Strange & Mr Norrell": {
+  "places": [],
+  "set": []
+ },
+ "Custer's Trials": {
+  "places": [],
+  "set": []
+ },
+ "Nettle & Bone": {
+  "places": [],
+  "set": []
+ },
+ "An American Marriage": {
+  "places": [
+   "Atlanta (Ga.)",
+   "Atlanta",
+   "Georgia"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Crime in the Neighborhood": {
+  "places": [
+   "Washington (D.C.)",
+   "Washington Metropolitan Area"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Birthday Letters": {
+  "places": [],
+  "set": []
+ },
+ "The Rabbit Hutch": {
+  "places": [],
+  "set": []
+ },
+ "Drylands": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Acolyte": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "In America": {
+  "places": [],
+  "set": []
+ },
+ "The Slow Natives": {
+  "places": [],
+  "set": []
+ },
+ "The Friend": {
+  "places": [],
+  "set": []
+ },
+ "The Making of the President 1960": {
+  "places": [
+   "United States",
+   "États-Unis"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "From Beirut to Jerusalem": {
+  "places": [
+   "Israel",
+   "Lebanon",
+   "Middle East",
+   "Oriente (Medio Oriente)",
+   "Líbano",
+   "Libanon"
+  ],
+  "set": [
+   "mideast"
+  ]
+ },
+ "The First Tycoon": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Muhammad Ali: His Life and Times": {
+  "places": [],
+  "set": []
+ },
+ "Bring Larks and Heroes": {
+  "places": [
+   "Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Schindler's Ark": {
+  "places": [
+   "Germany",
+   "Poland"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Gravity's Rainbow": {
+  "places": [
+   "Europe"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Three Cheers for the Paraclete": {
+  "places": [],
+  "set": []
+ },
+ "The Hair of Harold Roux": {
+  "places": [
+   "New England"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "The Origins of the Urban Crisis": {
+  "places": [
+   "Michigan",
+   "Detroit",
+   "Detroit (Mich.)"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Tales from Ovid": {
+  "places": [
+   "Constanța",
+   "Romania",
+   "Rome"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Going After Cacciato": {
+  "places": [],
+  "set": []
+ },
+ "The Eighth Day": {
+  "places": [
+   "Souther Illinois",
+   "Algonquin",
+   "South America"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Dirt Music": {
+  "places": [
+   "Western Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "Shallows": {
+  "places": [
+   "Australia",
+   "Western Australia"
+  ],
+  "set": [
+   "oceania"
+  ]
+ },
+ "The Boy in the Burning House": {
+  "places": [],
+  "set": []
+ },
+ "The Worst Hard Time": {
+  "places": [
+   "Great Plains"
+  ],
+  "set": []
+ },
+ "The Haunted Land": {
+  "places": [
+   "Eastern Europe"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Legacy of Ashes": {
+  "places": [
+   "United States",
+   "États-Unis",
+   "Verenigde Staten",
+   "Estados Unidos",
+   "ABD"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "All That She Carried": {
+  "places": [],
+  "set": []
+ },
+ "Seaview": {
+  "places": [],
+  "set": []
+ },
+ "Old School": {
+  "places": [
+   "New England"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ },
+ "Oceana Fine": {
+  "places": [],
+  "set": []
+ },
+ "The Tiger's Wife": {
+  "places": [],
+  "set": []
+ },
+ "The Barracks Thief": {
+  "places": [],
+  "set": []
+ },
+ "Dance Hall of the Dead": {
+  "places": [
+   "Southwestern States",
+   "New Southwest"
+  ],
+  "set": []
+ },
+ "In a Free State": {
+  "places": [
+   "United States",
+   "India",
+   "West Indies",
+   "Great Britain",
+   "East Africa"
+  ],
+  "set": [
+   "britain",
+   "america",
+   "asia",
+   "africa",
+   "latam"
+  ]
+ },
+ "Brotherless Night": {
+  "places": [
+   "Sri Lanka",
+   "Jaffna (Sri Lanka)"
+  ],
+  "set": [
+   "asia"
+  ]
+ },
+ "Property": {
+  "places": [
+   "Louisiana"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Stones from the River": {
+  "places": [
+   "Burgdorf (Hannover)",
+   "Germany"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Right Stuff": {
+  "places": [
+   "United States",
+   "Edwards Air Force Base",
+   "Cape Canaveral"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Big Fellow": {
+  "places": [],
+  "set": []
+ },
+ "A Deepness in the Sky": {
+  "places": [],
+  "set": []
+ },
+ "The Sympathizer": {
+  "places": [
+   "Vietnam (Republic)",
+   "California",
+   "Los Angeles"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "Rainbows End": {
+  "places": [],
+  "set": []
+ },
+ "The Correspondent": {
+  "places": [],
+  "set": []
+ },
+ "A Fire Upon the Deep": {
+  "places": [],
+  "set": []
+ },
+ "The Moviegoer": {
+  "places": [
+   "New Orleans (La.)"
+  ],
+  "set": []
+ },
+ "Dreamsnake": {
+  "places": [],
+  "set": []
+ },
+ "The Story of Civilization": {
+  "places": [
+   "Greece",
+   "Middle East",
+   "Crete (Greece)"
+  ],
+  "set": [
+   "europe",
+   "mideast"
+  ]
+ },
+ "How German Is It": {
+  "places": [
+   "Germany"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "Restless": {
+  "places": [
+   "Great Britain",
+   "Grande-Bretagne"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "...The Heavens and the Earth": {
+  "places": [
+   "United States",
+   "Soviet Union"
+  ],
+  "set": [
+   "america",
+   "europe"
+  ]
+ },
+ "Angle of Repose": {
+  "places": [
+   "California",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Good Man in Africa": {
+  "places": [],
+  "set": []
+ },
+ "A Fable": {
+  "places": [],
+  "set": []
+ },
+ "Collected Stories of William Faulkner": {
+  "places": [
+   "Mississippi",
+   "Carcassonne",
+   "Southern States",
+   "Yoknapatawpha County",
+   "Jefferson"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "A Frolic of His Own": {
+  "places": [
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "The Reivers": {
+  "places": [
+   "Memphis (Tenn.)",
+   "Mississippi",
+   "Southern States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Carpenter's Gothic": {
+  "places": [],
+  "set": []
+ },
+ "J R": {
+  "places": [],
+  "set": []
+ },
+ "To the Ends of the Earth": {
+  "places": [],
+  "set": []
+ },
+ "Rites of Passage": {
+  "places": [
+   "Australia",
+   "England"
+  ],
+  "set": [
+   "britain",
+   "oceania"
+  ]
+ },
+ "The Tunnel": {
+  "places": [
+   "Middle West"
+  ],
+  "set": []
+ },
+ "Ironweed": {
+  "places": [],
+  "set": []
+ },
+ "Columbo": {
+  "places": [
+   "Calif.) Hollywood (Los Angeles",
+   "California",
+   "Hollywood (Los Angeles, Calif.)",
+   "Los Angeles",
+   "Los Angeles (Calif.)",
+   "United States"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Exploration and Empire": {
+  "places": [
+   "West (U.S.)"
+  ],
+  "set": []
+ },
+ "Roscoe": {
+  "places": [
+   "Albany (N.Y.)"
+  ],
+  "set": []
+ },
+ "The Confessions of Nat Turner": {
+  "places": [
+   "Virginia",
+   "America"
+  ],
+  "set": [
+   "america"
+  ]
+ },
+ "Beautiful Swimmers": {
+  "places": [
+   "Chesapeake Bay (Md. and Va.)"
+  ],
+  "set": []
+ },
+ "Felicia's Journey": {
+  "places": [
+   "England",
+   "Midlands",
+   "Midlands (England)"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "Europe Central": {
+  "places": [
+   "Germany",
+   "Soviet Union"
+  ],
+  "set": [
+   "europe"
+  ]
+ },
+ "The Desperate Hours": {
+  "places": [],
+  "set": []
+ },
+ "Detective Story": {
+  "places": [],
+  "set": []
+ },
+ "The Field of Vision": {
+  "places": [],
+  "set": []
+ },
+ "Poor Fellow My Country": {
+  "places": [],
+  "set": []
+ },
+ "Hugo Award for Best Novel": {
+  "places": [
+   "England",
+   "Brighton",
+   "Derbyshire",
+   "Hertfordshire",
+   "Meryton",
+   "Longbourn",
+   "Netherfield",
+   "Pemberley",
+   "Great Britain",
+   "Ying guo"
+  ],
+  "set": [
+   "britain"
+  ]
+ },
+ "The Safekeep": {
+  "places": [],
+  "set": []
+ },
+ "Life of Pi": {
+  "places": [
+   "Pacific Ocean",
+   "India",
+   "Océano Pacífico",
+   "Toronto (Ont.)"
+  ],
+  "set": [
+   "america",
+   "asia"
+  ]
+ },
+ "On Beauty": {
+  "places": [
+   "Massachusetts",
+   "London, UK",
+   "Boston, MA, USA",
+   "New England",
+   "Great Britain"
+  ],
+  "set": [
+   "britain",
+   "america"
+  ]
+ }
+}
