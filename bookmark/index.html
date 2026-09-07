@@ -222,6 +222,8 @@ h2.sec.first{margin-top:26px}
 .q:first-of-type{border-top:none}
 .qlabel{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
         font-weight:600;margin-bottom:11px}
+.qhint{margin-left:10px;font-size:12px;letter-spacing:0;text-transform:none;
+  font-weight:400;color:var(--ink-faint,var(--ink-soft));opacity:.75}
 .opts{display:flex;flex-wrap:wrap;gap:7px}
 .opt{font:inherit;font-size:14px;color:var(--ink);background:var(--paper2);border:1px solid var(--line2);
      border-radius:8px;padding:9px 14px;cursor:pointer;transition:.12s}
@@ -229,6 +231,11 @@ h2.sec.first{margin-top:26px}
 .opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#211d16;font-weight:600}
 .opt.chip[aria-pressed="true"]{background:color-mix(in srgb, var(--accent) 22%, var(--paper2));
   border-color:var(--accent);color:var(--ink)}
+/* Excluded has to look like a DIFFERENT answer, not a fainter version of wanted -
+   dimming alone reads as disabled. Struck through and desaturated. */
+.opt.chip.no{color:var(--ink-soft);border-color:var(--line);background:transparent;
+  text-decoration:line-through;text-decoration-thickness:1px;opacity:.75}
+.opt.chip.no:hover{opacity:1;color:var(--ink)}
 
 /* SLIDERS for the three ordinal questions. Length, age and effort are points on a
    line, and a row of buttons hid that - "Short / Middling / Long" is one axis
@@ -400,11 +407,16 @@ var QS = [
    opts:[["any","No preference"],["plain","Plain and fast"],["rich","Rich and slow"],["funny","Funny and sharp"]]},
   {id:"dem", label:"How much work", multi:false, slider:true,
    opts:[["1","Easy company"],["2","Some work"],["3","Hard is fine"]]},
-  {id:"tags", label:"Subjects", multi:true, chips:true,
+  {id:"tags", label:"Subjects", multi:true, chips:true, tri:true,
    opts:TAGS.map(function(t){return [t,TAGNAME[t]];})}
 ];
 
-var DEFAULTS = {mood:["absorb"],form:"any",len:"any",era:"any",sty:"any",dem:"2",tags:[]};
+/* notags is the exclusion list. Kept separate from tags rather than encoded as a
+   negative inside it, because the two are asked in opposite directions: tags
+   WIDENS the shelf (any match qualifies) and notags NARROWS it (any match
+   disqualifies), so a single signed array would have needed unpicking at every
+   use anyway. */
+var DEFAULTS = {mood:["absorb"],form:"any",len:"any",era:"any",sty:"any",dem:"2",tags:[],notags:[]};
 var state = JSON.parse(JSON.stringify(DEFAULTS));
 var offset = 0;      /* "Read it already", counted in months forward */
 var browsing = null; /* a spine the reader pulled out, which is not this month's */
@@ -479,7 +491,8 @@ function score(b){
 
 function key(){
   return [state.mood.slice().sort().join("+"),state.form,state.len,state.era,state.sty,state.dem,
-          state.tags.slice().sort().join("+")].join("|");
+          state.tags.slice().sort().join("+"),
+          state.notags.slice().sort().join("+")].join("|");
 }
 /* The shuffle seed includes the reading history; the shareable ?p= does not. */
 function seedKey(){
@@ -495,6 +508,10 @@ function eligible(){
   return window.SHELF.filter(function(b){
     if(state.form!=="any" && b.f!==state.form) return false;
     if(state.tags.length && !state.tags.some(function(t){ return b.tags.indexOf(t)>-1; })) return false;
+    /* ONE excluded subject is enough to drop a book, where one wanted subject is
+       enough to keep it. Exclusion is the stronger claim: "no war books" means no
+       war books, not fewer of them. */
+    if(state.notags.some(function(t){ return b.tags.indexOf(t)>-1; })) return false;
     return true;
   });
 }
@@ -706,7 +723,9 @@ function renderEmpty(){
   document.getElementById("month").textContent = "";
   document.getElementById("title").textContent = "Nothing on the shelf fits";
   document.getElementById("byline").textContent = "";
-  document.getElementById("whytext").textContent = "Drop a subject or take fiction back to either.";
+  document.getElementById("whytext").textContent = state.notags.length
+    ? "Too much is excluded. Clear a struck-through subject."
+    : "Drop a subject or take fiction back to either.";
   var m = document.getElementById("match");
   while(m.firstChild) m.removeChild(m.firstChild);
   document.getElementById("shelfcount").textContent = "No books fit these answers.";
@@ -719,6 +738,14 @@ function build(){
   QS.forEach(function(q){
     var wrap = document.createElement("div"); wrap.className = "q";
     var lab = document.createElement("div"); lab.className = "qlabel"; lab.textContent = q.label;
+    /* The third state is the one thing on this page nobody would find by looking.
+       A chip that is merely on or off needs no instruction; one that also goes to
+       "not this" does. */
+    if(q.tri){
+      var hint = document.createElement("span");
+      hint.className = "qhint"; hint.textContent = "click twice to rule one out";
+      lab.appendChild(hint);
+    }
     wrap.appendChild(lab);
     wrap.appendChild(q.slider ? buildSlider(q) : buildButtons(q));
     host.appendChild(wrap);
@@ -818,7 +845,15 @@ function buildSlider(q){
 }
 
 function choose(q, v){
-  if(q.multi){
+  if(q.tri){
+    /* want -> not this -> neither. Readers know their dislikes better than their
+       likes, and until now the page could only be told what to include. */
+    var yes = state[q.id], no = state.notags;
+    var iy = yes.indexOf(v), inn = no.indexOf(v);
+    if(iy > -1){ yes.splice(iy,1); no.push(v); }
+    else if(inn > -1){ no.splice(inn,1); }
+    else { yes.push(v); }
+  } else if(q.multi){
     var arr = state[q.id], at = arr.indexOf(v);
     if(at > -1){ arr.splice(at,1); } else { arr.push(v); }
   } else {
@@ -834,7 +869,11 @@ function paint(){
     g.querySelectorAll(".opt").forEach(function(btn){
       var v = btn.getAttribute("data-v");
       var on = Array.isArray(val) ? val.indexOf(v) > -1 : val === v;
+      var off = id === "tags" && state.notags.indexOf(v) > -1;
       btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.classList.toggle("no", off);
+      btn.title = off ? "Excluded. Click to clear."
+                : on ? "Wanted. Click to exclude." : "Click to include.";
     });
   });
   document.querySelectorAll(".slider").forEach(function(g){
@@ -866,10 +905,13 @@ function writeUrl(){
 function readUrl(){
   var p = new URLSearchParams(location.search).get("p");
   if(!p) return;
-  var f = p.split("|"); if(f.length !== 7) return;
+  /* 7 or 8: links shared before exclusions existed carry seven fields and must
+     keep resolving to the same shelf. */
+  var f = p.split("|"); if(f.length !== 7 && f.length !== 8) return;
   state.mood = f[0] ? f[0].split("+") : [];
   state.form = f[1]; state.len = f[2]; state.era = f[3]; state.sty = f[4]; state.dem = f[5];
   state.tags = f[6] ? f[6].split("+").filter(function(t){ return TAGS.indexOf(t) > -1; }) : [];
+  state.notags = f[7] ? f[7].split("+").filter(function(t){ return TAGS.indexOf(t) > -1; }) : [];
 }
 
 /* ---- light and dark ----
