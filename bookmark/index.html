@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="/bookmark/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <script>/* Ahead of the stylesheet on purpose: reading the choice after first paint
    flashes the other theme for a frame. No stored choice means follow the system. */
 (function(){try{var t=localStorage.getItem("bookmark.theme");
@@ -32,6 +32,15 @@ if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)
   --line:#33302a; --line2:#474135; --accent:#d9a441;
   --case:#141310; --wood:#4b3a28; --shadow:.55;
   color-scheme:dark;
+  /* TWO SERIFS, ON PURPOSE. Young Serif is a display face and ships in one
+     weight, so a 600 heading would be a synthesised bold - it takes the wordmark,
+     the book title and the section headings, all at 400. Spectral keeps the
+     running text and the spines: the descriptions now run to about 170 characters
+     and Young Serif's weight is hard going at that length, and at 13px vertical
+     on a spine it clogs. */
+  --font-display:'Young Serif',Georgia,'Times New Roman',serif;
+  --font-serif:'Spectral',Georgia,'Times New Roman',serif;
+  --font-sans:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
@@ -50,25 +59,52 @@ if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-  font-family:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-family:var(--font-sans);
   color:var(--ink); background:var(--paper); min-height:100vh; font-size:15px;
 }
-.serif{font-family:'Spectral',Georgia,'Times New Roman',serif}
+.serif{font-family:var(--font-serif)}
 a{color:inherit}
 .wrap{max-width:900px;margin:0 auto;padding:0 24px}
 .bar{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:22px 0 0}
-.brand{font-family:'Spectral',Georgia,serif;font-size:38px;font-weight:600;letter-spacing:-.025em;line-height:1}
+.brand{display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--font-display);font-size:36px;font-weight:400;
+  letter-spacing:-.015em;line-height:1}
 .brand .dot{color:var(--accent)}
-.barright{display:flex;align-items:baseline;gap:16px}
-.home{font-size:14px;color:var(--ink-soft);text-decoration:none;white-space:nowrap}
-.home:hover{color:var(--ink)}
-/* The arrow is a span so the gap can grow on hover without moving the words. */
-.home .arw{display:inline-block;transition:transform .14s}
-.home:hover .arw{transform:translateX(3px)}
-.theme{font:inherit;font-size:14px;color:var(--ink-soft);background:none;border:none;
-  cursor:pointer;padding:0;line-height:1}
-.theme:hover{color:var(--ink)}
-.lede{font-family:'Spectral',Georgia,serif;font-size:17px;color:var(--ink-soft);
+/* THE MARK OPENS ON HOVER. Two page halves and a gutter, drawn as three paths so
+   each leaf can be hinged on the gutter independently - a single path could not
+   be. transform-origin is written in px because transform-box:fill-box measures
+   from the PATH's own bounding box, and the two leaves have different boxes;
+   view-box makes both measure from the same 24-unit frame. */
+.brand .mark{width:.86em;height:.86em;flex:0 0 auto;overflow:visible;
+  transform-box:view-box}
+.brand .pg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;
+  transform-box:view-box;transition:transform .34s cubic-bezier(.22,.7,.25,1)}
+.brand .pg{transform-origin:12px 13px}
+.brand .gut{stroke:var(--accent);stroke-width:1.8}
+.bar:hover .brand .pg{transform:rotate(-7deg)}
+.bar:hover .brand .pg.r{transform:rotate(7deg)}
+@media (prefers-reduced-motion: reduce){
+  .brand .pg{transition:none}
+  .bar:hover .brand .pg,.bar:hover .brand .pg.r{transform:none}
+}
+/* THE ESTATE'S OWN BAR, not a local invention. Both of these were hand-rolled
+   here first - a right-pointing arrow after the words, and a bare text button for
+   the theme - and neither matched anything else on the site. The house pattern is
+   in assets/room.css and shipped on Worst Case Scenario: a muted uppercase
+   back-link with an accent left arrow, and a pill toggle carrying an accent dot. */
+.barright{display:flex;align-items:center;gap:1.1rem}
+.home{font:500 13px/1 var(--font-sans);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-soft);text-decoration:none;white-space:nowrap;
+  display:inline-flex;align-items:center;transition:color .2s}
+.home:hover{color:var(--accent)}
+.home .back{color:var(--accent);font-size:14px}
+.toggle{appearance:none;-webkit-appearance:none;cursor:pointer;background:transparent;
+  color:var(--ink-soft);border:1px solid var(--line2);border-radius:999px;
+  padding:.45rem .85rem;font:500 12px/1 var(--font-sans);letter-spacing:.04em;
+  display:inline-flex;align-items:center;gap:.5rem;transition:border-color .2s,color .2s}
+.toggle:hover{color:var(--ink);border-color:var(--accent)}
+.toggle .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.lede{font-family:var(--font-serif);font-size:17px;color:var(--ink-soft);
       margin:24px 0 26px;max-width:46ch;line-height:1.5}
 
 /* the shelf */
@@ -107,7 +143,7 @@ a{color:inherit}
   background:rgba(0,0,0,.20);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
   display:flex;align-items:center;justify-content:center;overflow:hidden}
 .spine .t{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;
-  color:#f6f1e4;font-family:'Spectral',Georgia,serif;font-size:13px;letter-spacing:.02em;
+  color:#f6f1e4;font-family:var(--font-serif);font-size:13px;letter-spacing:.02em;
   text-shadow:0 1px 2px rgba(0,0,0,.55);max-height:100%;overflow:hidden;text-overflow:ellipsis}
 /* the author's initial, foil-blocked at the tail the way a real spine carries the
    publisher's mark */
@@ -135,7 +171,7 @@ a{color:inherit}
 .cover{position:relative;height:250px;border-radius:2px 6px 6px 2px;
   border-left:11px solid rgba(0,0,0,.42);
   display:flex;flex-direction:column;justify-content:space-between;padding:22px 18px;
-  font-family:'Spectral',Georgia,serif;color:#f6f1e4;overflow:hidden;
+  font-family:var(--font-serif);color:#f6f1e4;overflow:hidden;
   background:
     repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px var(--weave,3px)),
     linear-gradient(115deg, rgba(255,255,255,.09), transparent 42%),
@@ -149,10 +185,10 @@ a{color:inherit}
 .cover .ct{font-size:19px;line-height:1.15;font-weight:600}
 .cover .ca{font-size:12px;opacity:.85}
 .month{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600}
-.title{font-family:'Spectral',Georgia,serif;font-size:37px;line-height:1.1;font-weight:500;
-  letter-spacing:-.02em;margin:12px 0 5px}
+.title{font-family:var(--font-display);font-size:35px;line-height:1.12;font-weight:400;
+  letter-spacing:-.012em;margin:12px 0 5px}
 .byline{color:var(--ink-soft);margin:0 0 18px}
-.why{font-family:'Spectral',Georgia,serif;font-size:19px;line-height:1.55;margin:0 0 8px;max-width:46ch}
+.why{font-family:var(--font-serif);font-size:19px;line-height:1.55;margin:0 0 8px;max-width:46ch}
 /* CC BY-SA is not a formality: the text is Wikipedia's, so every book that took
    a line links the page it came from, and the footer names the licence. */
 .whysrc{display:inline-block;font-size:12px;color:var(--ink-soft);text-decoration:none;
@@ -180,7 +216,7 @@ a{color:inherit}
 .pulled.empty .cover,.pulled.empty .actions{display:none}
 
 /* questions */
-h2.sec{font-family:'Spectral',Georgia,serif;font-size:22px;font-weight:600;margin:46px 0 20px}
+h2.sec{font-family:var(--font-display);font-size:21px;font-weight:400;letter-spacing:-.005em;margin:46px 0 20px}
 h2.sec.first{margin-top:26px}
 .q{border-top:1px solid var(--line);padding:18px 0}
 .q:first-of-type{border-top:none}
@@ -211,6 +247,10 @@ h2.sec.first{margin-top:26px}
 .slider input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;
   background:var(--accent);border:2px solid var(--paper);box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .slider input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:6px;border-radius:4px}
+/* No transition on the thumb: a native range thumb is positioned by its VALUE,
+   not by a transform, so CSS cannot animate it and a rule here would do nothing
+   while looking like it did something. A tick tap is animated in JS instead - see
+   glideTo(). */
 /* Ticks are labels, not decoration: a slider whose positions are unnamed is a
    guess. The chosen one is the one that goes solid. */
 /* Positioned, not space-between. The thumb centre travels from 9.5px to
@@ -247,7 +287,12 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
        font-size:13px;color:var(--ink-soft);line-height:1.6}
 @media (max-width:620px){
   .wrap{padding:0 16px}
-  .brand{font-size:30px}
+  .brand{font-size:28px}
+  /* Same fix room.css carries: at this width the wordmark, the toggle and two
+     words of link will not sit on one line, so the link keeps only its arrow. */
+  .barright{gap:.6rem}
+  .barright .home{font-size:0;letter-spacing:0}
+  .barright .home .back{font-size:16px}
   .ticks span{font-size:11px}
   .pulled{grid-template-columns:1fr;gap:22px}
   .cover{height:200px;max-width:150px}
@@ -262,11 +307,17 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
 <body>
 <div class="wrap">
   <div class="bar">
-    <span class="brand serif">Bookmark<span class="dot">.</span></span>
-    <span class="barright">
-      <button class="theme" id="themeBtn" type="button" aria-live="polite"></button>
-      <a class="home" href="/">Other projects <span class="arw" aria-hidden="true">&rarr;</span></a>
-    </span>
+    <span class="brand">
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path class="pg" d="M12 6.5C10 4.8 7.4 4.2 4 4.4v13.2c3.4-.2 6 .4 8 2.1z"/>
+        <path class="pg r" d="M12 6.5C14 4.8 16.6 4.2 20 4.4v13.2c-3.4-.2-6 .4-8 2.1z"/>
+        <path class="gut" d="M12 6.5v13.2"/>
+      </svg><span class="wm">Bookmark<span class="dot">.</span></span></span>
+    <div class="barright">
+      <button class="toggle" id="themeBtn" type="button"
+              aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl"></span></button>
+      <a class="home" href="/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
+    </div>
   </div>
 
   <p class="lede">Seven questions about what you want from a book. One comes off the shelf on the first of each month.</p>
@@ -688,15 +739,65 @@ function buildButtons(q){
   return opts;
 }
 
+/* Sub-units per notch. Big enough that a drag reads as continuous, small enough
+   that a keyboard arrow still lands somewhere useful. */
+var SUB = 40;
+
+/* Walk the thumb to a notch over ~190ms rather than teleporting it. Only for a
+   tick tap and a keyboard jump; a drag is already continuous and animating it
+   would make the thumb lag the finger. The answer is committed once, at the
+   destination, so the shelf is not re-scored on every frame. */
+function glideTo(box, q, val){
+  var r = box.querySelector("input");
+  var to = q.opts.findIndex(function(o){ return o[0] === val; }) * SUB;
+  var from = Number(r.value);
+  if(from === to){ choose(q, val); return; }
+  if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    r.value = to; choose(q, val); return;
+  }
+  var t0 = performance.now(), dur = 190;
+  (function step(now){
+    var k = Math.min(1, (now - t0) / dur);
+    var e = 1 - Math.pow(1 - k, 3);
+    r.value = Math.round(from + (to - from) * e);
+    box.style.setProperty("--fill", (Number(r.value) / r.max * 100) + "%");
+    if(k < 1) requestAnimationFrame(step);
+    else { markTicks(box, q, val); choose(q, val); }
+  })(t0);
+}
+
+function markTicks(box, q, val){
+  box.querySelectorAll(".ticks span").forEach(function(t){
+    t.setAttribute("data-on", t.getAttribute("data-v") === val ? "1" : "0");
+  });
+}
+
 function buildSlider(q){
   var box = document.createElement("div"); box.className = "slider";
   box.setAttribute("data-q", q.id);
   var r = document.createElement("input");
-  r.type = "range"; r.min = 0; r.max = q.opts.length - 1; r.step = 1;
+  /* SUB-STEPS, NOT NOTCHES. With step=1 over three or four positions the thumb
+     teleports and the control feels like three buttons wearing a slider. The
+     input now travels in SUB units per notch, so dragging is continuous, and the
+     ANSWER is the nearest notch - which is also why choose() only fires when
+     that nearest notch actually changes, rather than on every pixel of the drag
+     (each call re-scores 331 books). */
+  r.type = "range"; r.min = 0; r.max = (q.opts.length - 1) * SUB; r.step = 1;
   r.setAttribute("aria-label", q.label);
   /* The thumb is on a number, but what the reader is choosing is a WORD, so the
-     screen reader gets the word. Without this it announces "2 of 3". */
-  r.addEventListener("input", function(){ choose(q, q.opts[Number(r.value)][0]); });
+     screen reader gets the word. Without this it announces "40 of 200". */
+  r.addEventListener("input", function(){
+    var i = Math.round(Number(r.value) / SUB);
+    box.style.setProperty("--fill", (Number(r.value) / r.max * 100) + "%");
+    markTicks(box, q, q.opts[i][0]);
+    if(q.opts[i][0] !== state[q.id]) choose(q, q.opts[i][0]);
+  });
+  /* Let go and it settles onto the notch, so the thumb never rests between two
+     labels claiming to be neither. */
+  r.addEventListener("change", function(){
+    r.value = Math.round(Number(r.value) / SUB) * SUB;
+    paint();
+  });
   box.appendChild(r);
   var ticks = document.createElement("div"); ticks.className = "ticks";
   q.opts.forEach(function(o){
@@ -705,7 +806,7 @@ function buildSlider(q){
     if(o[0] === "any") t.className = "any";
     /* A tick is a label AND a target: on a phone the words are easier to hit than
        a 19px thumb, and someone who reads "Postwar" will try to tap it. */
-    t.addEventListener("click", function(){ choose(q, o[0]); });
+    t.addEventListener("click", function(){ glideTo(box, q, o[0]); });
     t.style.cursor = "pointer";
     ticks.appendChild(t);
   });
@@ -742,15 +843,16 @@ function paint(){
     var i = q.opts.findIndex(function(o){ return o[0] === state[id]; });
     if(i < 0) i = 0;
     var r = g.querySelector("input");
-    r.value = i;
+    /* Only written when it is actually wrong. Assigning .value mid-drag snaps the
+       thumb back under the reader's finger. */
+    var want = i * SUB;
+    if(Number(r.value) !== want) r.value = want;
     r.setAttribute("aria-valuetext", q.opts[i][1]);
     /* Chrome cannot fill a range track from CSS alone, so the filled fraction is
        handed to the gradient as a variable. Firefox uses ::-moz-range-progress and
        ignores this. */
     g.style.setProperty("--fill", (i / (q.opts.length - 1) * 100) + "%");
-    g.querySelectorAll(".ticks span").forEach(function(t){
-      t.setAttribute("data-on", t.getAttribute("data-v") === state[id] ? "1" : "0");
-    });
+    markTicks(g, q, state[id]);
   });
 }
 
@@ -782,9 +884,10 @@ function showingDark(){
 }
 function labelTheme(){
   var next = showingDark() ? "light" : "dark";
-  var btn = document.getElementById("themeBtn");
-  btn.textContent = next.charAt(0).toUpperCase() + next.slice(1);
-  btn.setAttribute("aria-label", "Switch to the " + next + " theme");
+  document.getElementById("themeLbl").textContent =
+    next.charAt(0).toUpperCase() + next.slice(1);
+  document.getElementById("themeBtn")
+    .setAttribute("aria-label", "Switch to the " + next + " theme");
 }
 document.getElementById("themeBtn").addEventListener("click", function(){
   var next = showingDark() ? "light" : "dark";
