@@ -156,6 +156,11 @@ a{color:inherit}
 .match{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
 .mchip{font-size:12px;color:var(--ink-soft);background:var(--paper2);border:1px solid var(--line);
        border-radius:20px;padding:4px 11px}
+/* The ones that answer what you asked for are filled; the rest still describe the
+   book. Colour carries the distinction, so the row reads as a description with
+   your answers picked out of it rather than as two separate lists. */
+.mchip.on{color:var(--ink);border-color:var(--accent);
+  background:color-mix(in srgb, var(--accent) 20%, var(--paper2));font-weight:600}
 .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:18px}
 .buy{font-size:14px;font-weight:600;text-decoration:none;color:#211d16;background:var(--accent);
      border:1px solid var(--accent);border-radius:8px;padding:10px 17px}
@@ -451,15 +456,28 @@ function shortlist(){
 function monthIndex(d){ return d.getFullYear()*12 + d.getMonth(); }
 function cloth(b){ return CLOTH[hash(b.t + b.a) % CLOTH.length]; }
 
+var MOODNAME = {absorb:"Absorbing",learn:"Teaches you something",unsettle:"Unsettling",laugh:"Funny"};
+var LENNAME = {s:"Short",m:"Middling",l:"Long"};
+var ERANAME = {contemporary:"Last twenty years",modern:"Postwar",older:"Older"};
+var STYNAME = {plain:"Plain prose",rich:"Rich prose",funny:"Sharp and funny"};
+var DEMNAME = {1:"Easy company",2:"Some work",3:"Hard going"};
+
+/* DESCRIBE THE BOOK, then mark what you asked for.
+   These used to be emitted only where an answer was non-default, so a first visit
+   - which is mood:absorb and "any" everywhere else - printed exactly one chip on
+   every book on the shelf: "Absorbing". The chips are the only place the page
+   says what a book IS, and they were saying it about the reader instead. */
 function matchChips(b){
   var out = [];
-  state.mood.forEach(function(m){ if(b.mood.indexOf(m)>-1)
-    out.push({absorb:"Absorbing",learn:"Teaches you something",unsettle:"Unsettling",laugh:"Funny"}[m]); });
-  if(state.form!=="any" && b.f===state.form) out.push(b.f==="fic"?"Fiction":"Nonfiction");
-  if(state.len!=="any" && b.len===state.len) out.push({s:"Short",m:"Middling",l:"Long"}[b.len]);
-  if(state.era!=="any" && era(b)===state.era) out.push({contemporary:"Last twenty years",modern:"Postwar",older:"Older"}[era(b)]);
-  if(state.sty!=="any" && b.sty===state.sty) out.push({plain:"Plain prose",rich:"Rich prose",funny:"Sharp and funny"}[b.sty]);
-  state.tags.forEach(function(t){ if(b.tags.indexOf(t)>-1) out.push(TAGNAME[t]); });
+  function add(label, on){ if(label) out.push({label:label, on:!!on}); }
+
+  add(b.f === "fic" ? "Fiction" : "Nonfiction", state.form !== "any" && b.f === state.form);
+  b.mood.forEach(function(m){ add(MOODNAME[m], state.mood.indexOf(m) > -1); });
+  add(LENNAME[b.len], state.len !== "any" && b.len === state.len);
+  add(ERANAME[era(b)], state.era !== "any" && era(b) === state.era);
+  add(STYNAME[b.sty], state.sty !== "any" && b.sty === state.sty);
+  add(DEMNAME[b.dem], String(b.dem) === String(state.dem));
+  b.tags.forEach(function(t){ add(TAGNAME[t], state.tags.indexOf(t) > -1); });
   return out;
 }
 
@@ -590,7 +608,11 @@ function render(){
   var m = document.getElementById("match");
   while(m.firstChild) m.removeChild(m.firstChild);
   matchChips(b).forEach(function(c){
-    var el = document.createElement("span"); el.className = "mchip"; el.textContent = c; m.appendChild(el);
+    var el = document.createElement("span");
+    el.className = "mchip" + (c.on ? " on" : "");
+    el.textContent = c.label;
+    if(c.on) el.title = "Matches what you asked for";
+    m.appendChild(el);
   });
 
   document.getElementById("buyAmz").href =
