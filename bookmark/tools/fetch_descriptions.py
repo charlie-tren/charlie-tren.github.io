@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import threading
 import time
 import urllib.parse
 import urllib.request
@@ -32,13 +33,48 @@ OUT = Path(__file__).resolve().parent / "descriptions.json"
 UA = "bookmark-shelf/1.0 (https://charlietrenorden.com/bookmark/)"
 API = "https://en.wikipedia.org/w/api.php"
 REST = "https://en.wikipedia.org/api/rest_v1/page/summary/"
-MAXLEN = 190
+#: Not a truncation point - a PREFERENCE. Sentences longer than this are scored
+#: down so a shorter complete one wins, but nothing is ever cut: the old code
+#: sliced at 190 characters and appended an ellipsis, which left a third of the
+#: shelf trailing off mid-clause ("...his love and pursuit of..."). A complete
+#: 260-character sentence reads properly; half a 190-character one does not.
+MAXLEN = 240
+#: Above this a sentence is a run-on and is not worth having at any length.
+HARDMAX = 400
+
+
+#: Wikipedia rate-limits anonymous clients, and a HTTP 429 is indistinguishable
+#: from "this article has no summary" once it has been swallowed by an except
+#: clause. Running eight workers against it produced 433 empty results out of 700
+#: - every one of which the pipeline dutifully recorded as "no usable
+#: description" and would have shipped as a refusal. A throttle plus a retry on
+#: 429 is not politeness alone, it is the difference between a real answer and a
+#: silent one.
+_LAST = [0.0]
+_LOCK = threading.Lock()
+MIN_GAP = 0.12          # seconds between requests, across all threads
+RETRIES = 4
 
 
 def get(url: str) -> dict:
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=25) as r:
-        return json.loads(r.read().decode("utf-8"))
+    for attempt in range(RETRIES):
+        with _LOCK:
+            wait = MIN_GAP - (time.monotonic() - _LAST[0])
+            if wait > 0:
+                time.sleep(wait)
+            _LAST[0] = time.monotonic()
+        req = urllib.request.Request(
+            url, headers={"User-Agent": UA, "Accept": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=25) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            if e.code not in (429, 503) or attempt == RETRIES - 1:
+                raise
+            # Exponential, and it must be OUTSIDE the lock or every thread queues
+            # behind one back-off.
+            time.sleep(1.5 * (2 ** attempt))
+    raise RuntimeError("unreachable")
 
 
 B = chr(92)   # heredocs eat backslashes; the pattern is built rather than typed
@@ -252,6 +288,17 @@ def useful(text: str, title: str, cap: int = MAXLEN, allow_card: bool = True) ->
         s -= i * 0.4                    # earlier is better, all else equal
         if len(p) < 60:
             s -= 2
+        # Overlength is a cost, not a cliff. One point per 20 characters past the
+        # target, so a 250-character complete sentence still beats a 150-character
+        # one about the publisher - which is the trade the ellipsis used to hide.
+        if len(p) > cap:
+            # Gentle. At one point per 20 characters The Swerve's own 316-character
+            # summary scored below its catalogue card, so the fix for trailing off
+            # reintroduced the byline restatement instead. Length is a mild cost
+            # against saying nothing, not a veto.
+            s -= (len(p) - cap) / 40.0
+        if len(p) > HARDMAX:
+            s -= 100
         return s
 
     best = max(range(len(parts)), key=lambda i: sc(i, parts[i]))
@@ -266,11 +313,9 @@ def useful(text: str, title: str, cap: int = MAXLEN, allow_card: bool = True) ->
             return ""
         best = 0
     out = parts[best]
-    if len(out) < 85 and best + 1 < len(parts):
+    if len(out) < 85 and best + 1 < len(parts) and len(out) + len(parts[best + 1]) <= cap:
         out = out + " " + parts[best + 1]
-    if len(out) > cap:
-        out = out[:cap].rsplit(" ", 1)[0].rstrip(",;:") + "..."
-    return out
+    return out if len(out) <= HARDMAX else ""
 
 
 def intro(page: str) -> str:

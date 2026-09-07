@@ -44,36 +44,95 @@ OL = "https://openlibrary.org"
 #: all twenty-two categories and looked like an API problem. The names are
 #: resolved by search now, and the resolver prints what it actually used.
 PRIZES = {
+    # ---- literary fiction
     "Booker Prize": ("fic", ["literary"]),
+    "International Booker Prize": ("fic", ["literary"]),
     "Pulitzer Prize for Fiction": ("fic", ["literary"]),
-    "Pulitzer Prize for General Nonfiction": ("non", ["ideas"]),
-    "Pulitzer Prize for History": ("non", ["history"]),
-    "Pulitzer Prize for Biography": ("non", ["memoir"]),
+    "National Book Award for Fiction": ("fic", ["literary"]),
+    "National Book Critics Circle Award": ("fic", ["literary"]),
+    "Women's Prize for Fiction": ("fic", ["literary"]),
+    "Orange Prize for Fiction": ("fic", ["literary"]),
+    "PEN/Faulkner Award": ("fic", ["literary"]),
+    "James Tait Black Memorial Prize": ("fic", ["literary"]),
+    "Costa Book Award": ("fic", ["literary"]),
+    "Miles Franklin Award": ("fic", ["literary"]),
+    "Stella Prize": ("fic", ["literary"]),
+    "Prime Minister's Literary Award": ("fic", ["literary"]),
+    "Giller Prize": ("fic", ["literary"]),
+    "Governor General's Award": ("fic", ["literary"]),
+    "Dublin Literary Award": ("fic", ["literary"]),
+    "Kirkus Prize": ("fic", ["literary"]),
+    "Rathbones Folio Prize": ("fic", ["literary"]),
+    "Goldsmiths Prize": ("fic", ["literary"]),
+    "Somerset Maugham Award": ("fic", ["literary"]),
+    "Encore Award": ("fic", ["literary"]),
+    "Hawthornden Prize": ("fic", ["literary"]),
+    "Prix Goncourt": ("fic", ["literary"]),
+    "Walter Scott Prize": ("fic", ["literary", "history"]),
+    "Bollinger Everyman Wodehouse Prize": ("fic", ["literary"]),
+    # ---- crime
+    "Edgar Award": ("fic", ["crime"]),
+    "Gold Dagger": ("fic", ["crime"]),
+    "Anthony Award": ("fic", ["crime"]),
+    "Macavity Award": ("fic", ["crime"]),
+    "Barry Award": ("fic", ["crime"]),
+    "Shamus Award": ("fic", ["crime"]),
+    "Ned Kelly Award": ("fic", ["crime"]),
+    # ---- speculative
     "Hugo Award for Best Novel": ("fic", ["speculative"]),
     "Nebula Award for Best Novel": ("fic", ["speculative"]),
-    "National Book Award for Fiction": ("fic", ["literary"]),
+    "World Fantasy Award": ("fic", ["speculative"]),
+    "Locus Award": ("fic", ["speculative"]),
+    "Arthur C. Clarke Award": ("fic", ["speculative"]),
+    "Philip K. Dick Award": ("fic", ["speculative"]),
+    "British Science Fiction Association Award": ("fic", ["speculative"]),
+    "Bram Stoker Award": ("fic", ["speculative"]),
+    "Mythopoeic Awards": ("fic", ["speculative"]),
+    # ---- history and ideas
+    "Pulitzer Prize for History": ("non", ["history"]),
+    "Pulitzer Prize for General Nonfiction": ("non", ["ideas"]),
+    "Pulitzer Prize for Biography or Autobiography": ("non", ["memoir"]),
     "National Book Award for Nonfiction": ("non", ["ideas"]),
-    "Women's Prize for Fiction": ("fic", ["literary"]),
-    "Miles Franklin Award": ("fic", ["literary"]),
-    "Costa Book Award": ("fic", ["literary"]),
-    "Edgar Award": ("fic", ["crime"]),
-    "James Tait Black Memorial Prize": ("fic", ["literary"]),
-    "Whitbread Award": ("fic", ["literary"]),
-    "Royal Society Prize for Science Books": ("non", ["science"]),
+    "Bancroft Prize": ("non", ["history"]),
+    "Francis Parkman Prize": ("non", ["history"]),
     "Wolfson History Prize": ("non", ["history"]),
+    "Cundill History Prize": ("non", ["history"]),
     "Duff Cooper Prize": ("non", ["history"]),
+    "Baillie Gifford Prize": ("non", ["ideas"]),
     "Samuel Johnson Prize": ("non", ["ideas"]),
+    "Orwell Prize": ("non", ["politics"]),
+    "Royal Society Prizes for Science Books": ("non", ["science"]),
+    "PEN/E. O. Wilson Award": ("non", ["science"]),
+    "Business Book of the Year Award": ("non", ["markets"]),
+    # ---- sport, nature, travel
     "William Hill Sports Book of the Year": ("non", ["sport"]),
     "Wainwright Prize": ("non", ["nature"]),
-    "Arthur C. Clarke Award": ("fic", ["speculative"]),
-    "Orwell Prize": ("non", ["politics"]),
-    "Bancroft Prize": ("non", ["history"]),
-    "PEN/Faulkner Award": ("fic", ["literary"]),
+    "Boardman Tasker Prize for Mountain Literature": ("non", ["nature", "travel"]),
+    "Thomas Cook Travel Book Award": ("non", ["travel"]),
+    "Dolman Best Travel Book Award": ("non", ["travel"]),
 }
 
 
+#: Words that appear in half the prize names on earth and so identify nothing.
+GENERIC = {"prize", "award", "awards", "for", "best", "novel", "book", "books",
+           "of", "the", "and", "fiction", "nonfiction", "non-fiction", "year",
+           "memorial", "literary", "literature", "english-language", "writing",
+           "general", "biography", "autobiography", "science", "history"}
+
+
+def keywords(prize: str) -> list[str]:
+    return [w for w in re.findall(r"[A-Za-z']+", prize.lower())
+            if w not in GENERIC and len(w) > 2]
+
+
 def resolve_category(prize: str) -> str | None:
-    """The category that actually has members, found rather than assumed."""
+    """The category that actually has members AND actually names this prize.
+
+    The members check alone is not enough. Searching "Nebula Award for Best Novel
+    winning works" returns the HUGO category among its hits, that category has 80
+    members, and it was accepted - so the Nebula contributed nothing and the Hugo
+    was counted twice. The category has to carry a word that identifies the prize.
+    """
     u = (API + "?action=query&list=search&srnamespace=14&srlimit=8&format=json"
          "&srsearch=" + urllib.parse.quote(prize + " winning works"))
     try:
@@ -83,9 +142,13 @@ def resolve_category(prize: str) -> str | None:
     # Prefer a "winning works" category over a "winners" one: the first holds the
     # BOOKS, the second holds the authors, and picking wrong fills the shelf with
     # biographies.
+    kws = keywords(prize)
     hits.sort(key=lambda h: (0 if "winning works" in h.lower() else 1, len(h)))
     for h in hits:
-        if "winners" in h.lower() and "winning works" not in h.lower():
+        low = h.lower()
+        if "winners" in low and "winning works" not in low:
+            continue
+        if kws and not any(k in low for k in kws):
             continue
         if members(h, probe=True):
             return h
@@ -100,10 +163,11 @@ NOT_A_BOOK = re.compile(
 
 
 def get(url: str) -> dict:
-    req = urllib.request.Request(url, headers={"User-Agent": UA,
-                                               "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode("utf-8"))
+    """Delegated, so there is ONE throttle for the whole estate of scripts. Two
+    modules with their own rate limiters running at once is not a rate limiter."""
+    sys.path.insert(0, str(HERE))
+    import fetch_descriptions as F
+    return F.get(url)
 
 
 def members(cat: str, probe: bool = False) -> list[str]:
@@ -132,9 +196,19 @@ def shelf_titles() -> set[str]:
 
 def collect() -> int:
     have = shelf_titles()
-    out, unresolved = {}, []
+    out, unresolved, used = {}, [], {}
     for prize, (form, tags) in PRIZES.items():
         cat = resolve_category(prize)
+        # ONE CATEGORY PER PRIZE. The search happily returned the Hugo category
+        # for "Nebula Award for Best Novel", so the Nebula contributed nothing and
+        # the Hugo was counted twice - visible in the first run's output as two
+        # identical lines, which I read past.
+        if cat and cat in used:
+            print(f"  {'--':>4}  {prize[:52]:54} resolved to {used[cat]}'s category")
+            unresolved.append(prize)
+            continue
+        if cat:
+            used[cat] = prize
         if not cat:
             unresolved.append(prize)
             print(f"  {'--':>4}  {prize[:52]:54} no category found")
@@ -165,9 +239,11 @@ def collect() -> int:
 
 
 #: Per prize, so one long-running award cannot set the shelf's character. The
-#: Edgar alone offered 215 crime titles against the Booker's 53, and taking
-#: everything would have made a crime shelf with a literary section.
-CAP = 55
+#: Edgar alone offers 215 crime titles against the Booker's 53. Raised from 55
+#: once the prize list went from 25 awards to 65: with that many sources the cap
+#: is no longer what balances the shelf - the spread of awards is - and 55 was
+#: throwing away most of the Pulitzer and Hugo back catalogues for nothing.
+CAP = 150
 
 #: Open Library subject strings -> the shelf's own sixteen tags. Deliberately
 #: narrow: a tag that fires on everything is worse than a missing one, because the
@@ -285,7 +361,7 @@ def hit(needle: str, subject: str) -> bool:
 #: work is entirely IO-bound and the two services are independent, so a small
 #: pool turns it into minutes. Kept small on purpose - these are free public APIs
 #: and there is no reason to lean on them.
-WORKERS = 8
+WORKERS = 4   # Wikipedia 429s above this; see fetch_descriptions.get
 
 
 def enrich() -> int:

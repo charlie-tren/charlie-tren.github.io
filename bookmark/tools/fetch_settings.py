@@ -172,13 +172,25 @@ def apply() -> int:
         nonlocal done
         title = m.group(1).replace('\\"', '"')
         rec = have.get(title)
-        if not rec or not rec["set"] or ",set:[" in m.group(0):
+        # IDEMPOTENCE HAS TO LOOK AT WHAT FOLLOWS THE MATCH, not at the match.
+        # This guard used to test `",set:[" in m.group(0)`, and the match ends at
+        # `y:1965` - so it never saw the set it had written on the previous run.
+        # Two applies produced set:["america"],set:["america"] on 437 records,
+        # which JavaScript accepts in silence (the last key wins) and node
+        # therefore parsed without complaint. Only a strict parse caught it.
+        if not rec or not rec["set"]:
             return m.group(0)
+        if m.group(2):                      # already carries one: replace it
+            done += 1
+            return (m.group(0)[:m.start(2) - m.start(0)] + ',set:['
+                    + ",".join('"%s"' % r for r in rec["set"]) + "]")
         done += 1
         return (m.group(0) + ',set:['
                 + ",".join('"%s"' % r for r in rec["set"]) + "]")
 
-    src = re.sub(r'\{t:"((?:[^"\\]|\\.)*)",a:"(?:[^"\\]|\\.)*",y:-?\d+', sub, src)
+    src = re.sub(
+        r'\{t:"((?:[^"\\]|\\.)*)",a:"(?:[^"\\]|\\.)*",y:-?\d+(,set:\[[^\]]*\])?',
+        sub, src)
     BOOKS.write_text(src, encoding="utf-8")
     print(f"added a setting to {done} books on the shelf")
     return 0
