@@ -15,26 +15,30 @@ one font ten times because the first inner quote closed the attribute.
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-OUT = Path(__file__).resolve().parent / "font_options.png"
+OUT = Path(__file__).resolve().parent / "font_options_2.png"
 
 # name, Google Fonts family (None = no request), CSS stack
 FACES = [
-    ("Spectral (current)", "Spectral:wght@400;500;600", "'Spectral',Georgia,serif"),
-    ("System serif (Pendulum's)", None,
-     "'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif"),
-    ("Literata", "Literata:opsz,wght@7..72,400;7..72,600", "'Literata',Georgia,serif"),
-    ("Newsreader", "Newsreader:opsz,wght@6..72,400;6..72,600", "'Newsreader',Georgia,serif"),
-    ("Source Serif 4", "Source+Serif+4:opsz,wght@8..60,400;8..60,600", "'Source Serif 4',Georgia,serif"),
-    ("Crimson Pro", "Crimson+Pro:wght@400;600", "'Crimson Pro',Georgia,serif"),
-    ("EB Garamond", "EB+Garamond:wght@400;600", "'EB Garamond',Georgia,serif"),
-    ("Libre Baskerville", "Libre+Baskerville:wght@400;700", "'Libre Baskerville',Georgia,serif"),
-    ("Lora", "Lora:wght@400;600", "'Lora',Georgia,serif"),
-    ("Playfair Display", "Playfair+Display:wght@400;600", "'Playfair Display',Georgia,serif"),
-    ("Fraunces", "Fraunces:opsz,wght@9..144,400;9..144,600", "'Fraunces',Georgia,serif"),
-    ("Instrument Serif", "Instrument+Serif:wght@400", "'Instrument Serif',Georgia,serif"),
-    ("Cormorant Garamond", "Cormorant+Garamond:wght@400;600", "'Cormorant Garamond',Georgia,serif"),
-    ("Bitter", "Bitter:wght@400;600", "'Bitter',Georgia,serif"),
-    ("Zilla Slab", "Zilla+Slab:wght@400;600", "'Zilla Slab',Georgia,serif"),
+    ("Spectral (current)", "Spectral:wght@400;500;600", "'Spectral',Georgia,serif", "where we are"),
+    ("IM Fell English", "IM+Fell+English:ital@0;1", "'IM Fell English',Georgia,serif", "antiquarian"),
+    ("IM Fell DW Pica", "IM+Fell+DW+Pica:ital@0;1", "'IM Fell DW Pica',Georgia,serif", "antiquarian"),
+    ("Almendra", "Almendra:wght@400;700", "'Almendra',Georgia,serif", "antiquarian"),
+    ("Bodoni Moda", "Bodoni+Moda:opsz,wght@6..96,400;6..96,600", "'Bodoni Moda',Georgia,serif", "didone"),
+    ("Prata", "Prata", "'Prata',Georgia,serif", "didone"),
+    ("Abril Fatface", "Abril+Fatface", "'Abril Fatface',Georgia,serif", "didone, heavy"),
+    ("Young Serif", "Young+Serif", "'Young Serif',Georgia,serif", "wedge"),
+    ("Eczar", "Eczar:wght@400;600", "'Eczar',Georgia,serif", "wedge"),
+    ("Vollkorn", "Vollkorn:wght@400;600", "'Vollkorn',Georgia,serif", "old-style, chunky"),
+    ("Alegreya", "Alegreya:wght@400;600", "'Alegreya',Georgia,serif", "old-style, calligraphic"),
+    ("Petrona", "Petrona:wght@400;600", "'Petrona',Georgia,serif", "quirky text"),
+    ("DM Serif Display", "DM+Serif+Display", "'DM Serif Display',Georgia,serif", "editorial display"),
+    ("Yeseva One", "Yeseva+One", "'Yeseva One',Georgia,serif", "art nouveau"),
+    ("Cinzel", "Cinzel:wght@400;600", "'Cinzel',Georgia,serif", "roman caps"),
+    ("Marcellus", "Marcellus", "'Marcellus',Georgia,serif", "roman caps, softer"),
+    ("Rokkitt", "Rokkitt:wght@400;600", "'Rokkitt',Georgia,serif", "slab"),
+    ("Bree Serif", "Bree+Serif", "'Bree Serif',Georgia,serif", "slab, friendly"),
+    ("Grenze", "Grenze:wght@400;600", "'Grenze',Georgia,serif", "condensed, gothic-ish"),
+    ("Syne", "Syne:wght@400;700", "'Syne',sans-serif", "sans, odd"),
 ]
 
 FAMS = "&".join("family=" + f[1] for f in FACES if f[1])
@@ -44,7 +48,7 @@ ROWS = "".join(
     # quote family names with ' , so the attribute is " . Getting this backwards
     # renders every row in the SAME face and looks like a font-loading problem.
     f"""<div class="row">
-          <div class="nm">{i+1}. {name}</div>
+          <div class="nm">{i+1}. {name}<span class="reg">{FACES[i][3]}</span></div>
           <div class="spec" style="--f: {stack}">
             <div class="brand">Bookmark<span class="dot">.</span></div>
             <div class="title">Say Nothing</div>
@@ -52,7 +56,7 @@ ROWS = "".join(
             <div class="sp"><span class="t">Piranesi</span></div>
           </div>
         </div>"""
-    for i, (name, _, stack) in enumerate(FACES))
+    for i, (name, _, stack, _reg) in enumerate(FACES))
 
 HTML = f"""<!doctype html><meta charset=utf-8>
 <link rel=preconnect href=https://fonts.googleapis.com>
@@ -64,6 +68,7 @@ HTML = f"""<!doctype html><meta charset=utf-8>
         padding:18px 0;border-top:1px solid #33302a}}
   .row:first-child{{border-top:none}}
   .nm{{color:#9a9384;font-size:13px;letter-spacing:.04em}}
+  .reg{{display:block;color:#6f695d;font-size:11px;margin-top:3px}}
   .spec{{display:flex;align-items:flex-end;gap:38px}}
   .brand{{display:inline-block;font-family:var(--f);font-size:38px;font-weight:600;letter-spacing:-.025em;line-height:1}}
   .dot{{color:#d9a441}}
