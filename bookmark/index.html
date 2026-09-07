@@ -81,22 +81,55 @@ a{color:inherit}
   font-family:var(--font-display);font-size:36px;font-weight:400;
   letter-spacing:-.015em;line-height:1}
 .brand .dot{color:var(--accent)}
-/* THE MARK OPENS ON HOVER. Two page halves and a gutter, drawn as three paths so
-   each leaf can be hinged on the gutter independently - a single path could not
-   be. transform-origin is written in px because transform-box:fill-box measures
-   from the PATH's own bounding box, and the two leaves have different boxes;
-   view-box makes both measure from the same 24-unit frame. */
-.brand .mark{width:.86em;height:.86em;flex:0 0 auto;overflow:visible;
+/* A PAGE TURNS. Four paths: two fixed leaves, a gutter, and one loose leaf that
+   sweeps from the right block across to the left. The sweep is scaleX hinged on
+   the gutter, which is what a page turning is when you see it head on, and each
+   phase carries its own easing inside the keyframes - one curve across the whole
+   cycle reads as a wipe rather than a page. Same trap as the Pendulum cradle:
+   transform-origin is written in px and transform-box must be view-box, or each
+   path measures from its OWN bounding box and the four stop agreeing.
+
+   THE REDUCED-MOTION BRANCH IS NOT A DEAD END. Windows animations are off on
+   Charlie's machine, so every hover animation on this estate is invisible to
+   him - which is how the first version of this mark shipped looking inert to the
+   one person reviewing it. Under reduced motion the leaf still turns up on the
+   left and the gutter still thickens; it just gets there by opacity rather than
+   by moving. */
+.brand .mark{width:.9em;height:.9em;flex:0 0 auto;overflow:visible;
   transform-box:view-box}
-.brand .pg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;
-  transform-box:view-box;transition:transform .34s cubic-bezier(.22,.7,.25,1)}
-.brand .pg{transform-origin:12px 13px}
-.brand .gut{stroke:var(--accent);stroke-width:1.8}
-.bar:hover .brand .pg{transform:rotate(-7deg)}
-.bar:hover .brand .pg.r{transform:rotate(7deg)}
+.brand .pg,.brand .turn{fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linejoin:round;transform-box:view-box;transform-origin:12px 13px;
+  transition:transform .3s cubic-bezier(.22,.7,.25,1)}
+/* Filled, so the turning leaf covers the block it is passing over instead of
+   showing through it. */
+.brand .turn{fill:var(--paper);opacity:0}
+.brand .gut{stroke:var(--accent);stroke-width:1.8;transition:stroke-width .25s}
+
+.bar:hover .brand .pg{transform:rotate(-6deg)}
+.bar:hover .brand .pg.r{transform:rotate(6deg)}
+.bar:hover .brand .gut{stroke-width:2.6}
+.bar:hover .brand .turn{animation:leaf 1s cubic-bezier(.4,0,.6,1) both}
+
+@keyframes leaf{
+  0%   {opacity:0; transform:rotate(6deg) scaleX(1)}
+  8%   {opacity:1; transform:rotate(6deg) scaleX(1)}
+  /* lifting off the right block, accelerating */
+  46%  {opacity:1; transform:rotate(2deg) scaleX(.10);
+        animation-timing-function:cubic-bezier(.5,0,.9,.4)}
+  /* edge-on at the gutter, the fastest point of the turn */
+  54%  {opacity:1; transform:rotate(-2deg) scaleX(-.10);
+        animation-timing-function:cubic-bezier(.1,.6,.5,1)}
+  /* settling onto the left block, decelerating */
+  92%  {opacity:1; transform:rotate(-6deg) scaleX(-1)}
+  100% {opacity:0; transform:rotate(-6deg) scaleX(-1)}
+}
+
 @media (prefers-reduced-motion: reduce){
-  .brand .pg{transition:none}
+  .brand .pg,.brand .turn,.brand .gut{transition:none}
   .bar:hover .brand .pg,.bar:hover .brand .pg.r{transform:none}
+  .bar:hover .brand .turn{animation:none;opacity:1;
+    transform:rotate(-6deg) scaleX(-1)}
+  .bar:hover .brand .gut{stroke-width:2.6}
 }
 /* THE ESTATE'S OWN BAR, not a local invention. Both of these were hand-rolled
    here first - a right-pointing arrow after the words, and a bare text button for
@@ -278,6 +311,9 @@ h2.sec.first{margin-top:26px}
 .ticks{position:relative;height:17px;margin-top:3px}
 .ticks span{position:absolute;top:0;font-size:12px;color:var(--ink-soft);line-height:1.25;
   white-space:nowrap;left:calc(9.5px + (100% - 19px) * var(--p));transform:translateX(-50%)}
+/* Belt and braces with the timestamp guard: mid-drag the labels are not targets,
+   so the cursor crossing them cannot even begin to look like a tap. */
+.slider:has(input[data-dragging]) .ticks{pointer-events:none}
 .ticks span:first-child{transform:translateX(0)}
 .ticks span:last-child{transform:translateX(-100%)}
 .ticks span[data-on="1"]{color:var(--ink);font-weight:600}
@@ -344,6 +380,7 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
       <svg class="mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path class="pg" d="M12 6.5C10 4.8 7.4 4.2 4 4.4v13.2c3.4-.2 6 .4 8 2.1z"/>
         <path class="pg r" d="M12 6.5C14 4.8 16.6 4.2 20 4.4v13.2c-3.4-.2-6 .4-8 2.1z"/>
+        <path class="turn" d="M12 6.5C14 4.8 16.6 4.2 20 4.4v13.2c-3.4-.2-6 .4-8 2.1z"/>
         <path class="gut" d="M12 6.5v13.2"/>
       </svg><span class="wm">Bookmark<span class="dot">.</span></span></span>
     <div class="barright">
@@ -833,6 +870,9 @@ function buildButtons(q){
 /* Sub-units per notch. Big enough that a drag reads as continuous, small enough
    that a keyboard arrow still lands somewhere useful. */
 var SUB = 40;
+/* When the last drag on any slider finished. A click arriving within a few
+   frames of that is the tail of the drag, not a new instruction. */
+var dragEnded = 0;
 
 /* Walk the thumb to a notch over ~190ms rather than teleporting it. Only for a
    tick tap and a keyboard jump; a drag is already continuous and animating it
@@ -893,6 +933,7 @@ function buildSlider(q){
   /* Let go and it settles onto the notch, so the thumb never rests between two
      labels claiming to be neither. */
   r.addEventListener("change", function(){
+    if(r.dataset.dragging) dragEnded = Date.now();
     delete r.dataset.dragging;
     r.value = Math.round(Number(r.value) / SUB) * SUB;
     paint();
@@ -902,6 +943,7 @@ function buildSlider(q){
   ["pointerup", "pointercancel", "blur"].forEach(function(ev){
     r.addEventListener(ev, function(){
       if(!r.dataset.dragging) return;
+      dragEnded = Date.now();
       delete r.dataset.dragging;
       r.value = Math.round(Number(r.value) / SUB) * SUB;
       paint();
@@ -914,8 +956,16 @@ function buildSlider(q){
     t.textContent = o[1]; t.setAttribute("data-v", o[0]);
     if(o[0] === "any") t.className = "any";
     /* A tick is a label AND a target: on a phone the words are easier to hit than
-       a 19px thumb, and someone who reads "Postwar" will try to tap it. */
-    t.addEventListener("click", function(){ glideTo(box, q, o[0]); });
+       a 19px thumb, and someone who reads "Postwar" will try to tap it.
+       BUT RELEASING A DRAG OVER A LABEL IS NOT A TAP ON IT. A range input
+       captures the pointer, so a drag that ends with the cursor over "Middling"
+       still fires that label's click - and the slider you had just placed by hand
+       jumped to whatever word you happened to let go over. That is the glitch
+       when you drag across the words underneath. */
+    t.addEventListener("click", function(){
+      if(Date.now() - dragEnded < 250) return;
+      glideTo(box, q, o[0]);
+    });
     t.style.cursor = "pointer";
     ticks.appendChild(t);
   });
