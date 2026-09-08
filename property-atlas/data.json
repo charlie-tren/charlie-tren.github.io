@@ -69,9 +69,11 @@
    "cgt_basis": "gain",
    "cgt_note": "15% on the realised gain",
    "rent_src": "text",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Bahrain",
@@ -142,9 +144,11 @@
    "cgt_basis": "exempt",
    "cgt_note": "no personal income tax",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Belgium",
@@ -215,9 +219,11 @@
    "cgt_basis": "exempt",
    "cgt_note": "buildings held over five years are exempt; 16.5% applies only inside five years",
    "rent_src": "none",
-   "rent_word": "deemed",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "25-50%",
+   "rent_low": 25.0,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Brazil",
@@ -288,9 +294,11 @@
    "cgt_basis": "progressive",
    "cgt_note": "not stated for non-residents on PwC",
    "rent_src": "none",
-   "rent_word": "2 regimes",
    "cgt_src": "none",
-   "cgt_word": "banded"
+   "rent_range": "15 / 25%",
+   "rent_low": 15.0,
+   "cgt_range": "15-22.5%",
+   "cgt_low": 15.0
   },
   {
    "country": "Colombia",
@@ -361,9 +369,11 @@
    "cgt_basis": "gain",
    "cgt_note": "general capital gains rate",
    "rent_src": "text",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Costa Rica",
@@ -434,9 +444,11 @@
    "cgt_basis": "proceeds",
    "cgt_note": "2.5% withheld on the sale by the buyer, charged on the price not the gain",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Croatia",
@@ -507,9 +519,11 @@
    "cgt_basis": "gain",
    "cgt_note": "24%, no long-hold exemption stated on PwC",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Dominican Republic",
@@ -580,9 +594,11 @@
    "cgt_basis": "gain",
    "cgt_note": "not stated for non-residents on PwC",
    "rent_src": "text",
-   "rent_word": "",
    "cgt_src": "text",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Egypt",
@@ -653,9 +669,11 @@
    "cgt_basis": "proceeds",
    "cgt_note": "disposal of built property not covered on PwC's individual pages",
    "rent_src": "none",
-   "rent_word": "banded",
    "cgt_src": "text",
-   "cgt_word": ""
+   "rent_range": "0-25%",
+   "rent_low": 0.0,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Georgia",
@@ -726,9 +744,11 @@
    "cgt_basis": "gain",
    "cgt_note": "5% on the profit",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Greece",
@@ -799,9 +819,11 @@
    "cgt_basis": "exempt",
    "cgt_note": "capital gains on immovable property suspended until 31 December 2026, so a sale ten years out is unknowable",
    "rent_src": "none",
-   "rent_word": "banded",
    "cgt_src": "text",
-   "cgt_word": ""
+   "rent_range": "15-45%",
+   "rent_low": 15.0,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Hungary",
@@ -872,9 +894,11 @@
    "cgt_basis": "flat",
    "cgt_note": "property-specific rules and holding-period reduction not stated on PwC",
    "rent_src": "text",
-   "rent_word": "",
    "cgt_src": "text",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Ireland",
@@ -945,9 +969,11 @@
    "cgt_basis": "gain",
    "cgt_note": "33% CGT",
    "rent_src": "workbook",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Italy (South)",
@@ -1018,9 +1044,11 @@
    "cgt_basis": "exempt",
    "cgt_note": "exempt where the property has been owned more than five years",
    "rent_src": "workbook",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Japan",
@@ -1091,9 +1119,11 @@
    "cgt_basis": "gain",
    "cgt_note": "long-term rate, property held over five years",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Malaysia",
@@ -1164,9 +1194,11 @@
    "cgt_basis": "gain",
    "cgt_note": "RPGT for a non-citizen disposing after more than five years",
    "rent_src": "text",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Mauritius",
@@ -1237,9 +1269,11 @@
    "cgt_basis": "none",
    "cgt_note": "no capital gains tax at all",
    "rent_src": "text",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Mexico",
@@ -1310,9 +1344,11 @@
    "cgt_basis": "regimes",
    "cgt_note": "not stated for non-residents on PwC",
    "rent_src": "text",
-   "rent_word": "",
    "cgt_src": "none",
-   "cgt_word": "2 regimes"
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "25 / 35%",
+   "cgt_low": 25.0
   },
   {
    "country": "Montenegro",
@@ -1383,9 +1419,11 @@
    "cgt_basis": "gain",
    "cgt_note": "15% on the difference between sale and purchase price",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Morocco",
@@ -1456,9 +1494,11 @@
    "cgt_basis": "gain",
    "cgt_note": "20% of the gain, with a floor of 3% of the sale price",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Netherlands",
@@ -1529,9 +1569,11 @@
    "cgt_basis": "none",
    "cgt_note": "no separate capital gains tax on the sale; the asset sits in Box 3",
    "rent_src": "none",
-   "rent_word": "deemed",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "36%",
+   "rent_low": 36.0,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "North Macedonia",
@@ -1602,9 +1644,11 @@
    "cgt_basis": "exempt",
    "cgt_note": "exempt once the property has been held five years, which a ten-year hold clears",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Oman",
@@ -1675,9 +1719,11 @@
    "cgt_basis": "exempt",
    "cgt_note": "disposal of real estate listed as taxable, no rate stated yet",
    "rent_src": "text",
-   "rent_word": "",
    "cgt_src": "text",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Panama",
@@ -1748,9 +1794,11 @@
    "cgt_basis": "gain",
    "cgt_note": "assessed at 10% of the gain, with a 3% advance on the price credited against it",
    "rent_src": "none",
-   "rent_word": "banded",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "0-25%",
+   "rent_low": 0.0,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Philippines",
@@ -1821,9 +1869,11 @@
    "cgt_basis": "proceeds",
    "cgt_note": "6% of the higher of gross selling price or fair market value, not of the gain",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Poland",
@@ -1894,9 +1944,11 @@
    "cgt_basis": "exempt",
    "cgt_note": "exempt if sold more than five years after the year of purchase",
    "rent_src": "workbook",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Portugal",
@@ -1967,9 +2019,11 @@
    "cgt_basis": "gain",
    "cgt_note": "50% of the gain taxed at marginal rates 12.5-48%",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "text",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Serbia",
@@ -2040,9 +2094,11 @@
    "cgt_basis": "gain",
    "cgt_note": "15%; the ten-year exemption is for residents only, so a foreign owner pays it",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Spain",
@@ -2113,9 +2169,11 @@
    "cgt_basis": "gain",
    "cgt_note": "19% for non-residents without a permanent establishment",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "Thailand",
@@ -2186,9 +2244,11 @@
    "cgt_basis": "progressive",
    "cgt_note": "not stated for non-residents on PwC",
    "rent_src": "none",
-   "rent_word": "banded",
-   "cgt_src": "none",
-   "cgt_word": "banded"
+   "cgt_src": "workbook",
+   "rent_range": "5-35%",
+   "rent_low": 5.0,
+   "cgt_range": "5-35%",
+   "cgt_low": 5.0
   },
   {
    "country": "Turkey",
@@ -2259,9 +2319,11 @@
    "cgt_basis": "progressive",
    "cgt_note": "real property gains not covered on PwC's income-determination page",
    "rent_src": "none",
-   "rent_word": "banded",
    "cgt_src": "none",
-   "cgt_word": "banded"
+   "rent_range": "15-40%",
+   "rent_low": 15.0,
+   "cgt_range": "15-40%",
+   "cgt_low": 15.0
   },
   {
    "country": "United Arab Emirates",
@@ -2332,9 +2394,11 @@
    "cgt_basis": "exempt",
    "cgt_note": "no personal income tax",
    "rent_src": "pwc",
-   "rent_word": "",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "United Kingdom",
@@ -2405,9 +2469,11 @@
    "cgt_basis": "gain",
    "cgt_note": "24% for non-residents on UK residential property",
    "rent_src": "none",
-   "rent_word": "banded",
    "cgt_src": "pwc",
-   "cgt_word": ""
+   "rent_range": "20-45%",
+   "rent_low": 20.0,
+   "cgt_range": "",
+   "cgt_low": null
   },
   {
    "country": "United States",
@@ -2478,9 +2544,11 @@
    "cgt_basis": "wht",
    "cgt_note": "FIRPTA withholding on gross proceeds, actual tax at graduated capital gains rates",
    "rent_src": "workbook",
-   "rent_word": "",
    "cgt_src": "workbook",
-   "cgt_word": ""
+   "rent_range": "",
+   "rent_low": null,
+   "cgt_range": "",
+   "cgt_low": null
   }
  ],
  "sources": [

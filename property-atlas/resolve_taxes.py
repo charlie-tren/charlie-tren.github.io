@@ -60,7 +60,22 @@ def resolve(country: dict, pwc: dict, wb: dict) -> dict:
         out[f"{kind}_rate"] = rate
         out[f"{kind}_basis"] = basis
         out[f"{kind}_src"] = src
-        out[f"{kind}_word"] = "" if rate is not None else classify.NO_RATE_LABEL.get(basis, "")
+
+        # NO SINGLE RATE MEANS A RANGE, NOT A WORD. This used to write "banded",
+        # "deemed" or "2 regimes", and Charlie asked what they meant and why they
+        # were formatted differently from the numbers. Fair: they were a glossary
+        # standing in front of figures the source had already stated. A cell with
+        # no one rate now shows the span the source gives - "15-45%", "25 / 35%" -
+        # and needs no explaining. `_low` is the bottom of it and is what the
+        # column sorts on, because the bottom is stated and a midpoint is not.
+        hand = (wb.get(country["country"]) or {}).get(kind) or {}
+        if rate is not None:
+            out[f"{kind}_range"], out[f"{kind}_low"] = "", None
+        elif hand.get("range"):
+            out[f"{kind}_range"], out[f"{kind}_low"] = hand["range"], hand.get("low")
+        else:
+            rng, low = classify.tax_range(country.get(tkey))
+            out[f"{kind}_range"], out[f"{kind}_low"] = rng or "", low
     return out
 
 
@@ -69,8 +84,19 @@ def apply(check: bool = False) -> int:
     pwc = json.loads(PWC.read_text(encoding="utf-8"))
     wb = json.loads(WORKBOOK.read_text(encoding="utf-8"))
 
+    #: Fields this script used to write and no longer manages. Without this they
+    #: sit in data.json for ever holding their last value: the retired `_word`
+    #: keys stayed behind after the words were replaced by ranges, and test_data
+    #: went on printing "9 banded, 2 deemed" off values nothing produced any more.
+    RETIRED = ("rent_word", "cgt_word")
+
     stale = []
     for c in data["countries"]:
+        for dead in RETIRED:
+            if dead in c:
+                stale.append(f"{c['country']}.{dead}: dropped")
+                if not check:
+                    del c[dead]
         want = resolve(c, pwc, wb)
         for k, v in want.items():
             if c.get(k) != v:
@@ -89,16 +115,17 @@ def apply(check: bool = False) -> int:
     DATA.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
     have = {k: 0 for k in ("pwc", "workbook", "text", "none")}
-    words = {}
+    ranges = 0
     for c in data["countries"]:
         for kind, _ in KINDS:
             have[c[f"{kind}_src"]] += 1
-            if c[f"{kind}_word"]:
-                words[c[f"{kind}_word"]] = words.get(c[f"{kind}_word"], 0) + 1
+            if c[f"{kind}_range"]:
+                ranges += 1
     total = len(data["countries"]) * 2
     print(f"{total} tax cells: {have['pwc']} from PwC, {have['workbook']} judged, "
-          f"{have['text']} read off the cell, {have['none']} with no single rate")
-    print("  the words that remain: " + ", ".join(f"{k} {v}" for k, v in sorted(words.items())))
+          f"{have['text']} read off the cell")
+    print(f"  {total - ranges} show one rate, {ranges} show the range the source states, "
+          f"0 show a word")
     print(f"  changed {len(stale)} field(s)")
     return 0
 
