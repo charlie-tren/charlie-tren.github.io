@@ -1,0 +1,5 @@
+# Only launch.json is shared. A settings.local.json here would carry this
+# machine's permissions, and this repo is public.
+*
+!.gitignore
+!launch.json
