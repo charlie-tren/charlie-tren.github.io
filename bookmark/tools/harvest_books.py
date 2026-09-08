@@ -377,7 +377,12 @@ def enrich() -> int:
     cand = {k: v for k, v in cand.items() if k in keep}
     print(f"{len(cand)} after a cap of {CAP} per prize", flush=True)
 
-    todo = [k for k, v in cand.items() if "year" not in v]
+    # KEYED ON pages, NOT year. harvest_lists pre-fills the year off the Wikidata
+    # short description, so a "year not in v" test skipped enrich entirely for 352
+    # of 454 records - and enrich is the only step that fetches the PAGE COUNT.
+    # Spine width is drawn from that, so 365 of 415 came out "middling" and the
+    # shelf lost the one channel it draws from length.
+    todo = [k for k, v in cand.items() if "pages" not in v]
     from concurrent.futures import ThreadPoolExecutor, as_completed
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
         futs = {pool.submit(enrich_one, cand[k]): k for k in todo}

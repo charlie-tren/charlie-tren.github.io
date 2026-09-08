@@ -205,9 +205,31 @@ def esc(x: str) -> str:
     return x.replace("\\", "\\\\").replace('"', '\\"')
 
 
+def existing_sources() -> set:
+    return set(re.findall(r'src:"([^"]*)"', BOOKS.read_text(encoding="utf-8")))
+
+
 def merge() -> int:
     recs = json.loads(NEW.read_text(encoding="utf-8"))
     recs = [r for r in recs if r.get("why")]
+    # DEDUPE ON THE SOURCE PAGE, NOT THE TITLE. A normalised-title key treats
+    # "Bad Blood" and "Bad Blood: Secrets and Lies in a Silicon Valley Startup"
+    # as different books, and six pairs of the same book reached the shelf that
+    # way - each pair citing one Wikipedia article between them. The article IS
+    # the identity; the title is just how it was written down that time.
+    have_src = existing_sources()
+    seen = set()
+    kept = []
+    for r in recs:
+        src = r.get("src", "")
+        if src and (src in have_src or src in seen):
+            continue
+        seen.add(src)
+        kept.append(r)
+    if len(kept) != len(recs):
+        print(f"skipped {len(recs) - len(kept)} already on the shelf under "
+              f"another title")
+    recs = kept
     if not recs:
         print("Nothing has a description yet - run the description fetch first.")
         return 1
