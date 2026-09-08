@@ -603,3 +603,19 @@ h1 { letter-spacing: -.004em; }
   margin: 12px 0 0; max-width: 52rem;
   font-size: .85rem; line-height: 1.5; color: var(--ink-soft);
 }
+
+/* The as-at column and the line above the table. A page whose claim is that the
+   numbers were checked owes a reader the date they were checked on, and one of
+   the caveats here read "spot rates as at research date" with the research date
+   nowhere on the page. */
+.asat-note {
+  margin: 0 0 14px; max-width: 52rem;
+  font-size: .85rem; line-height: 1.5; color: var(--ink-soft);
+}
+.src th {
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-faint); text-align: left; padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule); font-weight: 600;
+}
+td.asat { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.undated { color: var(--ink-faint); cursor: help; border-bottom: 1px dotted var(--ink-faint); }

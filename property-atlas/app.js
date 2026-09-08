@@ -594,6 +594,11 @@ function render() {
 // file because data.json is rebuilt from the workbook and would drop them, and a
 // .catch so a missing file costs those four rows their links and nothing else.
 let SOURCE_LINKS = {};
+//: How old each figure is, keyed by the source row's measure. Every date here is
+//: either the edition the source itself names or a bound from the repo's own
+//: history - never a restamp, because restamping is how a page claims to be
+//: fresher than its data.
+let SOURCE_DATES = {};
 //: The ease breakdown, derived once in render() and reused by the note, the
 //: little i beside the filter, and the line that i opens. Three copies of a
 //: formula is three chances for one of them to be the old formula.
@@ -603,11 +608,13 @@ Promise.all([
   fetch("data.json").then(r => r.json()),
   fetch("world.json").then(r => r.json()).catch(() => null),
   fetch("sources_links.json").then(r => r.json()).catch(() => ({})),
+  fetch("source_dates.json").then(r => r.json()).catch(() => ({})),
 ])
-  .then(([d, m, links]) => {
+  .then(([d, m, links, dates]) => {
     DATA = d;
     MAP = m;
     SOURCE_LINKS = links || {};
+    SOURCE_DATES = dates || {};
 
     const numeric = PLOTTABLE;
     const mm = $("map-metric");
@@ -634,10 +641,35 @@ Promise.all([
       const a = many
         ? many.map(l => `<a href="${l.url}" rel="noopener">${l.name}</a>`).join(", ")
         : linkable ? `<a href="${href}" rel="noopener">${s.name}</a>` : s.name;
-      tr.innerHTML = `<td>${s.measure}</td><td>${a}</td><td></td>`;
-      tr.lastElementChild.textContent = s.caveat || "";
+      // AS AT. A source that dates itself shows its edition; one that does not
+      // shows a dash rather than borrowing its neighbour's date, with the reason
+      // on hover. One caveat on this page read "spot rates as at research date"
+      // and the research date appeared nowhere at all.
+      const dt = SOURCE_DATES[s.measure] || {};
+      const when = dt.as_at
+        ? `<span title="${dt.how || ""}">${dt.as_at}</span>`
+        : `<span class="undated" title="${dt.how || "Not dated by its source."}">not dated</span>`;
+      tr.innerHTML = `<td>${s.measure}</td><td>${a}</td><td class="asat">${when}</td><td></td>`;
+      // A caveat that only repeats the As at column is the same clutter as a
+      // chart caption, so two rows override theirs from source_dates.json.
+      tr.lastElementChild.textContent = dt.caveat || s.caveat || "";
       tb.appendChild(tr);
     });
+
+    // ONE line, and it is provenance a reader cannot work out from the table:
+    // which end of the range the page sits at, and that some of it is undated.
+    const dated = Object.entries(SOURCE_DATES)
+      .filter(([k, v]) => !k.startsWith("_") && v.as_at);
+    const undated = Object.entries(SOURCE_DATES)
+      .filter(([k, v]) => !k.startsWith("_") && !v.as_at).length;
+    const stamp = $("asat-note");
+    if (stamp) {
+      stamp.textContent =
+        `The tax rates were read off PwC on 31 August and 2 September 2026. `
+        + `Everything else is its source's latest edition at that date, and ${undated} of `
+        + `${dated.length + undated} rows are not dated by their source at all - the `
+        + `Sources table says which.`;
+    }
 
     ["f-ease", "f-yield", "f-price", "f-own", "f-visa", "f-repat"]
       .forEach(id => $(id).addEventListener("input", render));
