@@ -39,14 +39,22 @@ def shelf() -> list[dict]:
             r'(?:,set:\[([^\]]*)\])?,f:"(\w+)",tags:\[([^\]]*)\],mood:\[([^\]]*)\],'
             r'len:"(\w)",sty:"(\w+)",dem:(\d)(,soft:1)?,why:"((?:[^"\\]|\\.)*)",'
             r'src:"([^"]*)"\}', body):
+        # UNESCAPED, because books.js is JS source and a title can contain a
+        # quote - Sue Grafton's '"B" Is for Burglar' does. Comparing the raw
+        # capture against a value node has already parsed makes three real books
+        # look missing.
+        def un(x: str) -> str:
+            return x.replace('\\"', '"').replace("\\\\", "\\")
+
         out.append({
-            "t": m.group(1), "a": m.group(2), "y": int(m.group(3)),
+            "t": un(m.group(1)), "a": un(m.group(2)), "y": int(m.group(3)),
             "set": re.findall('"([^"]+)"', m.group(4) or ""),
             "f": m.group(5),
             "tags": re.findall('"([^"]+)"', m.group(6)),
             "mood": re.findall('"([^"]+)"', m.group(7)),
             "len": m.group(8), "sty": m.group(9), "dem": int(m.group(10)),
-            "soft": bool(m.group(11)), "why": m.group(12), "src": m.group(13)})
+            "soft": bool(m.group(11)), "why": un(m.group(12)),
+            "src": m.group(13)})
     assert out, "no records parsed out of books.js"
     return out
 
@@ -201,3 +209,47 @@ def test_settings_file_agrees_with_the_shelf(shelf):
     for b in shelf:
         if b["set"] and b["t"] in have:
             assert set(b["set"]) == set(have[b["t"]]["set"]), b["t"]
+
+# ------------------------------------------------- the two served artefacts ----
+
+def test_served_files_are_in_step_with_books_js():
+    """shelf.js and texts.js are GENERATED, and a stale one ships a shelf that
+    disagrees with its own descriptions. This is the check that stops that."""
+    import build_site_data as B
+    shelf, texts = B.build()
+    assert B.SHELF.read_text(encoding="utf-8") == shelf,         "shelf.js is stale - rerun tools/build_site_data.py"
+    assert B.TEXTS.read_text(encoding="utf-8") == texts,         "texts.js is stale - rerun tools/build_site_data.py"
+
+
+def test_the_blocking_file_carries_no_prose(shelf):
+    """The whole point of the split: 427KB of descriptions must not be in the
+    file that holds up first paint."""
+    import build_site_data as B
+    blocking = B.SHELF.read_text(encoding="utf-8")
+    assert '"why"' not in blocking and "why:" not in blocking
+    assert '"src"' not in blocking and "src:" not in blocking
+    # ...and it must still carry everything the scoring needs.
+    for f in ("t", "a", "y", "f", "tags", "mood", "len", "sty", "dem"):
+        assert f'"{f}"' in blocking, f
+
+
+def test_every_book_has_a_text(shelf):
+    import build_site_data as B
+    _, texts = B.build()
+    # Split on the FIRST statement terminator, not the last: the file now ends
+    # with the onTexts callback, and rindex(";") swallowed it into the JSON.
+    body = texts.split("window.TEXTS = ", 1)[1].split(";\n", 1)[0]
+    have = json.loads(body)
+    missing = [b["t"] for b in shelf if b["t"] not in have]
+    assert not missing, f"{len(missing)} books have no description entry"
+
+
+def test_texts_calls_back():
+    """The page renders before texts.js arrives, so the data file has to say when
+    it landed. A load listener for this was nested inside another handler and
+    never fired, and the description shipped blank."""
+    import build_site_data as B
+    assert B.TEXTS.read_text(encoding="utf-8").rstrip().endswith(
+        "if (window.onTexts) window.onTexts();")
+    assert "window.onTexts = function" in (ROOT / "index.html").read_text(
+        encoding="utf-8")

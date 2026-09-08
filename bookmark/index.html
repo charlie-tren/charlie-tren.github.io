@@ -443,7 +443,12 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
   </footer>
 </div>
 
-<script src="books.js"></script>
+<!-- shelf.js is the facets and blocks, because nothing can draw without them.
+     texts.js is the descriptions and defers: 427KB of prose of which the page
+     shows one line at a time, and holding first paint for it made no sense at
+     1812 books. Both are generated from books.js by tools/build_site_data.py. -->
+<script src="shelf.js"></script>
+<script src="texts.js" defer></script>
 <script>
 /* Amazon Associates tag. Empty until there is one; the links work either way. */
 var AFFIL_TAG = "";
@@ -776,10 +781,15 @@ function render(){
     : "From your shelf";
   document.getElementById("title").textContent = b.t;
   document.getElementById("byline").textContent = b.a + ", " + (b.y<1000 ? b.y + " CE" : b.y);
-  document.getElementById("whytext").textContent = b.why;
+  /* THE PAGE HAS TO BE RIGHT WITH texts.js ABSENT, not merely late. It defers,
+     so on a slow connection the shelf, the questions and this month's pick all
+     draw first and the description arrives after - and nothing about WHICH book
+     was chosen depends on it. */
+  var tx = (window.TEXTS || {})[b.t] || [];
+  document.getElementById("whytext").textContent = tx[0] || "";
   var ws = document.getElementById("whysrc");
-  ws.hidden = !b.src;
-  if(b.src) ws.href = b.src;
+  ws.hidden = !tx[1];
+  if(tx[1]) ws.href = tx[1];
   var cv = document.getElementById("cover"), ch = hash(b.t + b.a);
   cv.style.setProperty("--cloth", cloth(b));
   cv.style.setProperty("--weave", (3 + ch % 4) + "px");
@@ -1070,6 +1080,14 @@ document.getElementById("themeBtn").addEventListener("click", function(){
   try{ localStorage.setItem("bookmark.theme", next); }catch(e){}
   labelTheme();
 });
+
+/* texts.js CALLS THIS when it finishes, rather than the page guessing when that
+   was. A deferred script runs after the document is parsed but the inline app
+   script below runs DURING parsing, so the first render always happens before
+   the descriptions exist - and a load listener put here to catch up landed
+   inside the theme handler and never fired. The data file invoking a hook is the
+   only version of this with no ordering to get wrong. */
+window.onTexts = function(){ render(); };
 /* Someone who never pressed the button is still following the system, so the
    label has to move when the system does. */
 if(window.matchMedia){
