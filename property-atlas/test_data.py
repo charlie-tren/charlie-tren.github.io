@@ -117,11 +117,24 @@ for s in data["sources"]:
           f"{s['measure']}: url {u!r} has more than one destination in it, so it "
           f"cannot resolve to anything")
 
-if fails:
-    print(f"FAILED ({len(fails)})")
-    for f in fails:
-        print("  -", f)
-    sys.exit(1)
+def report():
+    """Print and exit if anything has failed.
+
+    THIS IS A FUNCTION BECAUSE IT USED TO BE A BLOCK IN THE MIDDLE OF THE FILE.
+    Everything below it called `check()`, which only appends to `fails` - so the
+    three blocks added on 08/09/2026 (the ease formula, the source dates, the
+    restamp guard) collected failures that nothing ever read. They passed by
+    being unreachable. Caught by restamping a date to a future day and watching
+    the suite stay green, which is the one test of a test that matters.
+    """
+    if fails:
+        print(f"FAILED ({len(fails)})")
+        for f in fails:
+            print("  -", f)
+        sys.exit(1)
+
+
+report()
 
 # WHAT THIS USED TO SAY, and why it is worth the extra thirty lines:
 #
@@ -170,6 +183,36 @@ if words:
     print(f"FAILED: a tax cell still shows a word rather than figures: {words[:3]}")
     sys.exit(1)
 
+# --- every source row must say how old it is ------------------------------------
+# The page's whole claim is that the numbers were checked, and until 08/09/2026
+# nothing on it said WHEN: one caveat read "spot rates as at research date" and
+# the research date appeared nowhere, not on the page and not in data.json. So
+# every source row now carries an as-at or an explicit reason it has none, and a
+# new source cannot slip in silently undated.
+dates = json.loads((HERE / "source_dates.json").read_text(encoding="utf-8"))
+measures = [s["measure"] for s in data["sources"]]
+for m in measures:
+    check(m in dates, f"source row {m!r} has no entry in source_dates.json")
+for k, v in dates.items():
+    if k.startswith("_"):
+        continue
+    check(k in measures, f"source_dates.json dates {k!r}, which is not a source row")
+    check(bool(v.get("how")), f"{k}: an as-at needs to say how it is known")
+
+# A DATE MUST NOT BE A RESTAMP. Nothing here may claim to be newer than the day
+# the dataset shipped, because no figure has been re-pulled since: the standing
+# rule on this project is that changing an as-at means re-pulling the figures,
+# never restamping them.
+import datetime as _dt  # noqa: E402
+shipped = _dt.date(2026, 8, 31)
+for k, v in dates.items():
+    if k.startswith("_") or not v.get("as_at"):
+        continue
+    for d, mo, y in re.findall(r"(\d{1,2})/(\d{1,2})/(\d{4})", v["as_at"]):
+        stamped = _dt.date(int(y), int(mo), int(d))
+        check(stamped <= _dt.date(2026, 9, 2),
+              f"{k}: as-at {stamped} is later than the last recorded pull")
+
 # --- the published ease score must be reproducible from its own six parts -------
 # The note on the page states the formula (six parts, 0 to 3, out of 18) and
 # derives the divisor from the data. If a seventh part or a wider band is ever
@@ -206,3 +249,6 @@ for c in countries:
             gaps.append(f"{c['country']} {kind}: PwC {c[f'{kind}_rate']} vs cell {alt}")
 if gaps:
     print(f"  PwC and the cell disagree on {len(gaps)}, PwC used: " + "; ".join(gaps))
+
+# Every check added after the block above reaches this one.
+report()
