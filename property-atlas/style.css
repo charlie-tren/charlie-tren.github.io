@@ -134,16 +134,61 @@ h3 {
   text-transform: uppercase; color: var(--ink-faint); margin-bottom: 5px;
 }
 .control select {
-  width: 100%; padding: 7px 9px; font: inherit; font-size: .94rem;
+  width: 100%; height: 32px; padding: 0 9px; font: inherit; font-size: .94rem;
   color: var(--ink); background: var(--panel);
   border: 1px solid var(--rule); border-radius: 6px;
 }
-.control .row { display: flex; align-items: center; gap: 10px; }
-.control input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
-.control output {
-  min-width: 3.6em; text-align: right; font-variant-numeric: tabular-nums;
-  font-size: 1rem; font-weight: 650;
+.control .row { display: flex; align-items: center; gap: 10px; height: 32px; }
+
+/* THE SLIDERS AND THE SELECTS ARE ONE FAMILY.
+   Six controls sat in one row as two different user interfaces: three hairline
+   tracks with a bold word beside them, and three bordered boxes. The tracks are
+   drawn by hand now so the track height, the rule colour and the row height are
+   the select's, and `accent-color` is gone with them - it painted the fill from
+   the low end whatever the slider meant, which is what left the price slider
+   full while the other two were empty and all three said "any". */
+.control input[type=range] {
+  flex: 1; min-width: 0; height: 32px; margin: 0;
+  -webkit-appearance: none; appearance: none; background: none; cursor: pointer;
 }
+.control input[type=range]::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 2px; background: var(--track-paint);
+}
+.control input[type=range]::-moz-range-track {
+  height: 4px; border-radius: 2px; background: var(--track-paint);
+}
+.control input[type=range] {
+  /* The excluded region, from the end that means "no filter" to the thumb.
+     --pct is written by setSlider; --from flips it for a maximum. */
+  --pct: 0%;
+  --track-paint: linear-gradient(to right,
+      var(--ease-track) 0, var(--ease-track) var(--lo),
+      var(--accent) var(--lo), var(--accent) var(--hi),
+      var(--ease-track) var(--hi), var(--ease-track) 100%);
+  --lo: 0%;
+  --hi: var(--pct);
+}
+/* A maximum runs the other way: everything above the thumb is what you cut. */
+.control input[type=range][data-dir="max"] { --lo: var(--pct); --hi: 100%; }
+
+.control input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 14px; margin-top: -5px; border-radius: 50%;
+  background: var(--panel); border: 2px solid var(--accent);
+}
+.control input[type=range]::-moz-range-thumb {
+  width: 14px; height: 14px; border: 2px solid var(--accent); border-radius: 50%;
+  background: var(--panel);
+}
+.control input[type=range]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Quiet until the filter is doing something. Three bold "any"s were the loudest
+   text in the bar and the least informative; weight now marks a live filter. */
+.control output {
+  min-width: 4.2em; text-align: right; font-variant-numeric: tabular-nums;
+  font-size: .94rem; font-weight: 400; color: var(--ink-faint);
+}
+.control.on output { font-weight: 650; color: var(--ink); }
 
 /* ---- charts ---- */
 figure.chart { margin: 0; position: relative; }

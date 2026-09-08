@@ -85,6 +85,18 @@ function easeCell(c) {
   return `<span class="ease"><span class="ease-bar"><i style="width:${c.ease}%"></i></span>${c.ease}</span>`;
 }
 
+/* One slider's readout and track fill. */
+function setSlider(name, text, active) {
+  const input = $("f-" + name);
+  const out = $("f-" + name + "-out");
+  out.textContent = text;
+  const box = input.closest(".control");
+  box.classList.toggle("on", active);
+  const min = +input.min, max = +input.max;
+  const pct = max === min ? 0 : ((+input.value - min) / (max - min)) * 100;
+  input.style.setProperty("--pct", pct.toFixed(2) + "%");
+}
+
 /* ---------- filtering ---------- */
 
 function filters() {
@@ -447,9 +459,17 @@ function fadeHint() {
 
 function render() {
   const f = filters();
-  $("f-ease-out").textContent = f.ease ? "≥ " + f.ease + "/100" : "any";
-  $("f-yield-out").textContent = f.yield ? "≥ " + f.yield.toFixed(1) + "%" : "any";
-  $("f-price-out").textContent = f.price >= 650000 ? "any" : "≤ " + fmtK(f.price);
+  // THE FILL IS THE PART YOU HAVE EXCLUDED, measured from the end that means
+  // "no filter". Two of these sliders are minimums and one is a maximum, so with
+  // a plain accent-color the price slider sat FULL while the other two sat empty
+  // and all three meant the same thing: any. Painting the excluded region
+  // instead makes an untouched bar an empty bar, whichever way it runs.
+  // `.on` marks a filter that is actually doing something - the readout is quiet
+  // until then, because three bold "any"s were the loudest thing in the bar.
+  setSlider("ease",  f.ease  ? "≥ " + f.ease + "/100" : "any", !!f.ease);
+  setSlider("yield", f.yield ? "≥ " + f.yield.toFixed(1) + "%" : "any", !!f.yield);
+  setSlider("price", f.price >= 650000 ? "any" : "≤ " + fmtK(f.price),
+            f.price < 650000);
 
   const shown = DATA.countries.filter(c => passes(c, f));
 
@@ -467,22 +487,15 @@ function render() {
     ? `All ${shown.length} markets.`
     : `${shown.length} of ${DATA.countries.length} markets match.`;
 
-  const mCol = PLOTTABLE.find(x => x.key === $("map-metric").value);
-  $("map-sub").textContent = shown.length <= 12
-    ? `${shown.length} markets, shaded by ${mCol.label.toLowerCase()}.`
-    : `All ${shown.length} shaded by ${mCol.label.toLowerCase()}. Filter down to a dozen to see them named.`;
-
   drawTable(shown);
   drawMap(shown);
   fadeHint();
 
   const verified = DATA.countries.filter(c => c.verified).length;
   $("note-tax").innerHTML =
-    `<strong>Tax</strong> is what the destination charges a non-resident, from PwC's country `
-    + `guides for ${verified} of ${DATA.countries.length} markets, on a ten-year hold. Not the `
-    + `headline rate: Belgium, Italy and Poland stop taxing the gain after five years, and the `
-    + `Netherlands never does. Where the source gives a schedule rather than one number, the `
-    + `column says so.`;
+    `<strong>Tax</strong> is what the destination charges a non-resident on a ten-year hold, `
+    + `from PwC's country guides for ${verified} of ${DATA.countries.length} markets. Belgium, `
+    + `Italy and Poland stop taxing the gain after five years; the Netherlands never does.`;
 }
 
 /* ---------- boot ---------- */
