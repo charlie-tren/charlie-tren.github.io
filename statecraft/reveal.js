@@ -184,14 +184,14 @@ function axisRow(data, axis, mine, country, selection) {
 
   const keys = [];
   if (youHave) {
-    keys.push(`<span class="ax-k"><i class="ax-sw ax-sw-you" aria-hidden="true"></i>Your country ${esc(fmt(axis, yours))}</span>`);
+    keys.push(`<span class="ax-k"><i class="ax-sw ax-sw-you" aria-hidden="true"></i>${esc(fmt(axis, yours))}</span>`);
   } else {
     keys.push('<span class="ax-k ax-k-flat">Your country: none of your thirteen choices sets this.</span>');
   }
 
   if (themHave) {
     const when = cell.year ? `, ${esc(cell.year)}` : '';
-    keys.push(`<span class="ax-k"><i class="ax-sw ax-sw-them" aria-hidden="true"></i>${esc(country.name)} ${esc(fmt(axis, theirs))}${when}</span>`);
+    keys.push(`<span class="ax-k"><i class="ax-sw ax-sw-them" aria-hidden="true"></i>${esc(fmt(axis, theirs))}${when}</span>`);
   } else if (hasCell) {
     const why = cell.na_reason ? sentence(cell.na_reason) : 'The figure does not apply.';
     keys.push(`<span class="ax-k ax-k-flat">${esc(country.name)}: ${esc(why)}</span>`);
@@ -273,12 +273,15 @@ export function renderReveal(data, ranked, selection, pos, rate) {
     ${diverge}
 
     <h3>Your Country on the Measured Axes</h3>
-    <p class="ax-cap">Fourteen measures, your design against ${esc(country.name)}.</p>
+    <p class="ax-cap">
+      <span class="ax-k"><i class="ax-sw ax-sw-you" aria-hidden="true"></i>Your country</span>
+      <span class="ax-k"><i class="ax-sw ax-sw-them" aria-hidden="true"></i>${esc(country.name)}</span>
+    </p>
     <div class="axes">${rows}</div>
 
     <h3>Where You Agree</h3>
     ${agree}
 
-    <p class="rv-method">The match is a count of the domains where your choice is the policy ${esc(country.name)} actually has. Your own figures on the axes above are estimates taken from the countries that run each policy. ${esc(country.name)}'s figures are measurements, and each carries the year it was taken.</p>
+    <p class="rv-method">Your figures on the axes are estimates from the countries that run each policy. ${esc(country.name)}'s are measurements, each carrying the year it was taken.</p>
   </div>`;
 }
