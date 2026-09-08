@@ -240,3 +240,48 @@ NO_RATE_LABEL = {
     "unstated":    "",
     "unclear":     "see row",
 }
+
+
+#: Every rate stated anywhere in a cell, in order. A cell that does not reduce to
+#: ONE rate usually states two or several, and those numbers are the honest answer
+#: for it: "15-45%" says what "banded" was trying to say, in the source's own
+#: figures, and needs no glossary.
+_RATES = re.compile(r"(\d+(?:\.\d+)?)\s*%")
+#: "15-45%" carries its percent sign only on the second number, so a bare hunt
+#: for `N%` found 45 and reported Greece as a flat 45. Ranges are expanded to
+#: "15% 45%" before the hunt.
+_SPAN = re.compile(r"(\d+(?:\.\d+)?)\s*(?:-|to)\s*(\d+(?:\.\d+)?)\s*%")
+
+
+def tax_range(text):
+    """(display, low) for a cell with no single rate, or (None, None).
+
+    Charlie, 08/09/2026: "deemed and banded and none sound off. what do they
+    mean." They were words I coined to stand in for a range that the source had
+    already written down. This returns the range instead.
+
+    `low` is the bottom of it, and it is what the column sorts on. The bottom is
+    a stated figure; a midpoint is not, and inventing one is already on this
+    project's list of things not to do.
+    """
+    t = _SPAN.sub(lambda m: f"{m.group(1)}% {m.group(2)}%", (text or ""))
+    found = [float(x) for x in _RATES.findall(t)]
+    # A deemed cell can state the rate AND the deemed return it applies to, and
+    # that second number is not a tax rate: the Netherlands' "~36% on deemed
+    # ~5.5% return" must not read as 5.5-36%. But Belgium's "25-50% progressive
+    # (on cadastral income basis)" IS a range on a deemed base, so the test is
+    # whether the cell states a span, not whether it says "deemed".
+    if _DEEMED.search(t) and not _SPAN.search(text or ""):
+        return (f"{_num(found[0])}%", found[0]) if found else (None, None)
+    if not found:
+        return None, None
+    lo, hi = min(found), max(found)
+    if lo == hi:
+        return f"{_num(lo)}%", lo
+    # Two stated alternatives read as a choice; three or more read as a band.
+    joiner = " / " if len(set(found)) == 2 and _TWO.search(_PAREN.sub("", t)) else "-"
+    return f"{_num(lo)}{joiner}{_num(hi)}%", lo
+
+
+def _num(v):
+    return f"{v:g}"

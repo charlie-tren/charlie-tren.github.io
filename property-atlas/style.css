@@ -84,10 +84,8 @@ body {
    title looking like it starts halfway down the page. */
 header.wrap { padding-top: 26px; }
 
-.topnav {
-  display: flex; align-items: baseline; justify-content: flex-end;
-  gap: 14px; margin-bottom: 18px;
-}
+/* Superseded by the one-row rule further down; kept only for the link styling
+   that follows it. */
 .topnav a {
   color: var(--ink-faint); text-decoration: none;
   font-size: .85rem; letter-spacing: .12em; text-transform: uppercase;
@@ -102,6 +100,7 @@ h1 {
   letter-spacing: .01em;
   margin: 0 0 10px;
 }
+.standfirst { margin-top: 0; }
 .standfirst {
   margin: 0 0 4px; max-width: 46rem;
   font-size: 1.06rem; color: var(--ink-soft);
@@ -271,10 +270,10 @@ footer a { color: var(--ink-faint); }@media (max-width: 620px) {
 .filter-count {
   margin: 14px 0 0; font-size: .85rem; color: var(--ink-faint);
 }
-.axis-picks {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px 20px; margin-bottom: 16px;
-}
+/* `.axis-picks` held the lone "Shade by" select inside the map panel, where it
+   was a full-width box under an uppercase label and the only thing above the
+   map. It is the seventh control on the page, so it now sits with the other six
+   and the map panel holds nothing but the map. */
 
 /* ---- the grid ----
    The table is the page. It scrolls inside its own box rather than pushing the
@@ -347,17 +346,22 @@ table#grid tbody tr { cursor: pointer; }
 table#grid tbody tr:hover td { background: var(--hover); }
 table#grid tbody tr:hover td:first-child { background: var(--hover); }
 table#grid tr.picked td, table#grid tr.picked td:first-child { background: var(--hover); }
-.tax-nil { color: var(--over); font-weight: 650; }
+/* ONE REGISTER FOR THE TAX COLUMNS. "none" was bold accent, the words were
+   small faint italic, a rate was plain - three treatments in one column of
+   percentages, which is what "why is the formatting different?" was about. They
+   are all figures now, all in the table's own face. A zero reads as 0% and is
+   left to be a low number rather than dressed as good news. */
+.tax-cell { font-variant-numeric: tabular-nums; }
 /* Not a value, so it should not read like one. Twenty of thirty-four rows carry
    it and in italics at full size they were the loudest thing in the table. */
 /* Quiet by size, not by opacity: at .75 the blend against the paper came out
    at 2.98:1, and a word nobody can read is not a subtle word. */
-/* QUIET BY SIZE, NOT BY OPACITY - the rule this file already carries, and this
-   was still the declaration it was written about. `opacity: .75` blended
-   --ink-faint against the paper at 2.98:1, and a word nobody can read is not a
-   subtle word. Smaller and italic is the whole effect now, at the token's own
-   4.79:1. */
-.tax-unknown { color: var(--ink-faint); font-size: .82em; font-style: italic; }
+/* `.tax-unknown` lived here - the small faint italic for the words. Both the
+   words and the class are gone: the cells show the source's own range instead,
+   in the same face as every other figure in the column. It had also still
+   carried `opacity: .75`, which blended --ink-faint to 2.98:1 against the paper,
+   the exact declaration this project's "quiet by size, not by opacity" rule was
+   written about. */
 
 /* A rate charged on something other than the obvious base - Egypt's 2.5% is of
    the sale price, Spain's 24% of gross rent - so a column of bare percentages
@@ -514,7 +518,17 @@ table#grid th.soft { text-decoration: underline dotted var(--ink-faint); text-un
    A word and a dot, not an icon. An icon here would be a sun or a moon, which
    are the two most over-used glyphs on the web and say nothing this word does
    not. It names what you GET, not what you are in. */
-.topnav { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+/* ONE ROW: the title, the theme switch, and Other projects hard right. The
+   title used to sit on its own line below a nav that had Other projects on the
+   LEFT, so the page's name and its two controls were at three different heights
+   and the link pointing away from the page was the first thing in the corner. */
+.topnav {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: 10px 16px; margin-bottom: 18px;
+}
+.topnav .masthead { margin: 0 auto 0 0; }
+.topnav .home { order: 3; }
+.topnav .theme { order: 2; }
 .theme {
   appearance: none; background: transparent; cursor: pointer;
   border: 1px solid var(--rule); border-radius: 999px; padding: 5px 12px 5px 10px;
@@ -571,3 +585,21 @@ table#grid th.soft { text-decoration: underline dotted var(--ink-faint); text-un
    Size and spacing carry the hierarchy instead. */
 h2 { font-weight: 400; letter-spacing: .004em; }
 h1 { letter-spacing: -.004em; }
+
+/* The little i beside "Ease of investing". Sized to the uppercase label it sits
+   in, not to the body text, and it opens a line instead of relying on a tooltip:
+   a hover-only explanation does not exist on a phone. */
+.info {
+  appearance: none; margin-left: 6px; padding: 0; width: 14px; height: 14px;
+  border: 1px solid var(--ink-faint); border-radius: 50%; background: none;
+  color: var(--ink-faint); cursor: help; vertical-align: 1px;
+  font: 600 9px/12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-transform: none; letter-spacing: 0;
+}
+.info:hover, .info[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
+.info:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.ease-help {
+  margin: 12px 0 0; max-width: 52rem;
+  font-size: .85rem; line-height: 1.5; color: var(--ink-soft);
+}

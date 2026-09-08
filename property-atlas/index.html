@@ -24,13 +24,8 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 </head>
 <body>
 <header class="wrap">
-  <nav class="topnav">
-    <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
-    <button id="theme" type="button" class="theme" aria-pressed="false">
-      <span class="theme-dot" aria-hidden="true"></span><span id="theme-label">Dark</span>
-    </button>
-  </nav>
-  <h1 class="masthead">
+  <div class="topnav">
+    <h1 class="masthead">
     <svg class="mark" viewBox="0 0 64 74" aria-hidden="true" focusable="false">
       <clipPath id="scanclip"><rect x="0" y="-76" width="64" height="76"/></clipPath>
       <path class="pin-base" d="M32 6 C42 6 50 14 50 24 C50 37 32 58 32 58 C32 58 14 37 14 24 C14 14 22 6 32 6 Z"/>
@@ -41,9 +36,14 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
       </g>
       <line class="scanline" x1="2" y1="0" x2="62" y2="0"/>
     </svg>Property Atlas</h1>
+    <button id="theme" type="button" class="theme" aria-pressed="false">
+      <span class="theme-dot" aria-hidden="true"></span><span id="theme-label">Dark</span>
+    </button>
+    <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
+  </div>
   <p class="standfirst">
     Thirty-four residential markets, from the outside. What a foreigner can buy,
-    what it yields, what the tax office takes.
+    what it yields, what a non-resident pays in tax.
   </p>
 </header>
 
@@ -52,7 +52,9 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
   <section class="panel" id="filters-panel">
     <div class="filters" id="filters" aria-label="Filters">
       <div class="control">
-        <label for="f-ease">Ease of investing</label>
+        <label for="f-ease">Ease of investing<button type="button" class="info" id="ease-info"
+          aria-expanded="false" aria-controls="ease-help"
+          aria-label="What goes into the ease score">i</button></label>
         <div class="row"><input type="range" id="f-ease" min="0" max="100" step="1" value="0"><output id="f-ease-out"></output></div>
       </div>
       <div class="control">
@@ -87,17 +89,16 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
           <option value="2">Free or on registration</option>
         </select>
       </div>
+      <div class="control">
+        <label for="map-metric">Shade the map by</label>
+        <select id="map-metric"></select>
+      </div>
     </div>
+    <p class="ease-help" id="ease-help" hidden></p>
     <p class="filter-count" id="count"></p>
   </section>
 
   <section class="panel" id="map-panel">
-    <div class="axis-picks">
-      <div class="control">
-        <label for="map-metric">Shade by</label>
-        <select id="map-metric"></select>
-      </div>
-    </div>
     <figure class="chart">
       <svg id="map" role="img" aria-label="World map with the thirty-four markets shaded by the selected factor"></svg>
       <div class="readout" id="map-readout" hidden></div>
@@ -121,9 +122,7 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
   <section class="panel notes">
     <h2>Notes</h2>
     <ul>
-      <li><strong>Ease of investing</strong>, out of 100: who may own, residency from buying, getting money out, time to sell, cost to buy, property rights. The parts are in each row.</li>
       <li id="note-tax"></li>
-      <li><strong>Yields</strong> are Numbeo's, user-contributed and the weakest figures here. General information, not advice.</li>
     </ul>
     <h3>Sources</h3>
     <table class="src"><tbody id="sources"></tbody></table>

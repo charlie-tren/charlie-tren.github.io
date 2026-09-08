@@ -141,37 +141,57 @@ if resolve_taxes.apply(check=True) != 0:
     print("FAILED: data.json no longer agrees with the sources - run resolve_taxes.py")
     sys.exit(1)
 
-no_rate = [(c["country"], kind, c[f"{kind}_word"], c[f"{kind}_text" if False else
-            ("rental_tax_text" if kind == "rent" else "cgt_text")])
+import re  # noqa: E402
+
+no_rate = [(c["country"], kind, c[f"{kind}_range"],
+            c["rental_tax_text"] if kind == "rent" else c["cgt_text"])
            for c in countries for kind in ("rent", "cgt") if c[f"{kind}_rate"] is None]
 
-# Every cell without a rate must say WHICH KIND of unresolved it is. An empty
-# word would put a blank in the table, which reads as missing data.
-blank = [(n, k) for n, k, w, _ in no_rate if not w]
+# EVERY tax cell shows a figure. A cell with neither a rate nor a range would be
+# blank, and a blank in this column reads as missing data rather than as a range.
+blank = [(n, k) for n, k, rng, _ in no_rate if not rng]
 if blank:
-    print(f"FAILED: {len(blank)} cell(s) have no rate and no word: {blank[:5]}")
+    print(f"FAILED: {len(blank)} cell(s) have neither a rate nor a range: {blank[:5]}")
     sys.exit(1)
 
-# And nothing calling itself banded or progressive may state a single rate: that
-# is the specific error the old line covered up.
-import re  # noqa: E402
-liar = [(n, k, t) for n, k, w, t in no_rate
-        if w == "banded" and not re.search(r"\d.*(?:-|to|/|basic).*\d", t or "")]
-if liar:
-    print(f"FAILED: called banded but states one rate: {liar[:3]}")
+# Every number in a displayed range must appear in the source text. This is the
+# check that would have caught the two real bugs in building them: a range regex
+# that read "15-45%" as a flat 45 because only the second number carried the
+# percent sign, and a deemed cell whose 5.5% deemed RETURN was being read as the
+# bottom of a tax range.
+for name, kind, rng, text in no_rate:
+    for n in re.findall(r"\d+(?:\.\d+)?", rng):
+        check(n in (text or ""),
+              f"{name} {kind}: shows {rng} but {n} is not in the source cell {text!r}")
+
+# And no word may reach the column. The vocabulary is gone on purpose.
+words = [(n, k, rng) for n, k, rng, _ in no_rate if re.search(r"[a-z]", rng, re.I)]
+if words:
+    print(f"FAILED: a tax cell still shows a word rather than figures: {words[:3]}")
     sys.exit(1)
+
+# --- the published ease score must be reproducible from its own six parts -------
+# The note on the page states the formula (six parts, 0 to 3, out of 18) and
+# derives the divisor from the data. If a seventh part or a wider band is ever
+# added, the note follows automatically and this catches any score that does not.
+cap = max(p["score"] for c in countries for p in c["ease_parts"].values())
+for c in countries:
+    ps = c["ease_parts"]
+    want = round(sum(p["score"] for p in ps.values()) / (len(ps) * cap) * 100)
+    check(c["ease"] == want,
+          f"{c['country']}: ease is {c['ease']} but its {len(ps)} parts sum to {want}")
+check(len({len(c["ease_parts"]) for c in countries}) == 1,
+      "the markets do not all carry the same number of ease parts")
 
 src = {}
 for c in countries:
     for kind in ("rent", "cgt"):
         src[c[f"{kind}_src"]] = src.get(c[f"{kind}_src"], 0) + 1
-words = {}
-for _, _, w, _ in no_rate:
-    words[w] = words.get(w, 0) + 1
 
 print(f"{len(countries)} markets, merge exact against rates_pwc.json")
 print(f"{len(countries) * 2} tax cells: " + ", ".join(f"{v} {k}" for k, v in sorted(src.items())))
-print(f"  no single rate: {len(no_rate)} - " + ", ".join(f"{v} {k}" for k, v in sorted(words.items())))
+print(f"  {len(no_rate)} show the source's own range: "
+      + ", ".join(f"{n} {rng}" for n, _, rng, _ in no_rate[:5]) + ", ...")
 
 # PwC and the workbook disagreeing is a finding, not a rounding difference. It is
 # printed rather than failed because PwC wins by precedence either way, but a

@@ -63,7 +63,16 @@ const PLOTTABLE = [...COLS.filter(c => c.num), ...EXTRA];
    wht and proceeds, so Albania's 15% rendered as a word again. It is not needed
    any more - `_rate` is null exactly when no single rate was stated, decided in
    one place - and a second opinion about that here is how the two disagreed. */
-const rate = (c, kind) => (kind === "rent" ? c.rent_rate : c.cgt_rate) ?? null;
+/* Sorts on the one rate where there is one and on the BOTTOM of the range where
+   there is not, so a cell reading 15-45% ranks with the 15s. The bottom is a
+   figure the source states; a midpoint is not, and this project has already
+   shipped an invented 4.5 once. */
+const rate = (c, kind) => {
+  const r = kind === "rent" ? c.rent_rate : c.cgt_rate;
+  if (r != null) return r;
+  const low = kind === "rent" ? c.rent_low : c.cgt_low;
+  return low ?? null;
+};
 
 function val(c, key) {
   if (key === "rent_tax") return rate(c, "rent");
@@ -71,13 +80,15 @@ function val(c, key) {
   return c[key];
 }
 
-//: What a cell says when there is no single rate, spelled out on hover. These
-//: used to be one word, "scale", covering three different answers.
-const NO_RATE_WHY = {
-  banded: "A band that depends on the owner's other income in that country, not one rate. Open the row for the schedule.",
-  deemed: "Taxed on a deemed return rather than on the rent actually received. Open the row for the basis.",
-  "2 regimes": "Two regimes apply and neither is the one a foreign buyer simply falls into. Open the row for both.",
-  "see row": "The source does not state a single rate. Open the row for what it says."
+//: Why a cell shows a range rather than one rate. There is no vocabulary to
+//: learn any more: the cell shows the source's own figures, and this only says
+//: what shape they are.
+const RANGE_WHY = {
+  progressive: "A band. Which rate applies depends on the owner's other income in that market.",
+  deemed: "Charged on a deemed return rather than on the rent actually received.",
+  regimes: "Two regimes, and the seller or landlord elects between them.",
+  schedule: "The source gives a schedule rather than one rate.",
+  unclear: "The source does not reduce to one rate."
 };
 
 //: Where the number came from, on hover, because three sources now feed this
@@ -101,17 +112,26 @@ const BASIS_WHY = {
   exempt: "not taxed"
 };
 
+/* ONE FORMAT FOR EVERY TAX CELL. There used to be three: bold accent for
+   "none", small faint italic for the words, plain for a number - so a column of
+   percentages had three typographic registers in it and, as Charlie put it, the
+   formatting was different without saying why. Every cell is now a figure in the
+   same face; the only mark is a dotted underline where the base is not the
+   obvious one, and it promises the hover it has. */
 function taxCell(c, kind) {
-  const r = rate(c, kind);
-  if (r === 0) return `<span class="tax-nil" title="No tax on this in this market.">none</span>`;
-  if (r != null) {
-    const basis = c[kind + "_basis"];
-    const why = [BASIS_WHY[basis], RATE_WHY[c[kind + "_src"]]].filter(Boolean).join(". ");
-    const odd = basis === "proceeds" || basis === "gross" ? " tax-basis" : "";
-    return `<span class="tax-rate${odd}" title="${pc(r)} ${why}">${pc(r)}</span>`;
+  const single = kind === "rent" ? c.rent_rate : c.cgt_rate;
+  const basis = c[kind + "_basis"];
+  const odd = basis === "proceeds" || basis === "gross" || basis === "deemed";
+
+  if (single === 0) {
+    return `<span class="tax-cell tax-nil" title="This market does not tax it.">0%</span>`;
   }
-  const word = c[kind + "_word"] || "see row";
-  return `<span class="tax-unknown" title="${NO_RATE_WHY[word] || ""}">${word}</span>`;
+  const text = single != null ? pc(single) : (c[kind + "_range"] || "");
+  if (!text) return "";
+  const why = single != null
+    ? [BASIS_WHY[basis], RATE_WHY[c[kind + "_src"]]].filter(Boolean).join(". ")
+    : [RANGE_WHY[basis], BASIS_WHY[basis]].filter(Boolean).join(" ");
+  return `<span class="tax-cell${odd ? " tax-basis" : ""}" title="${text}. ${why}">${text}</span>`;
 }
 
 function easeCell(c) {
@@ -305,10 +325,19 @@ function drawMap(shown) {
     bindMarket(node, c, col, box, fig);
   });
 
-  /* Name the markets when the filter has cut the set down far enough to read.
-     Above about a dozen the labels collide into a smear and the map is better
-     off silent, so the threshold is the point where naming still helps. */
-  const named = shown.length <= 12 ? shown : (PICKED ? shown.filter(c => c.country === PICKED) : []);
+  /* NAME EVERY MARKET THAT HAS ROOM FOR ITS NAME.
+     There used to be a cutoff here: at more than twelve shown, nothing was
+     labelled at all, on the reasoning that the labels collide into a smear.
+     Charlie: "why do country names disappear when there's too many". Because of
+     that line - and it was belt-and-braces over a collision test thirty lines
+     below that already skips any label overlapping one already placed. So the
+     smear could not happen anyway, and the cutoff was throwing away the United
+     States, Brazil, Turkey and every other market with space around it in order
+     to prevent something the placement loop prevents.
+     Drawn PICKED first and then alphabetically, so which names win is fixed
+     rather than following whatever the table happens to be sorted by. */
+  const named = [...shown].sort((a, b) =>
+    (b.country === PICKED) - (a.country === PICKED) || a.country.localeCompare(b.country));
   if (named.length) {
     const placed = [];
     const centroid = f => {
@@ -533,14 +562,30 @@ function render() {
   drawMap(shown);
   fadeHint();
 
-  const noRate = DATA.countries.reduce(
-    (n, c) => n + (c.rent_word ? 1 : 0) + (c.cgt_word ? 1 : 0), 0);
+  // THE CALC, not a list of its inputs. Charlie: "break down this calc more".
+  // Derived from the data rather than typed, so the divisor cannot drift from the
+  // number of parts, and test_data.py asserts the formula still reproduces every
+  // published score.
+  const parts = Object.keys(DATA.countries[0].ease_parts);
+  const cap = Math.max(...DATA.countries.flatMap(
+    c => Object.values(c.ease_parts).map(p => p.score)));
+  const names = { ownership: "who may own", visa: "residency from buying",
+    repatriation: "getting money out", liquidity: "time to sell",
+    costs: "cost to buy", rights: "property rights" };
+  EASE_HELP = `Six parts, each scored 0 to ${cap}, summed out of ${parts.length * cap} and `
+    + `shown as a percentage: ` + parts.map(k => names[k] || k).join(", ")
+    + `. Every row carries its own six.`;
+  const help = $("ease-help");
+  if (help.textContent !== EASE_HELP) help.textContent = EASE_HELP;
+  $("ease-info").title = EASE_HELP;
+
+  // No Notes entry for this. The i beside the filter carries the same sentence,
+  // at the control it describes, and two homes for one formula is the thing the
+  // house rule is about.
+
   $("note-tax").innerHTML =
-    `<strong>Tax</strong> is what the destination charges a non-resident on a ten-year hold, `
-    + `from PwC's country guides where they state it and each market's own tax note where `
-    + `they do not. Belgium, Italy and Poland stop taxing the gain after five years; the `
-    + `Netherlands never does. ${noRate} of ${DATA.countries.length * 2} cells have no single `
-    + `rate and say which kind.`;
+    `<strong>Tax</strong> is what a non-resident pays after a ten-year hold, from PwC's `
+    + `country guides. A range is the source's own; hover it.`;
 }
 
 /* ---------- boot ---------- */
@@ -549,6 +594,10 @@ function render() {
 // file because data.json is rebuilt from the workbook and would drop them, and a
 // .catch so a missing file costs those four rows their links and nothing else.
 let SOURCE_LINKS = {};
+//: The ease breakdown, derived once in render() and reused by the note, the
+//: little i beside the filter, and the line that i opens. Three copies of a
+//: formula is three chances for one of them to be the old formula.
+let EASE_HELP = "";
 
 Promise.all([
   fetch("data.json").then(r => r.json()),
@@ -592,6 +641,16 @@ Promise.all([
 
     ["f-ease", "f-yield", "f-price", "f-own", "f-visa", "f-repat"]
       .forEach(id => $(id).addEventListener("input", render));
+
+    /* The i opens the line rather than only carrying a title, because a
+       hover-only tooltip is nothing at all on a phone - and this page is checked
+       at 390px. The title stays for the pointer, the click is for everyone else. */
+    const info = $("ease-info"), help = $("ease-help");
+    info.addEventListener("click", () => {
+      const open = info.getAttribute("aria-expanded") === "true";
+      info.setAttribute("aria-expanded", open ? "false" : "true");
+      help.hidden = open;
+    });
 
     const root = document.documentElement, btn = $("theme");
     const paint = () => {
