@@ -159,6 +159,17 @@ def main():
         }
         rows.append(row)
 
+    # THE TAX CELLS PWC DID NOT STATE. Everything above takes rates_pwc.json at
+    # face value, nulls included, which is how 32 of 68 tax cells came to render
+    # as the word "scale" while the rate sat in the cell text beside them. The
+    # precedence, and the three sources, live in resolve_taxes so that this build
+    # and the committed data.json cannot disagree about them.
+    import resolve_taxes
+    import json as _json
+    _wb = _json.loads((HERE / "rates_workbook.json").read_text(encoding="utf-8"))
+    for row in rows:
+        row.update(resolve_taxes.resolve(row, pwc, _wb))
+
     rows.sort(key=lambda d: d["country"])
 
     USED = {

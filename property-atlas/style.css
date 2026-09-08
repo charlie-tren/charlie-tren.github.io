@@ -352,7 +352,20 @@ table#grid tr.picked td, table#grid tr.picked td:first-child { background: var(-
    it and in italics at full size they were the loudest thing in the table. */
 /* Quiet by size, not by opacity: at .75 the blend against the paper came out
    at 2.98:1, and a word nobody can read is not a subtle word. */
-.tax-unknown { color: var(--ink-faint); font-size: .82em; font-style: italic; opacity: .75; }
+/* QUIET BY SIZE, NOT BY OPACITY - the rule this file already carries, and this
+   was still the declaration it was written about. `opacity: .75` blended
+   --ink-faint against the paper at 2.98:1, and a word nobody can read is not a
+   subtle word. Smaller and italic is the whole effect now, at the token's own
+   4.79:1. */
+.tax-unknown { color: var(--ink-faint); font-size: .82em; font-style: italic; }
+
+/* A rate charged on something other than the obvious base - Egypt's 2.5% is of
+   the sale price, Spain's 24% of gross rent - so a column of bare percentages
+   would compare two different things. The mark promises the hover, which is there. */
+.tax-basis {
+  border-bottom: 1px dotted var(--ink-faint);
+  cursor: help;
+}
 
 /* ---- ease ---- */
 .ease { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-start; }

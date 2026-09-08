@@ -58,14 +58,12 @@ const PLOTTABLE = [...COLS.filter(c => c.num), ...EXTRA];
 /* The two tax columns are the point of the page, so they are sortable numbers
    rather than the source's prose. A rate that cannot be reduced to one number
    sorts last rather than as zero, which would rank "unknown" as "tax free". */
-const rate = (c, kind) => {
-  const r = kind === "rent" ? c.rent_rate : c.cgt_rate;
-  const basis = kind === "rent" ? c.rent_basis : c.cgt_basis;
-  const usable = kind === "rent"
-    ? ["gain", "gross", "net", "exempt"].includes(basis)
-    : ["gain", "exempt", "none"].includes(basis);
-  return usable && r != null ? r : null;
-};
+/* The basis allowlist that used to live here threw away every rate resolve_taxes
+   recovered: it accepted gain/gross/net/exempt and the recovered ones are flat,
+   wht and proceeds, so Albania's 15% rendered as a word again. It is not needed
+   any more - `_rate` is null exactly when no single rate was stated, decided in
+   one place - and a second opinion about that here is how the two disagreed. */
+const rate = (c, kind) => (kind === "rent" ? c.rent_rate : c.cgt_rate) ?? null;
 
 function val(c, key) {
   if (key === "rent_tax") return rate(c, "rent");
@@ -73,11 +71,47 @@ function val(c, key) {
   return c[key];
 }
 
+//: What a cell says when there is no single rate, spelled out on hover. These
+//: used to be one word, "scale", covering three different answers.
+const NO_RATE_WHY = {
+  banded: "A band that depends on the owner's other income in that country, not one rate. Open the row for the schedule.",
+  deemed: "Taxed on a deemed return rather than on the rent actually received. Open the row for the basis.",
+  "2 regimes": "Two regimes apply and neither is the one a foreign buyer simply falls into. Open the row for both.",
+  "see row": "The source does not state a single rate. Open the row for what it says."
+};
+
+//: Where the number came from, on hover, because three sources now feed this
+//: column and a reader should be able to tell which one they are reading.
+const RATE_WHY = {
+  pwc: "PwC's country guide for this market.",
+  workbook: "Read off the market's own tax note. The rate a non-resident actually pays where the guide gave a choice.",
+  text: "Read off the market's own tax note."
+};
+
+//: WHAT THE RATE IS CHARGED ON. Egypt's 2.5% is 2.5% of the sale price and
+//: Spain's 24% is 24% of gross rent; a column of percentages hides that, so the
+//: hover says it and `.tax-basis` marks the ones that are not on the obvious base.
+const BASIS_WHY = {
+  gain: "of the realised gain",
+  proceeds: "of the sale price, not of the gain",
+  gross: "of gross rent, with no deduction",
+  net: "of net rent, after deductions",
+  wht: "withheld at source, on the gross amount",
+  flat: "a flat rate",
+  exempt: "not taxed"
+};
+
 function taxCell(c, kind) {
   const r = rate(c, kind);
-  if (r === 0) return `<span class="tax-nil">none</span>`;
-  if (r != null) return pc(r);
-  return `<span class="tax-unknown" title="The source gives a sliding scale or a choice of regimes, not one rate. Open the row for what it says.">scale</span>`;
+  if (r === 0) return `<span class="tax-nil" title="No tax on this in this market.">none</span>`;
+  if (r != null) {
+    const basis = c[kind + "_basis"];
+    const why = [BASIS_WHY[basis], RATE_WHY[c[kind + "_src"]]].filter(Boolean).join(". ");
+    const odd = basis === "proceeds" || basis === "gross" ? " tax-basis" : "";
+    return `<span class="tax-rate${odd}" title="${pc(r)} ${why}">${pc(r)}</span>`;
+  }
+  const word = c[kind + "_word"] || "see row";
+  return `<span class="tax-unknown" title="${NO_RATE_WHY[word] || ""}">${word}</span>`;
 }
 
 function easeCell(c) {
@@ -429,6 +463,14 @@ function detail(c) {
   add("Tax on rent, as the source puts it", c.rental_tax_text);
   add("Tax on the gain", c.cgt_text);
   add("After a ten-year hold", c.verified ? c.cgt_note : "Not checked against PwC; workbook figure");
+  add("Where these rates come from",
+      [["Rent", c.rent_src, c.rent_rate], ["Gain", c.cgt_src, c.cgt_rate]]
+        .map(([what, src, r]) => `${what}: ` + (
+          r == null ? "no single rate stated"
+          : src === "pwc" ? "PwC's country guide"
+          : src === "workbook" ? "the market's own tax note, where PwC gave a choice"
+          : "the market's own tax note"))
+        .join(". ") + ".");
   add("Estate or inheritance tax", c.estate_text);
   add("Ownership rules", c.ownership);
   add("Residency pathway", c.visa);
@@ -491,11 +533,14 @@ function render() {
   drawMap(shown);
   fadeHint();
 
-  const verified = DATA.countries.filter(c => c.verified).length;
+  const noRate = DATA.countries.reduce(
+    (n, c) => n + (c.rent_word ? 1 : 0) + (c.cgt_word ? 1 : 0), 0);
   $("note-tax").innerHTML =
     `<strong>Tax</strong> is what the destination charges a non-resident on a ten-year hold, `
-    + `from PwC's country guides for ${verified} of ${DATA.countries.length} markets. Belgium, `
-    + `Italy and Poland stop taxing the gain after five years; the Netherlands never does.`;
+    + `from PwC's country guides where they state it and each market's own tax note where `
+    + `they do not. Belgium, Italy and Poland stop taxing the gain after five years; the `
+    + `Netherlands never does. ${noRate} of ${DATA.countries.length * 2} cells have no single `
+    + `rate and say which kind.`;
 }
 
 /* ---------- boot ---------- */
