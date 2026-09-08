@@ -150,3 +150,93 @@ def rights(v):
         return None, ""
     band = 3 if v >= 85 else 2 if v >= 70 else 1 if v >= 55 else 0
     return band, f"Property rights {v:.0f}/100"
+
+# ---------------------------------------------------------------------------
+# Tax cells: a rate where the source states one, an accurate word where it does
+# not.
+#
+# WHY THIS EXISTS. rates_pwc.json carries `rate: null, basis: "schedule"` for 21
+# of 34 rent cells and 11 of 34 gain cells, with the note "not stated for
+# non-residents on PwC" - and the page rendered every one of them as the word
+# "scale", while test_data.py printed "by design, those markets tax on a
+# progressive schedule". That was false for over half of them: Albania's cell
+# reads "15%", Hungary's "15% flat", Malaysia's "30% flat", Oman's "0%". The
+# figure was already in data.json, in the column beside the null, and the page
+# was reading the null.
+#
+# So the parser below is deliberately NARROW. It fires only on a cell that states
+# ONE rate plainly and nothing else, which is a transcription rather than an
+# interpretation. Anything with a range, a slash, an "or" or a deemed basis is
+# left alone and gets the right word: `progressive`, `deemed` or `regimes`. The
+# eight that need a judgement live in rates_workbook.json with the quote they
+# were read from and which of the four stated rules applied.
+
+#: One rate, at the front of the cell, with an optional basis word and an
+#: optional trailing parenthetical. Narrow on purpose: see above.
+ONE_RATE = re.compile(r"""^
+    ~?\s*
+    (?P<rate>\d+(?:\.\d+)?)\s*%
+    (?P<tail>(?:\s*(?:flat|WHT|on|of|net|gross|gain|sale\s+price))*)
+    (?P<paren>\s*\([^()]*\))?
+    \s*$""", re.I | re.X)
+
+_RANGE    = re.compile(r"\d+(?:\.\d+)?\s*%?\s*(?:-|to)\s*\d+(?:\.\d+)?\s*%")
+_PROGRESS = re.compile(r"\bprogressive\b|\bgraduated\b|\bbasic\b.*\bhigher\b", re.I)
+_DEEMED   = re.compile(r"\bdeemed\b|\bcadastral\b", re.I)
+_EXEMPT   = re.compile(r"^exempt\b", re.I)
+_TWO      = re.compile(r"\bor\b|/|;", re.I)
+_PAREN    = re.compile(r"\([^()]*\)")
+
+
+def tax_from_text(text):
+    """(rate, basis) read from a workbook tax cell.
+
+    `rate` is None wherever the cell does not state a single one, and `basis` then
+    says WHICH kind of not-a-single-rate it is, because "progressive", "a deemed
+    basis" and "two regimes" are three different answers and "scale" was standing
+    in for all three.
+    """
+    t = (text or "").strip()
+    if not t:
+        return None, "unstated"
+    if _EXEMPT.search(t):
+        return 0.0, "exempt"
+
+    m = ONE_RATE.match(t)
+    if m:
+        rate = float(m.group("rate"))
+        tail = (m.group("tail") or "").lower()
+        if rate == 0:
+            basis = "exempt"
+        elif "wht" in tail:
+            basis = "wht"
+        elif "sale price" in tail or "gross" in tail:
+            basis = "proceeds"
+        elif "gain" in tail:
+            basis = "gain"
+        else:
+            basis = "flat"
+        return rate, basis
+
+    # A parenthetical explains; it does not make a cell ambiguous. Panama's
+    # "Progressive 0-25% (territorial system; only Panama-source income taxed)"
+    # was read as two regimes purely for the semicolon inside its brackets.
+    bare = _PAREN.sub("", t)
+    if _DEEMED.search(t):
+        return None, "deemed"
+    if _RANGE.search(bare) or _PROGRESS.search(bare):
+        return None, "progressive"
+    if _TWO.search(bare):
+        return None, "regimes"
+    return None, "unclear"
+
+
+#: What the page prints where there is no single rate. Each says something
+#: different, which is the whole point of splitting them.
+NO_RATE_LABEL = {
+    "progressive": "banded",
+    "deemed":      "deemed",
+    "regimes":     "2 regimes",
+    "unstated":    "",
+    "unclear":     "see row",
+}

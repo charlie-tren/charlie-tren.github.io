@@ -1,0 +1,33 @@
+{
+  "_comment": "The FALLBACK for tax cells PwC's guides did not state, and the record of the eight that needed a judgement rather than a parser. rates_pwc.json wins wherever it carries a rate; classify.tax_from_text resolves anything stating one rate plainly; this file covers what is left. Every entry carries the quote it was read from, so the number on the page traces to a string in data.json rather than to anybody's memory.",
+  "_convention": "A non-resident's rate is the one that actually leaves the transaction. (1) Where the jurisdiction WITHHOLDS at source, that is the number, whatever the eventual assessment. (2) Where a non-resident may ELECT a flat regime, the flat rate. (3) Where two regimes apply with no default a foreign buyer falls into, no number: the word stays. (4) A genuine band that depends on the owner's other income in that country is a schedule, not a rate.",
+  "Ireland": {
+    "rent": { "rate": 20.0, "basis": "wht", "rule": 1,
+      "quote": "20% WHT; marginal rate up to 52% inc. USC",
+      "why": "The 20% is withheld by the tenant or agent under the non-resident landlord scheme. The 52% marginal figure needs Irish residence to reach." }
+  },
+  "Italy (South)": {
+    "rent": { "rate": 21.0, "basis": "flat", "rule": 2,
+      "quote": "21% cedolare secca (flat) or 23-43% progressive",
+      "why": "Cedolare secca is elective and open to a non-resident landlord, and 21% beats the bottom of the progressive band." }
+  },
+  "Poland": {
+    "rent": { "rate": 8.5, "basis": "flat", "rule": 2,
+      "quote": "8.5% (up to PLN 100K) / 12.5% (above PLN 100K) lump-sum",
+      "why": "The lump-sum regime is the one a non-resident landlord uses. 8.5% is the rate below PLN 100k of rent, which is where a single property sits." }
+  },
+  "United States": {
+    "rent": { "rate": 30.0, "basis": "wht", "rule": 1,
+      "quote": "30% WHT on gross OR elect net basis (10-37% graduated rates)",
+      "why": "30% on gross is the default for a non-resident. The net-basis election is available but has to be made." },
+    "cgt": { "rate": 15.0, "basis": "wht", "rule": 1,
+      "quote": "FIRPTA: 15% WHT on gross; actual tax 0-20% + 3.8% NIIT on net gain",
+      "why": "FIRPTA withholds 15% of the gross price at settlement. The eventual assessment can be more or less and is reclaimed or topped up on a return." }
+  },
+  "_kept_as_words": {
+    "Brazil.rent": "15% (via Carne-Leao) or 25% WHT - two regimes, and which applies turns on whether the rent is collected through a Brazilian paying source. No default a foreign buyer simply falls into.",
+    "Mexico.cgt": "25% of gross or 35% of net gain - the seller elects, and which is cheaper depends on the gain. Rule 3.",
+    "Thailand.cgt": "Specific business tax 3.3% or stamp duty 0.5%, plus income tax 5-35% on the gain portion - three components on different bases. Rule 3.",
+    "United Kingdom.rent": "20% basic / 40% higher / 45% additional - a genuine band, and which one applies depends on the landlord's other UK income. Rule 4."
+  }
+}

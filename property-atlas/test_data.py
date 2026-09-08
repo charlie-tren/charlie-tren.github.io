@@ -15,6 +15,7 @@ silent drift would throw that away.
 """
 
 import json
+import classify
 import sys
 from pathlib import Path
 
@@ -43,18 +44,27 @@ check(set(by_name) == set(rates),
       f"only in data {sorted(set(by_name) - set(rates))}, "
       f"only in pwc {sorted(set(rates) - set(by_name))}")
 
-# --- the merge is exact ----------------------------------------------------------
+# --- the merge is exact WHERE PWC HAS A RATE -------------------------------------
+# It used to require data.json to equal rates_pwc.json field for field, including
+# its nulls. That is what made 32 tax cells unfixable without failing the suite:
+# PwC not stating a rate had become a requirement that the page not show one. PwC
+# still WINS wherever it carries a rate - that is what this asserts - but where it
+# is silent, resolve_taxes fills the cell from the market's own tax note and the
+# check for that lives in resolve_taxes.apply(check=True), below.
 for name, src in sorted(rates.items()):
     row = by_name.get(name)
     if row is None:
         continue
     for kind in ("rent", "cgt"):
+        want_rate = (src.get(kind) or {}).get("rate")
+        if not isinstance(want_rate, (int, float)):
+            continue
         for field in ("rate", "basis", "note"):
             want = (src.get(kind) or {}).get(field)
             got = row.get(f"{kind}_{field}")
             check(want == got,
                   f"{name}: {kind}_{field} is {got!r} in data.json but {want!r} in "
-                  f"rates_pwc.json - build_data.py's merge has drifted")
+                  f"rates_pwc.json - PwC wins where it states a rate, and this drifted")
 
 # --- a rate must never be readable as zero when it is unknown --------------------
 # app.js sorts an unusable rate last rather than as zero, "which would rank 'unknown'
@@ -113,8 +123,66 @@ if fails:
         print("  -", f)
     sys.exit(1)
 
-scale_rent = sum(1 for v in rates.values() if (v.get("rent") or {}).get("rate") is None)
-scale_cgt = sum(1 for v in rates.values() if (v.get("cgt") or {}).get("rate") is None)
+# WHAT THIS USED TO SAY, and why it is worth the extra thirty lines:
+#
+#   print("shown as 'scale' rather than a rate: rent 21, capital gains 11
+#          - by design, those markets tax on a progressive schedule")
+#
+# It was not by design and over half of them were not progressive. Albania's cell
+# reads "15%", Hungary's "15% flat", Malaysia's "30% flat", Oman's "0%", Greece's
+# gain cell reads "Exempt". The rate was in data.json all along, in the column
+# beside PwC's null, and the page was rendering the null as "scale". A test that
+# ASSERTS a comfortable reason for a gap will hide it for as long as it runs; this
+# one counts, names, and re-derives instead.
+
+import resolve_taxes  # noqa: E402
+
+if resolve_taxes.apply(check=True) != 0:
+    print("FAILED: data.json no longer agrees with the sources - run resolve_taxes.py")
+    sys.exit(1)
+
+no_rate = [(c["country"], kind, c[f"{kind}_word"], c[f"{kind}_text" if False else
+            ("rental_tax_text" if kind == "rent" else "cgt_text")])
+           for c in countries for kind in ("rent", "cgt") if c[f"{kind}_rate"] is None]
+
+# Every cell without a rate must say WHICH KIND of unresolved it is. An empty
+# word would put a blank in the table, which reads as missing data.
+blank = [(n, k) for n, k, w, _ in no_rate if not w]
+if blank:
+    print(f"FAILED: {len(blank)} cell(s) have no rate and no word: {blank[:5]}")
+    sys.exit(1)
+
+# And nothing calling itself banded or progressive may state a single rate: that
+# is the specific error the old line covered up.
+import re  # noqa: E402
+liar = [(n, k, t) for n, k, w, t in no_rate
+        if w == "banded" and not re.search(r"\d.*(?:-|to|/|basic).*\d", t or "")]
+if liar:
+    print(f"FAILED: called banded but states one rate: {liar[:3]}")
+    sys.exit(1)
+
+src = {}
+for c in countries:
+    for kind in ("rent", "cgt"):
+        src[c[f"{kind}_src"]] = src.get(c[f"{kind}_src"], 0) + 1
+words = {}
+for _, _, w, _ in no_rate:
+    words[w] = words.get(w, 0) + 1
+
 print(f"{len(countries)} markets, merge exact against rates_pwc.json")
-print(f"shown as 'scale' rather than a rate: rent {scale_rent}, capital gains "
-      f"{scale_cgt} - by design, those markets tax on a progressive schedule")
+print(f"{len(countries) * 2} tax cells: " + ", ".join(f"{v} {k}" for k, v in sorted(src.items())))
+print(f"  no single rate: {len(no_rate)} - " + ", ".join(f"{v} {k}" for k, v in sorted(words.items())))
+
+# PwC and the workbook disagreeing is a finding, not a rounding difference. It is
+# printed rather than failed because PwC wins by precedence either way, but a
+# reader of this output should know the two sources are 15 points apart on Georgia.
+gaps = []
+for c in countries:
+    for kind, tkey in (("rent", "rental_tax_text"), ("cgt", "cgt_text")):
+        if c[f"{kind}_src"] != "pwc":
+            continue
+        alt, _ = classify.tax_from_text(c.get(tkey))
+        if alt is not None and abs(alt - c[f"{kind}_rate"]) > 0.6:
+            gaps.append(f"{c['country']} {kind}: PwC {c[f'{kind}_rate']} vs cell {alt}")
+if gaps:
+    print(f"  PwC and the cell disagree on {len(gaps)}, PwC used: " + "; ".join(gaps))
