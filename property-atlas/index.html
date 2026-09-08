@@ -42,9 +42,8 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
       <line class="scanline" x1="2" y1="0" x2="62" y2="0"/>
     </svg>Property Atlas</h1>
   <p class="standfirst">
-    Thirty-four residential markets, compared from the outside. What a foreigner
-    can buy, what it yields, what the local tax office takes, and how hard it is
-    to get in and back out again.
+    Thirty-four residential markets, from the outside. What a foreigner can buy,
+    what it yields, what the tax office takes.
   </p>
 </header>
 
@@ -62,12 +61,12 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
       </div>
       <div class="control">
         <label for="f-price">Entry price</label>
-        <div class="row"><input type="range" id="f-price" min="75000" max="650000" step="5000" value="650000"><output id="f-price-out"></output></div>
+        <div class="row"><input type="range" id="f-price" data-dir="max" min="75000" max="650000" step="5000" value="650000"><output id="f-price-out"></output></div>
       </div>
       <div class="control">
         <label for="f-own">Foreign ownership</label>
         <select id="f-own">
-          <option value="">Anyone, however restricted</option>
+          <option value="">Any</option>
           <option value="3">Foreigners, no restrictions</option>
           <option value="2">Foreigners, with conditions</option>
         </select>
@@ -75,7 +74,7 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
       <div class="control">
         <label for="f-visa">Residency from buying</label>
         <select id="f-visa">
-          <option value="">Doesn't matter</option>
+          <option value="">Any</option>
           <option value="3">Buying gets you residency</option>
           <option value="2">Some investor route</option>
         </select>
@@ -83,7 +82,7 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
       <div class="control">
         <label for="f-repat">Getting money out</label>
         <select id="f-repat">
-          <option value="">Doesn't matter</option>
+          <option value="">Any</option>
           <option value="3">Free</option>
           <option value="2">Free or on registration</option>
         </select>
@@ -93,8 +92,6 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
   </section>
 
   <section class="panel" id="map-panel">
-    <h2>The Map</h2>
-    <p class="sub" id="map-sub"></p>
     <div class="axis-picks">
       <div class="control">
         <label for="map-metric">Shade by</label>
@@ -124,9 +121,9 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
   <section class="panel notes">
     <h2>Notes</h2>
     <ul>
-      <li><strong>Ease of investing</strong> is six things scored out of 100: who may own, whether buying brings residency, whether money can leave, time to sell, cost to buy, property rights. Open a row for the parts, which matter more than the total.</li>
+      <li><strong>Ease of investing</strong>, out of 100: who may own, residency from buying, getting money out, time to sell, cost to buy, property rights. The parts are in each row.</li>
       <li id="note-tax"></li>
-      <li><strong>Yields</strong> are Numbeo's, user-contributed and the weakest figures here. Global Property Guide is better sourced but blocks after one page. General information, not advice.</li>
+      <li><strong>Yields</strong> are Numbeo's, user-contributed and the weakest figures here. General information, not advice.</li>
     </ul>
     <h3>Sources</h3>
     <table class="src"><tbody id="sources"></tbody></table>
