@@ -1,0 +1,16 @@
+{
+  "_comment": "Links for the source rows whose url field is the word 'Various', keyed by measure. Kept out of data.json because that file is rebuilt from the workbook and would drop them. Every URL below was opened in a real browser on 08/09/2026 and returned 200, except globalpropertyguide.com, which answers 403 with Cloudflare's 'Just a moment...' interstitial to anything automated and is fine for a reader - the Yields note already says it blocks after one page. A curl 403 is not evidence a page is dead.",
+  "Foreign Ownership Restrictions": [
+    { "name": "Global Property Guide", "url": "https://www.globalpropertyguide.com/investment-guide" },
+    { "name": "PwC Worldwide Tax Summaries", "url": "https://taxsummaries.pwc.com" }
+  ],
+  "Golden Visa / Residency Pathways": [
+    { "name": "Henley & Partners", "url": "https://www.henleyglobal.com/residence-investment" }
+  ],
+  "FX Regimes": [
+    { "name": "IMF AREAER", "url": "https://www.elibrary-areaer.imf.org/Pages/Home.aspx" }
+  ],
+  "Estate/Inheritance Tax": [
+    { "name": "PwC Worldwide Tax Summaries", "url": "https://taxsummaries.pwc.com" }
+  ]
+}

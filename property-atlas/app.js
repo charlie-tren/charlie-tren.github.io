@@ -545,13 +545,20 @@ function render() {
 
 /* ---------- boot ---------- */
 
+// The links for the four source rows whose url is the word "Various". A separate
+// file because data.json is rebuilt from the workbook and would drop them, and a
+// .catch so a missing file costs those four rows their links and nothing else.
+let SOURCE_LINKS = {};
+
 Promise.all([
   fetch("data.json").then(r => r.json()),
   fetch("world.json").then(r => r.json()).catch(() => null),
+  fetch("sources_links.json").then(r => r.json()).catch(() => ({})),
 ])
-  .then(([d, m]) => {
+  .then(([d, m, links]) => {
     DATA = d;
     MAP = m;
+    SOURCE_LINKS = links || {};
 
     const numeric = PLOTTABLE;
     const mm = $("map-metric");
@@ -566,14 +573,18 @@ Promise.all([
     const tb = $("sources");
     (d.sources || []).forEach(s => {
       const tr = document.createElement("tr");
-      // Four of these rows say "Various" rather than naming one page, because the
-      // column really was assembled from several. Linkifying that produced
-      // href="https://Various" - five source links on the page that went nowhere,
-      // on a page whose whole claim is that the numbers were checked. A citation
-      // that cannot be followed is worse than an honest "several sources".
+      // Four rows carried the word "Various" in their url, because the column
+      // really was assembled from several sources - and linkifying that produced
+      // href="https://Various", citations that went nowhere on a page whose whole
+      // claim is that the numbers were checked. So those four now name each source
+      // separately in sources_links.json, every one of them followable, rather
+      // than one link standing for three.
+      const many = SOURCE_LINKS[s.measure];
       const linkable = /^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+([\/?#]|$)/i.test(s.url || "");
       const href = s.url && s.url.startsWith("http") ? s.url : "https://" + s.url;
-      const a = linkable ? `<a href="${href}" rel="noopener">${s.name}</a>` : s.name;
+      const a = many
+        ? many.map(l => `<a href="${l.url}" rel="noopener">${l.name}</a>`).join(", ")
+        : linkable ? `<a href="${href}" rel="noopener">${s.name}</a>` : s.name;
       tr.innerHTML = `<td>${s.measure}</td><td>${a}</td><td></td>`;
       tr.lastElementChild.textContent = s.caveat || "";
       tb.appendChild(tr);
