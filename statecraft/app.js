@@ -12,6 +12,7 @@
 
 import {
   TAX, TAX_DOMAIN, budgets, blockers, realisedRevenue, rateForOption, startingState,
+  optionForRate,
   ladder, positionsOf, valuesAt, posFromSelection, reformCost,
 } from './budget.js';
 import { applyChange, setTaxRate, toggleLock, isLocked } from './cascade.js';
@@ -200,10 +201,13 @@ function paintDomains() {
 
   host.innerHTML = data.domains.map((domain, i) => {
     const isTax = domain.id === TAX_DOMAIN;
-    // The first section carries a one-line note pointing at its padlock, and no
-    // other one does. A padlock on its own is a control nobody has a reason to
-    // press, and the same sentence thirteen times is furniture.
-    const first = i === 0;
+    // ONE section carries a one-line note pointing at its padlock, and it is the
+    // first one the budget can actually cut. A padlock on its own is a control
+    // nobody has a reason to press, and the same sentence thirteen times is
+    // furniture - but the note sat on the tax panel, which is the one section
+    // the cascade never touches, so the sentence was untrue exactly where it was
+    // written.
+    const first = i === (data.domains[0] && data.domains[0].id === TAX_DOMAIN ? 1 : 0);
     const rungs = isTax ? [] : ladder(data, domain.id);
     const rangeAttrs = isTax
       ? `min="${TAX.MIN}" max="${TAX.MAX}" step="${RATE_STEP}"`
@@ -389,9 +393,9 @@ function paintMethod() {
   document.getElementById('method').innerHTML = `
   <h2>Method</h2>
 
-  <p>The match is a count. One point for every domain where you picked what that country actually does, and ties go to whoever is closest on the measured axes.</p>
+  <p>One point for each domain where your choice is the policy that country actually has. Ties go to whichever country is closest on the measured axes.</p>
 
-  <p>${derived} of the ${options} option figures are the median of the countries running that policy, and ${slider} are the tax rate. The other ${hand.length} are my estimates. So are the costs.</p>
+  <p>Of the ${options} option figures, ${derived} are the median of the countries running that policy and ${slider} are the tax rate. The other ${hand.length} are my estimates, as are all the costs.</p>
 
   <details class="mdet">
     <summary>Every option and what it costs</summary>
@@ -401,12 +405,6 @@ function paintMethod() {
   <details class="mdet">
     <summary>The ${data.axes.length} axes and their sources</summary>
     <div class="scroller">${axisTable()}</div>
-    <!-- The one axis whose convention a reader cannot infer from its label. The
-         OECD series is the after-transfers column, so the United Kingdom reads
-         21.8 where the same table's initial-funds column reads 44.05, and
-         without this line the UK's spoke looks like a fault. State the
-         convention and stop: the mechanism is in axes.py. -->
-    <p>University funding is counted after transfers, so a state student loan that the student repays counts as private money.</p>
   </details>
 
 `;
@@ -599,7 +597,21 @@ function render(change) {
       if (input.value !== target) {
         if (cutIds.has(id)) tweenRange(input, rate); else input.value = target;
       }
-      const stop = optionOf(id, live.selection[id]);
+      // MID-DRAG, THE STOP COMES OFF THE LIVE RATE. The selection is still the
+      // regime the visitor let go of last time, so every line under the tax
+      // slider - the label, what it is, and who runs it - sat on the old policy
+      // until the finger came off, which is what "the who runs it section does
+      // not update" was.
+      //
+      // AT REST IT IS THE SELECTION, and that is not the same thing. A country
+      // starts on the rate it actually raises, and Australia raises 29.5 where
+      // its own regime stop reads 34.0 - so the nearest stop to where Australia
+      // opens is the flat tax, and reading the label off the rate would tell an
+      // Australian their country runs a flat income tax before they had touched
+      // anything. The selection is the country's own claim about itself.
+      const stop = optionOf(id, previewRate !== null
+        ? optionForRate(data, rate)
+        : live.selection[id]);
       input.setAttribute('aria-valuetext', `${one(rate)} per cent of GDP, ${stop ? stop.label : ''}`);
 
       document.getElementById(`val_${id}`).innerHTML = `

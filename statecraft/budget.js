@@ -469,6 +469,65 @@ function chargeAt(v, chosen, homeId) {
   };
 }
 
+/**
+ * What tax reform costs at a rate, interpolated between the stops either side.
+ *
+ * WHY THIS IS NOT `chargeAt`. Tax has no ladder, so `valuesAt` returns null for
+ * it and the two pools were billed the snapped stop's cost. Dragging the rate
+ * moved the budget continuously and left political capital and public patience
+ * sitting still until the release, then jumped them a whole regime's worth. Every
+ * other control on the page interpolates; this was the one that did not.
+ *
+ * AND THE COUNTRY'S OWN STOP SITS AT THE RATE IT ACTUALLY RAISES, not at that
+ * stop's headline rate. Australia's regime stop reads 34.0 and Australia raises
+ * 29.5, so pricing off the stop would charge it for reform before the visitor
+ * touched anything, which breaks the rule that a country spends nothing on its
+ * own status quo. Moving the home stop to the measured rate holds the charge at
+ * zero where the slider starts and lets it rise in both directions from there.
+ */
+export function taxChargeAt(data, state) {
+  const country = countryOf(data, state.start);
+  const homeId = country ? country.choices[TAX_DOMAIN] : undefined;
+  // CLAMPED, because the live rate is. Panama raises 11.3 and the slider starts
+  // at 12, so an unclamped home stop sat a tenth of a point outside the track and
+  // charged Panama for standing still.
+  const homeRate = clampRate(country ? startingRate(data, country) : TAX.MIN);
+  const stops = taxStops(data)
+    .map((o) => ({ ...o, rate: o.id === homeId ? homeRate : o.rate }))
+    .sort((a, b) => a.rate - b.rate);
+  if (!stops.length) return { political: 0, social: 0 };
+
+  const of = (o) => (o.id === homeId ? 0 : reformCost(o.political));
+  const ofSocial = (o) => (o.id === homeId ? 0 : reformCost(o.social));
+
+  const r = clampRate(rateOf(data, state));
+  // SITTING ON YOUR OWN RATE IS FREE, tested before the bracket rather than
+  // falling out of it. Finland raises 43.0, which is exactly the rate of the
+  // regime next door, so the sort can put the home stop either side of its twin
+  // and the bracket then reads Finland as having already reformed. Czechia is the
+  // same case one rung down.
+  if (Math.abs(r - homeRate) < 1e-9) return { political: 0, social: 0 };
+  let lo = stops[0];
+  let hi = stops[stops.length - 1];
+  if (r <= lo.rate) hi = lo;
+  else if (r >= hi.rate) lo = hi;
+  else {
+    for (let i = 0; i < stops.length - 1; i += 1) {
+      if (r >= stops[i].rate && r <= stops[i + 1].rate) {
+        lo = stops[i];
+        hi = stops[i + 1];
+        break;
+      }
+    }
+  }
+  const span = hi.rate - lo.rate;
+  const t = span > 0 ? (r - lo.rate) / span : 0;
+  return {
+    political: lerp(of(lo), of(hi), t),
+    social: lerp(ofSocial(lo), ofSocial(hi), t),
+  };
+}
+
 export function budgets(data, state) {
   const country = countryOf(data, state.start);
   const base = country ? country.choices : {};
@@ -515,7 +574,9 @@ export function budgets(data, state) {
       changed.push({ domain: domain.id, domainName: domain.name, from: home, to: chosen.id });
     }
     if (home !== undefined) {
-      const bill = chargeAt(v, chosen, home);
+      const bill = domain.id === TAX_DOMAIN
+        ? taxChargeAt(data, state)
+        : chargeAt(v, chosen, home);
       political += bill.political;
       social += bill.social;
     }

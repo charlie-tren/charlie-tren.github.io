@@ -9,6 +9,7 @@ import {
   budgets, blockers, capacityOf, optionForRate, rateForOption, realisedRevenue,
   spendOf, startingState, REFORM_POOL, TAX, reformCost,
   clampPos, financialAt, posFromSelection, posOfOption, positionsOf, valuesAt,
+  taxChargeAt,
 } from './budget.js';
 import { applyChange, ladder, setLock, setTaxRate } from './cascade.js';
 import { axisValues, rank, matchable } from './match.js';
@@ -952,9 +953,16 @@ test('cascaded cuts are charged, and a cut back to the starting option is free',
   // Both sides on the POOL's scale. The meter is scaled through reformCost and
   // the raw option numbers are not, so summing raw ones and comparing was
   // comparing two units once the pool became 100.
+  //
+  // AND THE TAX SIDE IS INTERPOLATED, not the snapped stop's cost. It used to be
+  // the stop's, which is why political capital stood still through a whole drag
+  // of the tax slider and then jumped a regime's worth on release while the
+  // budget beside it had moved with the thumb. 26.0 is part of the way from
+  // Australia's own 29.5 towards the minimal state, and it is charged for that
+  // part, which is what the money and every other slider already did.
   assert.equal(
     squeeze.budgets.political.used,
-    Math.round(reformCost(option('tax', squeeze.state.selection.tax).political)
+    Math.round(taxChargeAt(data, squeeze.state).political
       + reformCost(option('housing', partial.to).political)),
     'a cut that lands somewhere new is a reform and someone has to pass it',
   );
@@ -1412,6 +1420,41 @@ test('a null axis is taken from the nearer option and never averaged', () => {
 // the median measured take of the countries running that regime. A visitor on 46
 // saw a spoke at 46 sitting above a line reading "Your country 42.5% of GDP".
 // Both numbers were real. Only one of them was the visitor's.
+test('the two pools move with the tax rate, and are free at the rate you start on', () => {
+  // Charlie, 08/09/2026: "should see political capital and public patience slide
+  // as I slide tax and redistribution". They did not: tax has no ladder, so the
+  // charge came off the SNAPPED stop and the two meters sat still through a drag
+  // the budget beside them followed one for one.
+  for (const code of ['AU', 'FI', 'CZ', 'PA', 'AE', 'UK']) {
+    const st = startingState(data, code);
+    const at = (rate) => budgets(data, { ...st, taxRate: rate });
+
+    const home = at(st.taxRate);
+    assert.equal(home.political.used, 0, `${code} pays nothing to be itself`);
+    assert.equal(home.social.used, 0, `${code} pays nothing to be itself`);
+
+    // Walked in tenths, so a step anywhere shows up as a jump between readings.
+    // The pools are pools of 100 and the whole sweep is 43 points wide, so a
+    // single move of more than 12 is a cliff rather than a slope.
+    let last = null;
+    let moved = 0;
+    for (let r = TAX.MIN; r <= TAX.MAX + 1e-9; r += 0.1) {
+      const b = at(Number(r.toFixed(1)));
+      if (last !== null) {
+        assert.ok(Math.abs(b.political.used - last.p) <= 12,
+          `${code}: political capital jumped ${last.p} to ${b.political.used} at ${r.toFixed(1)}`);
+        assert.ok(Math.abs(b.social.used - last.s) <= 12,
+          `${code}: public patience jumped ${last.s} to ${b.social.used} at ${r.toFixed(1)}`);
+        if (b.political.used !== last.p || b.social.used !== last.s) moved += 1;
+      }
+      last = { p: b.political.used, s: b.social.used };
+    }
+    // The test has to be able to fail the other way too: a charge that never
+    // moves is exactly the bug, and it would pass every assertion above.
+    assert.ok(moved > 20, `${code}: the pools only changed ${moved} times across the track`);
+  }
+});
+
 test('the tax spoke and the tax axis row both print the slider rate', () => {
   const se = startingState(data, 'SE');
   assert.equal(se.selection.tax, 'tax_nordic');
@@ -1457,8 +1500,9 @@ test('the tax spoke and the tax axis row both print the slider rate', () => {
   const row = html.split('<div class="ax">')
     .find((chunk) => chunk.includes(`class="ax-name">${taxAxis.label} <`));
   assert.ok(row, 'the reveal has no tax take row');
-  const printed = /Your country ([0-9.]+)</.exec(row);
-  assert.ok(printed, `no "Your country" figure in the tax row: ${row}`);
+  const YOURS = /ax-sw-you[^>]*><\/i>([0-9.]+)</;
+  const printed = YOURS.exec(row);
+  assert.ok(printed, `no figure of your own in the tax row: ${row}`);
 
   assert.equal(Number(printed[1]), RATE,
     `the axis row prints ${printed[1]} where the slider and the spoke say ${RATE}`);
@@ -1475,7 +1519,7 @@ test('the tax spoke and the tax axis row both print the slider rate', () => {
     );
     const chunk = panel.split('<div class="ax">')
       .find((c) => c.includes(`class="ax-name">${taxAxis.label} <`));
-    const said = Number(/Your country ([0-9.]+)</.exec(chunk)[1]);
+    const said = Number(YOURS.exec(chunk)[1]);
     assert.ok(Math.abs(at - rate) < 1e-9, `spoke says ${at} at ${rate}`);
     assert.equal(said, Number(rate.toFixed(1)), `the row says ${said} at ${rate}`);
   }

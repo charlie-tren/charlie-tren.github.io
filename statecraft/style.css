@@ -866,16 +866,21 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 
 /* A cut domain has to look like it just moved, because the thing that paid may
    be nowhere near the thing the visitor touched. */
+/* COLOUR ONLY, SO IT IS NOT GATED ON prefers-reduced-motion. It used to be, and
+   the reduced-motion branch painted the edge `--over` as a STATIC declaration -
+   but `.cut` is never taken off the section, so on a machine with animations
+   turned off every policy the budget had ever cut wore a permanent orange edge
+   under its own coloured heading. A cross-fade of two colours moves nothing;
+   what the reduced-motion rule owed the reader was the `.d-cut` line, and that
+   is text and always there.
+   The rest at 100% is the domain's hue, not `--rule`: the edge is the domain's
+   colour and only that, which is the same mistake the note above documents. */
 .domain.cut { animation: cut-flash 1.6s ease-out 1; }
 
 @keyframes cut-flash {
   0%   { border-left-color: var(--over); background: var(--band); }
   60%  { border-left-color: var(--over); background: var(--band); }
-  100% { border-left-color: var(--rule); background: transparent; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .domain.cut { animation: none; border-left-color: var(--over); }
+  100% { border-left-color: var(--dom); background: transparent; }
 }
 
 /* What paid for it ---------------------------------------------------------
@@ -1157,21 +1162,28 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 
 /* Axes ----------------------------------------------------------------------- */
 
+/* The key for all fourteen rows, which is why it is a flex row of swatches and
+   not a sentence any more. Naming both series on every row printed the same two
+   names twenty-eight times down one panel, and that repetition was most of what
+   made the section hard to read. */
 .ax-cap {
-  margin: 0.35rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1.1rem;
+  margin: 0.5rem 0 0;
   color: var(--soft);
   font-size: 0.85rem;
 }
 
-.axes { margin-top: 1rem; }
+.axes { margin-top: 1.6rem; }
 
 .ax {
-  margin: 0 0 1.15rem;
+  margin: 0 0 1.9rem;
   min-width: 0;
 }
 
 .ax-name {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.7rem;
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -1229,7 +1241,7 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 .ax-ends {
   display: flex;
   justify-content: space-between;
-  margin: 0.25rem 0 0;
+  margin: 0.45rem 0 0;
   color: var(--faint);
   font-size: 0.7rem;
   font-variant-numeric: tabular-nums;
@@ -1238,8 +1250,8 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 .ax-key {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.1rem 1rem;
-  margin: 0.2rem 0 0;
+  gap: 0.1rem 1.4rem;
+  margin: 0.5rem 0 0;
   color: var(--soft);
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
@@ -1267,7 +1279,7 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
 .ax-sw-them { background: var(--them); }
 
 .ax-prov {
-  margin: 0.15rem 0 0;
+  margin: 0.35rem 0 0;
   color: var(--faint);
   font-size: 0.76rem;
   line-height: 1.45;
@@ -1724,6 +1736,12 @@ main.wrap > .finish { grid-column: 1; }
 /* The note sits immediately left of the padlock, so the arrow points straight
    at it along the same line. A north-east arrow was tried while the note lived
    under the value line and was the tell that the note was in the wrong place. */
+/* Both the tip and the lock carried `margin-left: auto`, which splits the free
+   space in the head row BETWEEN them - so the arrow ended a quarter of the row
+   short of the thing it points at. The tip keeps the auto and pushes the pair
+   right; the lock sits against the arrow. */
+.d-head .lk-tip + .lock { margin-left: 0.15rem; }
+
 .lk-tip .lk-arrow {
   margin-left: 0.4rem;
   color: var(--dom);
