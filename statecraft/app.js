@@ -227,11 +227,19 @@ function paintDomains() {
 
     return `
     <section class="domain${isTax ? ' tax' : ''}" id="dom_${esc(domain.id)}" data-domain="${esc(domain.id)}">
+      <!-- NO PADLOCK ON THE TAX PANEL. The lock's whole job is to hold a policy
+           where it is when the budget has to find money, and the cascade cuts
+           spending only - it never touches tax, which is why a shortfall tells
+           you to raise the rate. So on tax the button protected nothing and its
+           one remaining effect was to disable the visitor's own tax slider: the
+           single control that sets the budget every other slider spends. It was
+           here because the condition that gated it had decayed into an
+           unconditional template literal, not because anything wanted it. -->
       <div class="d-head">
         <h2 id="h_${esc(domain.id)}">${domainIcon(domain.id)}${esc(domain.name)}</h2>
         <span class="chip" id="chip_${esc(domain.id)}" hidden>Changed</span>
         ${first ? `<span class="lk-tip">Locked policies are never cut to balance the books<span class="lk-arrow" aria-hidden="true">&rarr;</span></span>` : ''}
-        ${`<button class="lock" type="button" id="lock_${esc(domain.id)}"
+        ${isTax ? '' : `<button class="lock" type="button" id="lock_${esc(domain.id)}"
                 data-lock="${esc(domain.id)}" aria-pressed="false">
           <svg class="lk" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
             <rect class="lk-body" x="3" y="7" width="10" height="7" rx="1.6"/>
