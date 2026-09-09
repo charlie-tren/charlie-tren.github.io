@@ -147,3 +147,75 @@ class TestCorners:
 
     def test_does_not_divide_by_zero_on_a_short_list(self):
         assert build.corners([{"strain": 5, "reading": "inline"}])["cut"] == 5
+
+
+DCF_JSON = json.dumps({
+    "site": "DCF Studio",
+    "as_of": "2026-09-09",
+    "published": 4,
+    "ratios": {"AMD": 0.30, "KO": 0.61, "MSFT": 1.20, "SOLO": 2.40},
+})
+
+
+class TestDcfBands:
+    """DCF Studio's model runs systematically below market prices - median 0.61x
+    across the 506 it can value - so the page shows where a company SITS in that
+    distribution and never the implied price. A number that is uniformly 0.6x is a
+    perfectly good ordering and a bad valuation, and only one of those can be printed
+    honestly."""
+
+    def test_reads_the_published_ratios(self):
+        assert build.parse_dcf(DCF_JSON)["AMD"] == 0.30
+
+    def test_cuts_the_distribution_into_thirds(self):
+        lo, hi = build.dcf_cuts([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+        assert lo < hi
+        bands = [build.dcf_band(r, (lo, hi)) for r in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]]
+        assert bands.count("dearer") == 2
+        assert bands.count("middle") == 2
+        assert bands.count("cheaper") == 2
+
+    def test_a_higher_ratio_is_cheaper_not_dearer(self):
+        # The one thing a reader could have exactly backwards. A high ratio means the
+        # model puts the shares above the market price.
+        cuts = build.dcf_cuts([0.2, 0.5, 1.0, 2.0])
+        assert build.dcf_band(2.0, cuts) == "cheaper"
+        assert build.dcf_band(0.2, cuts) == "dearer"
+
+    def test_a_company_with_no_reading_gets_none_rather_than_a_middle_band(self):
+        # 103 of the 609 are dropped as implausible. Landing them in the middle band
+        # would state a finding the model explicitly refused to make.
+        rows = build.join(
+            build.parse_shortfall(SHORTFALL_JS), build.parse_drift(DRIFT_HTML),
+            {"AMD": 0.30},
+        )
+        by = {r["ticker"]: r for r in rows}
+        assert by["AMD"]["dcf"] == 0.30
+        assert by["KO"]["dcf"] is None
+        assert by["KO"]["dcfband"] is None
+
+    def test_the_column_is_absent_entirely_when_dcf_is_unreachable(self):
+        # Degrade to LESS, never to a column of blanks. A blank column reads as "the
+        # model had no opinion on any of these", which is a claim; no column reads as
+        # what it is.
+        rows = build.join(
+            build.parse_shortfall(SHORTFALL_JS), build.parse_drift(DRIFT_HTML), None,
+        )
+        assert all(r["dcf"] is None for r in rows)
+        assert build.has_dcf(rows) is False
+
+    def test_says_it_has_dcf_when_enough_rows_carry_one(self):
+        rows = build.join(
+            build.parse_shortfall(SHORTFALL_JS), build.parse_drift(DRIFT_HTML),
+            {"AMD": 0.30, "KO": 0.61},
+        )
+        assert build.has_dcf(rows) is True
+
+    def test_a_handful_of_readings_is_not_a_column(self):
+        # One company in 609 with a reading is a curiosity, not a ranked column, and
+        # ranking two names against each other says nothing at all.
+        many = [{"dcf": None} for _ in range(600)] + [{"dcf": 0.5}, {"dcf": 0.6}]
+        assert build.has_dcf(many) is False
+
+    def test_survives_a_file_that_lost_its_ratios(self):
+        assert build.parse_dcf('{"site": "DCF Studio"}') == {}
