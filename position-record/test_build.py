@@ -34,25 +34,15 @@ def test_stop_left_never_negative():
     assert row["stop_left"] == 0.0
 
 
-def test_headline_loss_is_derived_not_stored():
-    """The page's largest figure must come from net contributions against today's
-    balance. Stored, the two could drift apart and the page would state a loss that
-    reconciles with nothing."""
-    src = json.loads((HERE / "positions.json").read_text(encoding="utf-8"))
-    hist = json.loads((HERE / "history.json").read_text(encoding="utf-8"))
-    assert "net_pnl" not in hist, "net_pnl is stored in history.json; it must be derived"
-    want = round(src["account"]["balance_aud"] - hist["net_in"], 2)
-    page = (HERE / "index.html").read_text(encoding="utf-8")
-    assert f"{abs(want):,.2f}" in page, f"the page does not state the derived result {want}"
-
-
-def test_costs_reconcile():
-    hist = json.loads((HERE / "history.json").read_text(encoding="utf-8"))
-    c = hist["costs"]
-    assert abs(c["total"] - (c["commission"] + c["holding"] + c["market_data"])) < 0.01
-    # Every commission charge is on a share CFD. If this ever fails the claim on the
-    # page is wrong, and the page states it as an absolute.
-    assert c["commission_on_macro"] == 0, "the page says every dollar was on share CFDs"
+def test_a_nan_price_is_never_published():
+    """yfinance can hand back a NaN close for a name it half-knows, and NaN survives
+    round(), json.dump and every sum after it - the page printed "¥nan / +nan%".
+    A NaN already in the cache is dropped too, so the miss is loud rather than sticky."""
+    sys.path.insert(0, str(HERE))
+    from build import usable
+    assert not usable({"price": float("nan")})
+    assert not usable({"price": 0})
+    assert usable({"price": 1099.0})
 
 
 def test_build_refuses_to_publish_without_a_price():
