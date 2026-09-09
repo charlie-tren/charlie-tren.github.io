@@ -55,12 +55,20 @@ jobs:
           cp -r gen/docs ghostwriters
           rm -rf gen
 
+      # Ghostwriters gains an essay every day, so the sitemap is stale every day
+      # unless it is rebuilt here. Hand-maintaining it is what left 135 pages out
+      # of every sitemap until 09/09/2026, when Search Console reported 115 of
+      # them as "Discovered - currently not indexed".
+      - name: Rebuild the sitemap
+        if: steps.clone.outputs.ok == 'yes'
+        run: python tools/build_sitemap.py
+
       - name: Commit
         if: steps.clone.outputs.ok == 'yes'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ghostwriters
+          git add ghostwriters sitemap.xml
           if git diff --cached --quiet; then
             echo "already up to date"
             exit 0
@@ -82,7 +90,7 @@ jobs:
             # --mixed resets the index to origin/main and leaves the working tree
             # alone, so the `git add` below stages only this job's own output.
             git reset --mixed origin/main
-            git add ghostwriters
+            git add ghostwriters sitemap.xml
             git diff --cached --quiet && exit 0
             git commit -m "ghostwriters: $(date -u +%Y-%m-%d)"
             sleep 3
