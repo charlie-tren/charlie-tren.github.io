@@ -15,21 +15,28 @@ SYMBOLS: Japan 225 is NIY=F, the yen Nikkei future, not ^N225. The spot index cl
 with Tokyo while CMC's cash CFD tracks the future, so ^N225 measures about 0.8% away
 from the platform - enough to put the stop distance visibly wrong.
 """
-import json, sys
+import json, math, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 SOURCE = HERE / "positions.json"
-HISTORY = HERE / "history.json"
 PRICES = HERE / "prices.json"
 TEMPLATE = HERE / "template.html.j2"
 OUT = HERE / "index.html"
 
 
+def usable(q):
+    p = q.get("price")
+    return isinstance(p, (int, float)) and not isinstance(p, bool) and math.isfinite(p) and p > 0
+
+
 def load_prices():
+    """A NaN that reached the file is not a price to reuse: drop it, so the
+    missing-price guard fires instead of republishing "nan" for ever."""
     if PRICES.exists():
-        return json.loads(PRICES.read_text(encoding="utf-8"))
+        cache = json.loads(PRICES.read_text(encoding="utf-8"))
+        return {k: v for k, v in cache.items() if usable(v)}
     return {}
 
 
@@ -40,12 +47,16 @@ def fetch(symbols, cache):
     for sym in symbols:
         try:
             hist = yf.Ticker(sym).history(period="5d", auto_adjust=False)
+            if len(hist):
+                hist = hist.dropna(subset=["Close"])
             if not len(hist):
                 raise ValueError("no rows")
-            cache[sym] = {
-                "price": round(float(hist["Close"].iloc[-1]), 5),
-                "asof": str(hist.index[-1].date()),
-            }
+            # yfinance hands back a NaN close for a name it half-knows, and NaN
+            # survives round(), json.dump and every sum after it.
+            close = round(float(hist["Close"].iloc[-1]), 5)
+            if not math.isfinite(close) or close <= 0:
+                raise ValueError(f"close is {close!r}")
+            cache[sym] = {"price": close, "asof": str(hist.index[-1].date())}
             fresh.append(sym)
         except Exception as exc:                       # noqa: BLE001 - any failure is the same failure
             print(f"  ! {sym}: {type(exc).__name__}: {exc}"[:120])
@@ -97,46 +108,19 @@ def main():
 
     shut = sorted(closed, key=lambda c: c["exit_date"], reverse=True)
 
-    # The record before this page existed. Written by build_history.py from the account
-    # statements; absent is allowed, so the page still builds on a machine without them.
-    hist = json.loads(HISTORY.read_text(encoding="utf-8")) if HISTORY.exists() else None
-    if hist:
-        # Derived here rather than stored, so the balance and the arithmetic can never
-        # disagree: net_in is a fact about the statements, balance is a fact about today.
-        bal = data["account"]["balance_aud"]
-        hist["balance"] = bal
-        hist["net_pnl"] = round(bal - hist["net_in"], 2)
-        hist["net_pnl_pct"] = round(100 * (bal - hist["net_in"]) / hist["net_in"], 1)
-        c = hist["costs"]
-        hist["cost_share_of_loss"] = round(100 * abs(c["total"]) / abs(hist["net_pnl"]))
-        hist["with_r"] = sum(1 for t in hist["trades"] if t["r"] is not None)
-        wins = [t for t in hist["trades"] if t["move_pct"] > 0]
-        hist["win_pct"] = round(100 * len(wins) / len(hist["trades"]))
-        rs = [t["r"] for t in hist["trades"] if t["r"] is not None]
-        hist["mean_r"] = round(sum(rs) / len(rs), 2) if rs else None
-
     def px(v, dp):
         return f"{v:,.{int(dp)}f}"
 
-    def aud(v):
-        """Sign in front of the currency, not between it and the digits: -A$4,690.50
-        reads as a negative amount of money, A$-4,690.50 reads as a typo."""
-        return f"{'-' if v < 0 else ''}A${abs(v):,.2f}"
-
     env = Environment(loader=FileSystemLoader(HERE), autoescape=select_autoescape(["html"]))
     env.filters["px"] = px
-    env.filters["aud"] = aud
     html = env.get_template(TEMPLATE.name).render(
         rows=rows,
         closed=shut,
-        hist=hist,
         built=datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M"),
-        asof=max((r.get("asof") or "") for r in rows) if rows else "",
     )
     OUT.write_text(html, encoding="utf-8", newline="\n")
-    PRICES.write_text(json.dumps(cache, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
-    print(f"  wrote {OUT.relative_to(HERE.parent)} - {len(rows)} open, {len(shut)} closed, "
-          f"{len(hist['trades']) if hist else 0} historical")
+    PRICES.write_text(json.dumps(cache, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8", newline="\n")
+    print(f"  wrote {OUT.relative_to(HERE.parent)} - {len(rows)} open, {len(shut)} closed")
 
 
 if __name__ == "__main__":

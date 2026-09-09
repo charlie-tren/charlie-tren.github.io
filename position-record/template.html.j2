@@ -10,10 +10,10 @@
 <!-- PAIRED with the visible lede below, word for word. Google ignores this tag on
      this domain and builds its own snippet from the page, so both have to say the
      same thing. Change one, change the other. -->
-<meta name="description" content="Every position I hold, the reasoning as it stood when I opened it, and the record before it.">
+<meta name="description" content="Every position I hold and the reasoning as it stood when I opened it.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Position Record">
-<meta property="og:description" content="Every position I hold, the reasoning as it stood when I opened it, and the record before it.">
+<meta property="og:description" content="Every position I hold and the reasoning as it stood when I opened it.">
 <meta property="og:url" content="https://charlietrenorden.com/position-record/">
 <meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -109,39 +109,8 @@
   .gauge .cap { display: block; margin-top: .4rem; font: 400 11px/1 ui-sans-serif, system-ui, sans-serif;
                 letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
 
-  .note { font: 400 13px/1.65 ui-sans-serif, system-ui, sans-serif; color: var(--faint);
-          margin: 2.4rem 0 0; max-width: 62ch; }
-  .note b { font-weight: 600; color: var(--soft); }
   .empty { color: var(--faint); font-size: .95rem; }
 
-  /* --- the record before this page ----------------------------------------
-     The account result, then where it went. The cost line is the finding, so it is
-     the one figure on the page set in the accent colour. */
-  .say { font-size: 1.05rem; max-width: 62ch; margin: 0 0 2rem; }
-  .ledger { display: grid; grid-template-columns: 1fr auto; gap: .55rem 1.5rem;
-            max-width: 30rem; margin: 0 0 2.4rem;
-            font: 400 14px/1.4 ui-sans-serif, system-ui, sans-serif; }
-  .ledger dt { color: var(--soft); }
-  .ledger dd { margin: 0; text-align: right; font-family: ui-monospace, Consolas, monospace; }
-  .ledger .rule { grid-column: 1 / 3; height: 1px; background: var(--rule); margin: .35rem 0; }
-  .ledger .big  { color: var(--ink); font-weight: 600; }
-  .ledger .big dd, .ledger dd.big { font-size: 1.05rem; }
-  .ledger .hit { color: var(--accent); }
-
-  /* 125 rows of monospace. Dense on purpose: it is evidence, not a feature. */
-  .rec { width: 100%; border-collapse: collapse; margin-top: 1.2rem;
-         font: 400 12.5px/1.5 ui-monospace, Consolas, monospace; }
-  .rec th { text-align: left; padding: 0 .7rem .5rem 0; border-bottom: 1px solid var(--rule);
-            font: 600 10.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .11em;
-            text-transform: uppercase; color: var(--faint); white-space: nowrap; }
-  .rec td { padding: .3rem .7rem .3rem 0; border-bottom: 1px solid var(--rule); color: var(--soft); }
-  .rec th.n, .rec td.n { text-align: right; padding-right: 0; }
-  .rec td.p { color: var(--ink); }
-  .rec .up { color: var(--pos); } .rec .dn { color: var(--neg); }
-  /* Half these trades predate any stop being recorded. The token recedes rather than
-     shouting, because it appears 67 times and the real numbers must read first. */
-  .rec .na { color: var(--faint); font-style: italic; font-size: 11.5px; }
-  .scroller { overflow-x: auto; }
 
   @media (max-width: 680px) {
     .wrap { padding-top: 1.6rem; }
@@ -162,7 +131,7 @@
   </div>
 
   <h1>Position Record</h1>
-  <p class="lede">Every position I hold, the reasoning as it stood when I opened it, and the record before it.</p>   <!-- PAIRED with meta description, word for word. -->
+  <p class="lede">Every position I hold and the reasoning as it stood when I opened it.</p>   <!-- PAIRED with meta description, word for word. -->
 
   <h2>Open</h2>
 {% for p in rows %}
@@ -209,83 +178,6 @@
 {% else %}
   <p class="empty">Nothing closed yet under this page's rules.</p>
 {% endif %}
-
-{% if hist %}
-  <h2>Before this page</h2>
-
-  <p class="say">I traded this account for fourteen months before I started writing the
-  reasoning down. It lost {{ '%.0f'|format(-hist.net_pnl_pct) }}% of what I put into it.
-  Here is where the money went, because the answer is not the one I expected.</p>
-
-  <dl class="ledger">
-    <dt>Paid in, {{ hist.paid_in_count }} deposits</dt><dd>{{ hist.paid_in | aud }}</dd>
-    <dt>Taken back out</dt><dd>{{ hist.taken_out | aud }}</dd>
-    <div class="rule"></div>
-    <dt class="big">Net in</dt><dd class="big">{{ hist.net_in | aud }}</dd>
-    <dt>Balance today</dt><dd>{{ hist.balance | aud }}</dd>
-    <div class="rule"></div>
-    <dt class="big">Result</dt><dd class="big dn">{{ hist.net_pnl | aud }}</dd>
-  </dl>
-
-  <p class="say">{{ hist.cost_share_of_loss }}% of that loss never went to the market. It
-  went to the broker.</p>
-
-  <dl class="ledger">
-    <dt>Commission, {{ hist.costs.commission_charges }} charges</dt><dd class="hit">{{ hist.costs.commission | aud }}</dd>
-    <dt>Holding costs, {{ hist.costs.holding_charges }} daily charges</dt><dd>{{ hist.costs.holding | aud }}</dd>
-    <dt>Market data</dt><dd>{{ hist.costs.market_data | aud }}</dd>
-    <div class="rule"></div>
-    <dt class="big">Total cost</dt><dd class="big hit">{{ hist.costs.total | aud }}</dd>
-  </dl>
-
-  <p class="say">Every dollar of that commission was on share CFDs. CMC charges none on
-  currencies, indices or commodities, so the split is not close: {{ (-hist.costs.commission_on_share_cfds) | aud }}
-  against {{ (-hist.costs.commission_on_macro) | aud }}. My median hold over that
-  period was {{ hist.median_hold_days }} days, so I was paying around
-  {{ (2 * -hist.costs.commission / hist.costs.commission_charges) | aud }} in commission
-  to hold a share for {{ hist.median_hold_days }} days in an account this size. No edge survives that, and it is not a question of whether the trades were any
-  good. Everything I hold now is priced by spread and financing instead, which is why
-  the carry number sits on every position above.</p>
-
-  <p class="say">The {{ hist.trades|length }} trades below are what I could pair from the
-  statements between {{ hist.first_row }} and {{ hist.last_row }}. {{ hist.win_pct }}%
-  of them made money. They do not add up to the result at the top: they miss positions
-  that opened or closed outside the statement windows, and they exclude every cost in
-  the table above. The account figure is what actually happened. This is a partial view
-  of how.</p>
-
-  <div class="scroller">
-  <table class="rec">
-    <thead><tr>
-      <th>Closed</th><th>Product</th><th>Dir</th>
-      <th class="n">Hold</th><th class="n">Move</th><th class="n">R</th>
-    </tr></thead>
-    <tbody>
-{% for t in hist.trades %}      <tr>
-        <td>{{ t.exit_date }}</td>
-        <td class="p">{{ t.product }}</td>
-        <td>{{ t.direction }}</td>
-        <td class="n">{{ t.hold_days }}d</td>
-        <td class="n {{ 'up' if t.move_pct > 0 else 'dn' }}">{{ '%+.2f'|format(t.move_pct) }}%</td>
-{% if t.r is not none %}        <td class="n {{ 'up' if t.r > 0 else 'dn' }}">{{ '%+.2f'|format(t.r) }}</td>
-{% else %}        <td class="n na">no stop</td>
-{% endif %}      </tr>
-{% endfor %}    </tbody>
-  </table>
-  </div>
-
-  <p class="note">R is blank on {{ hist.trades|length - hist.with_r }} of these because no
-  stop was recorded when the position opened, and a stop set later is a trailing stop
-  rather than the risk I had accepted. Across the {{ hist.with_r }} that do carry one the
-  mean is {{ '%+.2f'|format(hist.mean_r) }}R. The account reached {{ hist.peak_balance | aud }}
-  on {{ hist.peak_date }} and hit zero on {{ hist.zeroed|join(' and ') }}.</p>
-{% endif %}
-
-  <p class="note"><b>1R</b> is the distance from the entry to the stop I set when I opened
-  the position, so it is the loss I had accepted before I knew the answer. Everything here
-  is quoted in multiples of it, which makes a peso position and an index position
-  comparable and means the page discloses no position sizes. Prices are the market mid
-  as at {{ asof }}, not my broker's fill. Not investment advice.</p>
 </div>
 
 <script>

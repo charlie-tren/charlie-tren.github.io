@@ -100,6 +100,37 @@ def test_one_failed_name_falls_back_to_its_cached_quote(tmp_path):
     assert "80.00" in html and "2026-08-20" in html
 
 
+
+def test_a_nan_quote_is_refused_not_published(tmp_path):
+    """yfinance hands back a NaN close for a name it half-knows, and NaN survives
+    round(), json.dump and the division: the page printed a target, a call price and
+    then "nan / +nan%". A NaN sitting in prices.json is dropped on load too, so the
+    miss is loud instead of sticky."""
+    b = load_build(tmp_path, [report()], prices={"ARB.AX": {"price": float("nan"), "asof": "2026-08-20"}})
+    (tmp_path / "index.html").write_text("ORIGINAL", encoding="utf-8")
+    b.fetch = lambda syms, cache: ([], [])
+    with pytest.raises(SystemExit):
+        b.main()
+    assert (tmp_path / "index.html").read_text(encoding="utf-8") == "ORIGINAL"
+
+
+def test_a_nan_close_never_reaches_the_cache(tmp_path, monkeypatch):
+    """The dropna is the fix: a session row with no close yet is not a quote."""
+    import pandas as pd
+    b = load_build(tmp_path, [report()])
+    idx = pd.to_datetime(["2026-08-21", "2026-08-22"])
+    frame = pd.DataFrame({"Close": [80.0, float("nan")]}, index=idx)
+
+    class Stub:
+        def __init__(self, sym): pass
+        def history(self, **kw): return frame
+
+    monkeypatch.setitem(sys.modules, "yfinance", type("m", (), {"Ticker": Stub}))
+    cache = {}
+    b.fetch(["ARB.AX"], cache)
+    assert cache["ARB.AX"] == {"price": 80.0, "asof": "2026-08-21"}
+
+
 # --------------------------------------------------------------------- the tone
 
 @pytest.mark.parametrize("call,expected", [

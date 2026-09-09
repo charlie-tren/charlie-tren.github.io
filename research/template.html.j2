@@ -63,7 +63,11 @@
 
   h1 { font-weight: 400; font-size: clamp(2.3rem, 6vw, 3.4rem); line-height: 1.05;
        letter-spacing: -.015em; margin: 0 0 1.1rem; }
-  .lede { font-size: 1.15rem; color: var(--soft); max-width: 48ch; margin: 0 0 3rem; }
+  .lede { font-size: 1.15rem; color: var(--soft); max-width: 48ch; margin: 0 0 1.1rem; }
+  .jump { margin: 0 0 3rem; font: 500 13px/1 ui-sans-serif, system-ui, sans-serif;
+          letter-spacing: .06em; text-transform: uppercase; }
+  .jump a { color: var(--accent); text-decoration: none; }
+  .jump a:hover { text-decoration: underline; }
 
   .list { border-top: 1px solid var(--rule); }
   .item { display: grid; grid-template-columns: 1fr auto auto; align-items: baseline;
@@ -155,6 +159,7 @@
 
   <h1>Equity Research</h1>
   <p class="lede">Company research and thesis reviews on listed equities.</p>
+  <p class="jump"><a href="/position-record/">Position Record &rarr;</a></p>
 
   <!-- New tab on every report: these are PDFs, and a PDF that replaces the page
        strands the reader with only the back button to get home. -->

@@ -10,7 +10,7 @@ GUARD BEFORE WRITE: if a quote cannot be fetched, the previous one in prices.jso
 reused and the page says when it was taken. The page is only refused outright if there
 is no price at all for a name, because a row with a blank return would read as flat.
 """
-import json, sys
+import json, math, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -21,9 +21,17 @@ TEMPLATE = HERE / "template.html.j2"
 OUT = HERE / "index.html"
 
 
+def usable(q):
+    p = q.get("price")
+    return isinstance(p, (int, float)) and not isinstance(p, bool) and math.isfinite(p) and p > 0
+
+
 def load_prices():
+    """A NaN that reached the file is not a price to reuse: drop it, so the
+    missing-price guard fires instead of republishing "nan" for ever."""
     if PRICES.exists():
-        return json.loads(PRICES.read_text(encoding="utf-8"))
+        cache = json.loads(PRICES.read_text(encoding="utf-8"))
+        return {k: v for k, v in cache.items() if usable(v)}
     return {}
 
 
@@ -34,12 +42,16 @@ def fetch(symbols, cache):
     for sym in symbols:
         try:
             hist = yf.Ticker(sym).history(period="5d", auto_adjust=False)
+            if len(hist):
+                hist = hist.dropna(subset=["Close"])
             if not len(hist):
                 raise ValueError("no rows")
-            cache[sym] = {
-                "price": round(float(hist["Close"].iloc[-1]), 4),
-                "asof": str(hist.index[-1].date()),
-            }
+            # yfinance hands back a NaN close for a name it half-knows, and NaN
+            # survives round(), json.dump and every sum after it.
+            close = round(float(hist["Close"].iloc[-1]), 4)
+            if not math.isfinite(close) or close <= 0:
+                raise ValueError(f"close is {close!r}")
+            cache[sym] = {"price": close, "asof": str(hist.index[-1].date())}
             fresh.append(sym)
         except Exception as exc:                       # noqa: BLE001 - any failure is the same failure
             print(f"  ! {sym}: {type(exc).__name__}: {exc}"[:120])
@@ -112,7 +124,7 @@ def main():
         asof=max((r.get("asof") or "") for r in rows),
     )
     OUT.write_text(html, encoding="utf-8", newline="\n")
-    PRICES.write_text(json.dumps(cache, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+    PRICES.write_text(json.dumps(cache, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8", newline="\n")
     print(f"  wrote {OUT.relative_to(HERE.parent)} - {len(rows)} rows")
 
 
