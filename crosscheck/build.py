@@ -34,6 +34,10 @@ HERE = Path(__file__).resolve().parent
 TEMPLATE = HERE / "template.html.j2"
 OUT = HERE / "index.html"
 COUNTS = HERE / "counts.json"
+# The manifest the sibling sites read to decide whether to offer a link here. Same
+# contract as shortfall/tickers.json and consensus-drift/tickers.json: an unavailable
+# target is OMITTED rather than greyed, so each site has to be able to check first.
+MANIFEST = HERE / "tickers.json"
 
 SHORTFALL_URL = "https://charlietrenorden.com/shortfall/data.js"
 DRIFT_URL = "https://charlietrenorden.com/consensus-drift/"
@@ -167,7 +171,17 @@ def main() -> int:
         built=datetime.now(timezone.utc).strftime("%d %B %Y"),
     )
     OUT.write_text(html, encoding="utf-8")
+    MANIFEST.write_text(
+        json.dumps({
+            "site": "Crosscheck",
+            "url": "https://charlietrenorden.com/crosscheck/",
+            "as_of": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "tickers": sorted(r["ticker"] for r in rows),
+        }, indent=1) + "\n",
+        encoding="utf-8",
+    )
     print(f"{OUT}: {len(rows)} companies from {len(names)} x {len(drift)}")
+    print(f"{MANIFEST}: {len(rows)} tickers")
     return 0
 
 
