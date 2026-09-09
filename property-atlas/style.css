@@ -214,10 +214,8 @@ figure.chart svg { display: block; width: 100%; }
 .profile { margin: 18px 0 0; font-size: .92rem; color: var(--ink-soft); white-space: pre-line; }
 
 /* ---- notes ---- */
-.notes p, .notes li { max-width: 44rem; font-size: .93rem; color: var(--ink-soft); }
-.notes ul { padding-left: 1.1rem; }
-.notes li { margin-bottom: 7px; }
-.notes a { color: var(--accent); }
+.sources p { max-width: 44rem; font-size: .93rem; color: var(--ink-soft); }
+.sources a { color: var(--accent); }
 
 table.src { width: 100%; border-collapse: collapse; font-size: .88rem; }
 /* The As at column was sizing to its content and wrapping "Aug-Sep 2026" onto two
@@ -244,7 +242,7 @@ footer a { color: var(--ink-faint); }@media (max-width: 620px) {
      comes first here and the controls sit under it. Measured, not guessed: the
      wall is only a wall at this width, so the desktop order is untouched. */
   main.wrap { display: flex; flex-direction: column; }
-  .notes      { order: 4; }
+  .sources    { order: 4; }
 
   /* Three columns will not hold at this width: measured, the table pushed the
      document to 405px against a 390px viewport. Each source stacks into its own
@@ -410,7 +408,7 @@ tr.detail td { padding: 0 0 18px; white-space: normal; }
   #table-panel    { order: 1; margin-top: 22px; }
   #map-panel      { order: 2; }
   #filters-panel  { order: 3; }
-  .notes          { order: 4; }
+  .sources        { order: 4; }
   /* A world map is 113px tall at this width, which is a thin thing to open a
      page on. The table is the substance, so it leads and the map follows. */
   table#grid { font-size: .8rem; }
