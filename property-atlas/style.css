@@ -100,11 +100,6 @@ h1 {
   letter-spacing: .01em;
   margin: 0 0 10px;
 }
-.standfirst { margin-top: 0; }
-.standfirst {
-  margin: 0 0 4px; max-width: 46rem;
-  font-size: 1.06rem; color: var(--ink-soft);
-}
 
 main.wrap { padding-bottom: 70px; }
 
@@ -225,6 +220,12 @@ figure.chart svg { display: block; width: 100%; }
 .notes a { color: var(--accent); }
 
 table.src { width: 100%; border-collapse: collapse; font-size: .88rem; }
+/* The As at column was sizing to its content and wrapping "Aug-Sep 2026" onto two
+   lines while the Caveat column took the slack. Declared widths, so the dates sit on
+   one line and the caveat still gets the room it needs. */
+table.src th:nth-child(1), table.src td:nth-child(1) { width: 26%; }
+table.src th:nth-child(2), table.src td:nth-child(2) { width: 20%; }
+table.src th:nth-child(3), table.src td:nth-child(3) { width: 13%; white-space: nowrap; }
 table.src th, table.src td {
   text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--rule);
   vertical-align: top;
@@ -446,11 +447,12 @@ tr.detail td { padding: 0 0 18px; white-space: normal; }
 
 /* ---- overall polish ---- */
 
-/* A rule under the masthead, which is what a markets page has instead of a
-   drop shadow. It also stops the standfirst and the first panel running
-   together on a page where everything shares one paper colour. */
-header.wrap { padding-bottom: 4px; }
-.standfirst { padding-bottom: 20px; border-bottom: 1px solid var(--rule); max-width: none; }
+/* A rule under the masthead, which is what a markets page has instead of a drop
+   shadow, and what stops the head and the first panel running together on a page
+   where everything shares one paper colour. It used to hang off the standfirst;
+   when that line was cut the rule went with it and the masthead sat loose. It
+   belongs to the header, which is the thing it underlines. */
+header.wrap { padding-bottom: 18px; border-bottom: 1px solid var(--rule); }
 
 /* Panels sit on the paper rather than floating above it: on a single-colour
    ground a border reads as structure and a shadow reads as a mistake. */
