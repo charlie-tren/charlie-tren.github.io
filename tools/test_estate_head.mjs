@@ -30,6 +30,8 @@ const SITES = {
   "CFA Companion":     "https://charlietrenorden.com/cfa-companion/",
   "Ghostwriters":      "https://charlietrenorden.com/ghostwriters/",
   "Statecraft":        "https://charlietrenorden.com/statecraft/",
+  "Property Atlas":    "https://charlietrenorden.com/property-atlas/",
+  "Bookmark":          "https://charlietrenorden.com/bookmark/",
   "Pendulum: Inequality": "https://charlietrenorden.com/inequality/",
   "Equity Research":   "https://charlietrenorden.com/research/",
   "Position Record":   "https://charlietrenorden.com/position-record/",
@@ -101,6 +103,35 @@ for (const [name, url] of Object.entries(SITES)) {
   check(`${name}: has its own icon tags`, icons.length > 0,
     "falls back to the hub's mark at /favicon.ico");
 
+  /* PRESENCE, not just alpha. This block used to be one `icons.length > 0` and
+     then a loop checking the alpha of whatever happened to exist - so a page
+     carrying a single SVG passed every assertion in the file. Statecraft went
+     Live on 08/09/2026 that way and Property Atlas had been like it for ten
+     days: a blank tab in Safari and older Chrome, under a green run whose own
+     summary line said "own icons". */
+  const hrefs = icons.map((m) => m[0].match(/href="([^"]+)"/)?.[1] || "");
+  const raster = hrefs.some((h) => /\.(png|ico)(\?|$)/i.test(h));
+  check(`${name}: has a raster favicon, not only an SVG`, raster,
+    "Safari and older Chrome do not read an SVG favicon, so the tab is blank");
+
+  /* apple-touch is missing on eight properties and each is a twenty-minute
+     rasterise. Enumerated rather than warned about, so a NEW one fails
+     immediately and the debt is visible and countable instead of being a line
+     in a report nobody re-reads. Delete a name as you fix it; the list only
+     shrinks. */
+  const NO_APPLE_YET = new Set([
+    "Beyond Small Talk", "Crowdwise", "DCF Studio", "Lexicon",
+    "Shortfall", "Spectrum", "Split the Room", "Worst Case Scenario",
+  ]);
+  const hasApple = icons.some((m) => m[1].toLowerCase() === "apple-touch-icon");
+  if (!NO_APPLE_YET.has(name)) {
+    check(`${name}: has an apple-touch icon`, hasApple,
+      "iOS has nothing to mask, so a home-screen shortcut gets a screenshot");
+  } else if (hasApple) {
+    check(`${name}: fixed - remove it from NO_APPLE_YET`, false,
+      "it now has an apple-touch icon, so the exemption is stale");
+  }
+
   for (const [tag, rel] of icons.map((m) => [m[0], m[1].toLowerCase()])) {
     const href = tag.match(/href="([^"]+)"/)?.[1];
     if (!href || href.endsWith(".svg")) continue;
@@ -132,4 +163,23 @@ if (fails.length) {
   console.error(`${fails.length} problem(s):\n` + fails.map((f) => `  ${f}`).join("\n"));
   process.exit(1);
 }
+/* Every homepage card on one of our own domains must be in SITES. The list is
+   hand-maintained on purpose - it also holds sub-pages and shared cards that have
+   no card of their own - so this checks the direction that actually goes wrong:
+   a project gets carded and nobody adds it here. */
+{
+  const { readFileSync } = await import("node:fs");
+  const home = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  const cards = [...home.matchAll(
+    /<a class="proj" href="([^"]+)"[\s\S]{0,400}?class="name[^"]*">(?:<svg[\s\S]*?<\/svg>)?([^<]+)<\/span>/g)];
+  const known = new Set(Object.keys(SITES));
+  for (const [, href, rawName] of cards) {
+    const name = rawName.trim();
+    if (!/charlietrenorden\.com|^\/|^[a-z-]+\/$/.test(href)) continue;  // off-estate, e.g. Substack
+    check(`${name}: carded on the homepage and covered by this test`, known.has(name),
+      `add "${name}": "${href}" to SITES - a carded project with no head check is how ` +
+      `Property Atlas shipped an SVG-only favicon for ten days`);
+  }
+}
+
 console.log(`all ${Object.keys(SITES).length} properties pass: title, description, own icons, correct alpha`);
