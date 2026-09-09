@@ -659,21 +659,6 @@ Promise.all([
       tb.appendChild(tr);
     });
 
-    // ONE line, and it is provenance a reader cannot work out from the table:
-    // which end of the range the page sits at, and that some of it is undated.
-    const dated = Object.entries(SOURCE_DATES)
-      .filter(([k, v]) => !k.startsWith("_") && v.as_at);
-    const undated = Object.entries(SOURCE_DATES)
-      .filter(([k, v]) => !k.startsWith("_") && !v.as_at).length;
-    const stamp = $("asat-note");
-    if (stamp) {
-      stamp.textContent = undated
-        ? `Tax rates read 31 August and 2 September 2026; everything else is its `
-          + `source's latest edition at that date. ${undated} of ${dated.length + undated} `
-          + `rows are not dated by their source.`
-        : `Tax rates read 31 August and 2 September 2026. Everything else is its `
-          + `source's latest edition at that date.`;
-    }
 
     ["f-ease", "f-yield", "f-price", "f-own", "f-visa", "f-repat"]
       .forEach(id => $(id).addEventListener("input", render));
