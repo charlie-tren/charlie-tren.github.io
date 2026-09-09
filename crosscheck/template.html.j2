@@ -135,6 +135,7 @@
   col.c-sect { width: 13%; }     col.c-score { width: 6rem; }
   col.c-tests { width: 5rem; }   col.c-gap { width: 6rem; }
   col.c-read { width: 6rem; }    col.c-cap { width: 7rem; }
+  col.c-dcf { width: 6rem; }
   .tick { font-weight: 500; }
   /* On a phone the ticker moves INSIDE the company cell. Five columns need 376px of
      declared width against 358px of content, so the name column was being squeezed to
@@ -150,6 +151,14 @@
           text-transform: uppercase; }
   .read.behind { color: var(--behind); } .read.ahead { color: var(--ahead); }
   .read.inline { color: var(--inline); }
+  /* Same hues as the gap reading, because they mean the same direction: cheaper is
+     the model agreeing the price has room, dearer is the opposite. Reusing them says
+     the two columns are two answers to one question rather than two scales. */
+  .read.dcf-cheaper { color: var(--behind); } .read.dcf-dearer { color: var(--ahead); }
+  .read.dcf-middle { color: var(--inline); }
+  /* 103 of the 609 have no usable reading. Set quiet and italic, so the real bands
+     read first and the absence recedes into being an absence rather than a value. */
+  .none { color: var(--faint); font-style: italic; }
   .empty { padding: 2rem .7rem; color: var(--soft); }
 
   .foot { margin-top: 3rem; color: var(--faint); font: 400 13px/1.6 ui-sans-serif, system-ui, sans-serif; }
@@ -163,8 +172,8 @@
     .cell .cn { font-size: 1.15rem; }
     .cell .cd { display: none; }
     .gh { font-size: 9px; letter-spacing: .06em; }
-    col.c-sect, col.c-cap, col.c-tests, col.c-tick { display: none; }
-    .c-sect-cell, .c-cap-cell, .c-tests-cell, .c-tick-cell { display: none; }
+    col.c-sect, col.c-cap, col.c-tests, col.c-tick, col.c-dcf { display: none; }
+    .c-sect-cell, .c-cap-cell, .c-tests-cell, .c-tick-cell, .c-dcf-cell { display: none; }
     col.c-name { width: 42%; }
     col.c-score { width: 17%; } col.c-gap { width: 21%; } col.c-read { width: 20%; }
     .hfull { display: none; } .hshort { display: inline; }
@@ -202,7 +211,7 @@
     <table id="tbl">
       <colgroup>
         <col class="c-tick"><col class="c-name"><col class="c-sect"><col class="c-score">
-        <col class="c-tests"><col class="c-gap"><col class="c-read"><col class="c-cap">
+        <col class="c-tests"><col class="c-gap"><col class="c-read">{% if has_dcf %}<col class="c-dcf">{% endif %}<col class="c-cap">
       </colgroup>
       <thead><tr>
         <th data-k="ticker" class="c-tick-cell">Ticker<span class="ar">&#9650;</span></th>
@@ -212,6 +221,7 @@
         <th data-k="applicable" class="num c-tests-cell">Tests<span class="ar">&#9650;</span></th>
         <th data-k="gap" class="num">Gap (pp)<span class="ar">&#9650;</span></th>
         <th data-k="reading">Reading<span class="ar">&#9650;</span></th>
+        {% if has_dcf %}<th data-k="dcf" class="c-dcf-cell">DCF<span class="ar">&#9650;</span></th>{% endif %}
         <th data-k="mcap" class="num c-cap-cell">Cap (US$bn)<span class="ar">&#9650;</span></th>
       </tr></thead>
       <tbody id="tb"></tbody>
@@ -226,6 +236,12 @@
     in percentage points, so a positive number means the price is behind the estimates.
     The two measures are close to independent across these companies, which is why the
     corners are worth reading: neither site can tell you what the other one says.
+    {% if has_dcf %}DCF is where <a href="https://dcf.charlietrenorden.com/">DCF
+    Studio</a>'s model puts a company against the other {{ n_dcf }} it can value, in
+    thirds: cheaper means it puts the shares further above their market price. It is a
+    ranking rather than a valuation, because that model on its default assumptions runs
+    below market prices across the board, so the order it puts companies in carries more
+    than any single figure it prints. A dash is a company it declined to value.{% endif %}
     Built from <a href="https://charlietrenorden.com/shortfall/">Shortfall</a>
     ({{ n_shortfall }} companies) and
     <a href="https://charlietrenorden.com/consensus-drift/">Consensus Drift</a>
@@ -237,6 +253,7 @@
 <script>
 (function () {
   var ROWS = JSON.parse(document.getElementById("rows").textContent);
+  var HAS_DCF = {{ 'true' if has_dcf else 'false' }};
   var CUT = {{ corners.cut }};
   var tb = document.getElementById("tb"), grid = document.getElementById("grid");
   var q = document.getElementById("q"), count = document.getElementById("count");
@@ -301,7 +318,7 @@
       : rows.length + " of " + ROWS.length;
     clear.hidden = rows.length === ROWS.length;
 
-    if (!rows.length) { tb.innerHTML = '<tr><td class="empty" colspan="8">No companies match.</td></tr>'; return; }
+    if (!rows.length) { tb.innerHTML = '<tr><td class="empty" colspan="' + (HAS_DCF ? 9 : 8) + '">No companies match.</td></tr>'; return; }
     tb.innerHTML = rows.map(function (r) {
       return '<tr>' +
         '<td class="tick c-tick-cell">' + r.ticker + "</td>" +
@@ -311,6 +328,9 @@
         '<td class="num c-tests-cell">' + r.applicable + "</td>" +
         '<td class="num">' + (r.gap > 0 ? "+" : "") + r.gap.toFixed(1) + "</td>" +
         '<td><span class="read ' + r.reading + '">' + r.reading + "</span></td>" +
+        (HAS_DCF ? '<td class="c-dcf-cell">' + (r.dcfband
+          ? '<span class="read dcf-' + r.dcfband + '">' + r.dcfband + "</span>"
+          : '<span class="none">-</span>') + "</td>" : "") +
         '<td class="num c-cap-cell">' + (r.mcap === null || r.mcap === undefined ? "" : r.mcap.toFixed(1)) + "</td>" +
       "</tr>";
     }).join("");

@@ -1,0 +1,78 @@
+name: Rebuild Crosscheck
+
+# Crosscheck joins Shortfall's accounting scores to Consensus Drift's estimate gaps,
+# and adds DCF Studio's ranking on top. All three move on their own schedules, so a
+# page built by hand is a page that is quietly wrong within a week.
+#
+# 22:20 UTC. That is after both sources have refreshed, and BEFORE dcf-studio's 22:40
+# valuations job, which takes its universe from the tickers.json this build writes.
+# The one-day consequence: a company newly admitted to the join has no DCF reading
+# until the following night, which costs one dash in one column rather than a wrong
+# number. Getting this the other way round would be worse - dcf-studio would value
+# yesterday's universe and Crosscheck would then rank a set that no longer matches it.
+#
+# Odd minute on purpose: GitHub's scheduler drops on-the-hour jobs.
+on:
+  schedule:
+    - cron: "20 22 * * *"
+  workflow_dispatch:
+  # Fired by the heartbeat Worker (site-stats/heartbeat) from OUTSIDE GitHub Actions.
+  # On 26/08/2026 GitHub's scheduler went down and took every cron on the estate with
+  # it, catch-ups included, and it has since been measured running 3-7 hours late for
+  # this account. A backup sharing a failure domain with the thing it backs up is not
+  # a backup.
+  repository_dispatch:
+    types: [heartbeat-crosscheck]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install jinja2
+
+      # Runs the unit tests BEFORE the build, because the two parsers read files other
+      # repositories publish and neither controls their shape. A silent format change
+      # upstream would still produce a page here, just a wrong one, and the tests are
+      # the only thing that would notice.
+      - run: python -m pytest crosscheck/test_build.py -q
+
+      # Refuses to write at all if either source, or the join itself, drops below half
+      # of what it published last run. A join fails silently: forty rows is a
+      # working-looking page.
+      - run: python crosscheck/build.py
+
+      - name: Commit only if the numbers actually moved
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Explicit pathspecs. Several sessions push to this repo and routinely leave
+          # work in the tree; a bare `git add -A` in a bot job is how an unrelated
+          # change ends up inside a commit titled "crosscheck".
+          git add crosscheck/index.html crosscheck/tickers.json crosscheck/counts.json
+          git diff --staged --quiet && echo "no change" && exit 0
+          git commit -m "crosscheck: $(date -u +%Y-%m-%d)"
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "push attempt $attempt lost a race - replaying onto main"
+            git fetch origin main
+            # --mixed, NOT --soft. `reset --soft` leaves the INDEX holding this run's
+            # whole checked-out tree, so the replay commit rewrites every tracked file
+            # back to how it stood when the job started, silently reverting anything
+            # pushed in between. The thumbnail workflow did exactly that on 26/08/2026
+            # and undid an estate-wide analytics change inside a commit titled
+            # "Refresh card thumbnails".
+            git reset --mixed origin/main
+            git add crosscheck/index.html crosscheck/tickers.json crosscheck/counts.json
+            git diff --staged --quiet && exit 0
+            git commit -m "crosscheck: $(date -u +%Y-%m-%d)"
+            sleep 3
+          done
+          echo "::error::could not push after 3 attempts"
+          exit 1
