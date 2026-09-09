@@ -94,8 +94,15 @@ def main():
     # newest first, so the most recent call leads
     rows.sort(key=lambda r: r["date"], reverse=True)
 
+    # Currencies with no minor unit. Two decimals on a yen price is a precision
+    # the currency does not have, and the Tokyo exchange quotes in whole units:
+    # the first Japanese report on this page printed "¥1,400.00". Keyed by the
+    # symbol rather than an ISO code because that is what reports.json carries.
+    NO_MINOR_UNIT = {"¥", "JPY", "₩", "KRW"}
+
     def money(v, cur):
-        return f"{cur}{v:,.2f}"
+        dp = 0 if str(cur).strip() in NO_MINOR_UNIT else 2
+        return f"{cur}{v:,.{dp}f}"
 
     env = Environment(loader=FileSystemLoader(HERE), autoescape=select_autoescape(["html"]))
     env.filters["money"] = money
