@@ -667,3 +667,17 @@ td.asat { white-space: nowrap; font-variant-numeric: tabular-nums; }
   .masthead:hover .mark clipPath rect,
   .masthead:hover .mark .scanline { animation: none; }
 }
+
+
+/* The line under the name is a NAMEPLATE, not a standfirst. The sentence that used to
+   sit here was making an argument and it got cut; this says what the thing is and
+   stops. So it wears the page's own label idiom - small, letterspaced, uppercase, the
+   same treatment the filter labels have - rather than body prose, which is what would
+   quietly rebuild the thing that was removed. */
+.tagline {
+  margin: 6px 0 0;
+  font: 600 11.5px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint);
+}
+/* The rule keeps its distance from the line now, not from the name. */
+header.wrap { padding-bottom: 16px; }
