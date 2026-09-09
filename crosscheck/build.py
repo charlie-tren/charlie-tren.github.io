@@ -147,6 +147,72 @@ def has_dcf(rows: list[dict]) -> bool:
     return sum(1 for r in rows if r.get("dcf") is not None) >= len(rows) * 0.25
 
 
+def _percentiles(values: list[float | None]) -> list[float | None]:
+    """Each value's position in its own distribution, 0 to 1, ties sharing a position.
+
+    Percentiles rather than the raw numbers, because the three measures have nothing
+    in common numerically: Shortfall is 0-100, the gap spans about 270 percentage
+    points, and the DCF ratio sits mostly between 0.1 and 2. Averaged raw, the gap
+    would decide the entire ordering by virtue of having the widest range.
+    """
+    present = sorted(v for v in values if v is not None)
+    if not present:
+        return [None] * len(values)
+    if len(present) == 1:
+        return [None if v is None else 0.5 for v in values]
+
+    # RANK position, not (v - min) / (max - min). Min-max scaling is the obvious way to
+    # write this and it hands the ordering to outliers: the gap runs from -211.1 to
+    # +56.7, so one distressed name at the bottom compresses every other company into
+    # the top fifth of the range and the measure stops discriminating between them.
+    # A rank percentile is unaffected by how far the extremes sit from the pack, which
+    # is the property this needs - all three inputs are heavy-tailed.
+    import bisect
+
+    n = len(present)
+    out = []
+    for v in values:
+        if v is None:
+            out.append(None)
+            continue
+        # Ties share a position: the midpoint of the block of equal values, so that a
+        # column with many repeated readings does not order them by accident.
+        lo = bisect.bisect_left(present, v)
+        hi = bisect.bisect_right(present, v)
+        out.append(((lo + hi - 1) / 2) / (n - 1))
+    return out
+
+
+def rank_rows(rows: list[dict]) -> list[dict]:
+    """Order the table by how far the three measures agree, and stamp a rank on each.
+
+    ONE AXIS, oriented so higher is more attractive on all three: accounts that are not
+    strained, a price that sits behind analyst estimates, and a model value above the
+    market price. The top of the table is where all three point the same way and the
+    bottom is where they point the other way. That is coherent precisely because the
+    measures are close to independent - r = +0.087 between the first two - so agreement
+    between them is information rather than one number counted three times.
+
+    Shortfall is FLIPPED, because its own scale runs the other way: 100 is the most
+    strained company, not the best. Carrying it through unflipped would have put the
+    worst accounts on the estate at the top of the page.
+
+    A missing component is averaged over the ones that are there rather than scored
+    zero. 103 of the 609 have no DCF reading, and scoring the absence would rank them
+    by data coverage instead of by anything about the companies.
+    """
+    strain = _percentiles([100 - r["strain"] for r in rows])
+    gap = _percentiles([r["gap"] for r in rows])
+    dcf = _percentiles([r.get("dcf") for r in rows])
+    for r, s, g, d in zip(rows, strain, gap, dcf):
+        parts = [p for p in (s, g, d) if p is not None]
+        r["score"] = sum(parts) / len(parts) if parts else 0.0
+    ordered = sorted(rows, key=lambda r: (-r["score"], r["ticker"]))
+    for i, r in enumerate(ordered, 1):
+        r["rank"] = i
+    return ordered
+
+
 def join(names: list[dict], drift: list[dict], dcf: dict | None = None) -> list[dict]:
     """One row per company present in BOTH, on the plain Yahoo-suffixed ticker.
 
@@ -183,8 +249,10 @@ def join(names: list[dict], drift: list[dict], dcf: dict | None = None) -> list[
     cuts = dcf_cuts([r["dcf"] for r in rows if r["dcf"] is not None])
     for r in rows:
         r["dcfband"] = dcf_band(r["dcf"], cuts)
-    rows.sort(key=lambda r: (-r["strain"], r["ticker"]))
-    return rows
+    # Ordered by the three measures combined rather than by Shortfall alone. Sorting on
+    # one of three columns made that column the page's opinion by default, which is the
+    # opposite of what a cross-tab is for.
+    return rank_rows(rows)
 
 
 def check_universes(n_short: int, n_drift: int, n_join: int) -> None:
