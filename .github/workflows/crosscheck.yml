@@ -4,17 +4,25 @@ name: Rebuild Crosscheck
 # and adds DCF Studio's ranking on top. All three move on their own schedules, so a
 # page built by hand is a page that is quietly wrong within a week.
 #
-# 22:20 UTC. That is after both sources have refreshed, and BEFORE dcf-studio's 22:40
-# valuations job, which takes its universe from the tickers.json this build writes.
-# The one-day consequence: a company newly admitted to the join has no DCF reading
-# until the following night, which costs one dash in one column rather than a wrong
-# number. Getting this the other way round would be worse - dcf-studio would value
-# yesterday's universe and Crosscheck would then rank a set that no longer matches it.
+# THE RELAY SLOT, 18:40 UTC / 04:40 AEST. This page generates nothing - it copies what
+# three other sites published - so it belongs in the same slot as the hub's Ghostwriters
+# pull, after the generate slot at 18:00 and before the photograph slot at 19:10.
 #
-# Odd minute on purpose: GitHub's scheduler drops on-the-hour jobs.
+# The first version of this file ran at 22:20 UTC, which is 08:20 AEST: twenty-five
+# minutes AFTER Charlie opens the site at 07:55. Every morning he would have been
+# reading the previous day's build while a fresh one ran behind him. Every cron on this
+# estate has to be written down in AEST as well as UTC for exactly that reason.
+#
+# On DCF Studio: this build takes whatever valuations.json is currently published and
+# does not wait for it. That repo is PRIVATE, so the heartbeat Worker's token, which is
+# scoped public_repo, cannot dispatch to it - it runs on GitHub's own scheduler, which
+# is measured 3-7 hours late for this account, so there is no arrival time to sequence
+# against. The DCF column is a slowly-moving ranking rather than a daily figure, so
+# reading a copy up to a day old costs nothing; pretending the two are sequenced would
+# be the error.
 on:
   schedule:
-    - cron: "20 22 * * *"
+    - cron: "40 18 * * *"
   workflow_dispatch:
   # Fired by the heartbeat Worker (site-stats/heartbeat) from OUTSIDE GitHub Actions.
   # On 26/08/2026 GitHub's scheduler went down and took every cron on the estate with
