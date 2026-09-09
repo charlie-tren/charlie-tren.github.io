@@ -586,9 +586,6 @@ function render() {
   // at the control it describes, and two homes for one formula is the thing the
   // house rule is about.
 
-  $("note-tax").innerHTML =
-    `<strong>Tax</strong> is what a non-resident pays on a ten-year hold, from PwC. `
-    + `Ranges are theirs.`;
 }
 
 /* ---------- boot ---------- */
