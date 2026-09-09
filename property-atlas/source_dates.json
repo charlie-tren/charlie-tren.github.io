@@ -8,7 +8,8 @@
  },
  "Price per sqm (city centre)": {
   "as_at": "Mar 2026",
-  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. Numbeo is a rolling user-contributed dataset and publishes no vintage. Pulled on or before 31/08/2026."
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. Numbeo is a rolling user-contributed dataset and publishes no vintage. Pulled on or before 31/08/2026.",
+  "caveat": "Used to derive approximate median prices alongside Global Property Guide data."
  },
  "Property Rights Score": {
   "as_at": "Jun 2024",
@@ -62,13 +63,14 @@
  },
  "Converted Price (AUD)": {
   "as_at": "Mar 2026",
-  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. The caveat says 'spot rates as at research date' and no date was recorded. The bound is this repo's: the AUD prices have not changed in any commit since the dataset first shipped on 31/08/2026, so the rates behind them are that date or earlier."
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. The caveat says 'spot rates as at research date' and no date was recorded. The bound is this repo's: the AUD prices have not changed in any commit since the dataset first shipped on 31/08/2026, so the rates behind them are that date or earlier.",
+  "caveat": "Indicative only."
  },
  "Estate/Inheritance Tax": {
   "as_at": "",
   "how": "Read from the same guides as the tax rates but not separately dated. On or before 02/09/2026."
  },
- "_caveat_note": "Two rows carry a caveat override, because their workbook caveat was the edition date and the As at column now says that. The override lives here rather than in data.json, which is rebuilt from the workbook.",
+ "_caveat_note": "Four rows carry a caveat override. Two because the workbook caveat WAS the edition date and the As at column now says that; one because it pointed at a 'research date' the page had no way to show until that column existed; one because it used a bare acronym the rest of the page spells out. The override lives here rather than in data.json, which is rebuilt from the workbook and would drop it.",
  "_workbook_access_date": "Mar 2026, from the Date Accessed column of the workbook's Sources sheet. Applies to every figure carried from the workbook. It does NOT apply to the non-resident tax rates, which were re-read off PwC on 31/08-02/09/2026 and supersede the workbook's - those are the only figures on this page younger than March.",
  "_format": "The As at column is 'Mon YYYY', or a bare 'YYYY' where the source dates itself no finer than a year, and a range joins two of the same kind with a hyphen. Anything more precise lives in the row's `how` text, not in the column, so the column stays scannable."
 }
