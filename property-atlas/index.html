@@ -63,7 +63,7 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
       </div>
       <div class="control">
         <label for="f-price">Entry price</label>
-        <div class="row"><input type="range" id="f-price" data-dir="max" min="75000" max="650000" step="5000" value="650000"><output id="f-price-out"></output></div>
+        <div class="row"><input type="range" id="f-price" min="75000" max="650000" step="5000" value="75000"><output id="f-price-out"></output></div>
       </div>
       <div class="control">
         <label for="f-own">Foreign ownership</label>
@@ -77,7 +77,7 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
         <label for="f-visa">Residency from buying</label>
         <select id="f-visa">
           <option value="">Any</option>
-          <option value="3">Buying gets you residency</option>
+          <option value="3">Straight from buying</option>
           <option value="2">Some investor route</option>
         </select>
       </div>
@@ -107,8 +107,6 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
   </section>
 
   <section class="panel" id="table-panel">
-    <h2>The Markets</h2>
-    <p class="sub">Click any column heading to sort it, highest first. Click again to flip it. Click a row for the detail behind it.</p>
     <div class="table-wrap" id="table-wrap">
     <div class="table-scroll" id="table-scroll">
       <table id="grid">
@@ -125,8 +123,8 @@ document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
       <li id="note-tax"></li>
     </ul>
     <h3>Sources</h3>
-    <p class="asat-note" id="asat-note"></p>
     <table class="src">
+      <caption id="asat-note"></caption>
       <thead><tr><th scope="col">Measure</th><th scope="col">Source</th><th scope="col">As at</th><th scope="col">Caveat</th></tr></thead>
       <tbody id="sources"></tbody>
     </table>

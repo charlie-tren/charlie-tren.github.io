@@ -153,11 +153,16 @@ function setSlider(name, text, active) {
 
 /* ---------- filtering ---------- */
 
+const PMIN = 75000, PMAX = 650000;
+
 function filters() {
   return {
     ease: +$("f-ease").value,
     yield: +$("f-yield").value,
-    price: +$("f-price").value,
+    // The slider runs left-to-right like the other two, so its raw value is a
+    // POSITION and the cap is its mirror: hard left is the top of the range (no
+    // filter), hard right is the cheapest. PMIN + PMAX is the axis it reflects in.
+    price: PMIN + PMAX - +$("f-price").value,
     own: $("f-own").value,
     visa: $("f-visa").value,
     repat: $("f-repat").value,
@@ -537,10 +542,9 @@ function render() {
   // instead makes an untouched bar an empty bar, whichever way it runs.
   // `.on` marks a filter that is actually doing something - the readout is quiet
   // until then, because three bold "any"s were the loudest thing in the bar.
-  setSlider("ease",  f.ease  ? "≥ " + f.ease + "/100" : "any", !!f.ease);
-  setSlider("yield", f.yield ? "≥ " + f.yield.toFixed(1) + "%" : "any", !!f.yield);
-  setSlider("price", f.price >= 650000 ? "any" : "≤ " + fmtK(f.price),
-            f.price < 650000);
+  setSlider("ease",  f.ease  ? f.ease + "/100" : "any", !!f.ease);
+  setSlider("yield", f.yield ? f.yield.toFixed(1) + "%" : "any", !!f.yield);
+  setSlider("price", f.price >= PMAX ? "any" : fmtK(f.price), f.price < PMAX);
 
   const shown = DATA.countries.filter(c => passes(c, f));
 
@@ -572,9 +576,8 @@ function render() {
   const names = { ownership: "who may own", visa: "residency from buying",
     repatriation: "getting money out", liquidity: "time to sell",
     costs: "cost to buy", rights: "property rights" };
-  EASE_HELP = `Six parts, each scored 0 to ${cap}, summed out of ${parts.length * cap} and `
-    + `shown as a percentage: ` + parts.map(k => names[k] || k).join(", ")
-    + `. Every row carries its own six.`;
+  EASE_HELP = `Six things a foreign buyer runs into, scored out of 100: `
+    + parts.map(k => names[k] || k).join(", ") + `. Open a row for its own six.`;
   const help = $("ease-help");
   if (help.textContent !== EASE_HELP) help.textContent = EASE_HELP;
   $("ease-info").title = EASE_HELP;
@@ -584,8 +587,8 @@ function render() {
   // house rule is about.
 
   $("note-tax").innerHTML =
-    `<strong>Tax</strong> is what a non-resident pays after a ten-year hold, from PwC's `
-    + `country guides. A range is the source's own; hover it.`;
+    `<strong>Tax</strong> is what a non-resident pays on a ten-year hold, from PwC. `
+    + `Ranges are theirs.`;
 }
 
 /* ---------- boot ---------- */
@@ -664,11 +667,12 @@ Promise.all([
       .filter(([k, v]) => !k.startsWith("_") && !v.as_at).length;
     const stamp = $("asat-note");
     if (stamp) {
-      stamp.textContent =
-        `The tax rates were read off PwC on 31 August and 2 September 2026. `
-        + `Everything else is its source's latest edition at that date, and ${undated} of `
-        + `${dated.length + undated} rows are not dated by their source at all - the `
-        + `Sources table says which.`;
+      stamp.textContent = undated
+        ? `Tax rates read 31 August and 2 September 2026; everything else is its `
+          + `source's latest edition at that date. ${undated} of ${dated.length + undated} `
+          + `rows are not dated by their source.`
+        : `Tax rates read 31 August and 2 September 2026. Everything else is its `
+          + `source's latest edition at that date.`;
     }
 
     ["f-ease", "f-yield", "f-price", "f-own", "f-visa", "f-repat"]
