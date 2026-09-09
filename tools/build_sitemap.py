@@ -80,10 +80,17 @@ HEADER = """<?xml version="1.0" encoding="UTF-8"?>
 
 
 def _last_commit_date(path: Path) -> str:
-    """The file's last commit date, so lastmod means something."""
+    """The file's last AUTHOR date, so lastmod means something and stays put.
+
+    %as, not %cs. Committer date is rewritten by every rebase, and this repo takes
+    pushes from several sessions plus a bot, so a pull would silently change the
+    lastmod of every page and produce a 154-line diff out of nothing - which the
+    daily job would then commit, every day, forever. Author date survives a rebase.
+    Caught by test_the_sitemap_is_up_to_date within an hour of the file landing.
+    """
     try:
         out = subprocess.run(
-            ["git", "log", "-1", "--format=%cs", "--", str(path.relative_to(ROOT))],
+            ["git", "log", "-1", "--format=%as", "--", str(path.relative_to(ROOT))],
             cwd=ROOT, capture_output=True, text=True, timeout=20)
         return (out.stdout or "").strip() or "2026-01-01"
     except Exception:  # noqa: BLE001 - a date is a nicety, never fail the build
