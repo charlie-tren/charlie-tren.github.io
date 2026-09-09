@@ -117,6 +117,34 @@ for s in data["sources"]:
           f"{s['measure']}: url {u!r} has more than one destination in it, so it "
           f"cannot resolve to anything")
 
+
+# --- the As at column has ONE shape -------------------------------------------------
+# It carried "Mar 2026", "2024", "2024-2025" and "31/08 - 02/09/2026" at once, so the
+# tidiest column on the page read as three conventions. Anything more precise than the
+# shape below belongs in the row's `how` text, where it does not have to line up with
+# fifteen neighbours.
+def check_date_formats():
+    import json as _json
+    import re as _re
+    f = HERE / "source_dates.json"
+    if not f.exists():
+        return
+    dates = _json.loads(f.read_text(encoding="utf-8"))
+    MON = r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
+    ok = _re.compile(rf"^(?:{MON} \d{{4}}|\d{{4}}|{MON}-{MON} \d{{4}}|\d{{4}}-\d{{4}})$")
+    for k, v in dates.items():
+        if k.startswith("_") or not isinstance(v, dict):
+            continue
+        a = v.get("as_at", "")
+        if not a:
+            check(v.get("how"), f"{k}: undated and with no `how` saying why")
+            continue
+        check(ok.match(a), f"{k}: As at is {a!r}, which is not 'Mon YYYY', 'YYYY', or a "
+                           f"range of two of the same kind")
+
+
+check_date_formats()
+
 def report():
     """Print and exit if anything has failed.
 

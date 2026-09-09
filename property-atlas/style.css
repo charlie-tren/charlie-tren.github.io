@@ -168,7 +168,8 @@ h3 {
   --hi: var(--pct);
 }
 /* A maximum runs the other way: everything above the thumb is what you cut. */
-.control input[type=range][data-dir="max"] { --lo: var(--pct); --hi: 100%; }
+/* data-dir="max" is gone: the price slider now runs left-to-right like the other
+   two, so one fill rule covers all three. */
 
 .control input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
@@ -619,3 +620,50 @@ h1 { letter-spacing: -.004em; }
 }
 td.asat { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .undated { color: var(--ink-faint); cursor: help; border-bottom: 1px dotted var(--ink-faint); }
+
+
+/* The map fills its panel edge to edge. It is the one element on the page that is a
+   PICTURE rather than a block of type, so the 20px of reading gutter that every other
+   panel wants is just a frame around it. Negative margins rather than removing the
+   panel's padding, because the scale legend under it still wants the gutter. Corners
+   are clipped to the panel's radius so the sea does not square off inside a round box. */
+#map-panel { overflow: hidden; }
+#map-panel figure.chart {
+  margin: -20px -20px 0;
+  border-radius: 9px 9px 0 0;
+  overflow: hidden;
+}
+#map-panel #map { border-radius: 0; }
+#map-panel .scale { margin-top: 14px; }
+
+/* ---- the mark ----
+   HOVER ONLY, and it runs until you leave. The scan sweeps down, then back up, and
+   keeps going while the pointer is on the masthead - a pass that only ever goes one
+   way reads as a thing that finished, and this one is meant to read as a thing that
+   is looking. Nothing moves on load: a mark that animates itself on arrival is the
+   page performing rather than responding. */
+.masthead .mark clipPath rect,
+.masthead .mark .scanline { animation: none; }
+.mark clipPath rect { transform: translateY(76px); }   /* at rest: fully revealed */
+.scanline { opacity: 0; }
+
+@keyframes pa-sweep {
+  0%   { transform: translateY(76px); }
+  50%  { transform: translateY(0); }
+  100% { transform: translateY(76px); }
+}
+@keyframes pa-sweepline {
+  0%, 100% { opacity: 0; }
+  10%, 90% { opacity: .95; }
+}
+.masthead:hover .mark clipPath rect {
+  animation: pa-sweep 2.2s ease-in-out infinite;
+}
+.masthead:hover .mark .scanline {
+  animation: pa-sweep 2.2s ease-in-out infinite,
+             pa-sweepline 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .masthead:hover .mark clipPath rect,
+  .masthead:hover .mark .scanline { animation: none; }
+}

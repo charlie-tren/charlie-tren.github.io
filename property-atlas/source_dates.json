@@ -37,7 +37,7 @@
   "how": "World Bank and IMF WEO, each market at its latest available year, which is 2024 or 2025."
  },
  "Non-Resident Tax Rates (CGT, Rental, WHT)": {
-  "as_at": "31/08 - 02/09/2026",
+  "as_at": "Aug-Sep 2026",
   "how": "The dates each PwC country guide was read, recorded in rates_pwc.json. The firmest date on the page."
  },
  "Australia Double Tax Agreements": {
@@ -69,5 +69,6 @@
   "how": "Read from the same guides as the tax rates but not separately dated. On or before 02/09/2026."
  },
  "_caveat_note": "Two rows carry a caveat override, because their workbook caveat was the edition date and the As at column now says that. The override lives here rather than in data.json, which is rebuilt from the workbook.",
- "_workbook_access_date": "Mar 2026, from the Date Accessed column of the workbook's Sources sheet. Applies to every figure carried from the workbook. It does NOT apply to the non-resident tax rates, which were re-read off PwC on 31/08-02/09/2026 and supersede the workbook's - those are the only figures on this page younger than March."
+ "_workbook_access_date": "Mar 2026, from the Date Accessed column of the workbook's Sources sheet. Applies to every figure carried from the workbook. It does NOT apply to the non-resident tax rates, which were re-read off PwC on 31/08-02/09/2026 and supersede the workbook's - those are the only figures on this page younger than March.",
+ "_format": "The As at column is 'Mon YYYY', or a bare 'YYYY' where the source dates itself no finer than a year, and a range joins two of the same kind with a hyphen. Anything more precise lives in the row's `how` text, not in the column, so the column stays scannable."
 }
