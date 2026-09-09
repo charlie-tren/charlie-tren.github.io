@@ -71,10 +71,14 @@ class TestJoin:
         assert rows[0]["strain"] == 100.0
         assert rows[0]["applicable"] == 6
 
-    def test_orders_by_strain_so_the_interesting_end_is_first(self):
+    def test_orders_by_the_three_measures_combined_rather_than_by_strain_alone(self):
+        # Sorted by Shortfall's score alone until 10/09/2026, which quietly made one of
+        # the three columns the page's default opinion - the opposite of what a
+        # cross-tab is for.
         rows = build.join(build.parse_shortfall(SHORTFALL_JS), build.parse_drift(DRIFT_HTML))
-        assert [r["strain"] for r in rows] == sorted(
-            [r["strain"] for r in rows], reverse=True
+        assert [r["rank"] for r in rows] == list(range(1, len(rows) + 1))
+        assert [r["score"] for r in rows] == sorted(
+            [r["score"] for r in rows], reverse=True
         )
 
 
@@ -219,3 +223,107 @@ class TestDcfBands:
 
     def test_survives_a_file_that_lost_its_ratios(self):
         assert build.parse_dcf('{"site": "DCF Studio"}') == {}
+
+
+class TestCombinedRank:
+    """One ordering across three measures that do not share a scale.
+
+    Shortfall is 0-100 where high is bad, the gap is percentage points either side of
+    zero, and DCF is a ratio with a median near 0.61. Averaging those raw would let the
+    gap, which has by far the widest numeric range, decide everything. Each is turned
+    into its own percentile first, so each contributes equally by construction.
+
+    ORIENTED SO HIGHER IS MORE ATTRACTIVE, on all three: unstrained accounts, price
+    behind analyst estimates, and a model value above the market price. That makes one
+    coherent axis - at the top the three agree the shares look cheap and the numbers
+    look clean, at the bottom they agree on the opposite.
+    """
+
+    def rows(self):
+        return [
+            # strain, gap, dcf
+            {"ticker": "BEST", "strain": 0, "gap": 40.0, "dcf": 2.0},
+            {"ticker": "MID", "strain": 50, "gap": 0.0, "dcf": 0.6},
+            {"ticker": "WORST", "strain": 100, "gap": -40.0, "dcf": 0.2},
+        ]
+
+    def test_puts_the_name_all_three_agree_on_at_the_top(self):
+        ranked = build.rank_rows(self.rows())
+        assert [r["ticker"] for r in ranked] == ["BEST", "MID", "WORST"]
+        assert ranked[0]["rank"] == 1
+        assert ranked[-1]["rank"] == 3
+
+    def test_low_strain_is_attractive_not_high(self):
+        # Shortfall's own scale runs the other way: 100 is the MOST strained. Carrying
+        # it through unflipped would put the worst accounts at the top of the page.
+        a = build.rank_rows([
+            {"ticker": "CLEAN", "strain": 5, "gap": 0.0, "dcf": 0.6},
+            {"ticker": "STRAINED", "strain": 95, "gap": 0.0, "dcf": 0.6},
+        ])
+        assert a[0]["ticker"] == "CLEAN"
+
+    def test_a_positive_gap_is_attractive_because_the_price_is_behind(self):
+        a = build.rank_rows([
+            {"ticker": "BEHIND", "strain": 50, "gap": 40.0, "dcf": 0.6},
+            {"ticker": "AHEAD", "strain": 50, "gap": -40.0, "dcf": 0.6},
+        ])
+        assert a[0]["ticker"] == "BEHIND"
+
+    def test_a_higher_dcf_ratio_is_attractive(self):
+        a = build.rank_rows([
+            {"ticker": "CHEAP", "strain": 50, "gap": 0.0, "dcf": 2.0},
+            {"ticker": "DEAR", "strain": 50, "gap": 0.0, "dcf": 0.2},
+        ])
+        assert a[0]["ticker"] == "CHEAP"
+
+    def test_a_missing_dcf_averages_the_two_that_are_there(self):
+        # 103 of the 609 have no DCF reading. Scoring a missing component as zero would
+        # push every one of them to the bottom of the page for having no opinion, which
+        # is a ranking of data coverage rather than of companies.
+        a = build.rank_rows([
+            {"ticker": "NODCF", "strain": 0, "gap": 40.0, "dcf": None},
+            {"ticker": "HASDCF", "strain": 100, "gap": -40.0, "dcf": 0.2},
+        ])
+        assert a[0]["ticker"] == "NODCF"
+
+    def test_the_widest_raw_range_does_not_dominate(self):
+        # The gap spans about 270 points and strain spans 100, so on raw numbers the gap
+        # would outvote everything. On percentiles a name that is last on two measures
+        # cannot be first overall on the strength of one.
+        a = build.rank_rows([
+            {"ticker": "ONEGOOD", "strain": 100, "gap": 200.0, "dcf": 0.1},
+            {"ticker": "TWOGOOD", "strain": 0, "gap": -5.0, "dcf": 2.0},
+        ])
+        assert a[0]["ticker"] == "TWOGOOD"
+
+    def test_every_row_gets_a_distinct_rank_from_one_upward(self):
+        ranked = build.rank_rows(self.rows())
+        assert sorted(r["rank"] for r in ranked) == [1, 2, 3]
+
+    def test_handles_a_single_row_without_dividing_by_zero(self):
+        assert build.rank_rows([{"ticker": "ONE", "strain": 50, "gap": 1.0, "dcf": 0.5}])[0]["rank"] == 1
+
+    def test_one_extreme_outlier_does_not_flatten_the_rest(self):
+        # The live gap runs from -211.1 to +56.7. Under min-max scaling that single
+        # bottom name compresses everything else into the top of the range and the
+        # measure stops separating the companies anyone is actually comparing.
+        # On rank position the pack keeps its spread whatever the extremes do.
+        pack = [{"ticker": f"T{i}", "strain": 50, "gap": float(i), "dcf": 0.6}
+                for i in range(10)]
+        without = build.rank_rows([dict(r) for r in pack])
+        with_outlier = build.rank_rows(
+            [dict(r) for r in pack] + [{"ticker": "CRASH", "strain": 50, "gap": -211.0, "dcf": 0.6}]
+        )
+        order_a = [r["ticker"] for r in without]
+        order_b = [r["ticker"] for r in with_outlier if r["ticker"] != "CRASH"]
+        assert order_a == order_b
+        # And the pack still spans a wide range of scores rather than bunching.
+        scores = [r["score"] for r in with_outlier if r["ticker"] != "CRASH"]
+        assert max(scores) - min(scores) > 0.25
+
+    def test_ties_share_a_position_rather_than_being_ordered_by_accident(self):
+        a = build.rank_rows([
+            {"ticker": "A", "strain": 50, "gap": 5.0, "dcf": 0.6},
+            {"ticker": "B", "strain": 50, "gap": 5.0, "dcf": 0.6},
+        ])
+        assert a[0]["score"] == a[1]["score"]

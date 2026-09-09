@@ -79,17 +79,29 @@
   /* The cross-tab. Six cells, because the two axes are what the page IS - a 2x2 on the
      outer corners alone would hide the 320 companies whose price sits inline with
      estimates, which is more than half of them. */
-  .grid { display: grid; grid-template-columns: auto repeat(3, 1fr); gap: 2px;
-          background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
-  .grid > * { background: var(--raised); padding: .7rem .8rem; }
-  .gh { font: 500 10.5px/1.3 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
-        text-transform: uppercase; color: var(--soft); display: flex; align-items: flex-end; }
-  .gh.rowlab { align-items: center; }
-  .cell { appearance: none; border: 0; cursor: pointer; text-align: left; color: inherit;
-          font: inherit; display: block; transition: background .15s; }
-  .cell:hover { background: var(--motif-bg); }
-  .cell[aria-pressed="true"] { background: var(--motif-bg); box-shadow: inset 0 0 0 1.5px var(--accent); }
-  .cell .cn { font: 400 1.5rem/1.1 inherit; font-variant-numeric: tabular-nums; display: block; }
+  /* Six counts, and they are CONTROLS rather than a second table. The first version
+     drew them as a bordered 2x3 spreadsheet with big serif numbers floating in a lot
+     of air, and it read as a data panel competing with the real one below it - which
+     is what Charlie objected to. Rebuilt tight: no box, no cell borders, one hairline
+     under the header row, and numbers at the size of a label rather than a headline.
+     The empty corner cell went with the box. */
+  .grid { display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr));
+          gap: .1rem 1.6rem; align-items: baseline; max-width: 34rem; }
+  .gh { font: 500 10px/1.3 ui-sans-serif, system-ui, sans-serif; letter-spacing: .09em;
+        text-transform: uppercase; color: var(--faint); padding-bottom: .45rem;
+        border-bottom: 1px solid var(--rule); }
+  .gh.rowlab { border-bottom: 0; padding: 0; color: var(--soft); text-align: left; }
+  /* The corner cell holds nothing, so it must not draw the header rule the other three
+     draw - on screen it read as a stray dash floating above the row labels. */
+  .gh.corner { border-bottom: 0; }
+  .cell { appearance: none; border: 0; background: transparent; cursor: pointer;
+          text-align: left; color: inherit; font: inherit; padding: .35rem 0;
+          transition: color .15s; }
+  .cell:hover .cn { color: var(--ink); }
+  .cell[aria-pressed="true"] .cn { text-decoration: underline;
+          text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  .cell .cn { font: 400 1.05rem/1.2 ui-sans-serif, system-ui, sans-serif;
+              font-variant-numeric: tabular-nums; display: block; }
   .cell.behind .cn { color: var(--behind); }
   .cell.ahead  .cn { color: var(--ahead); }
   .cell.inline .cn { color: var(--inline); }
@@ -131,11 +143,10 @@
   /* Alignment is a property of the COLUMN, never of the value, or a placeholder in a
      numeric column lands on the opposite side from the figures. */
   .num { text-align: right; font-variant-numeric: tabular-nums; }
-  col.c-tick { width: 5.5rem; }  col.c-name { width: 30%; }
-  col.c-sect { width: 13%; }     col.c-score { width: 6rem; }
-  col.c-tests { width: 5rem; }   col.c-gap { width: 6rem; }
-  col.c-read { width: 6rem; }    col.c-cap { width: 7rem; }
-  col.c-dcf { width: 6rem; }
+  col.c-rank { width: 4rem; }    col.c-tick { width: 5.5rem; }
+  col.c-name { width: 26%; }     col.c-sect { width: 12%; }
+  col.c-score { width: 6rem; }   col.c-gap { width: 6rem; }
+  col.c-dcf { width: 6.5rem; }   col.c-also { width: 11.5rem; }
   .tick { font-weight: 500; }
   /* On a phone the ticker moves INSIDE the company cell. Five columns need 376px of
      declared width against 358px of content, so the name column was being squeezed to
@@ -149,8 +160,23 @@
   .hshort { display: none; }
   .read { font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .08em;
           text-transform: uppercase; }
-  .read.behind { color: var(--behind); } .read.ahead { color: var(--ahead); }
-  .read.inline { color: var(--inline); }
+  /* The gap number IS the reading, so the separate Reading column went: a band of
+     behind / inline / ahead is the sign of this figure against a 10pp threshold, and
+     printing both was one measurement in two columns. The colour carries the band. */
+  td.behind { color: var(--behind); } td.ahead { color: var(--ahead); }
+  td.inline { color: var(--inline); }
+  .rank { color: var(--soft); }
+  /* Three links per row, so they are set small and quiet: at full weight a column of
+     1,827 links is the loudest thing on the page and none of them is the content. */
+  .also { white-space: nowrap; }
+  .also a { color: var(--soft); text-decoration: none; font-size: 11.5px;
+            letter-spacing: .02em; }
+  .also a + a::before { content: "·"; margin: 0 .4rem; color: var(--rule);
+                        text-decoration: none; }
+  .also a:hover { color: var(--accent); text-decoration: underline;
+                  text-decoration-style: dotted; text-underline-offset: 2px; }
+  thead th.nosort { cursor: default; }
+  thead th.nosort:hover { color: var(--soft); }
   /* Same hues as the gap reading, because they mean the same direction: cheaper is
      the model agreeing the price has room, dearer is the opposite. Reusing them says
      the two columns are two answers to one question rather than two scales. */
@@ -172,10 +198,10 @@
     .cell .cn { font-size: 1.15rem; }
     .cell .cd { display: none; }
     .gh { font-size: 9px; letter-spacing: .06em; }
-    col.c-sect, col.c-cap, col.c-tests, col.c-tick, col.c-dcf { display: none; }
-    .c-sect-cell, .c-cap-cell, .c-tests-cell, .c-tick-cell, .c-dcf-cell { display: none; }
-    col.c-name { width: 42%; }
-    col.c-score { width: 17%; } col.c-gap { width: 21%; } col.c-read { width: 20%; }
+    col.c-sect, col.c-tick, col.c-dcf, col.c-also { display: none; }
+    .c-sect-cell, .c-tick-cell, .c-dcf-cell, .c-also-cell { display: none; }
+    col.c-rank { width: 13%; }  col.c-name { width: 47%; }
+    col.c-score { width: 19%; } col.c-gap { width: 21%; }
     .hfull { display: none; } .hshort { display: inline; }
     thead th { font-size: 9.5px; letter-spacing: .05em; }
     .tick-inline { display: block; font-weight: 500; }
@@ -210,19 +236,18 @@
   <div class="tablewrap">
     <table id="tbl">
       <colgroup>
-        <col class="c-tick"><col class="c-name"><col class="c-sect"><col class="c-score">
-        <col class="c-tests"><col class="c-gap"><col class="c-read">{% if has_dcf %}<col class="c-dcf">{% endif %}<col class="c-cap">
+        <col class="c-rank"><col class="c-tick"><col class="c-name"><col class="c-sect">
+        <col class="c-score"><col class="c-gap">{% if has_dcf %}<col class="c-dcf">{% endif %}<col class="c-also">
       </colgroup>
       <thead><tr>
+        <th data-k="rank" class="num">Rank<span class="ar">&#9650;</span></th>
         <th data-k="ticker" class="c-tick-cell">Ticker<span class="ar">&#9650;</span></th>
         <th data-k="name">Company<span class="ar">&#9650;</span></th>
         <th data-k="sector" class="c-sect-cell">Sector<span class="ar">&#9650;</span></th>
         <th data-k="strain" class="num"><span class="hfull">Shortfall</span><span class="hshort">Score</span><span class="ar">&#9650;</span></th>
-        <th data-k="applicable" class="num c-tests-cell">Tests<span class="ar">&#9650;</span></th>
         <th data-k="gap" class="num">Gap (pp)<span class="ar">&#9650;</span></th>
-        <th data-k="reading">Reading<span class="ar">&#9650;</span></th>
         {% if has_dcf %}<th data-k="dcf" class="c-dcf-cell">DCF<span class="ar">&#9650;</span></th>{% endif %}
-        <th data-k="mcap" class="num c-cap-cell">Cap (US$bn)<span class="ar">&#9650;</span></th>
+        <th class="c-also-cell nosort">Also on</th>
       </tr></thead>
       <tbody id="tb"></tbody>
     </table>
@@ -230,22 +255,14 @@
 
   <h2>Notes</h2>
   <p class="foot">
-    Shortfall scores each company against six tests of accounting quality and ranks it
-    within its sector; 100 is the most strained. Tests is how many of the six could be
-    run at all. Gap is the distance between the price and where analyst estimates sit,
-    in percentage points, so a positive number means the price is behind the estimates.
-    The two measures are close to independent across these companies, which is why the
-    corners are worth reading: neither site can tell you what the other one says.
-    {% if has_dcf %}DCF is where <a href="https://dcf.charlietrenorden.com/">DCF
-    Studio</a>'s model puts a company against the other {{ n_dcf }} it can value, in
-    thirds: cheaper means it puts the shares further above their market price. It is a
-    ranking rather than a valuation, because that model on its default assumptions runs
-    below market prices across the board, so the order it puts companies in carries more
-    than any single figure it prints. A dash is a company it declined to value.{% endif %}
-    Built from <a href="https://charlietrenorden.com/shortfall/">Shortfall</a>
-    ({{ n_shortfall }} companies) and
-    <a href="https://charlietrenorden.com/consensus-drift/">Consensus Drift</a>
-    ({{ n_drift }}), {{ built }}. General information, not advice.
+    <!-- Cut from eight sentences to three on 10/09/2026: "way too long". What went was
+         everything explaining a column that its own header and values already say -
+         what Tests counted, what the DCF bands mean, why the two measures are
+         independent. What stays is the three things a reader cannot deduce from the
+         page: which way each scale runs, and that Rank is a combination. -->
+    Shortfall runs 0 to 100, higher is more strained. A positive gap means the price
+    sits behind analyst estimates. Rank combines all three columns, and the top of the
+    table is where they agree. General information, not advice.
   </p>
 </div>
 
@@ -258,7 +275,7 @@
   var tb = document.getElementById("tb"), grid = document.getElementById("grid");
   var q = document.getElementById("q"), count = document.getElementById("count");
   var clear = document.getElementById("clear");
-  var sortKey = "strain", sortDir = -1, cell = null;
+  var sortKey = "rank", sortDir = 1, cell = null;
 
   var READINGS = [["behind", "Price behind"], ["inline", "Inline"], ["ahead", "Price ahead"]];
   var BANDS = [["high", "Top quarter"], ["low", "The rest"]];
@@ -266,7 +283,7 @@
   function band(r) { return r.strain >= CUT ? "high" : "low"; }
 
   function buildGrid() {
-    var html = '<div class="gh"></div>';
+    var html = '<div class="gh corner"></div>';
     READINGS.forEach(function (rd) { html += '<div class="gh">' + rd[1] + "</div>"; });
     BANDS.forEach(function (b) {
       html += '<div class="gh rowlab">' + b[1] + "</div>";
@@ -318,32 +335,40 @@
       : rows.length + " of " + ROWS.length;
     clear.hidden = rows.length === ROWS.length;
 
-    if (!rows.length) { tb.innerHTML = '<tr><td class="empty" colspan="' + (HAS_DCF ? 9 : 8) + '">No companies match.</td></tr>'; return; }
+    if (!rows.length) { tb.innerHTML = '<tr><td class="empty" colspan="' + (HAS_DCF ? 8 : 7) + '">No companies match.</td></tr>'; return; }
     tb.innerHTML = rows.map(function (r) {
+      var t = encodeURIComponent(r.ticker);
       return '<tr>' +
+        '<td class="num rank">' + r.rank + "</td>" +
         '<td class="tick c-tick-cell">' + r.ticker + "</td>" +
         '<td><span class="tick-inline">' + r.ticker + '</span><span class="cname">' + r.name + "</span></td>" +
         '<td class="c-sect-cell">' + r.sector + "</td>" +
-        '<td class="num">' + r.strain.toFixed(0) + "</td>" +
-        '<td class="num c-tests-cell">' + r.applicable + "</td>" +
-        '<td class="num">' + (r.gap > 0 ? "+" : "") + r.gap.toFixed(1) + "</td>" +
-        '<td><span class="read ' + r.reading + '">' + r.reading + "</span></td>" +
+        // Tests is no longer a column of its own - it is a caveat on the score rather
+        // than a measurement beside it, so it rides along as the cell's title.
+        '<td class="num" title="' + r.applicable + ' of 6 tests could be run">' + r.strain.toFixed(0) + "</td>" +
+        '<td class="num ' + r.reading + '">' + (r.gap > 0 ? "+" : "") + r.gap.toFixed(1) + "</td>" +
         (HAS_DCF ? '<td class="c-dcf-cell">' + (r.dcfband
           ? '<span class="read dcf-' + r.dcfband + '">' + r.dcfband + "</span>"
           : '<span class="none">-</span>') + "</td>" : "") +
-        '<td class="num c-cap-cell">' + (r.mcap === null || r.mcap === undefined ? "" : r.mcap.toFixed(1)) + "</td>" +
+        '<td class="also c-also-cell">' +
+          '<a href="https://charlietrenorden.com/shortfall/?q=' + t + '">Shortfall</a>' +
+          '<a href="https://charlietrenorden.com/consensus-drift/?q=' + t + '">Drift</a>' +
+          '<a href="https://dcf.charlietrenorden.com/' + t + '">DCF</a>' +
+        "</td>" +
       "</tr>";
     }).join("");
   }
 
-  document.querySelectorAll("thead th").forEach(function (th) {
+  document.querySelectorAll("thead th[data-k]").forEach(function (th) {
     th.addEventListener("click", function () {
       var k = th.dataset.k;
       // Arriving at a sort from elsewhere gives the direction someone asking for it
       // expects first; only a second click on the pressed column flips it.
       if (sortKey === k) { sortDir = -sortDir; }
-      else { sortKey = k; sortDir = (k === "ticker" || k === "name" || k === "sector" || k === "reading") ? 1 : -1; }
-      document.querySelectorAll("thead th").forEach(function (o) {
+      // Rank ascends first, because rank 1 is the top of the page and nobody clicking
+      // "Rank" wants 609 first. The measures descend first; the text columns ascend.
+      else { sortKey = k; sortDir = (k === "ticker" || k === "name" || k === "sector" || k === "rank") ? 1 : -1; }
+      document.querySelectorAll("thead th[data-k]").forEach(function (o) {
         o.removeAttribute("aria-sort");
         o.querySelector(".ar").innerHTML = "&#9650;";
       });
