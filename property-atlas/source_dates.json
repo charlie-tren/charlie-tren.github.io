@@ -1,72 +1,73 @@
 {
-  "_comment": "How old each figure on the page is, keyed by the source row's measure. Separate from data.json because that file is rebuilt from the workbook and would drop it. NOTHING HERE IS A RESTAMP: every date is either the edition the source itself names, or a bound established from this repo's history, and `how` says which. A source that does not date itself is left blank and the page says so rather than borrowing a date from its neighbour.",
-  "_first_shipped": "31/08/2026",
-  "_first_shipped_how": "the commit that first added this dataset, as `absentee` (961e807, 31/08/2026). `price_aud` has not changed in any commit since, so every figure carried from the workbook was pulled on or before that date. This is a CEILING, not a research date: the real pull may have been earlier.",
-  "Price-to-Income, Gross Rental Yields": {
-    "as_at": "",
-    "how": "Numbeo is a rolling user-contributed dataset and publishes no vintage. Pulled on or before 31/08/2026."
-  },
-  "Price per sqm (city centre)": {
-    "as_at": "",
-    "how": "Numbeo is a rolling user-contributed dataset and publishes no vintage. Pulled on or before 31/08/2026."
-  },
-  "Property Rights Score": {
-    "as_at": "Jun 2024",
-    "how": "Heritage's 2025 edition, which the index itself states is built on data to June 2024.",
-    "caveat": "Heritage's own scoring, not a legal assessment."
-  },
-  "Economic Freedom Score": {
-    "as_at": "Jun 2024",
-    "how": "Same edition as the property-rights score: Heritage 2025, data to June 2024."
-  },
-  "CPI Score (Corruption)": {
-    "as_at": "2024",
-    "how": "Transparency International's 2024 index, published February 2025.",
-    "caveat": "Perceived corruption, surveyed. Higher is cleaner."
-  },
-  "S&P Sovereign Rating": {
-    "as_at": "",
-    "how": "A rating carries an action date per issuer and the page holds only the letter, so no one date covers the column. Read on or before 31/08/2026."
-  },
-  "GDP Growth Forecast": {
-    "as_at": "Jan 2026",
-    "how": "IMF World Economic Outlook, October 2025 edition with the January 2026 update."
-  },
-  "Population, Urbanisation, GDP/Capita PPP": {
-    "as_at": "2024-2025",
-    "how": "World Bank and IMF WEO, each market at its latest available year, which is 2024 or 2025."
-  },
-  "Non-Resident Tax Rates (CGT, Rental, WHT)": {
-    "as_at": "31/08 - 02/09/2026",
-    "how": "The dates each PwC country guide was read, recorded in rates_pwc.json. The firmest date on the page."
-  },
-  "Australia Double Tax Agreements": {
-    "as_at": "2025",
-    "how": "The ATO's 2022 treaty list plus signings since, the most recent being Croatia in 2025."
-  },
-  "Foreign Ownership Restrictions": {
-    "as_at": "",
-    "how": "Summarised from several undated country pages. Read on or before 31/08/2026, and the row already says to verify with a local lawyer."
-  },
-  "Golden Visa / Residency Pathways": {
-    "as_at": "",
-    "how": "Programme thresholds change without notice and none of the sources dates its page. Read on or before 31/08/2026, and this is the column most likely to be stale."
-  },
-  "FX Regimes": {
-    "as_at": "",
-    "how": "AREAER's classification is annual but the page does not record which volume was used. Read on or before 31/08/2026."
-  },
-  "Purchase/Holding Costs": {
-    "as_at": "",
-    "how": "Ranges assembled from several undated sources. Read on or before 31/08/2026."
-  },
-  "Converted Price (AUD)": {
-    "as_at": "on or before 31/08/2026",
-    "how": "The caveat says 'spot rates as at research date' and no date was recorded. The bound is this repo's: the AUD prices have not changed in any commit since the dataset first shipped on 31/08/2026, so the rates behind them are that date or earlier."
-  },
-  "Estate/Inheritance Tax": {
-    "as_at": "",
-    "how": "Read from the same guides as the tax rates but not separately dated. On or before 02/09/2026."
-  },
-  "_caveat_note": "Two rows carry a caveat override, because their workbook caveat was the edition date and the As at column now says that. The override lives here rather than in data.json, which is rebuilt from the workbook."
+ "_comment": "How old each figure on the page is, keyed by the source row's measure. Separate from data.json because that file is rebuilt from the workbook and would drop it. NOTHING HERE IS A RESTAMP: every date is either the edition the source itself names, or a bound established from this repo's history, and `how` says which. A source that does not date itself is left blank and the page says so rather than borrowing a date from its neighbour.",
+ "_first_shipped": "31/08/2026",
+ "_first_shipped_how": "the commit that first added this dataset, as `absentee` (961e807, 31/08/2026). `price_aud` has not changed in any commit since, so every figure carried from the workbook was pulled on or before that date. This is a CEILING, not a research date: the real pull may have been earlier.",
+ "Price-to-Income, Gross Rental Yields": {
+  "as_at": "Mar 2026",
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. Numbeo is a rolling user-contributed dataset and publishes no vintage. Pulled on or before 31/08/2026."
+ },
+ "Price per sqm (city centre)": {
+  "as_at": "Mar 2026",
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. Numbeo is a rolling user-contributed dataset and publishes no vintage. Pulled on or before 31/08/2026."
+ },
+ "Property Rights Score": {
+  "as_at": "Jun 2024",
+  "how": "Heritage's 2025 edition, which the index itself states is built on data to June 2024.",
+  "caveat": "Heritage's own scoring, not a legal assessment."
+ },
+ "Economic Freedom Score": {
+  "as_at": "Jun 2024",
+  "how": "Same edition as the property-rights score: Heritage 2025, data to June 2024."
+ },
+ "CPI Score (Corruption)": {
+  "as_at": "2024",
+  "how": "Transparency International's 2024 index, published February 2025.",
+  "caveat": "Perceived corruption, surveyed. Higher is cleaner."
+ },
+ "S&P Sovereign Rating": {
+  "as_at": "Mar 2026",
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. A rating carries an action date per issuer and the page holds only the letter, so no one date covers the column. Read on or before 31/08/2026."
+ },
+ "GDP Growth Forecast": {
+  "as_at": "Jan 2026",
+  "how": "IMF World Economic Outlook, October 2025 edition with the January 2026 update."
+ },
+ "Population, Urbanisation, GDP/Capita PPP": {
+  "as_at": "2024-2025",
+  "how": "World Bank and IMF WEO, each market at its latest available year, which is 2024 or 2025."
+ },
+ "Non-Resident Tax Rates (CGT, Rental, WHT)": {
+  "as_at": "31/08 - 02/09/2026",
+  "how": "The dates each PwC country guide was read, recorded in rates_pwc.json. The firmest date on the page."
+ },
+ "Australia Double Tax Agreements": {
+  "as_at": "2025",
+  "how": "The ATO's 2022 treaty list plus signings since, the most recent being Croatia in 2025."
+ },
+ "Foreign Ownership Restrictions": {
+  "as_at": "Mar 2026",
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. Summarised from several undated country pages. Read on or before 31/08/2026, and the row already says to verify with a local lawyer."
+ },
+ "Golden Visa / Residency Pathways": {
+  "as_at": "Mar 2026",
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. Programme thresholds change without notice and none of the sources dates its page. Read on or before 31/08/2026, and this is the column most likely to be stale."
+ },
+ "FX Regimes": {
+  "as_at": "Mar 2026",
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. AREAER's classification is annual but the page does not record which volume was used. Read on or before 31/08/2026."
+ },
+ "Purchase/Holding Costs": {
+  "as_at": "Mar 2026",
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. Ranges assembled from several undated sources. Read on or before 31/08/2026."
+ },
+ "Converted Price (AUD)": {
+  "as_at": "Mar 2026",
+  "how": "The workbook's own Sources sheet records Date Accessed = Mar 2026. That column is uniform across every row, so it dates a single research pass rather than this row individually - but it is a recorded fact and it is five months earlier than the on-or-before-31/08/2026 bound this file previously carried. The caveat says 'spot rates as at research date' and no date was recorded. The bound is this repo's: the AUD prices have not changed in any commit since the dataset first shipped on 31/08/2026, so the rates behind them are that date or earlier."
+ },
+ "Estate/Inheritance Tax": {
+  "as_at": "",
+  "how": "Read from the same guides as the tax rates but not separately dated. On or before 02/09/2026."
+ },
+ "_caveat_note": "Two rows carry a caveat override, because their workbook caveat was the edition date and the As at column now says that. The override lives here rather than in data.json, which is rebuilt from the workbook.",
+ "_workbook_access_date": "Mar 2026, from the Date Accessed column of the workbook's Sources sheet. Applies to every figure carried from the workbook. It does NOT apply to the non-resident tax rates, which were re-read off PwC on 31/08-02/09/2026 and supersede the workbook's - those are the only figures on this page younger than March."
 }

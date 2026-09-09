@@ -1,0 +1,19 @@
+Metric / Column,Source Name,URL,Date Accessed,Caveats
+"Price-to-Income, Gross Rental Yields",Numbeo,numbeo.com/property-investment/rankings_by_country.jsp,Mar 2026,User-contributed data; directionally reliable but not official statistics
+Price per sqm (city centre),Numbeo,numbeo.com/cost-of-living/country_price_rankings?itemId=100,Mar 2026,Used to derive approximate median prices alongside GPG data
+"Real House Price YoY, 10yr growth",BIS Residential Property Price Statistics,bis.org/statistics/pp_residential_2602.htm,Mar 2026,Q3 2025 release (Feb 2026). Official HPI data. Not all countries covered.
+Property Rights Score,Heritage Foundation Index of Economic Freedom 2025,economicfreedom.heritage.org,Mar 2026,2025 edition based on data to Jun 2024
+Economic Freedom Score,Heritage Foundation Index of Economic Freedom 2025,economicfreedom.heritage.org,Mar 2026,Overall economic freedom score
+CPI Score (Corruption),Transparency International CPI 2024,transparency.org/en/cpi/2024,Mar 2026,2024 edition released Feb 2025
+S&P Sovereign Rating,S&P Global Ratings via countryeconomy.com,countryeconomy.com/ratings/standardandpoors,Mar 2026,Long-term foreign currency rating
+GDP Growth Forecast,IMF World Economic Outlook (Oct 2025 / Jan 2026 Update),imf.org/en/publications/weo,Mar 2026,3-5 year forecast range
+"Population, Urbanisation, GDP/Capita PPP",World Bank / IMF WEO Database,data.worldbank.org,Mar 2026,Latest available year (2024/2025)
+"Non-Resident Tax Rates (CGT, Rental, WHT)",PwC Worldwide Tax Summaries,taxsummaries.pwc.com,Mar 2026,Country-specific tax guides. Verified against KPMG/Deloitte where possible.
+Australia Double Tax Agreements,"Australian Treasury, tax treaties",treasury.gov.au/tax-treaties,Mar 2026,"List as of 2022 ATO guide + recent signings (Portugal 2023, Croatia 2025)"
+Foreign Ownership Restrictions,"Various: PwC, Global Property Guide, country-specific sources",Various,Mar 2026,Summarised from multiple sources. Verify with local lawyer before purchase.
+Golden Visa / Residency Pathways,"Henley & Partners, Get Golden Visa, country-specific immigration sites",Various,Mar 2026,Thresholds change frequently. Verify current requirements.
+FX Regimes,"IMF AREAER, central bank websites",Various,Mar 2026,"Classification: free float, managed float, peg, capital controls"
+Purchase/Holding Costs,"Global Property Guide, KPMG, local sources",globalpropertyguide.com,Mar 2026,Ranges given; actual costs depend on property value and region
+Expected 10yr Growth,Author estimates,N/A,Mar 2026,"Based on historical trends, IMF forecasts, and market analysis. Not financial advice."
+Converted Price (AUD),XE.com / RBA exchange rates,xe.com,Mar 2026,Spot rates as at research date. Indicative only.
+Estate/Inheritance Tax,"PwC, EY, KPMG country guides",Various,Mar 2026,Summary only. Estate planning requires specialist advice.
