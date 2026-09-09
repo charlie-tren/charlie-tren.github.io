@@ -19,6 +19,7 @@ workbook fills the rest and those rows are flagged unverified.
 
 Run: python build_data.py
 """
+import csv
 import json
 import re
 import sys
@@ -62,11 +63,16 @@ def num(v):
     if isinstance(v, (int, float)):
         return float(v)
     s = clean(v)
+    # A range first, so "3-6 months" is a midpoint rather than a 3 followed by a
+    # stray minus. The range pattern requires digits on BOTH sides of the dash, which
+    # is what keeps it from swallowing a leading negative.
     rng = re.search(r"(\d+(?:\.\d+)?)\s*(?:-|to)\s*(\d+(?:\.\d+)?)", s)
     if rng:
         return round((float(rng.group(1)) + float(rng.group(2))) / 2, 2)
-    one = re.search(r"(\d+(?:\.\d+)?)", s)
-    return float(one.group(1)) if one else None
+    # The sign is part of the number. Without the [-−]? this returned 0.5 for
+    # "-0.5" and eleven markets with shrinking populations read as growing.
+    one = re.search(r"([-−]?\d+(?:\.\d+)?)", s)
+    return float(one.group(1).replace("−", "-")) if one else None
 
 
 def yes_no(v):
@@ -83,11 +89,61 @@ def yes_no(v):
 # a market scores what it does. The prose-to-ordinal rules live in classify.py,
 # which exists because the first version of them read three columns backwards.
 
+class _CsvSheet:
+    """The slice of openpyxl's API this file uses, over a CSV.
+
+    The workbook is gitignored, so without this a fresh clone can serve the page and
+    not rebuild it. tools/export_workbook.py writes the three sheets the build reads
+    into workbook/*.csv; this reads them back with the same iter_rows(min_row=, 
+    values_only=True) call, so main() does not care which it got.
+
+    Numbers come back from csv as strings. num() and clean() already handle that -
+    they were written for a spreadsheet whose cells are half text anyway - so nothing
+    downstream changes."""
+
+    @staticmethod
+    def _cell(c):
+        """csv gives back text for everything; openpyxl gives numbers for number cells.
+        Hand back what openpyxl would, or the CSV path takes a different branch through
+        every parser downstream and produces subtly different data - which is worse
+        than having no fallback at all."""
+        if c == "":
+            return None
+        try:
+            return int(c) if re.fullmatch(r"-?\d+", c) else float(c)
+        except ValueError:
+            return c
+
+    def __init__(self, path):
+        with open(path, newline="", encoding="utf-8") as f:
+            self._rows = [tuple(self._cell(c) for c in r) for r in csv.reader(f)]
+
+    def iter_rows(self, min_row=1, values_only=True):
+        return iter(self._rows[min_row - 1:])
+
+
+def _sheets():
+    """The workbook if it is here, the committed CSVs if it is not."""
+    if SRC.exists():
+        wb = openpyxl.load_workbook(SRC, data_only=True)
+        return wb["Comparison"], wb["Country Profiles"], wb["Sources"], "workbook"
+    d = HERE / "workbook"
+    need = ["comparison.csv", "country_profiles.csv", "sources.csv"]
+    missing = [n for n in need if not (d / n).exists()]
+    if missing:
+        raise SystemExit(
+            f"No workbook at {SRC} and no CSV fallback ({missing} missing from "
+            f"{d}). Run tools/export_workbook.py on the machine that has the "
+            f"workbook, and commit workbook/.")
+    return (_CsvSheet(d / "comparison.csv"), _CsvSheet(d / "country_profiles.csv"),
+            _CsvSheet(d / "sources.csv"), "committed CSVs")
+
+
 def main():
-    wb = openpyxl.load_workbook(SRC, data_only=True)
-    comp = wb["Comparison"]
+    comp, profile_sheet, source_sheet, whence = _sheets()
+    print(f"reading from the {whence}")
     pwc = json.loads(PWC_FILE.read_text(encoding="utf-8"))
-    profiles = {clean(r[0]): clean(r[1]) for r in wb["Country Profiles"].iter_rows(min_row=2, values_only=True) if r[0]}
+    profiles = {clean(r[0]): clean(r[1]) for r in profile_sheet.iter_rows(min_row=2, values_only=True) if r[0]}
 
     rows = []
     for r in comp.iter_rows(min_row=3, values_only=True):
@@ -183,7 +239,7 @@ def main():
         "Estate/Inheritance Tax",
     }
     sources = []
-    for r in wb["Sources"].iter_rows(min_row=2, values_only=True):
+    for r in source_sheet.iter_rows(min_row=2, values_only=True):
         if r[0] and clean(r[0]) in USED:
             sources.append({
                 "measure": clean(r[0]), "name": clean(r[1]),
