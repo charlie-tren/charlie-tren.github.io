@@ -32,6 +32,7 @@ const SITES = {
   "Statecraft":        "https://charlietrenorden.com/statecraft/",
   "Pendulum: Inequality": "https://charlietrenorden.com/inequality/",
   "Equity Research":   "https://charlietrenorden.com/research/",
+  "Position Record":   "https://charlietrenorden.com/position-record/",
   "Crowdwise":         "https://crowdwise.charlietrenorden.com/",
   "DCF Studio":        "https://dcf.charlietrenorden.com/GOOGL",
   "One Story":         "https://one-story.charlietrenorden.com/",
