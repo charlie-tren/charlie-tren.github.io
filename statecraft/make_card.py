@@ -9,9 +9,13 @@ the site looks like a broken page.
 TWO RULES SHAPE WHAT IS DRAWN, and both are the kind of thing that is easy to
 get wrong in a way nobody notices until the link is already out.
 
-1. DARK, FROM THE PAGE'S OWN TOKENS. Every image asset on this estate is dark.
-   A light rectangle dropped into a dark chat thread reads as a page from
-   somewhere else, which is the opposite of what a share card is for. The
+1. DARK, FROM THE PAGE'S OWN TOKENS. Every image asset for a DARK-SCHEME site is
+   dark - which this one is. A light rectangle dropped into a dark chat thread
+   reads as a page from somewhere else, which is the opposite of what a share card
+   is for. Read "on this estate" here as "for sites like this one": Lexicon is warm
+   paper and Property Atlas pins color-scheme light, and their cards are light for
+   the same reason this one is dark. The generalisation in the earlier wording was
+   taken literally on 10/09/2026 and nearly produced a dark card for a paper site. The
    palette below is lifted from the dark block of style.css rather than picked
    to look nice here, so restyling the page and not restyling the card shows up
    as a diff instead of as drift.
