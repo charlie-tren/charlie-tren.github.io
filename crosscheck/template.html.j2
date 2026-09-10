@@ -317,14 +317,19 @@
   </figure>
 
   <div class="weights">
-    <span class="wl">Weight</span>
-    <label class="w"><span>Shortfall</span>
+    <!-- Each label says what MORE WEIGHT FAVOURS, not which column it comes from.
+         Labelled "Shortfall", turning the slider to 100% surfaces the companies scoring
+         ZERO on Shortfall - correct, because a high score is worse and the measure is
+         inverted before it is weighted, but it reads as a bug. A weight control has one
+         job: to say which way it pulls. -->
+    <span class="wl">Rank favours</span>
+    <label class="w"><span>Clean accounts</span>
       <input type="range" id="wStrain" min="0" max="100" step="5" value="35">
       <b id="wStrainV">33%</b></label>
-    <label class="w"><span>Drift</span>
+    <label class="w"><span>Price behind estimates</span>
       <input type="range" id="wDrift" min="0" max="100" step="5" value="35">
       <b id="wDriftV">33%</b></label>
-    <label class="w"><span>DCF</span>
+    <label class="w"><span>Value above price</span>
       <input type="range" id="wDcf" min="0" max="100" step="5" value="35">
       <b id="wDcfV">33%</b></label>
     <button class="clear" id="wReset" type="button">Even</button>
@@ -348,7 +353,7 @@
         <col class="c-score"><col class="c-gap">{% if has_dcf %}<col class="c-dcf">{% endif %}<col class="c-also">
       </colgroup>
       <thead><tr>
-        <th data-k="rank" class="num">Rank<span class="ar">&#9650;</span></th>
+        <th data-k="rank" class="num" title="Position among the companies on this page, combining all three measures at the weights set below. Rank 1 has the cleanest accounts, the price furthest behind estimates and the highest model value against price.">Rank<span class="ar">&#9650;</span></th>
         <th data-k="ticker" class="c-tick-cell">Ticker<span class="ar">&#9650;</span></th>
         <th data-k="name">Company<span class="ar">&#9650;</span></th>
         <th data-k="sector" class="c-sect-cell">Sector<span class="ar">&#9650;</span></th>
@@ -369,8 +374,9 @@
          independent. What stays is the three things a reader cannot deduce from the
          page: which way each scale runs, and that Rank is a combination. -->
     Shortfall runs 0 to 100, higher is more strained. A positive drift means the price
-    sits behind analyst estimates. Rank combines all three columns, and the top of the
-    table is where they agree. General information, not advice.
+    sits behind analyst estimates. Rank combines all three and puts clean accounts,
+    a price behind estimates and a model value above the price at the top. General
+    information, not advice.
   </p>
 </div>
 
@@ -650,9 +656,11 @@
       if (r.pDcf !== null) { num += W.dcf * r.pDcf; den += W.dcf; }
       r.score = den > 0 ? num / den : 0;
     });
-    var ordered = ROWS.slice().sort(function (a, b) {
+    var pool = ROWS.filter(function (r) { return !onlyAll.checked || r.complete; });
+    var ordered = pool.slice().sort(function (a, b) {
       return b.score - a.score || a.ticker.localeCompare(b.ticker);
     });
+    ROWS.forEach(function (r) { r.rank = null; });
     ordered.forEach(function (r, i) { r.rank = i + 1; });
   }
 
@@ -682,7 +690,7 @@
     });
     readWeights();
   });
-  onlyAll.addEventListener("change", function () { render(); plot(); });
+  onlyAll.addEventListener("change", function () { rescore(); render(); plot(); });
 
   function visible() {
     var term = q.value.trim().toLowerCase();
@@ -739,7 +747,7 @@
     tb.innerHTML = rows.map(function (r) {
       var t = encodeURIComponent(r.ticker);
       return '<tr>' +
-        '<td class="num rank">' + r.rank + "</td>" +
+        '<td class="num rank">' + (r.rank === null ? "-" : r.rank) + "</td>" +
         '<td class="tick c-tick-cell">' + r.ticker + "</td>" +
         '<td><span class="tick-inline">' + r.ticker + '</span><span class="cname">' + r.name + "</span></td>" +
         '<td class="c-sect-cell">' + r.sector + "</td>" +
