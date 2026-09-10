@@ -85,6 +85,14 @@
              font: 400 13px/1.4 ui-monospace, Consolas, monospace; color: var(--soft); }
   .book th.n, .book td.n { text-align: right; padding-right: 0; }
   .book .sub { color: var(--faint); }
+  /* Only the columns that compare across instruments sort. A peso entry price and
+     an index entry price are not on the same scale, so ordering by one is noise. */
+  .book th[data-sort] { cursor: pointer; -webkit-user-select: none; user-select: none; }
+  .book th[data-sort]::after { content: "\2195"; padding-left: .3rem; color: var(--rule); }
+  .book th[data-sort]:hover::after { color: var(--soft); }
+  .book th[aria-sort]::after { color: var(--accent); }
+  .book th[aria-sort="ascending"]::after  { content: "\2191"; }
+  .book th[aria-sort="descending"]::after { content: "\2193"; }
 
   .nm { display: block; color: var(--ink);
         font: 400 1.15rem/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
@@ -137,14 +145,20 @@
 
   <h2>Open</h2>
   <div class="scroller">
-  <table class="book">
+  <table class="book" id="book">
     <thead><tr>
-      <th>Position</th><th>Dir</th>
+      <th data-sort="name" data-dir="asc">Position</th>
+      <th data-sort="side" data-dir="asc">Dir</th>
       <th class="n">Entry</th><th class="n">Stop</th><th class="n">Target</th>
-      <th class="n">Last</th><th class="n">Carry</th><th class="n">To stop</th><th class="n">R</th>
+      <th class="n">Last</th>
+      <th class="n" data-sort="carry" data-dir="desc">Carry</th>
+      <th class="n" data-sort="left" data-dir="asc">To stop</th>
+      <th class="n" data-sort="r" data-dir="desc">R</th>
     </tr></thead>
-    <tbody>
-{% for p in rows %}      <tr>
+{% for p in rows %}    <tbody class="pos" data-name="{{ p.name }}" data-side="{{ p.direction }}"
+        data-opened="{{ p.entry_date }}" data-carry="{{ p.carry_pct }}"
+        data-left="{{ p.stop_left }}" data-r="{{ p.r }}">
+      <tr>
         <td><span class="nm">{{ p.name }}</span><span class="kind">{{ p.kind }} &middot; opened {{ p.entry_date }}</span></td>
         <td><span class="dir {{ p.direction | lower }}">{{ p.direction }}</span></td>
         <td class="n">{{ p.entry | px(p.dp) }}</td>
@@ -158,8 +172,8 @@
       <tr class="why"><td colspan="9"><ul>
 {% for line in p.thesis %}        <li>{{ line }}</li>
 {% endfor %}      </ul></td></tr>
-{% endfor %}    </tbody>
-  </table>
+    </tbody>
+{% endfor %}  </table>
   </div>
 
 {% if closed %}
@@ -187,6 +201,37 @@
 </div>
 
 <script>
+  /* Sorting reorders whole tbodies, so a position keeps its reasoning with it. */
+  (function () {
+    var t = document.getElementById("book");
+    if (!t || !t.tHead) return;
+    var heads = [].slice.call(t.tHead.rows[0].cells);
+    function val(tb, k) {
+      var v = tb.getAttribute("data-" + k), n = parseFloat(v);
+      return isNaN(n) ? String(v).toLowerCase() : n;
+    }
+    function sort(th) {
+      var first = th.getAttribute("data-dir") === "asc" ? "ascending" : "descending";
+      var other = first === "ascending" ? "descending" : "ascending";
+      var dir = th.getAttribute("aria-sort") === first ? other : first;
+      heads.forEach(function (c) { c.removeAttribute("aria-sort"); });
+      th.setAttribute("aria-sort", dir);
+      var k = th.getAttribute("data-sort"), s = dir === "ascending" ? 1 : -1;
+      [].slice.call(t.tBodies).sort(function (a, b) {
+        var x = val(a, k), y = val(b, k);
+        return x < y ? -s : x > y ? s : 0;
+      }).forEach(function (tb) { t.appendChild(tb); });
+    }
+    heads.forEach(function (th) {
+      if (!th.getAttribute("data-sort")) return;
+      th.tabIndex = 0;
+      th.addEventListener("click", function () { sort(th); });
+      th.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); sort(th); }
+      });
+    });
+  })();
+
   var root = document.documentElement;
   var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
   function sync() { lbl.textContent = root.getAttribute("data-theme") === "dark" ? "Dark" : "Light"; }
