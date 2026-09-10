@@ -54,7 +54,7 @@ def test_every_position_is_its_own_tbody_with_its_sort_keys():
     bodies = re.findall(r'<tbody class="pos"(.*?)</tbody>', page, re.S)
     assert len(bodies) == len(src["open"]), f"{len(bodies)} tbodies for {len(src['open'])} positions"
     for b in bodies:
-        for key in ("name", "side", "opened", "carry", "progress", "r"):
+        for key in ("name", "side", "opened", "carry", "totarget", "r"):
             assert f'data-{key}="' in b, f"tbody missing data-{key}"
         assert b.count("<tr") == 2, "a position row and its reasoning row"
 
