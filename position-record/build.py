@@ -91,6 +91,7 @@ def enrich(p, price):
     if p.get("entry_date"):                 # the ISO date stays on the row, for sorting
         y, m, d = p["entry_date"].split("-")
         row["opened"] = f"{d}/{m}/{y}"
+        row["opened_short"] = f"{d}/{m}/{y[2:]}"
     return row
 
 
