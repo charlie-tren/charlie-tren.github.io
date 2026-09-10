@@ -78,7 +78,7 @@ def test_the_reasoning_ships_visible_and_is_collapsed_by_the_script():
     assert 'class="why"' in page and "<li>" in page
     assert 'hidden' not in page.split('<tr class="why">')[1][:200], "shipped already closed"
     assert 'aria-expanded="true"' in page, "the button must ship in its open state"
-    assert "set(false);" in page, "nothing collapses the rows on load"
+    assert "_set(false);" in page, "nothing collapses the rows on load"
 
 
 def test_build_refuses_to_publish_without_a_price():
