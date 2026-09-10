@@ -108,8 +108,11 @@ def main():
 
     shut = sorted(closed, key=lambda c: c["exit_date"], reverse=True)
 
-    def px(v, dp):
-        return f"{v:,.{int(dp)}f}"
+    def px(v, dp, ccy=""):
+        """A letter code needs a space before the digits; a glyph does not. CHF1.10
+        reads as a typo, CHF 1.10 reads as a price."""
+        gap = " " if ccy[-1:].isalpha() else ""
+        return f"{ccy}{gap}{v:,.{int(dp)}f}"
 
     env = Environment(loader=FileSystemLoader(HERE), autoescape=select_autoescape(["html"]))
     env.filters["px"] = px

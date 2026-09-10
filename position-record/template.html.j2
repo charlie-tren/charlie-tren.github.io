@@ -163,16 +163,16 @@
   <div class="scroller">
   <table class="book" id="book">
     <thead><tr>
-      <th style="width:23%" data-sort="name" data-dir="asc">Position</th>
-      <th style="width:8%" data-sort="side" data-dir="asc">Dir</th>
-      <th class="n" style="width:8%">Entry</th>
-      <th class="n" style="width:8%">Stop</th>
+      <th style="width:21%" data-sort="name" data-dir="asc">Position</th>
+      <th style="width:7%" data-sort="side" data-dir="asc">Dir</th>
+      <th class="n" style="width:10%">Entry</th>
+      <th class="n" style="width:10%">Stop</th>
       <th class="n" style="width:10%">Target</th>
-      <th class="n" style="width:8%">Last</th>
-      <th class="n" style="width:9%" data-sort="carry" data-dir="desc">Carry</th>
-      <th class="n" style="width:9%" data-sort="left" data-dir="asc">To stop</th>
+      <th class="n" style="width:10%">Last</th>
+      <th class="n" style="width:8%" data-sort="carry" data-dir="desc">Carry</th>
+      <th class="n" style="width:8%" data-sort="left" data-dir="asc">To stop</th>
       <th class="n" style="width:7%" data-sort="r" data-dir="desc">R</th>
-      <th style="width:10%"></th>
+      <th style="width:9%"></th>
     </tr></thead>
 {% for p in rows %}    <tbody class="pos" data-name="{{ p.name }}" data-side="{{ p.direction }}"
         data-opened="{{ p.entry_date }}" data-carry="{{ p.carry_pct }}"
@@ -180,10 +180,10 @@
       <tr>
         <td style="white-space:normal"><span class="nm">{{ p.name }}</span><span class="kind">{{ p.kind }} &middot; {{ p.entry_date }}</span></td>
         <td><span class="dir {{ p.direction | lower }}">{{ p.direction }}</span></td>
-        <td class="n q">{{ p.entry | px(p.dp) }}</td>
-        <td class="n q">{{ p.stop | px(p.dp) }}</td>
-        <td class="n q">{{ p.target | px(p.dp) }}</td>
-        <td class="n q">{{ p.price | px(p.dp) }}</td>
+        <td class="n q">{{ p.entry | px(p.dp, p.ccy) }}</td>
+        <td class="n q">{{ p.stop | px(p.dp, p.ccy) }}</td>
+        <td class="n q">{{ p.target | px(p.dp, p.ccy) }}</td>
+        <td class="n q">{{ p.price | px(p.dp, p.ccy) }}</td>
         <td class="n">{{ '%+.2f'|format(p.carry_pct) }}%</td>
         <td class="n">{{ '%.2f'|format(p.stop_left) }}R</td>
         <td class="n r {{ 'up' if p.r >= 0 else 'dn' }}">{{ '%+.2f'|format(p.r) }}</td>

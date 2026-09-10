@@ -17,6 +17,7 @@
       "stop": 1.085,
       "target": 1.1165,
       "dp": 2,
+      "ccy": "CHF",
       "carry_pct": 2.7788,
       "carry_dir": "received",
       "thesis": [
@@ -33,6 +34,7 @@
       "stop": 64043.0,
       "target": 70970.0,
       "dp": 0,
+      "ccy": "¥",
       "carry_pct": -3.477,
       "carry_dir": "charged",
       "thesis": [
@@ -49,6 +51,7 @@
       "stop": 17.14,
       "target": 16.48,
       "dp": 2,
+      "ccy": "MX$",
       "carry_pct": 1.5657,
       "carry_dir": "received",
       "thesis": [
@@ -58,5 +61,6 @@
   ],
   "closed": [],
   "_thesis_note": "One line per position, written AT ENTRY: what the trade is, and nothing after it. The figures are in the columns.",
-  "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it."
+  "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it.",
+  "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index."
 }
