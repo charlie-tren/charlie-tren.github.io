@@ -240,6 +240,11 @@ def join(names: list[dict], drift: list[dict], dcf: dict | None = None) -> list[
             "applicable": int(n["applicable"]),
             "gap": round(gap, 1),
             "reading": reading(gap),
+            # The two moves the drift is the difference OF. Carried so the cell can say
+            # what it is made of on hover - a lone "+15.8" says a distance without
+            # saying between what and what.
+            "rev": d.get("rev"),
+            "pxchg": d.get("price"),
             "mcap": d.get("mcap"),
             "analysts": d.get("analysts"),
             "dcf": (dcf or {}).get(n["ticker"]),
