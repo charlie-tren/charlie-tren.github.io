@@ -20,9 +20,9 @@
       "ccy": "CHF",
       "carry_pct": 2.7788,
       "carry_dir": "received",
-      "thesis": "Sterling pays 3.75% while the franc pays nothing, and the SNB has said it would meet a fast franc rally with intervention rather than negative rates. The position is long that gap and relies on the SNB meaning it.",
-      "catalyst": "Opened nine days before the September MPC, with the market pricing the Bank's next move as a rise rather than a cut.",
-      "breaks": "The MPC turns and starts cutting, or the SNB lets a safe-haven rally run without intervening."
+      "thesis": "Sterling pays 3.75% and the franc pays nothing. The position collects the difference. The danger is a rush into francs, and the SNB has said it would meet one by selling francs rather than cutting below zero.",
+      "catalyst": "Opened nine days before the September MPC. The market is pricing the Bank's next move as a rise, not a cut.",
+      "breaks": "The Bank of England starts cutting, or the SNB lets a franc rally run."
     },
     {
       "name": "Japan 225",
@@ -38,7 +38,7 @@
       "carry_pct": -3.477,
       "carry_dir": "charged",
       "thesis": "The index is price-weighted and Advantest alone was 12.2% of it at the July review. Advantest and Tokyo Electron together explain about three quarters of its daily moves over the past year.",
-      "catalyst": "Opened three weeks before the cap rule cuts Advantest's weight from 1 October and pushes passive money into the rest of the index.",
+      "catalyst": "Opened three weeks before the cap rule cuts Advantest's weight on 1 October. Passive funds have to sell it and buy the rest of the index.",
       "breaks": "Advantest and Tokyo Electron roll over. At those weights the other 223 cannot carry the index."
     },
     {
@@ -54,9 +54,9 @@
       "ccy": "MX$",
       "carry_pct": 1.5657,
       "carry_dir": "received",
-      "thesis": "Banxico is at 6.50% against a Fed at 3.50 to 3.75%, and the peso is the usual way that gap gets expressed. Crowded positions in it unwind faster than they build.",
-      "catalyst": "Entered the day after the pair closed at a twelve-month low, having fallen 1.5% over the prior quarter.",
-      "breaks": "Banxico cuts towards the Fed and the gap that pays the position closes."
+      "thesis": "Mexico's policy rate is 6.50% and the Fed's is 3.75%. Being long the peso earns most of that difference, and the risk is that a lot of people are doing the same thing.",
+      "catalyst": "The peso had been strengthening for three months and hit a one-year high the day before this went on.",
+      "breaks": "Banxico starts cutting and the rate gap narrows."
     }
   ],
   "closed": [],
