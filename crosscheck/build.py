@@ -205,6 +205,10 @@ def rank_rows(rows: list[dict]) -> list[dict]:
     gap = _percentiles([r["gap"] for r in rows])
     dcf = _percentiles([r.get("dcf") for r in rows])
     for r, s, g, d in zip(rows, strain, gap, dcf):
+        # Shipped per row so the page can REWEIGHT live without carrying the whole
+        # distribution three times over and re-ranking 609 rows on every slider move.
+        r["pStrain"], r["pDrift"], r["pDcf"] = s, g, d
+        r["complete"] = None not in (s, g, d)
         parts = [p for p in (s, g, d) if p is not None]
         r["score"] = sum(parts) / len(parts) if parts else 0.0
     ordered = sorted(rows, key=lambda r: (-r["score"], r["ticker"]))
@@ -245,6 +249,13 @@ def join(names: list[dict], drift: list[dict], dcf: dict | None = None) -> list[
             # saying between what and what.
             "rev": d.get("rev"),
             "pxchg": d.get("price"),
+            # Carried for the cross-plot's other axes. Measured over the 609 before
+            # adding them, so these are the pairs that actually relate rather than a
+            # pile of selectable noise: size against short interest is rho -0.65,
+            # analyst count against how many accounting tests can be run is +0.49, and
+            # a company's one-year return against its DCF ratio is -0.23.
+            "short_int": n.get("short_interest"),
+            "ret_1y": n.get("ret_1y"),
             "mcap": d.get("mcap"),
             "analysts": d.get("analysts"),
             "dcf": (dcf or {}).get(n["ticker"]),
