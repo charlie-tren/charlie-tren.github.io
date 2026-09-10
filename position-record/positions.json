@@ -20,9 +20,9 @@
       "ccy": "CHF",
       "carry_pct": 2.7788,
       "carry_dir": "received",
-      "thesis": "The franc is the funding leg of other people's trades, and a shock forces the same buy-back everywhere at once. The SNB has leaned against franc strength for a decade, and the position depends on that continuing.",
-      "catalyst": "Entered within half a percent of the twelve-month high, after a 2.8% run over the prior quarter.",
-      "breaks": "The Bank of England starts cutting towards the SNB, or the SNB stops leaning against a stronger franc."
+      "thesis": "Sterling pays 3.75% while the franc pays nothing, and the SNB has said it would meet a fast franc rally with intervention rather than negative rates. The position is long that gap and relies on the SNB meaning it.",
+      "catalyst": "Opened nine days before the September MPC, with the market pricing the Bank's next move as a rise rather than a cut.",
+      "breaks": "The MPC turns and starts cutting, or the SNB lets a safe-haven rally run without intervening."
     },
     {
       "name": "Japan 225",
@@ -37,9 +37,9 @@
       "ccy": "¥",
       "carry_pct": -3.477,
       "carry_dir": "charged",
-      "thesis": "Price weighting hands the index to a few high-priced exporters, and its sensitivity to the yen runs well ahead of the earnings underneath.",
-      "catalyst": "Bought a pullback rather than a high: 10% below the twelve-month peak and in the bottom quarter of its three-month range.",
-      "breaks": "The yen weakens and the index does not follow."
+      "thesis": "Price weighting puts the highest-priced semiconductor stocks at the top of the index, and Advantest alone was 12.2% of it at the July review. Buying the index is mostly buying them.",
+      "catalyst": "Opened three weeks before the cap rule cuts Advantest's weight from 1 October and pushes passive money into the rest of the index.",
+      "breaks": "Advantest and Tokyo Electron roll over. At those weights the other 223 cannot carry the index."
     },
     {
       "name": "USD/MXN",
@@ -54,13 +54,14 @@
       "ccy": "MX$",
       "carry_pct": 1.5657,
       "carry_dir": "received",
-      "thesis": "Peso carry is the most crowded expression of the global rate gap: it pays steadily while positioning stays one-way and returns the lot in a single unwind.",
-      "catalyst": "The pair closed at a twelve-month low two days before entry, having fallen 1.5% over the quarter.",
-      "breaks": "Banxico starts cutting towards the Fed and the gap that pays the position closes."
+      "thesis": "Banxico is at 6.50% against a Fed at 3.50 to 3.75%, and the peso is the usual way that gap gets expressed. Crowded positions in it unwind faster than they build.",
+      "catalyst": "Entered the day after the pair closed at a twelve-month low, having fallen 1.5% over the prior quarter.",
+      "breaks": "Banxico cuts towards the Fed and the gap that pays the position closes."
     }
   ],
   "closed": [],
   "_thesis_note": "Three slots, all written AT ENTRY. thesis: what has to be true. catalyst: what made that day the day. breaks: what says it is wrong, which is not the stop being hit. An empty slot renders as an empty line rather than disappearing - see the position-thesis skill.",
   "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it.",
-  "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index."
+  "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index.",
+  "_sources_note": "Slot facts as at 10/09/2026: BoE 3.75% (held 30/07, next MPC 17/09), SNB 0% (June 2026, intervention preferred to negative rates), Banxico 6.50% (06/08) against a Fed at 3.50-3.75%, Advantest 12.2% of the Nikkei at the 31/07 review reference and capped from 01/10. Re-check before quoting any of them again."
 }
