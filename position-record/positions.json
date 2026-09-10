@@ -21,8 +21,8 @@
       "carry_pct": 2.7788,
       "carry_dir": "received",
       "thesis": "The franc is the funding leg of other people's trades, and a shock forces the same buy-back everywhere at once. The SNB has leaned against franc strength for a decade, and the position depends on that continuing.",
-      "catalyst": "",
-      "breaks": ""
+      "catalyst": "Entered within half a percent of the twelve-month high, after a 2.8% run over the prior quarter.",
+      "breaks": "The Bank of England starts cutting towards the SNB, or the SNB stops leaning against a stronger franc."
     },
     {
       "name": "Japan 225",
@@ -38,8 +38,8 @@
       "carry_pct": -3.477,
       "carry_dir": "charged",
       "thesis": "Price weighting hands the index to a few high-priced exporters, and its sensitivity to the yen runs well ahead of the earnings underneath.",
-      "catalyst": "",
-      "breaks": ""
+      "catalyst": "Bought a pullback rather than a high: 10% below the twelve-month peak and in the bottom quarter of its three-month range.",
+      "breaks": "The yen weakens and the index does not follow."
     },
     {
       "name": "USD/MXN",
@@ -55,8 +55,8 @@
       "carry_pct": 1.5657,
       "carry_dir": "received",
       "thesis": "Peso carry is the most crowded expression of the global rate gap: it pays steadily while positioning stays one-way and returns the lot in a single unwind.",
-      "catalyst": "",
-      "breaks": ""
+      "catalyst": "The pair closed at a twelve-month low two days before entry, having fallen 1.5% over the quarter.",
+      "breaks": "Banxico starts cutting towards the Fed and the gap that pays the position closes."
     }
   ],
   "closed": [],
