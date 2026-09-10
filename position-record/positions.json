@@ -37,7 +37,7 @@
       "ccy": "¥",
       "carry_pct": -3.477,
       "carry_dir": "charged",
-      "thesis": "Price weighting puts the highest-priced semiconductor stocks at the top of the index, and Advantest alone was 12.2% of it at the July review. Buying the index is mostly buying them.",
+      "thesis": "The index is price-weighted and Advantest alone was 12.2% of it at the July review. Advantest and Tokyo Electron together explain about three quarters of its daily moves over the past year.",
       "catalyst": "Opened three weeks before the cap rule cuts Advantest's weight from 1 October and pushes passive money into the rest of the index.",
       "breaks": "Advantest and Tokyo Electron roll over. At those weights the other 223 cannot carry the index."
     },
@@ -63,5 +63,5 @@
   "_thesis_note": "Three slots, all written AT ENTRY. thesis: what has to be true. catalyst: what made that day the day. breaks: what says it is wrong, which is not the stop being hit. An empty slot renders as an empty line rather than disappearing - see the position-thesis skill.",
   "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it.",
   "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index.",
-  "_sources_note": "Slot facts as at 10/09/2026: BoE 3.75% (held 30/07, next MPC 17/09), SNB 0% (June 2026, intervention preferred to negative rates), Banxico 6.50% (06/08) against a Fed at 3.50-3.75%, Advantest 12.2% of the Nikkei at the 31/07 review reference and capped from 01/10. Re-check before quoting any of them again."
+  "_sources_note": "Slot facts as at 10/09/2026. Policy rates confirmed on Bloomberg: UKBRBASE 3.75, SZLTDEP 0.00, MXONBR 6.50, FDTR 3.75. Nikkei weights and the cap from Nikkei Inc's own review announcement; the 73% figure is measured from Yahoo daily closes. Re-check before quoting any of them."
 }
