@@ -71,6 +71,16 @@ def test_price_columns_are_not_sortable():
     assert {"Entry", "Stop", "Target", "Last"} <= set(c.strip() for c in cells)
 
 
+def test_the_reasoning_ships_visible_and_is_collapsed_by_the_script():
+    """A reader with no JavaScript must get the reasoning, not a dead button. So the
+    rows render open and the script closes them, never the other way round."""
+    page = (HERE / "index.html").read_text(encoding="utf-8")
+    assert 'class="why"' in page and "<li>" in page
+    assert 'hidden' not in page.split('<tr class="why">')[1][:200], "shipped already closed"
+    assert 'aria-expanded="true"' in page, "the button must ship in its open state"
+    assert "set(false);" in page, "nothing collapses the rows on load"
+
+
 def test_build_refuses_to_publish_without_a_price():
     """Proved by breaking it, because a guard whose red has never been seen is not a
     guard. A blank distance-to-stop reads as 'not close' rather than as 'unknown'."""
