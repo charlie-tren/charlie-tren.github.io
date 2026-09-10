@@ -7,10 +7,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Position Record - Charlie Trenorden</title>
-<meta name="description" content="Every position I hold and the reasoning as it stood when I opened it.">
+<!-- PAIRED with the visible line below, word for word: Google builds its own
+     snippet from the page on this domain, so both have to say the same thing. -->
+<meta name="description" content="Every position, open and closed, with the reasoning recorded at entry.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Position Record">
-<meta property="og:description" content="Every position I hold and the reasoning as it stood when I opened it.">
+<meta property="og:description" content="Every position, open and closed, with the reasoning recorded at entry.">
 <meta property="og:url" content="https://charlietrenorden.com/position-record/">
 <meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -62,7 +64,8 @@
   .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 
   h1 { font-weight: 400; font-size: clamp(2.3rem, 6vw, 3.4rem); line-height: 1.05;
-       letter-spacing: -.015em; margin: 0 0 .4rem; }
+       letter-spacing: -.015em; margin: 0 0 1.1rem; }
+  .lede { font-size: 1.15rem; color: var(--soft); max-width: 48ch; margin: 0 0 3rem; }
 
   h2 { font-weight: 400; font-size: 1.5rem; margin: 3rem 0 1.2rem; letter-spacing: -.01em; }
 
@@ -81,7 +84,7 @@
      instead of letting the scroller do its job. */
   .book { width: 100%; min-width: 800px; border-collapse: collapse; table-layout: fixed; }
   .book th { text-align: left; padding: 0 1rem .55rem 0; border-bottom: 1px solid var(--rule);
-             font: 600 10.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .13em;
+             font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .11em;
              text-transform: uppercase; color: var(--faint); white-space: nowrap; }
   .book tbody.pos.shut td { border-bottom: 1px solid var(--rule); padding-bottom: 1rem; }
   .book td { padding: 1rem 1rem .35rem 0; vertical-align: baseline; white-space: nowrap;
@@ -158,6 +161,7 @@
   </nav>
 
   <h1>Position Record</h1>
+  <p class="lede">Every position, open and closed, with the reasoning recorded at entry.</p>
 
   <h2>Open</h2>
   <div class="scroller">
@@ -165,18 +169,20 @@
     <thead><tr>
       <th style="width:21%" data-sort="name" data-dir="asc">Position</th>
       <th style="width:7%" data-sort="side" data-dir="asc">Dir</th>
-      <th class="n" style="width:10%">Entry</th>
-      <th class="n" style="width:10%">Stop</th>
-      <th class="n" style="width:10%">Target</th>
-      <th class="n" style="width:10%">Last</th>
+      <th class="n" style="width:10%" data-sort="entry" data-dir="asc">Entry</th>
+      <th class="n" style="width:10%" data-sort="stopat" data-dir="asc">Stop</th>
+      <th class="n" style="width:10%" data-sort="target" data-dir="asc">Target</th>
+      <th class="n" style="width:10%" data-sort="last" data-dir="asc">Last</th>
       <th class="n" style="width:8%" data-sort="carry" data-dir="desc">Carry</th>
-      <th class="n" style="width:8%" data-sort="left" data-dir="asc">To stop</th>
+      <th class="n" style="width:9%" data-sort="left" data-dir="asc">To stop</th>
       <th class="n" style="width:7%" data-sort="r" data-dir="desc">R</th>
-      <th style="width:9%"></th>
+      <th style="width:8%"></th>
     </tr></thead>
 {% for p in rows %}    <tbody class="pos" data-name="{{ p.name }}" data-side="{{ p.direction }}"
         data-opened="{{ p.entry_date }}" data-carry="{{ p.carry_pct }}"
-        data-left="{{ p.stop_left }}" data-r="{{ p.r }}">
+        data-left="{{ p.stop_left }}" data-r="{{ p.r }}"
+        data-entry="{{ p.entry }}" data-stopat="{{ p.stop }}"
+        data-target="{{ p.target }}" data-last="{{ p.price }}">
       <tr>
         <td style="white-space:normal"><span class="nm">{{ p.name }}</span><span class="kind">{{ p.kind }} &middot; {{ p.entry_date }}</span></td>
         <td><span class="dir {{ p.direction | lower }}">{{ p.direction }}</span></td>
