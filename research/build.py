@@ -11,7 +11,7 @@ reused and the page says when it was taken. The page is only refused outright if
 is no price at all for a name, because a row with a blank return would read as flat.
 """
 import json, math, sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -77,6 +77,15 @@ def tone(call):
     return "neutral"
 
 
+def target_by(report_date, months):
+    """The horizon the report prints, resolved against the date it was written, so the
+    two can never disagree. Month only: a target is not a claim about a day."""
+    y, m, _ = (int(x) for x in report_date.split("-"))
+    m += int(months)
+    y, m = y + (m - 1) // 12, (m - 1) % 12 + 1
+    return date(y, m, 1).strftime("%b %Y")
+
+
 def main():
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -101,6 +110,8 @@ def main():
             row["price"] = q["price"]
             row["asof"] = q["asof"]
             row["ret"] = (q["price"] / r["call_price"] - 1) * 100
+        if r.get("target") and r.get("target_months"):
+            row["target_by"] = target_by(r["date"], r["target_months"])
         rows.append(row)
 
     # newest first, so the most recent call leads
