@@ -45,6 +45,32 @@ def test_a_nan_price_is_never_published():
     assert usable({"price": 1099.0})
 
 
+def test_every_position_is_its_own_tbody_with_its_sort_keys():
+    """Sorting reorders tbodies, so a position that is not one loses its reasoning
+    the moment a column is clicked."""
+    import re
+    page = (HERE / "index.html").read_text(encoding="utf-8")
+    src = json.loads((HERE / "positions.json").read_text(encoding="utf-8"))
+    bodies = re.findall(r'<tbody class="pos"(.*?)</tbody>', page, re.S)
+    assert len(bodies) == len(src["open"]), f"{len(bodies)} tbodies for {len(src['open'])} positions"
+    for b in bodies:
+        for key in ("name", "side", "opened", "carry", "left", "r"):
+            assert f'data-{key}="' in b, f"tbody missing data-{key}"
+        assert b.count("<tr") == 2, "a position row and its reasoning row"
+
+
+def test_price_columns_are_not_sortable():
+    """A peso entry price and an index entry price are not on one scale, so ordering
+    by either is noise. The arrow must not promise it."""
+    import re
+    page = (HERE / "index.html").read_text(encoding="utf-8")
+    head = re.search(r"<thead>(.*?)</thead>", page, re.S).group(1)
+    cells = re.findall(r"<th[^>]*>(.*?)</th>", head, re.S)
+    sortable = re.findall(r'<th[^>]*data-sort[^>]*>(.*?)</th>', head, re.S)
+    assert set(c.strip() for c in sortable) == {"Position", "Dir", "Carry", "To stop", "R"}
+    assert {"Entry", "Stop", "Target", "Last"} <= set(c.strip() for c in cells)
+
+
 def test_build_refuses_to_publish_without_a_price():
     """Proved by breaking it, because a guard whose red has never been seen is not a
     guard. A blank distance-to-stop reads as 'not close' rather than as 'unknown'."""
