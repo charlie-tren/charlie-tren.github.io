@@ -7,10 +7,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Crosscheck - Charlie Trenorden</title>
-<meta name="description" content="{{ n }} companies scored for accounting strain against how far their price sits from analyst estimates.">
+<meta name="description" content="{{ n }} companies scored for accounting strain against how far their price has drifted from analyst estimates.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Crosscheck">
-<meta property="og:description" content="Accounting strain against the gap to analyst estimates, for {{ n }} companies.">
+<meta property="og:description" content="Accounting strain against the drift from analyst estimates, for {{ n }} companies.">
 <meta property="og:url" content="https://charlietrenorden.com/crosscheck/">
 <link rel="canonical" href="https://charlietrenorden.com/crosscheck/">
 <meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
@@ -77,35 +77,53 @@
   .lede { margin: 0 0 2.6rem; color: var(--soft); font-size: 1.05rem; max-width: 40rem; }
   h2 { font: 600 1.15rem/1.3 inherit; margin: 3rem 0 1rem; }
 
-  /* The cross-tab. Six cells, because the two axes are what the page IS - a 2x2 on the
-     outer corners alone would hide the 320 companies whose price sits inline with
-     estimates, which is more than half of them. */
-  /* Six counts, and they are CONTROLS rather than a second table. The first version
-     drew them as a bordered 2x3 spreadsheet with big serif numbers floating in a lot
-     of air, and it read as a data panel competing with the real one below it - which
-     is what Charlie objected to. Rebuilt tight: no box, no cell borders, one hairline
-     under the header row, and numbers at the size of a label rather than a headline.
-     The empty corner cell went with the box. */
-  .grid { display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr));
-          gap: .1rem 1.6rem; align-items: baseline; max-width: 34rem; }
-  .gh { font: 500 10px/1.3 ui-sans-serif, system-ui, sans-serif; letter-spacing: .09em;
-        text-transform: uppercase; color: var(--faint); padding-bottom: .45rem;
-        border-bottom: 1px solid var(--rule); }
-  .gh.rowlab { border-bottom: 0; padding: 0; color: var(--soft); text-align: left; }
-  /* The corner cell holds nothing, so it must not draw the header rule the other three
-     draw - on screen it read as a stray dash floating above the row labels. */
-  .gh.corner { border-bottom: 0; }
-  .cell { appearance: none; border: 0; background: transparent; cursor: pointer;
-          text-align: left; color: inherit; font: inherit; padding: .35rem 0;
-          transition: color .15s; }
-  .cell:hover .cn { color: var(--ink); }
-  .cell[aria-pressed="true"] .cn { text-decoration: underline;
-          text-decoration-thickness: 2px; text-underline-offset: 4px; }
-  .cell .cn { font: 400 1.05rem/1.2 ui-sans-serif, system-ui, sans-serif;
-              font-variant-numeric: tabular-nums; display: block; }
-  .cell.behind .cn { color: var(--behind); }
-  .cell.ahead  .cn { color: var(--ahead); }
-  .cell.inline .cn { color: var(--inline); }
+  /* The cross-tab as a picture. Every company is a dot: Shortfall across, the drift
+     between estimates and price up, and the model's reading as colour - so all three
+     measures are on one chart rather than in a panel of counts.
+
+     It is a LOCATOR, not a claim about a relationship. The correlation between the two
+     axes is r = +0.087 against a standard error of 0.041, so the cloud is close to
+     round by construction, and that is the finding: the corners are populated
+     independently, which is why reading them is worth anything. */
+  /* Capped rather than full-bleed. At the page's full 1072px this was 3:1 and the
+     cloud came out as a horizontal smear with no vertical separation - the axis that
+     carries the drift had a third of the room the axis carrying the score had. */
+  .plotwrap { position: relative; margin: 0 0 1rem; padding: 0; max-width: 660px; }
+  #plot { width: 100%; display: block; overflow: visible; }
+  .dot { cursor: pointer; }
+  .dot.cheaper { fill: var(--behind); fill-opacity: .72; }
+  .dot.dearer  { fill: var(--ahead);  fill-opacity: .72; }
+  .dot.middle  { fill: var(--inline); fill-opacity: .6; }
+  /* No reading is not a value, so it is drawn as an absence: hollow, quiet, still
+     locatable. Filling it in a fourth colour would make "we could not model this" look
+     like a fourth verdict. */
+  .dot.nodcf { fill: none; stroke: var(--faint); stroke-width: 1; }
+  /* Pinned at the axis edge because its true value is off the scale. Outlined so it
+     never reads as a company that happens to sit exactly on the boundary. */
+  .dot.clamped { stroke: var(--ink); stroke-width: 1.2; fill-opacity: .35; }
+  .dot.on { stroke: var(--accent); stroke-width: 2.5; fill-opacity: 1; }
+  .guide { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 4; }
+  .zero { stroke: var(--rule); stroke-width: 1; }
+  .tk { fill: var(--faint); font: 400 10.5px/1 ui-sans-serif, system-ui, sans-serif;
+        font-variant-numeric: tabular-nums; }
+  .ax { fill: var(--soft); font: 500 10px/1 ui-sans-serif, system-ui, sans-serif;
+        letter-spacing: .08em; text-transform: uppercase; }
+
+  .key { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin-top: .5rem; }
+  .ki { display: inline-flex; align-items: center; gap: .4rem; color: var(--soft);
+        font: 400 11.5px/1.4 ui-sans-serif, system-ui, sans-serif; }
+  .sw { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .sw.cheaper { background: var(--behind); } .sw.dearer { background: var(--ahead); }
+  .sw.middle { background: var(--inline); }
+  .sw.nodcf { background: transparent; border: 1px solid var(--faint); }
+
+  /* Follows the pointer rather than parking in a corner over the data. */
+  .tip { position: absolute; pointer-events: none; z-index: 5; max-width: 17rem;
+         background: var(--raised); border: 1px solid var(--rule); border-radius: 6px;
+         padding: .5rem .65rem; box-shadow: 0 6px 20px rgba(0,0,0,.35);
+         font: 400 12px/1.45 ui-sans-serif, system-ui, sans-serif; color: var(--ink); }
+  .tip .tl { display: block; color: var(--soft); }
+  .tip b { color: var(--ink); font-weight: 600; }
 
   .allbar { display: flex; align-items: baseline; gap: 1rem; margin: 1rem 0 0; flex-wrap: wrap; }
   .clear { appearance: none; background: transparent; border: 1px solid var(--rule);
@@ -181,8 +199,8 @@
   /* Same hues as the gap reading, because they mean the same direction: cheaper is
      the model agreeing the price has room, dearer is the opposite. Reusing them says
      the two columns are two answers to one question rather than two scales. */
-  .read.dcf-cheaper { color: var(--behind); } .read.dcf-dearer { color: var(--ahead); }
-  .read.dcf-middle { color: var(--inline); }
+  .dcf-cheaper { color: var(--behind); } .dcf-dearer { color: var(--ahead); }
+  .dcf-middle { color: var(--inline); }
   /* 103 of the 609 have no usable reading. Set quiet and italic, so the real bands
      read first and the absence recedes into being an absence rather than a value. */
   .none { color: var(--faint); font-style: italic; }
@@ -221,9 +239,18 @@
   </div>
 
   <h1>Crosscheck</h1>
-  <p class="lede">Accounting strain against the gap to analyst estimates, for {{ n }} companies.</p>
+  <p class="lede">Accounting strain against the drift from analyst estimates, for {{ n }} companies.</p>
 
-  <div class="grid" id="grid" role="group" aria-label="Filter by accounting strain and price reading"></div>
+  <figure class="plotwrap">
+    <!-- The svg is aria-hidden and the table below carries every value it draws, which
+         is the honest arrangement: this is a locator, not the data. Its one action -
+         click a company - is mirrored by the search box, which is reachable by
+         keyboard. Marking it role="img" would be worse than either, because that
+         promises there is nothing inside worth reaching. -->
+    <svg id="plot" aria-hidden="true"></svg>
+    <div class="key" id="key"></div>
+    <div class="tip" id="tip" hidden></div>
+  </figure>
 
   <div class="allbar">
     <button class="clear" id="clear" type="button" hidden>Show all {{ n }}</button>
@@ -246,7 +273,7 @@
         <th data-k="name">Company<span class="ar">&#9650;</span></th>
         <th data-k="sector" class="c-sect-cell">Sector<span class="ar">&#9650;</span></th>
         <th data-k="strain" class="num"><span class="hfull">Shortfall</span><span class="hshort">Score</span><span class="ar">&#9650;</span></th>
-        <th data-k="gap" class="num">Gap (pp)<span class="ar">&#9650;</span></th>
+        <th data-k="gap" class="num">Drift (pp)<span class="ar">&#9650;</span></th>
         {% if has_dcf %}<th data-k="dcf" class="c-dcf-cell">DCF<span class="ar">&#9650;</span></th>{% endif %}
         <th class="c-also-cell nosort">Also on</th>
       </tr></thead>
@@ -261,7 +288,7 @@
          what Tests counted, what the DCF bands mean, why the two measures are
          independent. What stays is the three things a reader cannot deduce from the
          page: which way each scale runs, and that Rank is a combination. -->
-    Shortfall runs 0 to 100, higher is more strained. A positive gap means the price
+    Shortfall runs 0 to 100, higher is more strained. A positive drift means the price
     sits behind analyst estimates. Rank combines all three columns, and the top of the
     table is where they agree. General information, not advice.
   </p>
@@ -272,46 +299,153 @@
 (function () {
   var ROWS = JSON.parse(document.getElementById("rows").textContent);
   var HAS_DCF = {{ 'true' if has_dcf else 'false' }};
+  var N_DCF = {{ n_dcf }};
   var CUT = {{ corners.cut }};
-  var tb = document.getElementById("tb"), grid = document.getElementById("grid");
+  var tb = document.getElementById("tb");
   var q = document.getElementById("q"), count = document.getElementById("count");
   var clear = document.getElementById("clear");
-  var sortKey = "rank", sortDir = 1, cell = null;
+  var sortKey = "rank", sortDir = 1;
 
-  var READINGS = [["behind", "Price behind"], ["inline", "Inline"], ["ahead", "Price ahead"]];
-  var BANDS = [["high", "Top quarter"], ["low", "The rest"]];
+  var svg = document.getElementById("plot"), tip = document.getElementById("tip");
+  var picked = null;
 
-  function band(r) { return r.strain >= CUT ? "high" : "low"; }
+  // The drift axis is CLAMPED rather than fitted. Measured over the 609: the values run
+  // -211.1 to +56.7, but -60 to +60 already contains 606 of them, so fitting to the
+  // data spends 70% of the plot on three distressed names and squashes everyone else
+  // into a band. The three sit ON the edge as hollow marks with their true figure in
+  // the readout, because a point silently parked off-canvas is worse than a squashed
+  // axis - it reads as a company the page forgot.
+  var YCLAMP = 60;
+  var BANDS = { cheaper: "cheaper", middle: "middle", dearer: "dearer" };
 
-  function buildGrid() {
-    var html = '<div class="gh corner"></div>';
-    READINGS.forEach(function (rd) { html += '<div class="gh">' + rd[1] + "</div>"; });
-    BANDS.forEach(function (b) {
-      html += '<div class="gh rowlab">' + b[1] + "</div>";
-      READINGS.forEach(function (rd) {
-        var n = ROWS.filter(function (r) { return band(r) === b[0] && r.reading === rd[0]; }).length;
-        html += '<button class="cell ' + rd[0] + '" type="button" aria-pressed="false"' +
-                ' data-b="' + b[0] + '" data-r="' + rd[0] + '">' +
-                '<span class="cn">' + n + "</span></button>";
-      });
-    });
-    grid.innerHTML = html;
-    grid.querySelectorAll(".cell").forEach(function (el) {
-      el.addEventListener("click", function () {
-        var key = el.dataset.b + "|" + el.dataset.r;
-        cell = cell === key ? null : key;
-        grid.querySelectorAll(".cell").forEach(function (o) {
-          o.setAttribute("aria-pressed", String(o.dataset.b + "|" + o.dataset.r === cell));
-        });
-        render();
-      });
-    });
+  function drawKey() {
+    var items = [["cheaper", "Cheaper on the model"], ["middle", "Middle third"],
+                 ["dearer", "Dearer on the model"], ["nodcf", "No model reading"]];
+    document.getElementById("key").innerHTML = items.map(function (i) {
+      return '<span class="ki"><i class="sw ' + i[0] + '"></i>' + i[1] + "</span>";
+    }).join("");
   }
+
+  function plot() {
+    // Drawn at CONTAINER PIXEL SCALE - the viewBox is set from the measured width, so
+    // one unit is one CSS pixel and a 10px label is 10px on a phone. A fixed wide
+    // viewBox scaled to fit is what renders axis type at 4px.
+    var w = Math.max(280, svg.clientWidth || svg.parentElement.clientWidth);
+    var h = w < 520 ? 300 : 430;
+    var M = { l: 44, r: 12, t: 12, b: 34 };
+    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+    svg.setAttribute("height", h);
+    var pw = w - M.l - M.r, ph = h - M.t - M.b;
+    var X = function (v) { return M.l + (v / 100) * pw; };
+    var Y = function (v) {
+      var c = Math.max(-YCLAMP, Math.min(YCLAMP, v));
+      return M.t + ph * (1 - (c + YCLAMP) / (2 * YCLAMP));
+    };
+
+    var parts = [];
+    // Guides: the strain quartile cut, and Consensus Drift's own 10pp bands. Drawn
+    // under the dots so a mark is never hidden behind a rule.
+    [-10, 10].forEach(function (v) {
+      parts.push('<line class="guide" x1="' + M.l + '" x2="' + (w - M.r) +
+                 '" y1="' + Y(v) + '" y2="' + Y(v) + '"/>');
+    });
+    parts.push('<line class="guide" y1="' + M.t + '" y2="' + (M.t + ph) +
+               '" x1="' + X(CUT) + '" x2="' + X(CUT) + '"/>');
+    parts.push('<line class="zero" x1="' + M.l + '" x2="' + (w - M.r) +
+               '" y1="' + Y(0) + '" y2="' + Y(0) + '"/>');
+
+    // Axes. Ticks are round numbers on both, and the labels say the DIRECTION, which
+    // is what a reader needs here - the units mean nothing without it.
+    [-60, -30, 0, 30, 60].forEach(function (v) {
+      parts.push('<text class="tk" x="' + (M.l - 7) + '" y="' + (Y(v) + 3.5) +
+                 '" text-anchor="end">' + (v > 0 ? "+" : "") + v + "</text>");
+    });
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      parts.push('<text class="tk" x="' + X(v) + '" y="' + (h - 16) +
+                 '" text-anchor="middle">' + v + "</text>");
+    });
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (h - 3) + '">Shortfall, higher is more strained</text>');
+    parts.push('<text class="ax" transform="translate(11,' + (M.t + 4) + ') rotate(-90)" text-anchor="end">Price behind estimates</text>');
+    parts.push('<text class="ax" transform="translate(11,' + (M.t + ph) + ') rotate(-90)">Price ahead</text>');
+
+    ROWS.forEach(function (r, i) {
+      var cls = r.dcfband ? BANDS[r.dcfband] : "nodcf";
+      var clamped = Math.abs(r.gap) > YCLAMP;
+      parts.push('<circle class="dot ' + cls + (clamped ? " clamped" : "") + '" data-i="' + i +
+                 '" cx="' + X(r.strain).toFixed(1) + '" cy="' + Y(r.gap).toFixed(1) +
+                 '" r="' + (w < 520 ? 2.6 : 3.1) + '"/>');
+    });
+    svg.innerHTML = parts.join("");
+    markPicked();
+  }
+
+  function markPicked() {
+    svg.querySelectorAll(".dot.on").forEach(function (d) { d.classList.remove("on"); });
+    if (picked === null) return;
+    var d = svg.querySelector('.dot[data-i="' + picked + '"]');
+    if (d) d.classList.add("on");
+  }
+
+  function nearest(ev) {
+    var b = svg.getBoundingClientRect();
+    var vb = svg.viewBox.baseVal;
+    var x = (ev.clientX - b.left) * (vb.width / b.width);
+    var y = (ev.clientY - b.top) * (vb.height / b.height);
+    var best = null, bd = 14 * 14;
+    svg.querySelectorAll(".dot").forEach(function (d) {
+      var dx = d.cx.baseVal.value - x, dy = d.cy.baseVal.value - y;
+      var dist = dx * dx + dy * dy;
+      if (dist < bd) { bd = dist; best = +d.dataset.i; }
+    });
+    return best;
+  }
+
+  function showTip(i, ev) {
+    var r = ROWS[i];
+    tip.innerHTML =
+      '<b>' + r.ticker + "</b> " + r.name +
+      '<span class="tl">Shortfall <b>' + r.strain.toFixed(0) + "</b> of 100, " +
+        r.applicable + " of 6 tests</span>" +
+      '<span class="tl">Drift <b>' + (r.gap > 0 ? "+" : "") + r.gap.toFixed(1) + "pp</b> " +
+        (r.gap > 0 ? "price behind" : r.gap < 0 ? "price ahead" : "level") + "</span>" +
+      '<span class="tl">DCF ' + (r.dcf === null ? "<b>no reading</b>"
+        : "<b>" + r.dcf.toFixed(2) + "x</b> the market price") + "</span>";
+    tip.hidden = false;
+    // Follows the pointer, and flips before it can run off the right edge.
+    var box = tip.getBoundingClientRect();
+    var wrap = svg.parentElement.getBoundingClientRect();
+    var left = ev.clientX - wrap.left + 14;
+    if (left + box.width > wrap.width) left = ev.clientX - wrap.left - box.width - 14;
+    tip.style.left = Math.max(0, left) + "px";
+    tip.style.top = Math.max(0, ev.clientY - wrap.top - box.height - 10) + "px";
+  }
+
+  svg.addEventListener("mousemove", function (ev) {
+    var i = nearest(ev);
+    if (i === null) { tip.hidden = true; return; }
+    showTip(i, ev);
+  });
+  svg.addEventListener("mouseleave", function () { tip.hidden = true; });
+  svg.addEventListener("click", function (ev) {
+    var i = nearest(ev);
+    if (i === null) return;
+    // Drops the ticker into the search box rather than filtering invisibly, so the
+    // control that did it is the one a keyboard reaches, and clearing is obvious.
+    q.value = ROWS[i].ticker;
+    picked = i;
+    render();
+    markPicked();
+  });
+
+  var rz;
+  window.addEventListener("resize", function () {
+    clearTimeout(rz);
+    rz = setTimeout(plot, 150);
+  });
 
   function visible() {
     var term = q.value.trim().toLowerCase();
     return ROWS.filter(function (r) {
-      if (cell && band(r) + "|" + r.reading !== cell) return false;
       if (!term) return true;
       // Match from the START of the ticker or of a word in the name. Substring
       // matching returns Camden Property Trust for "AMD"; this is the rule the
@@ -321,6 +455,29 @@
         return w.indexOf(term) === 0;
       });
     });
+  }
+
+  // Charlie: the three measures should say more on hover. Each says what the figure
+  // is MADE OF rather than restating it - what the score was computed over, the two
+  // moves the drift is the difference between, and what the model actually concluded.
+  function strainTip(r) {
+    return "Ranked against " + r.sector + ", on " + r.applicable +
+           " of Shortfall's 6 accounting tests. 100 is the most strained.";
+  }
+  function driftTip(r) {
+    var a = r.rev === null || r.rev === undefined ? null : r.rev;
+    var b = r.pxchg === null || r.pxchg === undefined ? null : r.pxchg;
+    if (a === null || b === null) return "Estimates against price over 90 days.";
+    var s = (a > 0 ? "+" : "") + a.toFixed(1) + "% vs the price " +
+            (b > 0 ? "+" : "") + b.toFixed(1) + "% over 90 days";
+    return "Consensus earnings estimates " + s + ", so the price is " +
+           (r.gap > 0 ? "behind" : r.gap < 0 ? "ahead of" : "level with") + " the estimates.";
+  }
+  function dcfTip(r) {
+    if (r.dcf === null) return "DCF Studio could not produce a usable value for this company.";
+    return "DCF Studio's model values the shares at " + r.dcf.toFixed(2) +
+           " times the market price, which is the " + r.dcfband +
+           " third of the " + N_DCF + " it can value.";
   }
 
   function render() {
@@ -346,14 +503,15 @@
         '<td class="c-sect-cell">' + r.sector + "</td>" +
         // Tests is no longer a column of its own - it is a caveat on the score rather
         // than a measurement beside it, so it rides along as the cell's title.
-        '<td class="num" title="' + r.applicable + ' of 6 tests could be run">' + r.strain.toFixed(0) + "</td>" +
-        '<td class="num ' + r.reading + '">' + (r.gap > 0 ? "+" : "") + r.gap.toFixed(1) + "</td>" +
-        (HAS_DCF ? '<td class="c-dcf-cell">' + (r.dcfband
-          ? '<span class="read dcf-' + r.dcfband + '">' + r.dcfband + "</span>"
-          : '<span class="none">-</span>') + "</td>" : "") +
+        '<td class="num" title="' + strainTip(r) + '">' + r.strain.toFixed(0) + "</td>" +
+        '<td class="num ' + r.reading + '" title="' + driftTip(r) + '">' +
+          (r.gap > 0 ? "+" : "") + r.gap.toFixed(1) + "</td>" +
+        (HAS_DCF ? '<td class="num c-dcf-cell" title="' + dcfTip(r) + '">' + (r.dcf === null
+          ? '<span class="none">-</span>'
+          : '<span class="dcf-' + r.dcfband + '">' + r.dcf.toFixed(2) + "x</span>") + "</td>" : "") +
         '<td class="also c-also-cell">' +
           '<a href="https://charlietrenorden.com/shortfall/?q=' + t + '">Shortfall</a>' +
-          '<a href="https://charlietrenorden.com/consensus-drift/?q=' + t + '">Drift</a>' +
+          '<a href="https://charlietrenorden.com/consensus-drift/?q=' + t + '">Consensus</a>' +
           '<a href="https://dcf.charlietrenorden.com/' + t + '">DCF</a>' +
         "</td>" +
       "</tr>";
@@ -381,16 +539,16 @@
 
   q.addEventListener("input", render);
   clear.addEventListener("click", function () {
-    q.value = ""; cell = null;
-    grid.querySelectorAll(".cell").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
-    render();
+    q.value = ""; picked = null;
+    render(); markPicked();
   });
 
   // A ?q= arriving from Shortfall or Consensus Drift lands on that company.
   var incoming = new URLSearchParams(location.search).get("q");
   if (incoming) q.value = incoming;
 
-  buildGrid();
+  drawKey();
+  plot();
   render();
 
   var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
