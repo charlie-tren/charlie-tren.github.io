@@ -59,16 +59,20 @@ def test_every_position_is_its_own_tbody_with_its_sort_keys():
         assert b.count("<tr") == 2, "a position row and its reasoning row"
 
 
-def test_price_columns_are_not_sortable():
-    """A peso entry price and an index entry price are not on one scale, so ordering
-    by either is noise. The arrow must not promise it."""
+def test_every_column_sorts_and_has_a_key_to_sort_on():
+    """A header carrying the arrow is a promise. Each one needs the matching
+    data attribute on every tbody, or clicking it silently does nothing."""
     import re
     page = (HERE / "index.html").read_text(encoding="utf-8")
     head = re.search(r"<thead>(.*?)</thead>", page, re.S).group(1)
-    cells = re.findall(r"<th[^>]*>(.*?)</th>", head, re.S)
-    sortable = re.findall(r'<th[^>]*data-sort[^>]*>(.*?)</th>', head, re.S)
-    assert set(c.strip() for c in sortable) == {"Position", "Dir", "Carry", "To stop", "R"}
-    assert {"Entry", "Stop", "Target", "Last"} <= set(c.strip() for c in cells)
+    labelled = [c.strip() for c in re.findall(r"<th[^>]*>(.+?)</th>", head, re.S)]
+    sortable = re.findall(r'<th[^>]*data-sort="([a-z]+)"[^>]*>(.+?)</th>', head, re.S)
+    assert {lbl.strip() for _, lbl in sortable} == set(labelled), "a column with no sort"
+    bodies = re.findall(r'<tbody class="pos"(.*?)>', page, re.S)
+    assert bodies
+    for key, lbl in sortable:
+        for b in bodies:
+            assert f'data-{key}="' in b, f"{lbl.strip()} sorts on a key no row carries"
 
 
 def test_the_reasoning_ships_visible_and_is_collapsed_by_the_script():
