@@ -79,7 +79,10 @@ def test_the_reasoning_ships_visible_and_is_collapsed_by_the_script():
     """A reader with no JavaScript must get the reasoning, not a dead button. So the
     rows render open and the script closes them, never the other way round."""
     page = (HERE / "index.html").read_text(encoding="utf-8")
-    assert 'class="why"' in page and "<li>" in page
+    assert 'class="why"' in page and "<dt>Thesis</dt>" in page
+    for slot in ("Thesis", "Catalyst", "Breaks if"):
+        assert page.count(f"<dt>{slot}</dt>") == len(json.loads(
+            (HERE / "positions.json").read_text(encoding="utf-8"))["open"]),             f"every position needs a {slot} slot, filled or not"
     assert 'hidden' not in page.split('<tr class="why">')[1][:200], "shipped already closed"
     assert 'aria-expanded="true"' in page, "the button must ship in its open state"
     assert "_set(false);" in page, "nothing collapses the rows on load"
