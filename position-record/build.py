@@ -83,6 +83,9 @@ def enrich(p, price):
     # is still live in any meaningful sense, and it is not visible from the P&L.
     row["stop_left"] = max(0.0, (price - p["stop"]) * sign / risk) if risk else None
     row["reward_r"] = (p["target"] - p["entry"]) * sign / risk if risk and p.get("target") else None
+    if p.get("entry_date"):                 # the ISO date stays on the row, for sorting
+        y, m, d = p["entry_date"].split("-")
+        row["opened"] = f"{d}/{m}/{y}"
     return row
 
 
