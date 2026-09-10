@@ -131,6 +131,27 @@ def test_a_nan_close_never_reaches_the_cache(tmp_path, monkeypatch):
     assert cache["ARB.AX"] == {"price": 80.0, "asof": "2026-08-21"}
 
 
+
+@pytest.mark.parametrize("report_date,months,want", [
+    ("2026-09-09", 12, "Sep 2027"),
+    ("2026-08-27", 12, "Aug 2027"),
+    ("2026-12-01", 1, "Jan 2027"),
+    ("2026-01-31", 18, "Jul 2027"),
+])
+def test_the_target_date_comes_off_the_report_date(tmp_path, report_date, months, want):
+    """The horizon is what the report prints; the date is derived, so a re-dated
+    report cannot leave a target hanging off the old one."""
+    b = load_build(tmp_path, [report()])
+    assert b.target_by(report_date, months) == want
+
+
+def test_a_target_with_no_stated_horizon_gets_no_date(tmp_path):
+    b = load_build(tmp_path, [report(target=100.0)], prices={"ARB.AX": {"price": 80.0, "asof": "2026-08-20"}})
+    b.fetch = lambda syms, cache: ([], list(syms))
+    b.main()
+    assert "class=\"by\"" not in (tmp_path / "index.html").read_text(encoding="utf-8")
+
+
 # --------------------------------------------------------------------- the tone
 
 @pytest.mark.parametrize("call,expected", [

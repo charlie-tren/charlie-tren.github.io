@@ -2,13 +2,10 @@
   "_comment": "Source of truth for the positions page. Hand-edited when a position is opened or closed; build.py adds the live price and derives R. The thesis is written AT ENTRY - a thesis composed at exit is marking your own homework, and the whole point of the page is that the claim was on the record before the outcome was.",
   "_symbol_note": "Yahoo symbols. Japan 225 uses NIY=F, the yen Nikkei future, NOT ^N225: the spot index closes with Tokyo while CMC's cash CFD tracks the future, so ^N225 reads about 0.8% away from the platform and puts the stop distance visibly wrong.",
   "_r_note": "1R is the distance from entry to the initial stop. Every outcome on this page is quoted in multiples of it, so positions of different sizes are comparable.",
-  "_balance_note": "Update balance_aud when it moves materially. The historical section derives its net P&L from this against the net contributions in history.json, so a stale balance makes the headline figure wrong rather than merely old.",
-
   "account": {
-    "balance_aud": 1641.00,
+    "balance_aud": 1641.0,
     "balance_asof": "2026-09-09"
   },
-
   "open": [
     {
       "name": "GBP/CHF",
@@ -17,8 +14,8 @@
       "direction": "Long",
       "entry_date": "2026-09-08",
       "entry": 1.09592,
-      "stop": 1.08500,
-      "target": 1.11650,
+      "stop": 1.085,
+      "target": 1.1165,
       "dp": 5,
       "carry_pct": 2.7788,
       "carry_dir": "received",
@@ -34,15 +31,14 @@
       "direction": "Long",
       "entry_date": "2026-09-08",
       "entry": 66332.94,
-      "stop": 64043.00,
-      "target": 70970.00,
+      "stop": 64043.0,
+      "target": 70970.0,
       "dp": 0,
       "carry_pct": -3.477,
       "carry_dir": "charged",
       "thesis": [
         "A continuation trade on an index that had been trending, with the stop 3.5% below the entry so it sits outside the index's own daily range.",
-        "It fell as soon as I was in it and has stayed near the stop since, so the setup I entered on has not done what it was supposed to.",
-        "The Nikkei usually rallies when the yen is weakening, and I hold this in Australian dollars, so the currency hands back part of any gain in the index."
+        "The Nikkei usually rallies when the yen is weakening, and the position is held in Australian dollars, so the currency hands back part of any gain in the index."
       ]
     },
     {
@@ -52,18 +48,17 @@
       "direction": "Short",
       "entry_date": "2026-09-08",
       "entry": 16.94992,
-      "stop": 17.14000,
-      "target": 16.48000,
+      "stop": 17.14,
+      "target": 16.48,
       "dp": 5,
       "carry_pct": 1.5657,
       "carry_dir": "received",
       "thesis": [
-        "Short the dollar against the peso to collect the gap between Banxico and the Fed, which is worth 1.57% a year to me after CMC takes its cut.",
-        "Financing is the cheapest of anything I hold. CMC charges 1.28% either side of the true rate here, against 8.24% on natural gas.",
-        "The peso does not drift against you, it gaps. A stop is not much protection in that, so what actually limits the loss is how small the position is."
+        "Short the dollar against the peso to collect the gap between Banxico and the Fed, worth 1.57% a year after CMC takes its cut, on the cheapest financing in the book.",
+        "The peso does not drift, it gaps. A stop is not much protection against that, so the loss is limited by the size of the position instead."
       ]
     }
   ],
-
-  "closed": []
+  "closed": [],
+  "_thesis_note": "Two lines per position, both written AT ENTRY: what the trade is, and what would break it. Third person - the page is a record, not a diary."
 }
