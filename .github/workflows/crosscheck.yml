@@ -43,7 +43,12 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - run: pip install jinja2
+      # pytest, because the gate below is `python -m pytest` and setup-python's
+      # interpreter does not carry it. Without it that step exits 1 before a
+      # single test runs, which looks identical to a failing test - and it is the
+      # FIRST step, so the build never ran either. This workflow had never once
+      # produced a page. research-prices.yml installs it; this file did not.
+      - run: pip install jinja2 pytest
 
       # Runs the unit tests BEFORE the build, because the two parsers read files other
       # repositories publish and neither controls their shape. A silent format change
