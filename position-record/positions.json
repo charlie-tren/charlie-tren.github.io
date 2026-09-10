@@ -20,9 +20,9 @@
       "ccy": "CHF",
       "carry_pct": 2.7788,
       "carry_dir": "received",
-      "thesis": "Sterling pays 3.75% and the franc pays nothing. The position collects the difference. The danger is a rush into francs, and the SNB has said it would meet one by selling francs rather than cutting below zero.",
-      "catalyst": "Opened nine days before the September MPC. The market is pricing the Bank's next move as a rise, not a cut.",
-      "breaks": "The Bank of England starts cutting, or the SNB lets a franc rally run."
+      "thesis": "Sterling pays 3.75% a year and the franc pays nothing. The position earns that difference for as long as the pair holds still. It loses when investors buy francs in a panic, and the SNB has said it will sell francs to slow that down.",
+      "catalyst": "Opened nine days before the September MPC. The market is pricing the Bank's next move as a rise, which would widen the gap.",
+      "breaks": "The Bank of England starts cutting, or the SNB stops selling francs into a rally."
     },
     {
       "name": "Japan 225",
@@ -37,9 +37,9 @@
       "ccy": "¥",
       "carry_pct": -3.477,
       "carry_dir": "charged",
-      "thesis": "The index is price-weighted and Advantest alone was 12.2% of it at the July review. Advantest and Tokyo Electron together explain about three quarters of its daily moves over the past year.",
-      "catalyst": "Opened three weeks before the cap rule cuts Advantest's weight on 1 October. Passive funds have to sell it and buy the rest of the index.",
-      "breaks": "Advantest and Tokyo Electron roll over. At those weights the other 223 cannot carry the index."
+      "thesis": "The Nikkei is price-weighted and two chip stocks dominate it: Advantest and Tokyo Electron explain about three quarters of its daily moves. Buying the index is buying semiconductors, not Japan.",
+      "catalyst": "Opened three weeks before the cap rule cuts Advantest's weight on 1 October. Passive funds have to sell it and buy the other 223 names.",
+      "breaks": "Advantest and Tokyo Electron roll over. At those weights nothing else in the index can hold it up."
     },
     {
       "name": "USD/MXN",
@@ -54,13 +54,13 @@
       "ccy": "MX$",
       "carry_pct": 1.5657,
       "carry_dir": "received",
-      "thesis": "Mexico's policy rate is 6.50% and the Fed's is 3.75%. Being long the peso earns most of that difference, and the risk is that a lot of people are doing the same thing.",
+      "thesis": "Mexico pays 6.50% a year and the United States pays 3.75%. Holding pesos earns that gap while the peso keeps its value. The risk is that a lot of people hold the same position and sell it at the same time.",
       "catalyst": "The peso had been strengthening for three months and hit a one-year high the day before this went on.",
-      "breaks": "Banxico starts cutting and the rate gap narrows."
+      "breaks": "Banxico starts cutting and the gap narrows."
     }
   ],
   "closed": [],
-  "_thesis_note": "Three slots, all written AT ENTRY. thesis: what has to be true. catalyst: what made that day the day. breaks: what says it is wrong, which is not the stop being hit. An empty slot renders as an empty line rather than disappearing - see the position-thesis skill.",
+  "_thesis_note": "Three slots, written AT ENTRY. The thesis says how the position MAKES MONEY first, then what stops it - a reader should not have to work out which direction a fact cuts. See the position-thesis skill.",
   "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it.",
   "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index.",
   "_sources_note": "Slot facts as at 10/09/2026. Policy rates confirmed on Bloomberg: UKBRBASE 3.75, SZLTDEP 0.00, MXONBR 6.50, FDTR 3.75. Nikkei weights and the cap from Nikkei Inc's own review announcement; the 73% figure is measured from Yahoo daily closes. Re-check before quoting any of them."
