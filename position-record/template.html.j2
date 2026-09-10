@@ -130,13 +130,16 @@
   .thesis::after { content: "\25BE"; padding-left: .4rem; }
   .thesis[aria-expanded="true"]::after { content: "\25B4"; }
 
-  .why td { padding: .85rem 0 1.3rem; border-bottom: 1px solid var(--rule); white-space: normal; }
-  .why dl { display: grid; grid-template-columns: 5.5rem minmax(0, 74ch);
-            gap: .3rem 1rem; margin: 0; }
-  .why dt { font: 600 10.5px/1.6 ui-sans-serif, system-ui, sans-serif; letter-spacing: .08em;
+  .why td { padding: .85rem 0 1.3rem 1.6rem; border-bottom: 1px solid var(--rule); white-space: normal; }
+  /* The label sits on the first line of its value, so the two line-heights have
+     to resolve to the same number of pixels: 12.5 x 1.6 = 10.5 x 1.905. */
+  .why dl { display: grid; grid-template-columns: 4.75rem minmax(0, 66ch);
+            gap: .75rem 1.25rem; margin: 0; padding-left: 1.15rem;
+            border-left: 1px solid var(--rule); }
+  .why dt { font: 600 10.5px/1.905 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
             text-transform: uppercase; color: var(--faint); }
-  .why dd { margin: 0; font: 400 12.5px/1.55 ui-sans-serif, system-ui, sans-serif;
-            color: var(--soft); min-height: 1.2em; }
+  .why dd { margin: 0; font: 400 12.5px/1.6 ui-sans-serif, system-ui, sans-serif;
+            color: var(--soft); min-height: 1.6em; }
 
   .scroller { overflow-x: auto; }
 
