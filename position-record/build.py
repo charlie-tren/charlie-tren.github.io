@@ -83,6 +83,13 @@ def enrich(p, price):
     # is still live in any meaningful sense, and it is not visible from the P&L.
     row["stop_left"] = max(0.0, (price - p["stop"]) * sign / risk) if risk else None
     row["reward_r"] = (p["target"] - p["entry"]) * sign / risk if risk and p.get("target") else None
+    # Where the price sits between the stop and the target: 0% at the stop, 100% at
+    # the target. Unlike the distance to the stop - which is just R plus one, the
+    # same fact twice - this carries each position's own reward-to-risk, so two
+    # positions on the same R can be a long way apart on the plan.
+    span = (p["target"] - p["stop"]) * sign if p.get("target") else None
+    row["progress"] = (max(0.0, min(1.0, (price - p["stop"]) * sign / span)) * 100
+                       if span else None)
     if p.get("entry_date"):                 # the ISO date stays on the row, for sorting
         y, m, d = p["entry_date"].split("-")
         row["opened"] = f"{d}/{m}/{y}"

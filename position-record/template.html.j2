@@ -184,13 +184,13 @@
       <th class="n" data-sort="entry" data-dir="asc">Entry</th>
       <th class="n" data-sort="stopat" data-dir="asc">Stop</th>
       <th class="n" data-sort="carry" data-dir="desc">Carry</th>
-      <th class="n" data-sort="left" data-dir="asc">Cushion</th>
+      <th class="n" data-sort="progress" data-dir="desc">Progress</th>
       <th class="n" data-sort="r" data-dir="desc">R</th>
       <th></th>
     </tr></thead>
 {% for p in rows %}    <tbody class="pos" data-name="{{ p.name }}" data-side="{{ p.direction }}"
         data-opened="{{ p.entry_date }}" data-carry="{{ p.carry_pct }}" data-kind="{{ p.kind }}"
-        data-left="{{ p.stop_left }}" data-r="{{ p.r }}"
+        data-progress="{{ p.progress }}" data-r="{{ p.r }}"
         data-entry="{{ p.entry }}" data-stopat="{{ p.stop }}"
 >
       <tr>
@@ -201,7 +201,7 @@
         <td class="n q">{{ p.entry | px(p.dp, p.ccy) }}</td>
         <td class="n q">{{ p.stop | px(p.dp, p.ccy) }}</td>
         <td class="n">{{ '%+.2f'|format(p.carry_pct) }}%</td>
-        <td class="n">{{ '%.2f'|format(p.stop_left) }}R</td>
+        <td class="n">{{ '%.0f'|format(p.progress) }}%</td>
         <td class="n r {{ 'up' if p.r >= 0 else 'dn' }}">{{ '%+.2f'|format(p.r) }}</td>
         <td class="n"><button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
       </tr>
