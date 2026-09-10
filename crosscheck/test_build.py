@@ -327,3 +327,45 @@ class TestCombinedRank:
             {"ticker": "B", "strain": 50, "gap": 5.0, "dcf": 0.6},
         ])
         assert a[0]["score"] == a[1]["score"]
+
+
+class TestComponentPercentiles:
+    """The client reweights the score live, so each row carries its three components
+    already turned into percentiles. Recomputing them in the browser would mean
+    shipping the whole distribution three times and doing it on every slider move."""
+
+    def rows(self):
+        return build.rank_rows([
+            {"ticker": "A", "strain": 0, "gap": 40.0, "dcf": 2.0},
+            {"ticker": "B", "strain": 50, "gap": 0.0, "dcf": 0.6},
+            {"ticker": "C", "strain": 100, "gap": -40.0, "dcf": 0.2},
+            {"ticker": "D", "strain": 25, "gap": 10.0, "dcf": None},
+        ])
+
+    def test_each_row_carries_its_three_component_percentiles(self):
+        r = self.rows()[0]
+        for k in ("pStrain", "pDrift", "pDcf"):
+            assert k in r
+
+    def test_all_three_are_oriented_so_higher_is_more_attractive(self):
+        by = {r["ticker"]: r for r in self.rows()}
+        assert by["A"]["pStrain"] > by["C"]["pStrain"]   # clean accounts
+        assert by["A"]["pDrift"] > by["C"]["pDrift"]     # price behind estimates
+        assert by["A"]["pDcf"] > by["C"]["pDcf"]         # model value above price
+
+    def test_a_missing_component_is_none_not_zero(self):
+        # Zero would read as "worst on this measure" rather than "no reading", and the
+        # client averages over what is present.
+        by = {r["ticker"]: r for r in self.rows()}
+        assert by["D"]["pDcf"] is None
+        assert by["D"]["pStrain"] is not None
+
+    def test_the_shipped_score_is_the_equal_weighted_mean_of_what_is_present(self):
+        for r in self.rows():
+            parts = [r[k] for k in ("pStrain", "pDrift", "pDcf") if r[k] is not None]
+            assert abs(r["score"] - sum(parts) / len(parts)) < 1e-9
+
+    def test_complete_says_whether_all_three_are_present(self):
+        by = {r["ticker"]: r for r in self.rows()}
+        assert by["A"]["complete"] is True
+        assert by["D"]["complete"] is False
