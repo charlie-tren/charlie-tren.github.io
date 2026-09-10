@@ -86,6 +86,8 @@
   .book tbody.pos.shut td { border-bottom: 1px solid var(--rule); padding-bottom: 1rem; }
   .book td { padding: 1rem 1rem .35rem 0; vertical-align: baseline; white-space: nowrap;
              font: 400 13px/1.4 ui-monospace, Consolas, monospace; color: var(--soft); }
+  /* The four prices are the plan and the mark. They are reference, not the reading. */
+  .book td.q { color: var(--faint); }
   .book th.n, .book td.n { text-align: right; padding-right: 0; }
   .book .sub { color: var(--faint); }
   /* Only the columns that compare across instruments sort. A peso entry price and
@@ -106,17 +108,14 @@
   .dir.short { color: var(--neg); border-color: var(--neg); }
   .book td.r { font-size: 14px; font-weight: 500; }
   .r.up { color: var(--pos); } .r.dn { color: var(--neg); }
-  .carry.rx { color: var(--pos); }
-  .carry.px { color: var(--neg); }
 
   /* Closed by default, so the book reads as a book. Rendered OPEN and collapsed by
      the script, so a reader with no JavaScript gets the reasoning rather than a
      button that does nothing. */
-  .thesis { appearance: none; -webkit-appearance: none; background: none; cursor: pointer;
-            border: 1px solid var(--rule); border-radius: 999px; padding: .3rem .7rem;
-            font: 500 12.5px/1 ui-sans-serif, system-ui, sans-serif; color: var(--faint);
-            white-space: nowrap; transition: color .2s, border-color .2s; }
-  .thesis:hover { color: var(--accent); border-color: var(--accent); }
+  .thesis { appearance: none; -webkit-appearance: none; background: none; border: 0;
+            cursor: pointer; padding: 0; color: var(--faint); white-space: nowrap;
+            font: 500 12.5px/1 ui-sans-serif, system-ui, sans-serif; transition: color .2s; }
+  .thesis:hover, .thesis[aria-expanded="true"] { color: var(--accent); }
   .thesis::after { content: "\25BE"; padding-left: .4rem; }
   .thesis[aria-expanded="true"]::after { content: "\25B4"; }
 
@@ -141,7 +140,7 @@
        numbers past first. */
     .book td:last-child, .book th:last-child { position: sticky; right: 0; background: var(--bg); }
     .why ul { position: sticky; left: 0; width: calc(100vw - 3rem); }
-    .thesis { padding: .28rem .6rem; }
+    .thesis { font-size: 12px; }
   }
 </style>
 <script>/* Analytics, gated. Two kinds of visitor are not an audience and never load it: anyone who has opted out with ?nostats=1, and automation, since navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose - served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2"}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
@@ -168,10 +167,10 @@
       <th style="width:8%" data-sort="side" data-dir="asc">Dir</th>
       <th class="n" style="width:8%">Entry</th>
       <th class="n" style="width:8%">Stop</th>
-      <th class="n" style="width:12%">Target</th>
+      <th class="n" style="width:10%">Target</th>
       <th class="n" style="width:8%">Last</th>
-      <th class="n" style="width:8%" data-sort="carry" data-dir="desc">Carry</th>
-      <th class="n" style="width:8%" data-sort="left" data-dir="asc">To stop</th>
+      <th class="n" style="width:9%" data-sort="carry" data-dir="desc">Carry</th>
+      <th class="n" style="width:9%" data-sort="left" data-dir="asc">To stop</th>
       <th class="n" style="width:7%" data-sort="r" data-dir="desc">R</th>
       <th style="width:10%"></th>
     </tr></thead>
@@ -181,11 +180,11 @@
       <tr>
         <td style="white-space:normal"><span class="nm">{{ p.name }}</span><span class="kind">{{ p.kind }} &middot; {{ p.entry_date }}</span></td>
         <td><span class="dir {{ p.direction | lower }}">{{ p.direction }}</span></td>
-        <td class="n">{{ p.entry | px(p.dp) }}</td>
-        <td class="n">{{ p.stop | px(p.dp) }}</td>
-        <td class="n">{{ p.target | px(p.dp) }} <span class="sub">{{ '%.1f'|format(p.reward_r) }}R</span></td>
-        <td class="n">{{ p.price | px(p.dp) }}</td>
-        <td class="n carry {{ 'rx' if p.carry_dir == 'received' else 'px' }}">{{ '%+.2f'|format(p.carry_pct) }}%</td>
+        <td class="n q">{{ p.entry | px(p.dp) }}</td>
+        <td class="n q">{{ p.stop | px(p.dp) }}</td>
+        <td class="n q">{{ p.target | px(p.dp) }}</td>
+        <td class="n q">{{ p.price | px(p.dp) }}</td>
+        <td class="n">{{ '%+.2f'|format(p.carry_pct) }}%</td>
         <td class="n">{{ '%.2f'|format(p.stop_left) }}R</td>
         <td class="n r {{ 'up' if p.r >= 0 else 'dn' }}">{{ '%+.2f'|format(p.r) }}</td>
         <td class="n"><button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
