@@ -20,8 +20,8 @@
       "ccy": "CHF",
       "carry_pct": 2.7788,
       "carry_dir": "received",
-      "thesis": "Sterling pays 3.75% a year and the franc pays nothing. This earns the difference for doing nothing.",
-      "catalyst": "Opened nine days before the September MPC, with the market pricing a rise rather than a cut.",
+      "thesis": "The SNB caps the franc: rates at zero, and it sells francs when the currency runs. That is what protects the 3.75% sterling pays.",
+      "catalyst": "The MPC meets on 17 September. The market expects a rise, widening the gap this earns.",
       "breaks": "The Bank of England starts cutting, or the SNB stops selling francs into a rally."
     },
     {
@@ -37,9 +37,9 @@
       "ccy": "¥",
       "carry_pct": -3.477,
       "carry_dir": "charged",
-      "thesis": "Two chip stocks drive the Nikkei: Advantest and Tokyo Electron explain three quarters of its daily moves. Buying the index buys them.",
-      "catalyst": "Opened three weeks before the cap rule cuts Advantest's weight on 1 October. Passive funds must buy the rest of the index.",
-      "breaks": "Advantest and Tokyo Electron roll over. Nothing else in the index is big enough to hold it up."
+      "thesis": "Price weighting turns the Nikkei into a concentrated bet on semiconductor capex. Advantest and Tokyo Electron drive three quarters of its moves.",
+      "catalyst": "From 1 October the cap rule cuts Advantest's weight, forcing index funds to buy the other 223 names.",
+      "breaks": "Semiconductor capex slows and the two chip names fall. Nothing else in the index is big enough to offset them."
     },
     {
       "name": "USD/MXN",
@@ -54,14 +54,14 @@
       "ccy": "MX$",
       "carry_pct": 1.5657,
       "carry_dir": "received",
-      "thesis": "Mexico pays 6.50% a year and the United States pays 3.75%. Holding pesos earns the gap.",
-      "catalyst": "The peso had been strengthening for three months and hit a one-year high the day before this went on.",
-      "breaks": "Banxico starts cutting, or the crowd holding pesos sells at once."
+      "thesis": "Nearshoring keeps pulling investment into Mexico while Banxico holds real rates high. Both push the peso up against the dollar.",
+      "catalyst": "The peso hit a one-year high the day before this went on, after three months of steady gains.",
+      "breaks": "The USMCA review goes against Mexico, and the nearshoring case with it."
     }
   ],
   "closed": [],
-  "_thesis_note": "thesis: how the position earns, and nothing else - the risk belongs in breaks, or it gets said twice. Caps: thesis 24 words, catalyst 22, breaks 20. See the position-thesis skill.",
+  "_thesis_note": "thesis: why the PRICE moves this way, or why the carry is not handed back in the exchange rate. Describing the carry is not a thesis. Caps: thesis 24 words, catalyst 22, breaks 20. See the position-thesis skill.",
   "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it.",
   "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index.",
-  "_sources_note": "Slot facts as at 10/09/2026. Policy rates confirmed on Bloomberg: UKBRBASE 3.75, SZLTDEP 0.00, MXONBR 6.50, FDTR 3.75. Nikkei weights and the cap from Nikkei Inc's own review announcement; the 73% figure is measured from Yahoo daily closes. Re-check before quoting any of them."
+  "_sources_note": "As at 10/09/2026. Policy rates on Bloomberg: UKBRBASE 3.75, SZLTDEP 0.00, MXONBR 6.50, FDTR 3.75. Advantest over the 10% cap at the 31/07 review, weight cut from 01/10 (Nikkei Inc). Mexican FDI and the 2026 USMCA joint review from press coverage, not a primary source - re-check before quoting."
 }
