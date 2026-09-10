@@ -37,8 +37,8 @@
       "ccy": "¥",
       "carry_pct": -3.477,
       "carry_dir": "charged",
-      "thesis": "Price weighting turns the Nikkei into a concentrated bet on semiconductor capex. Advantest and Tokyo Electron drive three quarters of its moves.",
-      "catalyst": "From 1 October the cap rule cuts Advantest's weight, forcing index funds to buy the other 223 names.",
+      "thesis": "AI chips are built and tested on Advantest and Tokyo Electron equipment. Price weighting makes the Nikkei the most concentrated way to own both.",
+      "catalyst": "The index had fallen 16% from its June high, then rose 2% on chip stocks in the session before this went on.",
       "breaks": "Semiconductor capex slows and the two chip names fall. Nothing else in the index is big enough to offset them."
     },
     {
@@ -55,7 +55,7 @@
       "carry_pct": 1.5657,
       "carry_dir": "received",
       "thesis": "Nearshoring keeps pulling investment into Mexico while Banxico holds real rates high. Both push the peso up against the dollar.",
-      "catalyst": "The peso hit a one-year high the day before this went on, after three months of steady gains.",
+      "catalyst": "The pair set fresh twelve-month lows twice in the three sessions before entry, so the peso went on at its strongest in a year.",
       "breaks": "The USMCA review goes against Mexico, and the nearshoring case with it."
     }
   ],
