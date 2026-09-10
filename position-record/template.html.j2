@@ -92,22 +92,19 @@
              font: 400 13px/1.4 ui-monospace, Consolas, monospace; color: var(--soft); }
   /* The four prices are the plan and the mark. They are reference, not the reading. */
   .book td.q { color: var(--faint); }
-  /* Auto layout sizes a column to its content, so the gutter has to sit on the
-     LEFT of a right-aligned cell - a right padding just pads empty space. */
-  .book th.n, .book td.n { text-align: right; padding-left: .75rem; padding-right: 0; }
+  /* The sort arrow sits to the right of every label. On a right-aligned column
+     that space has to exist under the number too, or the label stops short of the
+     digits - so the gutter moves from the left of the cell to the right of it. */
+  .book th.n { text-align: right; padding-left: .45rem; padding-right: .3rem; }
+  /* The header carries the arrow after its label, so the digits below need the
+     arrow's width as extra right padding or the two do not end on the same x. */
+  .book td.n { text-align: right; padding-left: .45rem; padding-right: 1.12rem; }
+  .book th.n:last-child, .book td.n:last-child { padding-right: 0; }
   .book .sub { color: var(--faint); }
   /* Only the columns that compare across instruments sort. A peso entry price and
      an index entry price are not on the same scale, so ordering by one is noise. */
   .book th[data-sort] { cursor: pointer; -webkit-user-select: none; user-select: none; }
   .book th[data-sort]::after { content: "\2195"; padding-left: .3rem; color: var(--rule); }
-  /* On a right-aligned header the arrow would sit between the label and the cell
-     edge, so the label stops short of the digits below it. Put it on the left. */
-  .book th.n[data-sort]::after { content: none; }
-  .book th.n[data-sort]::before { content: "\2195"; padding-right: .3rem; color: var(--rule); }
-  .book th.n[data-sort]:hover::before { color: var(--soft); }
-  .book th.n[aria-sort]::before { color: var(--accent); }
-  .book th.n[aria-sort="ascending"]::before  { content: "\2191"; }
-  .book th.n[aria-sort="descending"]::before { content: "\2193"; }
   .book th[data-sort]:hover::after { color: var(--soft); }
   .book th[aria-sort]::after { color: var(--accent); }
   .book th[aria-sort="ascending"]::after  { content: "\2191"; }
@@ -184,13 +181,13 @@
       <th class="n" data-sort="entry" data-dir="asc">Entry</th>
       <th class="n" data-sort="stopat" data-dir="asc">Stop</th>
       <th class="n" data-sort="carry" data-dir="desc">Carry</th>
-      <th class="n" data-sort="progress" data-dir="desc">Progress</th>
+      <th class="n" data-sort="totarget" data-dir="asc">To target</th>
       <th class="n" data-sort="r" data-dir="desc">R</th>
       <th></th>
     </tr></thead>
 {% for p in rows %}    <tbody class="pos" data-name="{{ p.name }}" data-side="{{ p.direction }}"
         data-opened="{{ p.entry_date }}" data-carry="{{ p.carry_pct }}" data-kind="{{ p.kind }}"
-        data-progress="{{ p.progress }}" data-r="{{ p.r }}"
+        data-totarget="{{ p.to_target }}" data-r="{{ p.r }}"
         data-entry="{{ p.entry }}" data-stopat="{{ p.stop }}"
 >
       <tr>
@@ -201,7 +198,7 @@
         <td class="n q">{{ p.entry | px(p.dp, p.ccy) }}</td>
         <td class="n q">{{ p.stop | px(p.dp, p.ccy) }}</td>
         <td class="n">{{ '%+.2f'|format(p.carry_pct) }}%</td>
-        <td class="n">{{ '%.0f'|format(p.progress) }}%</td>
+        <td class="n">{{ '%.2f'|format(p.to_target) }}R</td>
         <td class="n r {{ 'up' if p.r >= 0 else 'dn' }}">{{ '%+.2f'|format(p.r) }}</td>
         <td class="n"><button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
       </tr>
