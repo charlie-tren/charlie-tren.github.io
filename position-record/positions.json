@@ -21,7 +21,7 @@
       "carry_pct": 2.7788,
       "carry_dir": "received",
       "thesis": [
-        "The franc is borrowed to fund other trades and bought when those trades go wrong. The carry here is payment for standing on the other side of that."
+        "The franc is the funding leg of other people's trades, and a shock forces the same buy-back everywhere at once. The SNB has leaned against franc strength for a decade, and the position depends on that continuing."
       ]
     },
     {
@@ -38,7 +38,7 @@
       "carry_pct": -3.477,
       "carry_dir": "charged",
       "thesis": [
-        "A price-weighted index where a handful of exporters set the level, and it tracks the yen more closely than Japanese earnings."
+        "Price weighting hands the index to a few high-priced exporters, and its sensitivity to the yen runs well ahead of the earnings underneath."
       ]
     },
     {
@@ -55,7 +55,7 @@
       "carry_pct": 1.5657,
       "carry_dir": "received",
       "thesis": [
-        "The peso pays the most carry of any liquid currency, and carry returns are negatively skewed."
+        "Peso carry is the most crowded expression of the global rate gap: it pays steadily while positioning stays one-way and returns the lot in a single unwind."
       ]
     }
   ],

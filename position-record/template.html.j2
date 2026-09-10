@@ -14,6 +14,7 @@
 <meta property="og:title" content="Position Record">
 <meta property="og:description" content="Every position, open and closed, with the reasoning recorded at entry.">
 <meta property="og:url" content="https://charlietrenorden.com/position-record/">
+<link rel="canonical" href="https://charlietrenorden.com/position-record/">
 <meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -130,10 +131,12 @@
                     width: 5px; height: 1px; background: var(--faint); }
   .why li:last-child { margin-bottom: 0; }
 
-  /* Wider than the reading column, centred on it. A margin rather than a transform,
-     which would break the sticky cells. */
-  .scroller { overflow-x: auto; width: min(100vw - 2rem, 1040px);
-              margin-left: calc((100% - min(100vw - 2rem, 1040px)) / 2); }
+  /* Both pages share this: wider than the reading column, centred on it, so the
+     header block above stays put and the data block does not jump when you switch
+     between the two. A margin rather than a transform, which would break sticky. */
+  .wide { width: min(100vw - 2rem, 1040px);
+          margin-left: calc((100% - min(100vw - 2rem, 1040px)) / 2); }
+  .scroller { overflow-x: auto; }
 
   @media (max-width: 680px) {
     .wrap { padding-top: 1.6rem; }
@@ -166,7 +169,7 @@
   <h1>Position Record</h1>
   <p class="lede">Every position, open and closed, with the reasoning recorded at entry.</p>
 
-  <div class="scroller">
+  <div class="scroller wide">
   <table class="book" id="book">
     <thead><tr>
       <th style="width:11%" data-sort="name" data-dir="asc">Position</th>
@@ -210,7 +213,7 @@
 
 {% if closed %}
   <h2>Closed</h2>
-  <div class="scroller">
+  <div class="scroller wide">
   <table class="book">
     <thead><tr>
       <th>Position</th><th>Dir</th><th class="n">R</th>
