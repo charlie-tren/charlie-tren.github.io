@@ -81,6 +81,7 @@
   .book th { text-align: left; padding: 0 1.25rem .55rem 0; border-bottom: 1px solid var(--rule);
              font: 600 10.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .11em;
              text-transform: uppercase; color: var(--faint); white-space: nowrap; }
+  .book tbody.pos.shut td { border-bottom: 1px solid var(--rule); padding-bottom: 1rem; }
   .book td { padding: 1rem 1.25rem .35rem 0; vertical-align: baseline; white-space: nowrap;
              font: 400 13px/1.4 ui-monospace, Consolas, monospace; color: var(--soft); }
   .book th.n, .book td.n { text-align: right; padding-right: 0; }
@@ -107,10 +108,22 @@
   .carry.rx { color: var(--pos); }
   .carry.px { color: var(--neg); }
 
+  /* Closed by default, so the book reads as a book. Rendered OPEN and collapsed by
+     the script, so a reader with no JavaScript gets the reasoning rather than a
+     button that does nothing. */
+  .thesis { appearance: none; -webkit-appearance: none; background: none; cursor: pointer;
+            border: 1px solid var(--rule); border-radius: 999px; padding: .3rem .6rem;
+            font: 600 9.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em;
+            text-transform: uppercase; color: var(--faint); white-space: nowrap;
+            transition: color .2s, border-color .2s; }
+  .thesis:hover { color: var(--accent); border-color: var(--accent); }
+  .thesis::after { content: "\25BE"; padding-left: .4rem; }
+  .thesis[aria-expanded="true"]::after { content: "\25B4"; }
+
   .why td { padding: .15rem 0 1.15rem; border-bottom: 1px solid var(--rule); white-space: normal; }
-  .why ul { margin: 0; padding: 0; list-style: none; max-width: 76ch; }
-  .why li { position: relative; padding-left: 1rem; margin-bottom: .35rem;
-            font: 400 13.5px/1.55 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
+  .why ul { margin: 0; padding: 0; list-style: none; max-width: 78ch; }
+  .why li { position: relative; padding-left: 1rem; margin-bottom: .25rem;
+            font: 400 12.5px/1.5 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
   .why li::before { content: ""; position: absolute; left: 0; top: .72em;
                     width: 5px; height: 1px; background: var(--faint); }
   .why li:last-child { margin-bottom: 0; }
@@ -125,6 +138,7 @@
        with them, or reading a position means dragging the table back and forth. */
     .book td:first-child, .book th:first-child { position: sticky; left: 0; background: var(--bg); }
     .why ul { position: sticky; left: 0; width: calc(100vw - 3rem); }
+    .thesis { padding: .28rem .5rem; }
   }
 </style>
 <script>/* Analytics, gated. Two kinds of visitor are not an audience and never load it: anyone who has opted out with ?nostats=1, and automation, since navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose - served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2"}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
@@ -154,6 +168,7 @@
       <th class="n" data-sort="carry" data-dir="desc">Carry</th>
       <th class="n" data-sort="left" data-dir="asc">To stop</th>
       <th class="n" data-sort="r" data-dir="desc">R</th>
+      <th></th>
     </tr></thead>
 {% for p in rows %}    <tbody class="pos" data-name="{{ p.name }}" data-side="{{ p.direction }}"
         data-opened="{{ p.entry_date }}" data-carry="{{ p.carry_pct }}"
@@ -168,8 +183,9 @@
         <td class="n carry {{ 'rx' if p.carry_dir == 'received' else 'px' }}">{{ '%+.2f'|format(p.carry_pct) }}%</td>
         <td class="n">{{ '%.2f'|format(p.stop_left) }}R</td>
         <td class="n r {{ 'up' if p.r >= 0 else 'dn' }}">{{ '%+.2f'|format(p.r) }}</td>
+        <td class="n"><button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
       </tr>
-      <tr class="why"><td colspan="9"><ul>
+      <tr class="why"><td colspan="10"><ul>
 {% for line in p.thesis %}        <li>{{ line }}</li>
 {% endfor %}      </ul></td></tr>
     </tbody>
@@ -205,6 +221,21 @@
   (function () {
     var t = document.getElementById("book");
     if (!t || !t.tHead) return;
+
+    [].forEach.call(t.querySelectorAll("tbody.pos"), function (tb) {
+      var btn = tb.querySelector(".thesis"), row = tb.querySelector("tr.why");
+      if (!btn || !row) return;
+      function set(open) {
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        row.hidden = !open;
+        tb.classList.toggle("shut", !open);
+      }
+      set(false);
+      btn.addEventListener("click", function () {
+        set(btn.getAttribute("aria-expanded") !== "true");
+      });
+    });
+
     var heads = [].slice.call(t.tHead.rows[0].cells);
     function val(tb, k) {
       var v = tb.getAttribute("data-" + k), n = parseFloat(v);

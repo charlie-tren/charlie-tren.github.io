@@ -16,12 +16,12 @@
       "entry": 1.09592,
       "stop": 1.085,
       "target": 1.1165,
-      "dp": 5,
+      "dp": 2,
       "carry_pct": 2.7788,
       "carry_dir": "received",
       "thesis": [
-        "Sterling yields more than any other currency in the G10 and the franc yields least. CMC passes 2.78% a year of that gap through to a long, so the position earns something while it waits.",
-        "The risk is a rush into francs. That happens quickly when something goes wrong in Europe, and a stop 1% away does not survive a gap."
+        "Sterling yields the most in the G10 and the franc the least, and CMC passes 2.78% a year of that gap through to a long.",
+        "The risk is a rush into francs, which happens fast when Europe goes wrong, and a stop 1% away does not survive a gap."
       ]
     },
     {
@@ -37,8 +37,8 @@
       "carry_pct": -3.477,
       "carry_dir": "charged",
       "thesis": [
-        "A continuation trade on an index that had been trending, with the stop 3.5% below the entry so it sits outside the index's own daily range.",
-        "The Nikkei usually rallies when the yen is weakening, and the position is held in Australian dollars, so the currency hands back part of any gain in the index."
+        "A continuation trade on an index that had been trending, with the stop 3.5% away so it clears the daily range.",
+        "The Nikkei tends to rally when the yen weakens, and the position is held in Australian dollars, so the currency gives part of the gain back."
       ]
     },
     {
@@ -50,15 +50,16 @@
       "entry": 16.94992,
       "stop": 17.14,
       "target": 16.48,
-      "dp": 5,
+      "dp": 2,
       "carry_pct": 1.5657,
       "carry_dir": "received",
       "thesis": [
-        "Short the dollar against the peso to collect the gap between Banxico and the Fed, worth 1.57% a year after CMC takes its cut, on the cheapest financing in the book.",
-        "The peso does not drift, it gaps. A stop is not much protection against that, so the loss is limited by the size of the position instead."
+        "Short the dollar against the peso to collect the gap between Banxico and the Fed, worth 1.57% a year after CMC takes its cut.",
+        "The peso gaps rather than drifts, so what limits the loss is the size of the position, not the stop."
       ]
     }
   ],
   "closed": [],
-  "_thesis_note": "Two lines per position, both written AT ENTRY: what the trade is, and what would break it. Third person - the page is a record, not a diary."
+  "_thesis_note": "Two lines per position, both written AT ENTRY: what the trade is, and what would break it. Third person - the page is a record, not a diary.",
+  "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it."
 }
