@@ -83,6 +83,59 @@ for (const [name, url] of Object.entries(SITES)) {
   check(`${name}: has a meta description`,
     /<meta\s+name="description"\s+content="[^"]{20,}"/i.test(head));
 
+  /* CANONICAL. Fifteen of the twenty-five properties had none on 10/09/2026,
+     found by checking five homepages by hand - which is the reason this is a
+     test now. Two things make it matter here more than on a normal site.
+     Several projects are reachable at BOTH a path on the apex and their own
+     subdomain, or at their deploy origin as well as the custom domain
+     (dcf-studio.vercel.app and crowdwise-live.vercel.app both answer 200), so
+     without one tag Google is choosing between duplicates on its own. And DCF
+     Studio carries its whole assumption set in the query string, so one company
+     has an unbounded number of URLs.
+
+     Photocopy and One Story are template-fixed and land on their next scheduled
+     render rather than on a push here, so they are enumerated rather than
+     waived: the reverse assertion below turns the exemption itself into a
+     failure once they deploy, which is what makes the list shrink. */
+  const NO_CANONICAL_YET = new Set(["Photocopy", "One Story"]);
+  const canonical = head.match(/<link[^>]*rel="canonical"[^>]*href="([^"]+)"/i)?.[1];
+  if (!NO_CANONICAL_YET.has(name)) {
+    check(`${name}: has a canonical URL`, !!canonical,
+      "the apex path, the subdomain and the deploy origin all index separately");
+  } else if (canonical) {
+    check(`${name}: fixed - remove it from NO_CANONICAL_YET`, false,
+      "it now has a canonical, so the exemption is stale");
+  }
+  /* An absolute URL on our own domain: a relative or a stray localhost
+     canonical is worse than none, since it points the index somewhere real.
+     The trailing slash is optional - Crowdwise names its bare origin, which is
+     the same document, and requiring one failed a correct tag. */
+  if (canonical) {
+    check(`${name}: canonical is an absolute URL on this estate`,
+      /^https:\/\/[a-z0-9.-]*charlietrenorden\.com(\/|$)/.test(canonical), canonical);
+  }
+
+  /* A DECLARED CARD SLOT MUST HAVE AN IMAGE. Not "every page needs a card" -
+     several deliberately have none. This is the pairing that renders BROKEN:
+     twitter:card=summary_large_image tells X and Slack to reserve a large image
+     slot, and with no og:image they draw the slot empty, so the share looks
+     like a dead page. statecraft/make_card.py exists because of exactly this
+     and says so in its first paragraph; the-aftertimes/card.py is a second
+     instance, and CFA Companion was the third, found by this sweep and fixed in
+     the same change that added this check - which is why the set is empty. Keep
+     it: an enumerated exemption is how the next one stays visible and countable
+     while a card gets drawn, rather than being waived or left red. */
+  const EMPTY_CARD_SLOT = new Set([]);
+  const largeCard = /<meta[^>]*name="twitter:card"[^>]*content="summary_large_image"/i.test(head);
+  const hasOgImage = /<meta[^>]*property="og:image"/i.test(head);
+  if (largeCard && !EMPTY_CARD_SLOT.has(name)) {
+    check(`${name}: declares a large card and has an og:image`, hasOgImage,
+      "X and Slack reserve the slot and render it empty");
+  } else if (largeCard && hasOgImage) {
+    check(`${name}: fixed - remove it from EMPTY_CARD_SLOT`, false,
+      "it now has an og:image, so the exemption is stale");
+  }
+
   /* Checked against the WHOLE page, not `head`: the beacon is the last thing in
      <head> and on a big single-file page that sits well past the 8KB slice. */
   check(`${name}: reports to Cloudflare Web Analytics`,
@@ -182,4 +235,5 @@ if (fails.length) {
   }
 }
 
-console.log(`all ${Object.keys(SITES).length} properties pass: title, description, own icons, correct alpha`);
+console.log(`all ${Object.keys(SITES).length} properties pass: title, description, canonical, ` +
+            `no empty card slots, own icons, correct alpha`);
