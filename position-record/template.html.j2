@@ -83,16 +83,18 @@
      A row per position, with its reasoning on a second row beneath. */
   /* Fixed widths need a floor, or a phone squashes ten columns into 342px
      instead of letting the scroller do its job. */
-  .book { width: 100%; min-width: 1000px; border-collapse: collapse; table-layout: fixed; }
-  .book th { text-align: left; padding: 0 1rem .55rem 0; border-bottom: 1px solid var(--rule);
+  .book { width: 100%; min-width: 790px; border-collapse: collapse; }
+  .book th { text-align: left; padding: 0 .6rem .55rem 0; border-bottom: 1px solid var(--rule);
              font: 600 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
              text-transform: uppercase; color: var(--faint); white-space: nowrap; }
   .book tbody.pos.shut td { border-bottom: 1px solid var(--rule); padding-bottom: 1rem; }
-  .book td { padding: 1rem 1rem .35rem 0; vertical-align: baseline; white-space: nowrap;
+  .book td { padding: 1rem .6rem .35rem 0; vertical-align: baseline; white-space: nowrap;
              font: 400 13px/1.4 ui-monospace, Consolas, monospace; color: var(--soft); }
   /* The four prices are the plan and the mark. They are reference, not the reading. */
   .book td.q { color: var(--faint); }
-  .book th.n, .book td.n { text-align: right; padding-right: 0; }
+  /* Auto layout sizes a column to its content, so the gutter has to sit on the
+     LEFT of a right-aligned cell - a right padding just pads empty space. */
+  .book th.n, .book td.n { text-align: right; padding-left: .75rem; padding-right: 0; }
   .book .sub { color: var(--faint); }
   /* Only the columns that compare across instruments sort. A peso entry price and
      an index entry price are not on the same scale, so ordering by one is noise. */
@@ -131,17 +133,12 @@
                     width: 5px; height: 1px; background: var(--faint); }
   .why li:last-child { margin-bottom: 0; }
 
-  /* Both pages share this: wider than the reading column, centred on it, so the
-     header block above stays put and the data block does not jump when you switch
-     between the two. A margin rather than a transform, which would break sticky. */
-  .wide { width: min(100vw - 2rem, 1040px);
-          margin-left: calc((100% - min(100vw - 2rem, 1040px)) / 2); }
   .scroller { overflow-x: auto; }
 
   @media (max-width: 680px) {
     .wrap { padding-top: 1.6rem; }
     .bar { margin-bottom: 2.6rem; }
-    .book td, .book th { padding-right: .75rem; }
+    .book td, .book th { padding-right: .6rem; }
     /* The numbers scroll sideways on a phone; the name and the reasoning must not go
        with them, or reading a position means dragging the table back and forth. */
     .book td:first-child, .book th:first-child { position: sticky; left: 0; background: var(--bg); }
@@ -169,27 +166,26 @@
   <h1>Position Record</h1>
   <p class="lede">Every position, open and closed, with the reasoning recorded at entry.</p>
 
-  <div class="scroller wide">
+  <div class="scroller">
   <table class="book" id="book">
     <thead><tr>
-      <th style="width:11%" data-sort="name" data-dir="asc">Position</th>
-      <th style="width:11%" data-sort="kind" data-dir="asc">Type</th>
-      <th style="width:10%" data-sort="opened" data-dir="desc">Opened</th>
-      <th style="width:8%" data-sort="side" data-dir="asc">Dir</th>
-      <th class="n" style="width:8%" data-sort="entry" data-dir="asc">Entry</th>
-      <th class="n" style="width:8%" data-sort="stopat" data-dir="asc">Stop</th>
-      <th class="n" style="width:8%" data-sort="target" data-dir="asc">Target</th>
-      <th class="n" style="width:8%" data-sort="last" data-dir="asc">Last</th>
-      <th class="n" style="width:7%" data-sort="carry" data-dir="desc">Carry</th>
-      <th class="n" style="width:8%" data-sort="left" data-dir="asc">To stop</th>
-      <th class="n" style="width:6%" data-sort="r" data-dir="desc">R</th>
-      <th style="width:7%"></th>
+      <th data-sort="name" data-dir="asc">Position</th>
+      <th data-sort="kind" data-dir="asc">Type</th>
+      <th data-sort="opened" data-dir="desc">Opened</th>
+      <th data-sort="side" data-dir="asc">Dir</th>
+      <th class="n" data-sort="entry" data-dir="asc">Entry</th>
+      <th class="n" data-sort="stopat" data-dir="asc">Stop</th>
+      <th class="n" data-sort="target" data-dir="asc">Target</th>
+      <th class="n" data-sort="carry" data-dir="desc">Carry</th>
+      <th class="n" data-sort="left" data-dir="asc">To stop</th>
+      <th class="n" data-sort="r" data-dir="desc">R</th>
+      <th></th>
     </tr></thead>
 {% for p in rows %}    <tbody class="pos" data-name="{{ p.name }}" data-side="{{ p.direction }}"
         data-opened="{{ p.entry_date }}" data-carry="{{ p.carry_pct }}" data-kind="{{ p.kind }}"
         data-left="{{ p.stop_left }}" data-r="{{ p.r }}"
         data-entry="{{ p.entry }}" data-stopat="{{ p.stop }}"
-        data-target="{{ p.target }}" data-last="{{ p.price }}">
+        data-target="{{ p.target }}">
       <tr>
         <td style="white-space:normal"><span class="nm">{{ p.name }}</span></td>
         <td class="kind">{{ p.kind }}</td>
@@ -198,13 +194,12 @@
         <td class="n q">{{ p.entry | px(p.dp, p.ccy) }}</td>
         <td class="n q">{{ p.stop | px(p.dp, p.ccy) }}</td>
         <td class="n q">{{ p.target | px(p.dp, p.ccy) }}</td>
-        <td class="n q">{{ p.price | px(p.dp, p.ccy) }}</td>
         <td class="n">{{ '%+.2f'|format(p.carry_pct) }}%</td>
         <td class="n">{{ '%.2f'|format(p.stop_left) }}R</td>
         <td class="n r {{ 'up' if p.r >= 0 else 'dn' }}">{{ '%+.2f'|format(p.r) }}</td>
         <td class="n"><button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
       </tr>
-      <tr class="why"><td colspan="12"><ul>
+      <tr class="why"><td colspan="11"><ul>
 {% for line in p.thesis %}        <li>{{ line }}</li>
 {% endfor %}      </ul></td></tr>
     </tbody>
@@ -213,7 +208,7 @@
 
 {% if closed %}
   <h2>Closed</h2>
-  <div class="scroller wide">
+  <div class="scroller">
   <table class="book">
     <thead><tr>
       <th>Position</th><th>Dir</th><th class="n">R</th>

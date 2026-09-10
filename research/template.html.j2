@@ -74,11 +74,6 @@
   .tab:hover { color: var(--soft); }
   .tab[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* Both pages share this: wider than the reading column, centred on it, so the
-     header block above stays put and the data block does not jump when you switch
-     between the two. A margin rather than a transform, which would break sticky. */
-  .wide { width: min(100vw - 2rem, 1040px);
-          margin-left: calc((100% - min(100vw - 2rem, 1040px)) / 2); }
   .list { border-top: 1px solid var(--rule); }
   .item { display: grid; grid-template-columns: 1fr auto auto; align-items: baseline;
           gap: 1.2rem; padding: 1.15rem .2rem; border-bottom: 1px solid var(--rule);
@@ -179,9 +174,9 @@
 
   <!-- New tab on every report: these are PDFs, and a PDF that replaces the page
        strands the reader with only the back button to get home. -->
-  <div class="cols wide"><span>Report</span><span>Call</span><span>Target</span><span>At call</span><span>Now</span><span>Move</span></div>
+  <div class="cols"><span>Report</span><span>Call</span><span>Target</span><span>At call</span><span>Now</span><span>Move</span></div>
 
-  <div class="list wide">
+  <div class="list">
 {% for r in rows %}    <a class="item" href="{{ r.pdf }}" target="_blank" rel="noopener">
       <span class="who"><span class="main"><span class="name">{{ r.name }}</span><span class="tick">{{ r.ticker }}</span></span>
         <span class="sub">{{ r.kind }} &middot; {{ r.date_label }}</span></span>
@@ -198,7 +193,7 @@
 {% endif %}    </a>
 {% endfor %}  </div>
 
-  <p class="note wide">Not investment advice.</p>
+  <p class="note">Not investment advice.</p>
 </div>
 
 <script>
