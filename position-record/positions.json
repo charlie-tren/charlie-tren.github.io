@@ -20,9 +20,9 @@
       "ccy": "CHF",
       "carry_pct": 2.7788,
       "carry_dir": "received",
-      "thesis": [
-        "The franc is the funding leg of other people's trades, and a shock forces the same buy-back everywhere at once. The SNB has leaned against franc strength for a decade, and the position depends on that continuing."
-      ]
+      "thesis": "The franc is the funding leg of other people's trades, and a shock forces the same buy-back everywhere at once. The SNB has leaned against franc strength for a decade, and the position depends on that continuing.",
+      "catalyst": "",
+      "breaks": ""
     },
     {
       "name": "Japan 225",
@@ -37,9 +37,9 @@
       "ccy": "¥",
       "carry_pct": -3.477,
       "carry_dir": "charged",
-      "thesis": [
-        "Price weighting hands the index to a few high-priced exporters, and its sensitivity to the yen runs well ahead of the earnings underneath."
-      ]
+      "thesis": "Price weighting hands the index to a few high-priced exporters, and its sensitivity to the yen runs well ahead of the earnings underneath.",
+      "catalyst": "",
+      "breaks": ""
     },
     {
       "name": "USD/MXN",
@@ -54,13 +54,13 @@
       "ccy": "MX$",
       "carry_pct": 1.5657,
       "carry_dir": "received",
-      "thesis": [
-        "Peso carry is the most crowded expression of the global rate gap: it pays steadily while positioning stays one-way and returns the lot in a single unwind."
-      ]
+      "thesis": "Peso carry is the most crowded expression of the global rate gap: it pays steadily while positioning stays one-way and returns the lot in a single unwind.",
+      "catalyst": "",
+      "breaks": ""
     }
   ],
   "closed": [],
-  "_thesis_note": "One line per position, written AT ENTRY. See the position-thesis skill: mechanism plus a why-now, and nothing a column already carries.",
+  "_thesis_note": "Three slots, all written AT ENTRY. thesis: what has to be true. catalyst: what made that day the day. breaks: what says it is wrong, which is not the stop being hit. An empty slot renders as an empty line rather than disappearing - see the position-thesis skill.",
   "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it.",
   "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index."
 }
