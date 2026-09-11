@@ -100,6 +100,12 @@
      arrow's width as extra right padding or the two do not end on the same x. */
   .book td.n { text-align: right; padding-left: .45rem; padding-right: 1.12rem; }
   .book th.n:last-child, .book td.n:last-child { padding-right: 0; }
+  /* THE CLOSED TABLE HAS NO SORT ARROWS, so it must not carry the compensation for
+     them. td.n's 1.12rem right padding above exists solely to offset the glyph the
+     sortable headers print after their label; the Closed headers are plain, so the
+     same padding pushed every figure 0.82rem right of the label it belongs to. */
+  .shutbook td.n { padding-right: .3rem; }
+  .shutbook td.n:last-child { padding-right: 0; }
   .book .sub { color: var(--faint); }
   /* Only the columns that compare across instruments sort. A peso entry price and
      an index entry price are not on the same scale, so ordering by one is noise. */
