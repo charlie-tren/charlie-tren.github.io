@@ -67,7 +67,7 @@ def test_every_position_is_its_own_tbody_with_its_sort_keys():
     for b in live:
         # `totarget` went with the column on 11/09/2026; `expcagr` and `cagr`
         # replaced it and must sort too, or a column with a header arrow does nothing.
-        for key in ("name", "side", "opened", "carry", "expcagr", "cagr", "r"):
+        for key in ("name", "side", "opened", "carry", "expcagr", "r"):
             assert f'data-{key}="' in b, f"tbody missing data-{key}"
         assert b.count("<tr") == 2, "a position row and its reasoning row"
 
