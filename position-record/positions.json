@@ -2,10 +2,6 @@
   "_comment": "Source of truth for the positions page. Hand-edited when a position is opened or closed; build.py adds the live price and derives R. The thesis is written AT ENTRY - a thesis composed at exit is marking your own homework, and the whole point of the page is that the claim was on the record before the outcome was.",
   "_symbol_note": "Yahoo symbols. Japan 225 uses NIY=F, the yen Nikkei future, NOT ^N225: the spot index closes with Tokyo while CMC's cash CFD tracks the future, so ^N225 reads about 0.8% away from the platform and puts the stop distance visibly wrong.",
   "_r_note": "1R is the distance from entry to the initial stop. Every outcome on this page is quoted in multiples of it, so positions of different sizes are comparable.",
-  "account": {
-    "balance_aud": 1641.0,
-    "balance_asof": "2026-09-09"
-  },
   "open": [
     {
       "name": "GBP/CHF",
