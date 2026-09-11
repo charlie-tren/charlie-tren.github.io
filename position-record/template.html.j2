@@ -143,18 +143,118 @@
 
   .scroller { overflow-x: auto; }
 
+  .sec { font: 600 15px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .07em;
+         text-transform: uppercase; color: var(--faint); margin: 0 0 1rem; }
+  h2.sec { margin-top: 0; }
+  .scroller + h2.sec { margin-top: 3.2rem; }
+  .why dt.pm { color: var(--accent); }
+  .why dd.pm { color: var(--ink); }
+
+  /* The stop-to-target track. Drawn in every row and shown only on a phone, where
+     the four columns it stands in for are off-screen. */
+  .ctl .rail, .ctl .ends { display: none; }   /* phone only; see the media query */
+  .rail { position: relative; height: 3px; }
+  .rail .trk { position: absolute; inset: 0; background: var(--rule); border-radius: 2px; }
+  .rail .fil { position: absolute; top: 0; height: 3px; border-radius: 2px; opacity: .55; }
+  .rail .fil.up { background: var(--pos); }
+  .rail .fil.dn { background: var(--neg); }
+  .rail .tk { position: absolute; top: -3px; width: 1px; height: 9px; background: var(--faint); }
+  .rail .dot { position: absolute; top: -3.5px; width: 10px; height: 10px;
+               margin-left: -5px; border-radius: 50%; border: 2px solid var(--bg); }
+  .rail .dot.up { background: var(--pos); }
+  .rail .dot.dn { background: var(--neg); }
+  .ends { display: flex; justify-content: space-between; margin-top: 7px;
+          font: 400 11.5px ui-sans-serif, system-ui, sans-serif; color: var(--soft);
+          font-variant-numeric: tabular-nums; }
+  .ends .hi { text-align: right; }
+  .ends i { display: block; font: 600 9px ui-sans-serif, system-ui, sans-serif;
+            font-style: normal; letter-spacing: .12em; text-transform: uppercase;
+            color: var(--faint); margin-top: 2px; }
+
+  /* ONE CARD PER POSITION BELOW 680px.
+
+     The table is nine columns and 790px wide, so a phone showed three of them and R -
+     the unit this whole page is quoted in - was not one of the three. Sticky first
+     and last columns made it look readable while every figure between them still
+     needed a 433px sideways drag, measured rather than guessed.
+
+     So a tbody stops being a row and becomes a card: name, direction and R on the top
+     line, the stop-to-target track beneath, then the remaining figures as labelled
+     pairs. Nothing scrolls sideways. Three consequences worth knowing:
+       - `thead` goes, which costs the sort controls on a phone. Accepted: sorting
+         three to six positions is worth less than being able to see their numbers.
+       - Labels come from data-label, so there is no second copy of the heading text
+         in the markup to drift out of step with the header row.
+       - Stop and target are hidden as pairs because the track's two ends already
+         print them, and printing a number twice on a 375px screen is the reason the
+         card ran to 340px in the first draft. */
   @media (max-width: 680px) {
     .wrap { padding-top: 1.6rem; }
     .bar { margin-bottom: 2.6rem; }
-    .book td, .book th { padding-right: .6rem; }
-    /* The numbers scroll sideways on a phone; the name and the reasoning must not go
-       with them, or reading a position means dragging the table back and forth. */
-    .book td:first-child, .book th:first-child { position: sticky; left: 0; background: var(--bg); }
-    /* The control pins to the other edge, or reaching it means scrolling the
-       numbers past first. */
-    .book td:last-child, .book th:last-child { position: sticky; right: 0; background: var(--bg); }
-    .why ul { position: sticky; left: 0; width: calc(100vw - 3rem); }
+    .scroller { overflow-x: visible; }
+    .book { min-width: 0; width: 100%; }
+    .book thead { display: none; }
+    .book, .book tbody, .book tr, .book td { display: block; width: auto; }
+    .book tbody.pos { border-bottom: 1px solid var(--rule); padding: 1.05rem 0 1.1rem; }
+    .book tbody.pos td,
+    .book tbody.pos.shut td { border: 0; padding: 0; white-space: nowrap; }
+    .book tbody.pos tr.why td { white-space: normal; }
+
+    /* Top line, plus the pair grid below it, out of one row of cells. */
+    .book tbody.pos > tr:first-child {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 11px 12px; align-items: baseline; }
+    .book tbody.pos > tr:first-child > td:first-child { grid-column: 1 / span 2;
+        grid-row: 1; align-self: center; }
+    .nm { font-size: 1.02rem; }
+
+    /* R on the top line, hard right, big: the first thing read about a position. */
+    .book tbody.pos td[data-label="R"] { grid-column: 3; grid-row: 1;
+        text-align: right; align-self: center;
+        font: 500 21px/1 ui-sans-serif, system-ui, sans-serif;
+        font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+    .book tbody.pos td[data-label="R"]::after { content: "R";
+        font: 600 9.5px ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em;
+        color: var(--faint); padding-left: .24rem; vertical-align: .42em; }
+
+    /* The track, inside the control cell so it sits under the pairs and above the
+       Thesis button without needing a row of its own. */
+    .ctl .rail { display: block; }
+    .ctl .ends { display: flex; }
+    .ctl .rail { margin-top: 2px; }
+    .ctl .ends { margin-bottom: 13px; }
+
+    /* `row.hidden = !open` in the toggle script is a UA `display:none`, and the
+       card rule above sets `display:block` on every .book tr with higher
+       specificity - so the reasoning shipped visible and STAYED visible on a
+       phone, with three panels open at once pushing the book off the screen.
+       Restated here because the card layout is what broke it. */
+    .book tr[hidden] { display: none; }
+
+    /* Stop and target are the track's own end labels; do not print them twice. */
+    .book tbody.pos td[data-label="Stop"] { display: none; }
+
+    /* No DIR label: the pill says "Long". A label naming what the thing beside it
+       already says is clutter, and the label was colliding with the pill's border
+       because a bordered inline-block grows upward past its line box. */
+    .book tbody.pos td[data-label]:not([data-label="R"]):not([data-label="Dir"])::before {
+        content: attr(data-label); display: block;
+        font: 600 9px/1.5 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--faint); margin-bottom: 2px; }
+    .book tbody.pos td[data-label]:not([data-label="R"]) {
+        font: 400 12.5px/1.2 ui-sans-serif, system-ui, sans-serif; color: var(--soft);
+        font-variant-numeric: tabular-nums; text-align: left; }
+    .book tbody.pos td.kind { font-size: 12.5px; }
+    /* The direction is a bordered pill, not text on a baseline, so its label needs
+       clearance the other five pairs do not. */
+
+    .book tbody.pos td.ctl { grid-column: 1 / -1; text-align: left; }
     .thesis { font-size: 12px; }
+
+    /* The reasoning is prose: it wraps to the screen, not to a table cell. */
+    .why td { padding: .55rem 0 .1rem; border: 0; }
+    .why dl { grid-template-columns: 1fr; gap: .2rem; padding-left: .9rem; }
+    .why dd { margin-bottom: .6rem; }
   }
 </style>
 <script>/* Analytics, gated. Two kinds of visitor are not an audience and never load it: anyone who has opted out with ?nostats=1, and automation, since navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose - served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2"}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
@@ -174,6 +274,7 @@
   <h1>Position Record</h1>
   <p class="lede">Every position, open and closed, with the reasoning recorded at entry.</p>
 
+  <h2 class="sec">Open</h2>
   <div class="scroller">
   <table class="book" id="book">
     <thead><tr>
@@ -195,15 +296,15 @@
 >
       <tr>
         <td style="white-space:normal"><span class="nm">{{ p.name }}</span></td>
-        <td class="kind">{{ p.kind }}</td>
-        <td class="q">{{ p.opened_short }}</td>
-        <td><span class="dir {{ p.direction | lower }}">{{ p.direction }}</span></td>
-        <td class="n q">{{ p.entry | px(p.dp, p.ccy) }}</td>
-        <td class="n q">{{ p.stop | px(p.dp, p.ccy) }}</td>
-        <td class="n">{{ '%+.2f'|format(p.carry_pct) }}%</td>
-        <td class="n">{{ '%.2f'|format(p.to_target) }}R</td>
-        <td class="n r {{ 'up' if p.r >= 0 else 'dn' }}">{{ '%+.2f'|format(p.r) }}</td>
-        <td class="n"><button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
+        <td class="kind" data-label="Type">{{ p.kind }}</td>
+        <td class="q" data-label="Opened">{{ p.opened_short }}</td>
+        <td data-label="Dir"><span class="dir {{ p.direction | lower }}">{{ p.direction }}</span></td>
+        <td class="n q" data-label="Entry">{{ p.entry | px(p.dp, p.ccy) }}</td>
+        <td class="n q" data-label="Stop">{{ p.stop | px(p.dp, p.ccy) }}</td>
+        <td class="n" data-label="Carry">{{ '%+.2f'|format(p.carry_pct) }}%</td>
+        <td class="n" data-label="To target">{{ '%.2f'|format(p.to_target) }}R</td>
+        <td class="n r {{ 'up' if p.r >= 0 else 'dn' }}" data-label="R">{{ '%+.2f'|format(p.r) }}</td>
+        <td class="n ctl">{{ rail(p) }}<button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
       </tr>
       <tr class="why"><td colspan="10"><dl>
         <dt>Thesis</dt><dd>{{ p.thesis }}</dd>
@@ -215,52 +316,84 @@
   </div>
 
 {% if closed %}
-  <h2>Closed</h2>
+  <h2 class="sec">Closed</h2>
   <div class="scroller">
-  <table class="book">
+  <table class="book shutbook">
     <thead><tr>
-      <th>Position</th><th>Dir</th><th class="n">R</th>
+      <th>Position</th>
+      <th>Type</th>
+      <th>Opened</th>
+      <th>Closed</th>
+      <th>Dir</th>
+      <th class="n">Entry</th>
+      <th class="n">Exit</th>
+      <th class="n">Held</th>
+      <th class="n">R</th>
+      <th></th>
     </tr></thead>
-    <tbody>
-{% for c in closed %}      <tr>
-        <td><span class="nm">{{ c.name }}</span><span class="kind">{{ c.entry_date }} to {{ c.exit_date }}</span></td>
-        <td><span class="dir {{ c.direction | lower }}">{{ c.direction }}</span></td>
-        <td class="n r {{ 'up' if c.r >= 0 else 'dn' }}">{{ '%+.2f'|format(c.r) }}</td>
+{% for c in closed %}    <tbody class="pos shut">
+      <tr>
+        <td style="white-space:normal"><span class="nm">{{ c.name }}</span></td>
+        <td class="kind" data-label="Type">{{ c.kind }}</td>
+        <td class="q" data-label="Opened">{{ c.opened_short }}</td>
+        <td class="q" data-label="Closed">{{ c.closed_short }}</td>
+        <td data-label="Dir"><span class="dir {{ c.direction | lower }}">{{ c.direction }}</span></td>
+        <td class="n q" data-label="Entry">{{ c.entry | px(c.dp, c.ccy) }}</td>
+        <td class="n q" data-label="Exit">{{ c.exit | px(c.dp, c.ccy) }}</td>
+        <td class="n" data-label="Held">{{ c.held }}</td>
+        <td class="n r {{ 'up' if c.r >= 0 else 'dn' }}" data-label="R">{{ '%+.2f'|format(c.r) }}</td>
+        <td class="n ctl">{{ rail(c) }}<button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
       </tr>
-      <tr class="why"><td colspan="3"><ul>
-{% for line in c.thesis %}        <li>{{ line }}</li>
-{% endfor %}        <li>{{ c.outcome }}</li>
-      </ul></td></tr>
-{% endfor %}    </tbody>
-  </table>
+      {# The entry reasoning is reprinted unchanged, then judged. Post-mortem is the
+         only slot written after the outcome is known, which is why it sits last and
+         is labelled rather than folded into the thesis: the page's claim is that the
+         first three were on the record BEFORE this one could be written. #}
+      <tr class="why"><td colspan="10"><dl>
+        <dt>Thesis</dt><dd>{{ c.thesis }}</dd>
+        <dt>Catalyst</dt><dd>{{ c.catalyst }}</dd>
+        <dt>Breaks if</dt><dd>{{ c.breaks }}</dd>
+        <dt class="pm">Post-mortem</dt><dd class="pm">{{ c.postmortem }}</dd>
+      </dl></td></tr>
+    </tbody>
+{% endfor %}  </table>
   </div>
 {% endif %}
 
 </div>
 
 <script>
+  /* THE TOGGLE RUNS ON EVERY table.book, THE SORT ONLY ON #book.
+     It used to do both off `getElementById("book")` and return early unless that
+     table had a thead. The Closed table is a second table.book with no sort keys, so
+     every one of its Thesis buttons would have rendered, done nothing when pressed,
+     and left all its reasoning expanded - a control that is visibly a control and
+     is inert. One at a time is per table, so opening a closed position does not
+     shut an open one. */
+  (function () {
+    [].forEach.call(document.querySelectorAll("table.book"), function (t) {
+      [].forEach.call(t.querySelectorAll("tbody.pos"), function (tb) {
+        var btn = tb.querySelector(".thesis"), row = tb.querySelector("tr.why");
+        if (!btn || !row) return;
+        tb._set = function (open) {
+          btn.setAttribute("aria-expanded", open ? "true" : "false");
+          row.hidden = !open;
+          tb.classList.toggle("shut", !open);
+        };
+        tb._set(false);
+        btn.addEventListener("click", function () {
+          var open = btn.getAttribute("aria-expanded") !== "true";
+          [].forEach.call(t.querySelectorAll("tbody.pos"), function (o) {
+            if (o._set) o._set(o === tb && open);
+          });
+        });
+      });
+    });
+  })();
+
   /* Sorting reorders whole tbodies, so a position keeps its reasoning with it. */
   (function () {
     var t = document.getElementById("book");
     if (!t || !t.tHead) return;
-
-    [].forEach.call(t.querySelectorAll("tbody.pos"), function (tb) {
-      var btn = tb.querySelector(".thesis"), row = tb.querySelector("tr.why");
-      if (!btn || !row) return;
-      tb._set = function (open) {
-        btn.setAttribute("aria-expanded", open ? "true" : "false");
-        row.hidden = !open;
-        tb.classList.toggle("shut", !open);
-      };
-      tb._set(false);
-      btn.addEventListener("click", function () {
-        var open = btn.getAttribute("aria-expanded") !== "true";
-        /* One at a time: two open theses push the rest of the book off the screen. */
-        [].forEach.call(t.querySelectorAll("tbody.pos"), function (o) {
-          if (o._set) o._set(o === tb && open);
-        });
-      });
-    });
 
     var heads = [].slice.call(t.tHead.rows[0].cells);
     function val(tb, k) {
