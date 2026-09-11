@@ -92,14 +92,80 @@ def enrich(p, price):
         y, m, d = p["entry_date"].split("-")
         row["opened"] = f"{d}/{m}/{y}"
         row["opened_short"] = f"{d}/{m}/{y[2:]}"
+    row.update(track(row["r"], row["reward_r"]))
     return row
+
+
+def track(r, reward_r):
+    """Where entry and the current price sit on a stop-to-target track, as percents.
+
+    IN R-SPACE, not in price. The stop is -1R by construction and the target is a
+    fixed R, so one track carries entry, stop, target and distance-to-target at once -
+    and a short needs no inversion, because the left end is the losing end for both
+    directions. Plotting price would put a short's target to the LEFT of its stop and
+    invite exactly the misreading the R unit exists to prevent.
+    """
+    if r is None or reward_r is None or reward_r <= -1:
+        return {"pct_now": None, "pct_entry": None}
+    span = reward_r + 1                       # -1R .. +reward_r
+    return {"pct_now": max(0.0, min(100.0, (r + 1) / span * 100)),
+            "pct_entry": 1 / span * 100}
+
+
+def shut_row(p):
+    """A closed position, with R measured to the EXIT rather than to a live price.
+
+    R is derived here and never read from the file. A typed R is a number that can
+    disagree with the entry, stop and exit sitting beside it, and on a page whose
+    whole claim is the record it is the one figure nobody could check.
+    """
+    for field in ("exit", "exit_date"):
+        if p.get(field) in (None, ""):
+            sys.exit(f"ERROR: {p['name']} is closed but has no {field}.")
+    sign = 1 if p["direction"] == "Long" else -1
+    risk = abs(p["entry"] - p["stop"])
+    row = dict(p)
+    row["r"] = (p["exit"] - p["entry"]) * sign / risk if risk else None
+    row["move_pct"] = (p["exit"] - p["entry"]) / p["entry"] * 100 * sign
+    row["reward_r"] = (p["target"] - p["entry"]) * sign / risk if risk and p.get("target") else None
+    row["to_target"] = None                   # it is over; there is no distance left
+    row["price"] = p["exit"]
+    for key, src in (("opened", "entry_date"), ("closed", "exit_date")):
+        y, m, d = p[src].split("-")
+        row[key] = f"{d}/{m}/{y}"
+        row[key + "_short"] = f"{d}/{m}/{y[2:]}"
+    held = _days(p["entry_date"], p["exit_date"])
+    row["held"] = f"{held} day{'s' if held != 1 else ''}"
+    row.update(track(row["r"], row["reward_r"]))
+    return row
+
+
+def _days(a: str, b: str) -> int:
+    from datetime import date
+    return (date.fromisoformat(b) - date.fromisoformat(a)).days
 
 
 def main():
     from jinja2 import Environment, FileSystemLoader, select_autoescape
+    try:
+        from jinja2 import Markup
+    except ImportError:          # jinja2 >= 3.1 moved it back to markupsafe
+        from markupsafe import Markup
 
     data = json.loads(SOURCE.read_text(encoding="utf-8"))
-    openp, closed = data["open"], data.get("closed", [])
+    # A POSITION IS CLOSED BECAUSE IT HAS AN EXIT, not because it was typed into the
+    # other array. Charlie closes one by adding exit_date, exit and postmortem to the
+    # entry where it already sits; this moves it. Keeping the two lists as the source
+    # of truth meant cutting an object from one array and pasting it into another by
+    # hand, which is a step that can be half-done - and a position left in `open`
+    # with an exit on it would have been priced live and reported as still running.
+    both = list(data.get("open") or []) + list(data.get("closed") or [])
+    openp = [p for p in both if not p.get("exit_date")]
+    closed = [p for p in both if p.get("exit_date")]
+    names = [p["name"] for p in both]
+    if len(set(names)) != len(names):
+        dupe = sorted({n for n in names if names.count(n) > 1})
+        sys.exit(f"ERROR: the same position appears twice: {', '.join(dupe)}.")
     cache = load_prices()
 
     symbols = sorted({p["symbol"] for p in openp})
@@ -115,7 +181,8 @@ def main():
         r["asof"] = cache[p["symbol"]]["asof"]
     rows.sort(key=lambda r: r["entry_date"], reverse=True)
 
-    shut = sorted(closed, key=lambda c: c["exit_date"], reverse=True)
+    shut = sorted((shut_row(c) for c in closed),
+                  key=lambda c: c["exit_date"], reverse=True)
 
     def px(v, dp, ccy=""):
         """A letter code needs a space before the digits; a glyph does not. CHF1.10
@@ -123,8 +190,30 @@ def main():
         gap = " " if ccy[-1:].isalpha() else ""
         return f"{ccy}{gap}{v:,.{int(dp)}f}"
 
+    def rail(p):
+        """The stop-to-target track, as markup. Empty when the geometry is unknown.
+
+        Built here rather than in CSS because the two positions on it are data: a
+        percentage along the track cannot be expressed as a class.
+        """
+        if p.get("pct_now") is None:
+            return Markup("")
+        cls = "up" if (p.get("r") or 0) >= 0 else "dn"
+        now, ent = p["pct_now"], p["pct_entry"]
+        lo, hi = sorted((ent, now))
+        ends = (f'<span class="lo">{px(p["stop"], p["dp"], p["ccy"])}<i>stop</i></span>'
+                f'<span class="hi">{px(p["target"], p["dp"], p["ccy"])}<i>target</i></span>')
+        return Markup(
+            f'<div class="rail" aria-hidden="true">'
+            f'<span class="trk"></span>'
+            f'<span class="fil {cls}" style="left:{lo:.2f}%;width:{hi - lo:.2f}%"></span>'
+            f'<span class="tk" style="left:{ent:.2f}%"></span>'
+            f'<span class="dot {cls}" style="left:{now:.2f}%"></span>'
+            f'</div><div class="ends">{ends}</div>')
+
     env = Environment(loader=FileSystemLoader(HERE), autoescape=select_autoescape(["html"]))
     env.filters["px"] = px
+    env.globals["rail"] = rail
     html = env.get_template(TEMPLATE.name).render(
         rows=rows,
         closed=shut,

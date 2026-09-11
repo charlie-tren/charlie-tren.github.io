@@ -106,3 +106,100 @@ def test_build_refuses_to_publish_without_a_price():
     finally:
         src_p.write_text(src_before, encoding="utf-8")
         cache_p.write_text(cache_before, encoding="utf-8")
+
+
+# --- closing a position ------------------------------------------------------
+# Added 11/09/2026. Charlie: "japan 225 was closed. things should automatically move
+# to closed when they close". The manual step being removed is cutting an object out
+# of one array and pasting it into another, which can be half-done - and a position
+# left in `open` with an exit on it was priced live and reported as still running.
+
+def test_an_exit_date_moves_a_position_to_closed():
+    """Wherever it is typed. The array is not the source of truth; the exit is."""
+    sys.path.insert(0, str(HERE))
+    import build
+    data = json.loads((HERE / "positions.json").read_text(encoding="utf-8"))
+    live = dict(data["open"][0])
+    shut = dict(live, name="Fixture", exit_date="2026-09-10", exit=live["entry"],
+                postmortem="x")
+    # Still sitting in `open`, with an exit on it: it must be classified as closed.
+    both = [live, shut]
+    assert [p["name"] for p in both if p.get("exit_date")] == ["Fixture"]
+    row = build.shut_row(shut)
+    assert row["to_target"] is None, "a closed position has no distance left to run"
+    assert row["held"] == "2 days", row["held"]
+
+
+def test_closed_r_is_derived_from_the_exit_not_typed():
+    """The one figure a reader could not check if it were typed. Long and short."""
+    sys.path.insert(0, str(HERE))
+    from build import shut_row
+    base = {"name": "F", "direction": "Long", "entry": 100.0, "stop": 90.0,
+            "target": 130.0, "entry_date": "2026-09-01", "exit_date": "2026-09-03"}
+    for direction, exit_px, want in [("Long", 90.0, -1.0), ("Long", 110.0, 1.0),
+                                     ("Short", 110.0, -1.0), ("Short", 90.0, 1.0)]:
+        p = dict(base, direction=direction, exit=exit_px,
+                 stop=110.0 if direction == "Short" else 90.0)
+        got = shut_row(p)["r"]
+        assert abs(got - want) < 1e-9, f"{direction} exit {exit_px}: {got} != {want}"
+
+
+def test_a_close_without_an_exit_price_refuses_to_build():
+    """Proved by breaking it. A closed position with no exit cannot have an R, and a
+    blank R on a finished trade is the page quietly declining to score itself."""
+    src_p, out_p = HERE / "positions.json", HERE / "index.html"
+    src_before = src_p.read_text(encoding="utf-8")
+    digest_before = hashlib.md5(out_p.read_bytes()).hexdigest()
+    try:
+        broken = json.loads(src_before)
+        broken["open"][0]["exit_date"] = "2026-09-10"      # no `exit` alongside it
+        src_p.write_text(json.dumps(broken, indent=2), encoding="utf-8")
+        r = subprocess.run([sys.executable, str(HERE / "build.py")],
+                           capture_output=True, text=True)
+        assert r.returncode != 0, "built a closed position with no exit price"
+        assert "exit" in (r.stdout + r.stderr).lower(), (r.stdout + r.stderr)[-300:]
+        assert hashlib.md5(out_p.read_bytes()).hexdigest() == digest_before, \
+            "index.html was overwritten"
+    finally:
+        src_p.write_text(src_before, encoding="utf-8")
+
+
+def test_the_same_position_cannot_appear_twice():
+    """The failure mode of moving an entry by hand: pasted into `closed` and not
+    deleted from `open`. It would be priced live AND scored as finished."""
+    src_p = HERE / "positions.json"
+    src_before = src_p.read_text(encoding="utf-8")
+    try:
+        broken = json.loads(src_before)
+        broken["closed"] = [dict(broken["open"][0], exit_date="2026-09-10",
+                                 exit=broken["open"][0]["entry"], postmortem="x")]
+        src_p.write_text(json.dumps(broken, indent=2), encoding="utf-8")
+        r = subprocess.run([sys.executable, str(HERE / "build.py")],
+                           capture_output=True, text=True)
+        assert r.returncode != 0, "built with the same position open and closed"
+        assert "twice" in (r.stdout + r.stderr).lower(), (r.stdout + r.stderr)[-300:]
+    finally:
+        src_p.write_text(src_before, encoding="utf-8")
+
+
+def test_both_sections_are_headed_and_the_closed_control_is_wired():
+    """Charlie asked for an Open and a Closed section. The Closed table is a second
+    table.book with no sort keys, so the toggle has to be bound per table rather than
+    off getElementById("book") - otherwise its Thesis buttons render and do nothing."""
+    html = (HERE / "index.html").read_text(encoding="utf-8")
+    assert ">Open</h2>" in html, "no Open heading"
+    assert 'querySelectorAll("table.book")' in html, \
+        "the toggle is still bound to a single table by id"
+    assert 'getElementById("book")' in html, "the sort should still be scoped to #book"
+
+
+def test_the_track_is_in_r_space_and_cannot_plot_off_itself():
+    """Stop at the left end, target at the right, for a long AND a short. Clamped,
+    because a position past its stop is at the end of the track, not off it."""
+    sys.path.insert(0, str(HERE))
+    from build import track
+    assert track(0.0, 3.0)["pct_entry"] == 25.0                  # -1R..+3R, entry at 0
+    assert track(-1.0, 3.0)["pct_now"] == 0.0                    # at the stop
+    assert track(3.0, 3.0)["pct_now"] == 100.0                   # at the target
+    assert track(-2.5, 3.0)["pct_now"] == 0.0, "past the stop plotted off the track"
+    assert track(None, 3.0)["pct_now"] is None
