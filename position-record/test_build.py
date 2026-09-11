@@ -325,3 +325,19 @@ def test_a_closed_positions_bars_survive_a_reload():
         assert "JUNK=F" not in got, "an unusable price was kept"
     finally:
         cache_p.write_text(before, encoding="utf-8")
+
+
+def test_the_closed_table_does_not_compensate_for_arrows_it_has_not_got():
+    """td.n carries 1.12rem of right padding purely to offset the sort glyph the
+    sortable headers print after their label, so header and digits end on the same x.
+    The Closed table's headers are plain - no data-sort, no glyph - so inheriting
+    that padding pushed every figure 0.82rem right of the label it belongs to, which
+    is what Charlie saw on 11/09/2026. Measured at 0.0px across both tables after
+    the override; this pins the reasoning so deleting the override goes red."""
+    html = (HERE / "index.html").read_text(encoding="utf-8")
+    closed = html[html.find(">Closed</h2>"):]
+    head = closed[closed.find("<thead>"):closed.find("</thead>")]
+    assert "data-sort" not in head, \
+        "the Closed headers sort now, so they carry a glyph and this rule must change"
+    assert ".shutbook td.n { padding-right: .3rem; }" in html, \
+        "the Closed table is compensating for a sort arrow it does not have"
