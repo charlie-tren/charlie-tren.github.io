@@ -149,6 +149,8 @@
          margin: 0 0 1rem; }
   h2.sec { margin-top: 0; }
   .scroller + h2.sec { margin-top: 3.2rem; }
+  .atstop { display: block; font: 400 10px/1.4 ui-sans-serif, system-ui, sans-serif;
+            color: var(--faint); letter-spacing: .02em; }
   .why dt.pm { color: var(--accent); }
   .why dd.pm { color: var(--ink); }
 
@@ -341,7 +343,10 @@
         <td class="q" data-label="Closed">{{ c.closed_short }}</td>
         <td data-label="Dir"><span class="dir {{ c.direction | lower }}">{{ c.direction }}</span></td>
         <td class="n q" data-label="Entry">{{ c.entry | px(c.dp, c.ccy) }}</td>
-        <td class="n q" data-label="Exit">{{ c.exit | px(c.dp, c.ccy) }}</td>
+        {# A DERIVED exit is an inference, not a recorded fill: it assumes the resting
+           order filled at the level. Worth one word, because a reader cannot tell
+           64,043 the fill from 64,043 the stop, and slippage is real. #}
+        <td class="n q" data-label="Exit">{{ c.exit | px(c.dp, c.ccy) }}{% if c.stopped %}<span class="atstop">at the stop</span>{% endif %}</td>
         <td class="n" data-label="Held">{{ c.held }}</td>
         <td class="n r {{ 'up' if c.r >= 0 else 'dn' }}" data-label="R">{{ '%+.2f'|format(c.r) }}</td>
         <td class="n ctl">{{ rail(c) }}<button class="thesis" type="button" aria-expanded="true">Thesis</button></td>

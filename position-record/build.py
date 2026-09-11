@@ -36,7 +36,16 @@ def load_prices():
     missing-price guard fires instead of republishing "nan" for ever."""
     if PRICES.exists():
         cache = json.loads(PRICES.read_text(encoding="utf-8"))
-        return {k: v for k, v in cache.items() if usable(v)}
+        # Keep an entry that carries BARS but no price: that is a closed position,
+        # which is never priced, and its bars are what stop a failed fetch quietly
+        # re-opening it. Only the price itself is dropped when unusable.
+        out = {}
+        for k, v in cache.items():
+            if usable(v):
+                out[k] = v
+            elif v.get("bars"):
+                out[k] = {"bars": v["bars"]}
+        return out
     return {}
 
 
@@ -63,6 +72,59 @@ def fetch(symbols, cache):
             if sym in cache:
                 kept.append(sym)
     return fresh, kept
+
+
+def stopped_out(p, bars):
+    """The session a position traded through its stop, or None.
+
+    Charlie, 11/09/2026: *"but if its gone below the stop then it's closed by
+    default"*. Correct, and it is derivable rather than something to be typed: a
+    stop is a resting order, so the exit price IS the stop and R is exactly -1.00.
+    Japan 225 sat in the open list at -1.32R for a day because nothing was watching.
+
+    THE LOW DATES IT, NOT THE CLOSE. A close through the stop proves the level
+    traded, but the level can be hit intraday on a session that closes back above
+    it - so a close-based test reports the stop-out late and prices it at a level
+    the position never saw. For a short it is the high.
+
+    ONLY SESSIONS FROM THE ENTRY DATE ON. Japan 225's stop of 64,043 was breached
+    on 02/09 and 03/09, six days BEFORE the position existed; without that filter
+    this would have closed the trade before it was opened, at a loss it never took.
+
+    `bars` is [(iso date, low, high)] ascending.
+    """
+    if not p.get("stop") or not p.get("entry_date"):
+        return None
+    long = p["direction"] == "Long"
+    for day, low, high in bars:
+        if day < p["entry_date"]:
+            continue
+        hit = (low is not None and low <= p["stop"]) if long else \
+              (high is not None and high >= p["stop"])
+        if hit:
+            return day
+    return None
+
+
+def bars_for(symbol, cache):
+    """Daily low and high since entry, cached beside the spot price.
+
+    Cached because a failed fetch must not silently un-close a position: the page
+    would go back to reporting a stopped-out trade as still running, which is the
+    fault this whole change exists to remove.
+    """
+    import yfinance as yf
+    try:
+        hist = yf.Ticker(symbol).history(period="3mo", auto_adjust=False)
+        bars = [(str(i.date()), None if math.isnan(r.Low) else round(float(r.Low), 5),
+                 None if math.isnan(r.High) else round(float(r.High), 5))
+                for i, r in hist.iterrows()]
+        if bars:
+            cache.setdefault(symbol, {})["bars"] = bars
+        return bars
+    except Exception as exc:                           # noqa: BLE001
+        print(f"  ! bars {symbol}: {type(exc).__name__}: {exc}"[:120])
+        return (cache.get(symbol) or {}).get("bars") or []
 
 
 def enrich(p, price):
@@ -122,6 +184,11 @@ def shut_row(p):
     for field in ("exit", "exit_date"):
         if p.get(field) in (None, ""):
             sys.exit(f"ERROR: {p['name']} is closed but has no {field}.")
+    # A stop-out is priced AT the stop by construction, so R must come out at -1.00.
+    # Asserted rather than trusted: a derivation that quietly disagreed with the unit
+    # the page is quoted in would be worse than no derivation.
+    if p.get("stopped") and abs(p["exit"] - p["stop"]) > 1e-9:
+        sys.exit(f"ERROR: {p['name']} is marked stopped but exited away from its stop.")
     sign = 1 if p["direction"] == "Long" else -1
     risk = abs(p["entry"] - p["stop"])
     row = dict(p)
@@ -159,20 +226,37 @@ def main():
     # of truth meant cutting an object from one array and pasting it into another by
     # hand, which is a step that can be half-done - and a position left in `open`
     # with an exit on it would have been priced live and reported as still running.
+    cache = load_prices()
     both = list(data.get("open") or []) + list(data.get("closed") or [])
+    # A STOP-OUT CLOSES ITSELF. Derived before the split, so a position that traded
+    # through its stop lands in Closed on the same run rather than waiting for
+    # someone to type an exit. A hand-entered exit_date always wins: Charlie closing
+    # early, or moving a stop the page does not know about, must not be overwritten
+    # by a derivation.
+    for p in both:
+        if p.get("exit_date"):
+            continue
+        day = stopped_out(p, bars_for(p["symbol"], cache))
+        if day:
+            p["exit_date"] = day
+            p["exit"] = p["stop"]
+            p["stopped"] = True
+            print(f"  stop-out: {p['name']} traded through {p['stop']} on {day}")
     openp = [p for p in both if not p.get("exit_date")]
     closed = [p for p in both if p.get("exit_date")]
     names = [p["name"] for p in both]
     if len(set(names)) != len(names):
         dupe = sorted({n for n in names if names.count(n) > 1})
         sys.exit(f"ERROR: the same position appears twice: {', '.join(dupe)}.")
-    cache = load_prices()
 
     symbols = sorted({p["symbol"] for p in openp})
     fresh, kept = fetch(symbols, cache)
     print(f"  {len(fresh)} fetched, {len(kept)} reused from cache")
 
-    missing = [s for s in symbols if s not in cache]
+    # A USABLE PRICE, not merely a key. bars_for() creates a bars-only entry for
+    # every open symbol, so `s not in cache` silently stopped being able to fire and
+    # the next line raised KeyError instead of the guard's message.
+    missing = [s for s in symbols if not usable(cache.get(s) or {})]
     if missing:
         sys.exit(f"ERROR: no price at all for {missing}. index.html left untouched.")
 

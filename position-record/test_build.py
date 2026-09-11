@@ -51,9 +51,18 @@ def test_every_position_is_its_own_tbody_with_its_sort_keys():
     import re
     page = (HERE / "index.html").read_text(encoding="utf-8")
     src = json.loads((HERE / "positions.json").read_text(encoding="utf-8"))
-    bodies = re.findall(r'<tbody class="pos"(.*?)</tbody>', page, re.S)
-    assert len(bodies) == len(src["open"]), f"{len(bodies)} tbodies for {len(src['open'])} positions"
-    for b in bodies:
+    # COUNTED ACROSS BOTH SECTIONS, not against src["open"]. Since 11/09/2026 a
+    # stop-out closes itself, so the `open` array is no longer the set of open
+    # positions - that is the point of the change. The invariant that still holds,
+    # and the one worth testing, is that every position in the file appears exactly
+    # once on the page: none silently lost, none in both sections.
+    # `class="pos shut"` on a closed position, so the class attribute cannot be
+    # matched with a closing quote straight after "pos".
+    bodies = re.findall(r'<tbody class="pos([^"]*)"(.*?)</tbody>', page, re.S)
+    live = [rest for extra, rest in bodies if "shut" not in extra]
+    total = len(src.get("open") or []) + len(src.get("closed") or [])
+    assert len(bodies) == total, f"{len(bodies)} tbodies for {total} positions in the file"
+    for b in live:
         for key in ("name", "side", "opened", "carry", "totarget", "r"):
             assert f'data-{key}="' in b, f"tbody missing data-{key}"
         assert b.count("<tr") == 2, "a position row and its reasoning row"
@@ -203,3 +212,116 @@ def test_the_track_is_in_r_space_and_cannot_plot_off_itself():
     assert track(3.0, 3.0)["pct_now"] == 100.0                   # at the target
     assert track(-2.5, 3.0)["pct_now"] == 0.0, "past the stop plotted off the track"
     assert track(None, 3.0)["pct_now"] is None
+
+
+# --- a stop-out closes itself ------------------------------------------------
+# Charlie, 11/09/2026: "but if its gone below the stop then it's closed by default".
+# A stop is a resting order, so this is derivable and should never be typed.
+
+def _bars(*rows):
+    """(iso date, low, high) ascending."""
+    return list(rows)
+
+
+def test_a_long_stops_out_on_the_first_low_through_the_stop():
+    sys.path.insert(0, str(HERE))
+    from build import stopped_out
+    p = {"direction": "Long", "stop": 100.0, "entry_date": "2026-09-08"}
+    got = stopped_out(p, _bars(("2026-09-08", 101.0, 110.0),
+                               ("2026-09-09", 100.5, 108.0),
+                               ("2026-09-10", 99.0, 104.0),     # through it
+                               ("2026-09-11", 90.0, 95.0)))
+    assert got == "2026-09-10", got
+
+
+def test_a_short_stops_out_on_the_high_not_the_low():
+    sys.path.insert(0, str(HERE))
+    from build import stopped_out
+    p = {"direction": "Short", "stop": 100.0, "entry_date": "2026-09-08"}
+    assert stopped_out(p, _bars(("2026-09-08", 80.0, 99.0),
+                                ("2026-09-09", 85.0, 101.0))) == "2026-09-09"
+    # The same bars must NOT stop a long out: its stop is below, and a high through
+    # 100 is the good direction. Getting this backwards closes every winner.
+    assert stopped_out({**p, "direction": "Long"},
+                       _bars(("2026-09-08", 101.0, 140.0))) is None
+
+
+def test_a_breach_before_the_entry_date_is_not_a_stop_out():
+    """The fault this filter exists for. Japan 225's stop of 64,043 was breached on
+    02/09 and 03/09, six days before the position was opened - without the filter
+    the trade closes before it exists, at a loss it never took."""
+    sys.path.insert(0, str(HERE))
+    from build import stopped_out
+    p = {"direction": "Long", "stop": 64043.0, "entry_date": "2026-09-08"}
+    early = _bars(("2026-09-02", 63725.0, 64900.0), ("2026-09-03", 63700.0, 64800.0),
+                  ("2026-09-08", 64920.0, 65500.0))
+    assert stopped_out(p, early) is None, "closed a position before it was opened"
+    assert stopped_out(p, early + [("2026-09-10", 63930.0, 64500.0)]) == "2026-09-10"
+
+
+def test_the_close_is_not_what_dates_a_stop_out():
+    """A level can trade intraday on a session that closes back above it. Dating off
+    the close reports the stop-out late and prices it where the trade never was:
+    Japan 225 closed at 64,175 on 09/09 with a low of 64,135, and at 64,015 on 10/09
+    with a low of 63,930 - so only the low can tell 10/09 from 09/09."""
+    sys.path.insert(0, str(HERE))
+    from build import stopped_out
+    p = {"direction": "Long", "stop": 64100.0, "entry_date": "2026-09-08"}
+    # Low through the stop, close above it: still a stop-out, on that day.
+    assert stopped_out(p, _bars(("2026-09-09", 64000.0, 64300.0))) == "2026-09-09"
+
+
+def test_a_hand_entered_exit_beats_the_derivation():
+    """Charlie closing early, or moving a stop the page does not know about, must
+    survive a rebuild. The derivation only fills a blank."""
+    src_p = HERE / "positions.json"
+    before = src_p.read_text(encoding="utf-8")
+    try:
+        d = json.loads(before)
+        target = next(p for p in d["open"] if p["name"] == "Japan 225")
+        target.update(exit_date="2026-09-09", exit=65000.0, postmortem="hand-entered")
+        src_p.write_text(json.dumps(d, indent=2), encoding="utf-8")
+        r = subprocess.run([sys.executable, str(HERE / "build.py")],
+                           capture_output=True, text=True)
+        assert r.returncode == 0, r.stdout + r.stderr
+        assert "stop-out: Japan 225" not in r.stdout, \
+            "the derivation overwrote a hand-entered exit"
+        html = (HERE / "index.html").read_text(encoding="utf-8")
+        assert "09/09/26" in html and "hand-entered" in html
+    finally:
+        src_p.write_text(before, encoding="utf-8")
+        subprocess.run([sys.executable, str(HERE / "build.py")],
+                       capture_output=True, text=True)
+
+
+def test_the_missing_price_guard_can_still_fire():
+    """bars_for() creates a bars-only cache entry for every open symbol, which made
+    `s not in cache` true with no price in it - the guard stopped being able to fire
+    and the next line raised KeyError instead. It tests for a usable price now."""
+    sys.path.insert(0, str(HERE))
+    from build import usable
+    assert not usable({"bars": [("2026-09-10", 1.0, 2.0)]}), \
+        "a bars-only entry counts as a price, so the guard cannot fire"
+    assert usable({"price": 1.5})
+
+
+def test_a_closed_positions_bars_survive_a_reload():
+    """A closed position is never priced, so its cache entry is bars-only. Dropping
+    it on load threw away the fallback that stops a failed fetch quietly re-opening
+    a stopped-out trade."""
+    sys.path.insert(0, str(HERE))
+    import build
+    cache_p = HERE / "prices.json"
+    before = cache_p.read_text(encoding="utf-8")
+    try:
+        cache_p.write_text(json.dumps({
+            "SHUT=F": {"bars": [["2026-09-10", 1.0, 2.0]]},
+            "LIVE=F": {"price": 10.0, "asof": "2026-09-10"},
+            "JUNK=F": {"price": None},
+        }), encoding="utf-8")
+        got = build.load_prices()
+        assert "SHUT=F" in got and got["SHUT=F"]["bars"], "bars-only entry was dropped"
+        assert "LIVE=F" in got
+        assert "JUNK=F" not in got, "an unusable price was kept"
+    finally:
+        cache_p.write_text(before, encoding="utf-8")
