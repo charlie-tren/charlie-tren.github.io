@@ -97,7 +97,11 @@ for (const [name, url] of Object.entries(SITES)) {
      render rather than on a push here, so they are enumerated rather than
      waived: the reverse assertion below turns the exemption itself into a
      failure once they deploy, which is what makes the list shrink. */
-  const NO_CANONICAL_YET = new Set(["Photocopy", "One Story"]);
+  /* Emptied 11/09/2026: both Photocopy and One Story now emit a canonical, and
+     this test fails on a STALE exemption as loudly as on a missing tag, which is
+     what surfaced it. Kept as an empty set rather than deleted, because the next
+     new property will need somewhere to sit while its canonical is written. */
+  const NO_CANONICAL_YET = new Set([]);
   const canonical = head.match(/<link[^>]*rel="canonical"[^>]*href="([^"]+)"/i)?.[1];
   if (!NO_CANONICAL_YET.has(name)) {
     check(`${name}: has a canonical URL`, !!canonical,
