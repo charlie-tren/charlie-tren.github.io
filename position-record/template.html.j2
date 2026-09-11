@@ -155,8 +155,6 @@
          margin: 0 0 1rem; }
   h2.sec { margin-top: 0; }
   .scroller + h2.sec { margin-top: 3.2rem; }
-  .atstop { display: block; font: 400 10px/1.4 ui-sans-serif, system-ui, sans-serif;
-            color: var(--faint); letter-spacing: .02em; }
   .why dt.pm { color: var(--accent); }
   .why dd.pm { color: var(--ink); }
 
@@ -341,7 +339,10 @@
       <th class="n">R</th>
       <th></th>
     </tr></thead>
-{% for c in closed %}    <tbody class="pos shut">
+{# `done` marks a CLOSED POSITION. `shut` is the toggle's collapsed state and is
+   added at runtime to every row, open or closed, so the two must not share a
+   name: they did, and it outranked the phone card's border reset. #}
+{% for c in closed %}    <tbody class="pos done">
       <tr>
         <td style="white-space:normal"><span class="nm">{{ c.name }}</span></td>
         <td class="kind" data-label="Type">{{ c.kind }}</td>
@@ -349,13 +350,15 @@
         <td class="q" data-label="Closed">{{ c.closed_short }}</td>
         <td data-label="Dir"><span class="dir {{ c.direction | lower }}">{{ c.direction }}</span></td>
         <td class="n q" data-label="Entry">{{ c.entry | px(c.dp, c.ccy) }}</td>
-        {# A DERIVED exit is an inference, not a recorded fill: it assumes the resting
-           order filled at the level. Worth one word, because a reader cannot tell
-           64,043 the fill from 64,043 the stop, and slippage is real. #}
-        <td class="n q" data-label="Exit">{{ c.exit | px(c.dp, c.ccy) }}{% if c.stopped %}<span class="atstop">at the stop</span>{% endif %}</td>
+        <td class="n q" data-label="Exit">{{ c.exit | px(c.dp, c.ccy) }}</td>
         <td class="n" data-label="Held">{{ c.held }}</td>
         <td class="n r {{ 'up' if c.r >= 0 else 'dn' }}" data-label="R">{{ '%+.2f'|format(c.r) }}</td>
-        <td class="n ctl">{{ rail(c) }}<button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
+        {# "Post-mortem" on a closed row, not "Thesis". The panel behind it holds
+           all four slots either way, but the label should name the thing a reader
+           does not already have: the entry reasoning is on the open rows too, the
+           judgement of it only exists here. The CLASS stays `thesis` because the
+           toggle binds to it. #}
+        <td class="n ctl">{{ rail(c) }}<button class="thesis" type="button" aria-expanded="true">Post-mortem</button></td>
       </tr>
       {# The entry reasoning is reprinted unchanged, then judged. Post-mortem is the
          only slot written after the outcome is known, which is why it sits last and
