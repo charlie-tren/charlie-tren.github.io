@@ -56,10 +56,12 @@ def test_every_position_is_its_own_tbody_with_its_sort_keys():
     # positions - that is the point of the change. The invariant that still holds,
     # and the one worth testing, is that every position in the file appears exactly
     # once on the page: none silently lost, none in both sections.
-    # `class="pos shut"` on a closed position, so the class attribute cannot be
-    # matched with a closing quote straight after "pos".
+    # `class="pos done"` on a closed position, so the class attribute cannot be
+    # matched with a closing quote straight after "pos". `done` rather than `shut`
+    # because the toggle adds `shut` to every collapsed row at runtime, open or
+    # closed, and the shared name has already caused two bugs.
     bodies = re.findall(r'<tbody class="pos([^"]*)"(.*?)</tbody>', page, re.S)
-    live = [rest for extra, rest in bodies if "shut" not in extra]
+    live = [rest for extra, rest in bodies if "done" not in extra]
     total = len(src.get("open") or []) + len(src.get("closed") or [])
     assert len(bodies) == total, f"{len(bodies)} tbodies for {total} positions in the file"
     for b in live:
@@ -341,3 +343,13 @@ def test_the_closed_table_does_not_compensate_for_arrows_it_has_not_got():
         "the Closed headers sort now, so they carry a glyph and this rule must change"
     assert ".shutbook td.n { padding-right: .3rem; }" in html, \
         "the Closed table is compensating for a sort arrow it does not have"
+
+
+def test_the_closed_control_names_the_post_mortem():
+    """Charlie, 11/09/2026: the control should imply a post-mortem is behind it. The
+    entry reasoning is on the open rows too; the judgement of it only exists here."""
+    html = (HERE / "index.html").read_text(encoding="utf-8")
+    op, cl = html[:html.find(">Closed</h2>")], html[html.find(">Closed</h2>"):]
+    assert ">Thesis</button>" in op, "the open control should still say Thesis"
+    assert ">Post-mortem</button>" in cl, "the closed control should say Post-mortem"
+    assert ">Thesis</button>" not in cl, "a closed row still says Thesis"

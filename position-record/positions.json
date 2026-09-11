@@ -39,7 +39,8 @@
       "carry_dir": "charged",
       "thesis": "AI chips are built and tested on Advantest and Tokyo Electron equipment. Price weighting makes the Nikkei the most concentrated way to own both.",
       "catalyst": "The index had fallen 16% from its June high, then rose 2% on chip stocks in the session before this went on.",
-      "breaks": "Semiconductor capex slows and the two chip names fall. Nothing else in the index is big enough to offset them."
+      "breaks": "Semiconductor capex slows and the two chip names fall. Nothing else in the index is big enough to offset them.",
+      "postmortem": "The view ran six months. Both the stop and the target sat within four average days of movement."
     },
     {
       "name": "USD/MXN",
