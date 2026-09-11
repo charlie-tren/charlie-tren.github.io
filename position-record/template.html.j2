@@ -282,6 +282,14 @@
   <h1>Position Record</h1>
   <p class="lede">Every position, open and closed, with the reasoning recorded at entry.</p>
 
+  {# "To target" was dropped 11/09/2026 when Expected and CAGR went in. Eleven
+     columns ran the table to 906px inside an 812px reading column, so R - the unit
+     the whole page is quoted in - sat 94px off the right edge at every desktop
+     width. To target measured exactly 95px and is the only column derivable from
+     two others on its own row, reward R minus current R, while Expected now carries
+     the forward-looking number. Widening .wrap was the alternative and was rejected:
+     this page and the research page deliberately put their data blocks at the same
+     x so switching tabs moves nothing. #}
   <h2 class="sec">Open</h2>
   <div class="scroller">
   <table class="book" id="book">
@@ -293,13 +301,16 @@
       <th class="n" data-sort="entry" data-dir="asc">Entry</th>
       <th class="n" data-sort="stopat" data-dir="asc">Stop</th>
       <th class="n" data-sort="carry" data-dir="desc">Carry</th>
-      <th class="n" data-sort="totarget" data-dir="asc">To target</th>
+      <th class="n" data-sort="expcagr" data-dir="desc">Expected</th>
+      <th class="n" data-sort="cagr" data-dir="desc">CAGR</th>
       <th class="n" data-sort="r" data-dir="desc">R</th>
       <th></th>
     </tr></thead>
 {% for p in rows %}    <tbody class="pos" data-name="{{ p.name }}" data-side="{{ p.direction }}"
         data-opened="{{ p.entry_date }}" data-carry="{{ p.carry_pct }}" data-kind="{{ p.kind }}"
-        data-totarget="{{ p.to_target }}" data-r="{{ p.r }}"
+        data-r="{{ p.r }}"
+        data-expcagr="{{ p.exp_cagr if p.exp_cagr is not none else -99 }}"
+        data-cagr="{{ p.cagr if p.cagr is not none else -99 }}"
         data-entry="{{ p.entry }}" data-stopat="{{ p.stop }}" data-target="{{ p.target }}"
 >
       <tr>
@@ -310,11 +321,12 @@
         <td class="n q" data-label="Entry">{{ p.entry | px(p.dp, p.ccy) }}</td>
         <td class="n q" data-label="Stop">{{ p.stop | px(p.dp, p.ccy) }}</td>
         <td class="n" data-label="Carry">{{ '%+.2f'|format(p.carry_pct) }}%</td>
-        <td class="n" data-label="To target">{{ '%.2f'|format(p.to_target) }}R</td>
+        <td class="n" data-label="Expected">{{ p.exp_cagr | pc }}</td>
+        <td class="n" data-label="CAGR">{{ p.cagr | pc }}</td>
         <td class="n r {{ 'up' if p.r >= 0 else 'dn' }}" data-label="R">{{ '%+.2f'|format(p.r) }}</td>
         <td class="n ctl">{{ rail(p) }}<button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
       </tr>
-      <tr class="why"><td colspan="10"><dl>
+      <tr class="why"><td colspan="11"><dl>
         <dt>Thesis</dt><dd>{{ p.thesis }}</dd>
         <dt>Catalyst</dt><dd>{{ p.catalyst }}</dd>
         <dt>Breaks if</dt><dd>{{ p.breaks }}</dd>
@@ -336,6 +348,8 @@
       <th class="n">Entry</th>
       <th class="n">Exit</th>
       <th class="n">Held</th>
+      <th class="n">Expected</th>
+      <th class="n">CAGR</th>
       <th class="n">R</th>
       <th></th>
     </tr></thead>
@@ -352,6 +366,8 @@
         <td class="n q" data-label="Entry">{{ c.entry | px(c.dp, c.ccy) }}</td>
         <td class="n q" data-label="Exit">{{ c.exit | px(c.dp, c.ccy) }}</td>
         <td class="n" data-label="Held">{{ c.held }}</td>
+        <td class="n" data-label="Expected">{{ c.exp_cagr | pc }}</td>
+        <td class="n" data-label="CAGR">{{ c.cagr | pc }}</td>
         <td class="n r {{ 'up' if c.r >= 0 else 'dn' }}" data-label="R">{{ '%+.2f'|format(c.r) }}</td>
         {# "Post-mortem" on a closed row, not "Thesis". The panel behind it holds
            all four slots either way, but the label should name the thing a reader
@@ -364,7 +380,7 @@
          only slot written after the outcome is known, which is why it sits last and
          is labelled rather than folded into the thesis: the page's claim is that the
          first three were on the record BEFORE this one could be written. #}
-      <tr class="why"><td colspan="10"><dl>
+      <tr class="why"><td colspan="11"><dl>
         <dt>Thesis</dt><dd>{{ c.thesis }}</dd>
         <dt>Catalyst</dt><dd>{{ c.catalyst }}</dd>
         <dt>Breaks if</dt><dd>{{ c.breaks }}</dd>

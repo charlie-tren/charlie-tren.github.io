@@ -155,7 +155,56 @@ def enrich(p, price):
         row["opened"] = f"{d}/{m}/{y}"
         row["opened_short"] = f"{d}/{m}/{y[2:]}"
     row.update(track(row["r"], row["reward_r"]))
+    row["exp_cagr"] = expected_cagr(p)
+    row["cagr"] = None
+    if p.get("entry_date"):
+        held = _days(p["entry_date"], datetime.now(timezone.utc).date().isoformat())
+        row["held_days"] = held
+        row["cagr"] = annualise((price - p["entry"]) / p["entry"] * sign, held)
     return row
+
+
+#: Below this many days an annualised return is an artefact of the exponent, not a
+#: property of the trade. Japan 225 lost 3.45% in two sessions, which annualises to
+#: MINUS 99.8% - a number that describes the compounding maths and says nothing about
+#: the position. The cell shows a dash instead, because a plausible wrong figure in a
+#: percent column is worse than an obvious gap.
+CAGR_MIN_DAYS = 30
+
+
+def annualise(ret, days):
+    """A simple return over `days`, compounded to a year. None when too short to mean
+    anything, and None rather than a crash when the return wipes out the stake."""
+    if ret is None or not days or days < CAGR_MIN_DAYS:
+        return None
+    if ret <= -1:
+        return -1.0
+    return (1.0 + ret) ** (365.0 / days) - 1.0
+
+
+def expected_cagr(p):
+    """The move to target annualised over the stated horizon, PLUS carry.
+
+    Charlie's call, 11/09/2026, and it is the right one for this book: GBP/CHF's
+    target is worth 1.88% while its carry pays 2.78% a year, so a price-only figure
+    would report the smaller half of the expected return and rank a carry trade
+    below a directional one for the wrong reason.
+
+    Needs `horizon_months`. Returns None without it rather than assuming a horizon -
+    the whole point of recording one is that the Japan 225 post-mortem found a
+    six-month thesis carried on weekly risk parameters, and a guessed horizon would
+    hide exactly that mismatch again.
+    """
+    months = p.get("horizon_months")
+    if not months or not p.get("target") or not p.get("entry"):
+        return None
+    sign = 1 if p["direction"] == "Long" else -1
+    price_ret = (p["target"] - p["entry"]) / p["entry"] * sign
+    years = months / 12.0
+    if price_ret <= -1:
+        return None
+    price_cagr = (1.0 + price_ret) ** (1.0 / years) - 1.0
+    return price_cagr + (p.get("carry_pct") or 0.0) / 100.0
 
 
 def track(r, reward_r):
@@ -203,6 +252,9 @@ def shut_row(p):
         row[key + "_short"] = f"{d}/{m}/{y[2:]}"
     held = _days(p["entry_date"], p["exit_date"])
     row["held"] = f"{held} day{'s' if held != 1 else ''}"
+    row["held_days"] = held
+    row["exp_cagr"] = expected_cagr(p)
+    row["cagr"] = annualise((p["exit"] - p["entry"]) / p["entry"] * sign, held)
     row.update(track(row["r"], row["reward_r"]))
     return row
 
@@ -296,7 +348,14 @@ def main():
             f'</div><div class="ends">{ends}</div>')
 
     env = Environment(loader=FileSystemLoader(HERE), autoescape=select_autoescape(["html"]))
+    def pc(v):
+        """A signed percent, or an en-rule when the figure does not exist. Never a
+        zero: a blank CAGR means "too short to annualise" or "no horizon recorded",
+        and 0.0% would read as a measured flat return."""
+        return "-" if v is None else f"{v * 100:+.1f}%"
+
     env.filters["px"] = px
+    env.filters["pc"] = pc
     env.globals["rail"] = rail
     html = env.get_template(TEMPLATE.name).render(
         rows=rows,
