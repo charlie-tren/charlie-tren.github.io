@@ -65,7 +65,9 @@ def test_every_position_is_its_own_tbody_with_its_sort_keys():
     total = len(src.get("open") or []) + len(src.get("closed") or [])
     assert len(bodies) == total, f"{len(bodies)} tbodies for {total} positions in the file"
     for b in live:
-        for key in ("name", "side", "opened", "carry", "totarget", "r"):
+        # `totarget` went with the column on 11/09/2026; `expcagr` and `cagr`
+        # replaced it and must sort too, or a column with a header arrow does nothing.
+        for key in ("name", "side", "opened", "carry", "expcagr", "cagr", "r"):
             assert f'data-{key}="' in b, f"tbody missing data-{key}"
         assert b.count("<tr") == 2, "a position row and its reasoning row"
 

@@ -33,6 +33,7 @@
       "entry": 66332.94,
       "stop": 64043.0,
       "target": 70970.0,
+      "horizon_months": 6,
       "dp": 0,
       "ccy": "¥",
       "carry_pct": -3.477,
