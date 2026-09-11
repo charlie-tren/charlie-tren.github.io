@@ -40,7 +40,7 @@
       "thesis": "AI chips are built and tested on Advantest and Tokyo Electron equipment. Price weighting makes the Nikkei the most concentrated way to own both.",
       "catalyst": "The index had fallen 16% from its June high, then rose 2% on chip stocks in the session before this went on.",
       "breaks": "Semiconductor capex slows and the two chip names fall. Nothing else in the index is big enough to offset them.",
-      "postmortem": "The view ran six months. Both the stop and the target sat within four average days of movement."
+      "postmortem": "The thesis needed six months. The stop and target were four days apart."
     },
     {
       "name": "USD/MXN",
@@ -56,7 +56,7 @@
       "carry_pct": 1.5657,
       "carry_dir": "received",
       "thesis": "Nearshoring keeps pulling investment into Mexico while Banxico holds real rates high. Both push the peso up against the dollar.",
-      "catalyst": "The pair set fresh twelve-month lows twice in the three sessions before entry, so the peso went on at its strongest in a year.",
+      "catalyst": "The peso set fresh twelve-month highs twice in the three sessions before entry.",
       "breaks": "The USMCA review goes against Mexico, and the nearshoring case with it."
     }
   ],
