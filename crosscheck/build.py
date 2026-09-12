@@ -183,6 +183,35 @@ def _percentiles(values: list[float | None]) -> list[float | None]:
     return out
 
 
+# A rank percentile is exactly 0 for the last name, and log(0) is not a number. The
+# floor is half a rank step at n = 100, small enough that the bottom name still scores
+# under anything above it and large enough that one leg cannot zero a company outright.
+P_FLOOR = 0.005
+
+
+def drift_leg(p_gap, p_rev):
+    """Price behind estimates AND estimates rising, as one percentile-scaled leg."""
+    if p_gap is None:
+        return None
+    if p_rev is None:
+        return p_gap
+    return (max(p_gap, P_FLOOR) * max(p_rev, P_FLOOR)) ** 0.5
+
+
+def combine(*legs, weights=None):
+    """Weighted geometric mean of the legs that are present, 0 to 1."""
+    import math
+
+    weights = weights or [1.0] * len(legs)
+    num = den = 0.0
+    for p, w in zip(legs, weights):
+        if p is None or w <= 0:
+            continue
+        num += w * math.log(max(p, P_FLOOR))
+        den += w
+    return math.exp(num / den) if den else 0.0
+
+
 def rank_rows(rows: list[dict]) -> list[dict]:
     """Order the table by how far the three measures agree, and stamp a rank on each.
 
@@ -200,17 +229,30 @@ def rank_rows(rows: list[dict]) -> list[dict]:
     A missing component is averaged over the ones that are there rather than scored
     zero. 103 of the 609 have no DCF reading, and scoring the absence would rank them
     by data coverage instead of by anything about the companies.
+
+    GEOMETRIC mean, not arithmetic, since 12/09/2026. The page's claim is agreement,
+    and an arithmetic mean lets one leg pay for another: FIX sat in the top 50 on
+    percentiles 99 / 96 / 28. A geometric mean cannot be rescued by one strong leg,
+    which is what "all three point the same way" means in arithmetic. Measured on the
+    day: 45 of the top 50 unchanged, and the five that left were exactly the ones with
+    a leg under the 30th percentile.
+
+    The drift leg needs the estimates to be RISING, not only the price to be behind
+    them. "Price behind estimates" was satisfied by a price falling faster than the
+    estimates it trailed: 24 of the top 50 had falling estimates. So the leg is the
+    geometric mean of two percentiles, the gap and the estimate change itself, and a
+    name with estimates going down cannot score high on it whatever the price did.
     """
     strain = _percentiles([100 - r["strain"] for r in rows])
     gap = _percentiles([r["gap"] for r in rows])
+    rev = _percentiles([r.get("rev") for r in rows])
     dcf = _percentiles([r.get("dcf") for r in rows])
-    for r, s, g, d in zip(rows, strain, gap, dcf):
+    for r, s, g, e, d in zip(rows, strain, gap, rev, dcf):
         # Shipped per row so the page can REWEIGHT live without carrying the whole
         # distribution three times over and re-ranking 609 rows on every slider move.
-        r["pStrain"], r["pDrift"], r["pDcf"] = s, g, d
+        r["pStrain"], r["pDrift"], r["pRev"], r["pDcf"] = s, g, e, d
         r["complete"] = None not in (s, g, d)
-        parts = [p for p in (s, g, d) if p is not None]
-        r["score"] = sum(parts) / len(parts) if parts else 0.0
+        r["score"] = combine(s, drift_leg(g, e), d)
     ordered = sorted(rows, key=lambda r: (-r["score"], r["ticker"]))
     for i, r in enumerate(ordered, 1):
         r["rank"] = i
@@ -335,6 +377,7 @@ def append_history(rows: list[dict], prices: dict, date: str, path: Path = HISTO
             fh.write(json.dumps({
                 "d": date, "t": r["ticker"],
                 "s": r["pStrain"], "r": r["pDrift"], "v": r["pDcf"],
+                "e": r.get("pRev"),
                 "p": p[0] if p else None, "c": p[1] if p else None,
             }, separators=(",", ":")) + "\n")
             written += 1
