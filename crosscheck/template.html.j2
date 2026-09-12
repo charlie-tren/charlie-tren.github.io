@@ -98,26 +98,28 @@
   .segmented button + button { border-left: 1px solid var(--rule); }
   .segmented button:hover { color: var(--ink); }
   .segmented button[aria-pressed="true"] { background: var(--raised); color: var(--ink); }
-  /* One chart, drawn large. 680px is where a 25-bin histogram and a nine-row strip
-     both read comfortably; wider and the strip's dots spread into a smear. */
-  .charts { position: relative; max-width: 680px; margin: 0 0 1.2rem; }
+  /* One chart, drawn large: most of the 1120px column. The plot area sits on its own
+     tinted ground so it separates from the paper. */
+  .charts { position: relative; max-width: 920px; margin: 0 0 1.4rem; }
+  .ground { fill: var(--motif-bg); }
   .ch { margin: 0; padding: 0; min-width: 0; }
   .ch[hidden] { display: none; }
   .ch svg { width: 100%; display: block; overflow: visible; }
-  .bar-h { fill: var(--inline); fill-opacity: .7; }
-  .bar-h.hot { fill: var(--accent); fill-opacity: 1; }
+  .bar-h { fill-opacity: .85; }
+  .bar-h.hot { stroke: var(--accent); stroke-width: 2; fill-opacity: 1; }
   .mark { stroke: var(--accent); stroke-width: 2; }
   .mark-l { fill: var(--accent); font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; }
-  .sdot { fill: var(--inline); fill-opacity: .45; }
-  .sdot.hot { fill: var(--accent); fill-opacity: 1; }
-  .smed { stroke: var(--accent); stroke-width: 2.4; }
-  .slab { fill: var(--soft); font: 400 11px/1 ui-sans-serif, system-ui, sans-serif; }
-  .hcell { stroke: var(--bg); stroke-width: 1.5; }
-  .hval { font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; text-anchor: middle;
+  .sdot { fill-opacity: .6; }
+  .sdot.hot { stroke: var(--ink); stroke-width: 2; fill-opacity: 1; }
+  .smed { stroke: var(--ink); stroke-width: 2.4; }
+  .slab { fill: var(--soft); font: 400 12px/1 ui-sans-serif, system-ui, sans-serif; }
+  .slab .n { fill: var(--faint); }
+  .hcell { stroke: var(--bg); stroke-width: 2; }
+  .hval { font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; text-anchor: middle;
           font-variant-numeric: tabular-nums; pointer-events: none; }
   .guide { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 4; }
   .rowrule { stroke: var(--rule); stroke-width: 1; }
-  .tk { fill: var(--faint); font: 400 10.5px/1 ui-sans-serif, system-ui, sans-serif;
+  .tk { fill: var(--faint); font: 400 11px/1 ui-sans-serif, system-ui, sans-serif;
         font-variant-numeric: tabular-nums; }
   .ax { fill: var(--soft); font: 500 10px/1 ui-sans-serif, system-ui, sans-serif;
         letter-spacing: .08em; text-transform: uppercase; }
@@ -187,7 +189,7 @@
   col.c-rank { width: 4rem; }    col.c-tick { width: 5.5rem; }
   col.c-name { width: 26%; }     col.c-sect { width: 12%; }
   col.c-score { width: 6rem; }   col.c-gap { width: 6rem; }
-  col.c-dcf { width: 6.5rem; }   col.c-also { width: 11.5rem; }
+  col.c-dcf { width: 6.5rem; }
   .tick { font-weight: 500; }
   /* On a phone the ticker moves INSIDE the company cell. Five columns need 376px of
      declared width against 358px of content, so the name column was being squeezed to
@@ -207,15 +209,14 @@
   td.behind { color: var(--behind); } td.ahead { color: var(--ahead); }
   td.inline { color: var(--inline); }
   .rank { color: var(--soft); }
-  /* Three links per row, so they are set small and quiet: at full weight a column of
-     1,827 links is the loudest thing on the page and none of them is the content. */
-  .also { white-space: nowrap; }
-  .also a { color: var(--soft); text-decoration: none; font-size: 11.5px;
-            letter-spacing: .02em; }
-  .also a + a::before { content: "·"; margin: 0 .4rem; color: var(--rule);
-                        text-decoration: none; }
-  .also a:hover { color: var(--accent); text-decoration: underline;
-                  text-decoration-style: dotted; text-underline-offset: 2px; }
+  /* Each figure is the link to the site that produced it, in place of a column of
+     three grey words per row (1,827 links that were not the content). The dotted rule
+     is there at rest so a phone, with no hover, still shows that the number goes
+     somewhere; it takes the cell's own colour so the drift hues survive. */
+  a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: var(--faint);
+          text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a.src:hover { color: var(--accent); text-decoration: underline solid;
+                text-decoration-color: var(--accent); }
   thead th.nosort { cursor: default; }
   thead th.nosort:hover { color: var(--soft); }
   /* Same hues as the gap reading, because they mean the same direction: cheaper is
@@ -252,8 +253,8 @@
     .cell .cn { font-size: 1.15rem; }
     .cell .cd { display: none; }
     .gh { font-size: 9px; letter-spacing: .06em; }
-    col.c-sect, col.c-tick, col.c-dcf, col.c-also { display: none; }
-    .c-sect-cell, .c-tick-cell, .c-dcf-cell, .c-also-cell { display: none; }
+    col.c-sect, col.c-tick, col.c-dcf { display: none; }
+    .c-sect-cell, .c-tick-cell, .c-dcf-cell { display: none; }
     col.c-rank { width: 13%; }  col.c-name { width: 47%; }
     col.c-score { width: 19%; } col.c-gap { width: 21%; }
     .hfull { display: none; } .hshort { display: inline; }
@@ -293,9 +294,9 @@
        the figures carry none of their own. All three are aria-hidden; the table below
        holds every value they draw. -->
   <div class="segmented" id="chartpick" role="group" aria-label="Choose a chart">
-    <button type="button" data-chart="heat" aria-pressed="true">What Drags Each Sector</button>
-    <button type="button" data-chart="sect" aria-pressed="false">Score by Sector</button>
-    <button type="button" data-chart="hist" aria-pressed="false">Where a Name Sits</button>
+    <button type="button" data-chart="heat" aria-pressed="true">Sector Medians by Measure</button>
+    <button type="button" data-chart="sect" aria-pressed="false">Combined Score by Sector</button>
+    <button type="button" data-chart="hist" aria-pressed="false">Combined Score Distribution</button>
   </div>
   <div class="charts">
     <figure class="ch" id="fig-heat">
@@ -345,7 +346,7 @@
     <table id="tbl">
       <colgroup>
         <col class="c-rank"><col class="c-tick"><col class="c-name"><col class="c-sect">
-        <col class="c-score"><col class="c-gap">{% if has_dcf %}<col class="c-dcf">{% endif %}<col class="c-also">
+        <col class="c-score"><col class="c-gap">{% if has_dcf %}<col class="c-dcf">{% endif %}
       </colgroup>
       <thead><tr>
         <th data-k="rank" class="num" title="Position among the companies on this page, combining all three measures at the weights set below. Rank 1 has the cleanest accounts, the price furthest behind estimates and the highest model value against price.">Rank<span class="ar">&#9650;</span></th>
@@ -355,7 +356,6 @@
         <th data-k="strain" class="num"><span class="hfull">Shortfall</span><span class="hshort">Score</span><span class="ar">&#9650;</span></th>
         <th data-k="gap" class="num">Drift (pp)<span class="ar">&#9650;</span></th>
         {% if has_dcf %}<th data-k="dcf" class="c-dcf-cell">DCF<span class="ar">&#9650;</span></th>{% endif %}
-        <th class="c-also-cell nosort">Also on</th>
       </tr></thead>
       <tbody id="tb"></tbody>
     </table>
@@ -437,7 +437,7 @@
   // ---- 1. histogram of the combined score, one name marked ----
   function drawHist() {
     var svg = document.getElementById("hist");
-    var d = dims(svg, 300, 220), M = { l: 34, r: 10, t: 16, b: 30 };
+    var d = dims(svg, 380, 230), M = { l: 36, r: 12, t: 22, b: 32 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
     var rows = pool(), f = focus();
     var BINS = 25, counts = new Array(BINS).fill(0), members = [];
@@ -449,15 +449,24 @@
     var top = Math.max.apply(null, counts) || 1;
     var X = function (v) { return M.l + (v / 100) * pw; };
     var Y = function (c) { return M.t + ph * (1 - c / top); };
-    var parts = [];
+    var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
+    // Count gridlines at even divisions of the tallest bar, labelled on the left.
+    var step = top > 40 ? 20 : top > 16 ? 10 : 5;
+    for (var g = step; g <= top; g += step) {
+      parts.push('<line class="guide" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '"/>');
+      parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g) + 4).toFixed(1) + '" text-anchor="end">' + g + "</text>");
+    }
     [0, 25, 50, 75, 100].forEach(function (v) {
       parts.push('<text class="tk" x="' + X(v) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
     });
     parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined score</text>');
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 6) + '">Companies</text>');
     var fk = f ? Math.min(BINS - 1, Math.floor(f.score * 100 / (100 / BINS))) : -1;
     for (i = 0; i < BINS; i++) {
       var x0 = X(i * (100 / BINS)), x1 = X((i + 1) * (100 / BINS));
-      parts.push('<rect class="bar-h' + (i === fk ? " hot" : "") + '" data-b="' + i +
+      // The bar takes the same colour its score would get on the heatmap, so the three
+      // charts share one meaning for amber and teal.
+      parts.push('<rect class="bar-h' + (i === fk ? " hot" : "") + '" data-b="' + i + '" fill="' + heatColour((i + 0.5) / BINS) +
                  '" x="' + (x0 + 0.5).toFixed(1) + '" y="' + Y(counts[i]).toFixed(1) +
                  '" width="' + Math.max(1, x1 - x0 - 1).toFixed(1) + '" height="' + (M.t + ph - Y(counts[i])).toFixed(1) + '"/>');
     }
@@ -498,11 +507,12 @@
   function drawSectors() {
     var svg = document.getElementById("sect");
     var S = sectorRows(), f = focus();
-    var rowH = 30, M = { l: 130, r: 10, t: 6, b: 30 };
+    var rowH = 38, M = { l: 150, r: 12, t: 8, b: 32 };
     var d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b);
+    if (d.w < 520) { rowH = 30; M.l = 120; d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b); }
     var pw = d.w - M.l - M.r;
     var X = function (v) { return M.l + v * pw; };
-    var parts = [];
+    var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + (S.length * rowH) + '"/>'];
     [0, 25, 50, 75, 100].forEach(function (v) {
       parts.push('<line class="guide" x1="' + X(v / 100) + '" x2="' + X(v / 100) + '" y1="' + M.t + '" y2="' + (M.t + S.length * rowH) + '"/>');
       parts.push('<text class="tk" x="' + X(v / 100) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
@@ -511,18 +521,21 @@
     S.forEach(function (sec, i) {
       var cy = M.t + i * rowH + rowH / 2;
       if (i > 0) parts.push('<line class="rowrule" x1="' + M.l + '" x2="' + (d.w - M.r) + '" y1="' + (cy - rowH / 2) + '" y2="' + (cy - rowH / 2) + '"/>');
-      parts.push('<text class="slab" x="' + (M.l - 8) + '" y="' + (cy + 4) + '" text-anchor="end">' +
-                 sec.sector + " (" + sec.rows.length + ")</text>");
+      // The count comes off under 520px: "Transport & comms 24" clipped at the left
+      // edge at 390, and the hover carries n anyway.
+      parts.push('<text class="slab" x="' + (M.l - 10) + '" y="' + (cy + 4) + '" text-anchor="end">' +
+                 sec.sector + (d.w < 520 ? "" : ' <tspan class="n">' + sec.rows.length + "</tspan>") + "</text>");
       sec.rows.forEach(function (r, j) {
         // Deterministic jitter from the row's index, so a redraw does not shuffle the
         // dots and a hovered dot stays under the pointer.
         // +-8 in a 30px row leaves a 14px gutter, so one sector's dots never read as
         // its neighbour's. At +-10 the bands merged into one cloud.
-        var jit = ((Math.sin(j * 12.9898 + i * 78.233) * 43758.5453) % 1) * 16 - 8;
-        parts.push('<circle class="sdot' + (r === f ? " hot" : "") + '" data-i="' + ROWS.indexOf(r) +
-                   '" cx="' + X(r.score).toFixed(1) + '" cy="' + (cy + jit).toFixed(1) + '" r="' + (r === f ? 4 : 2.4) + '"/>');
+        var amp = rowH * 0.3;
+        var jit = ((Math.sin(j * 12.9898 + i * 78.233) * 43758.5453) % 1) * amp * 2 - amp;
+        parts.push('<circle class="sdot' + (r === f ? " hot" : "") + '" data-i="' + ROWS.indexOf(r) + '" fill="' + heatColour(r.score) +
+                   '" cx="' + X(r.score).toFixed(1) + '" cy="' + (cy + jit).toFixed(1) + '" r="' + (r === f ? 5 : 3) + '"/>');
       });
-      parts.push('<line class="smed" x1="' + X(sec.median) + '" x2="' + X(sec.median) + '" y1="' + (cy - 11) + '" y2="' + (cy + 11) + '"/>');
+      parts.push('<line class="smed" x1="' + X(sec.median) + '" x2="' + X(sec.median) + '" y1="' + (cy - rowH * 0.42) + '" y2="' + (cy + rowH * 0.42) + '"/>');
     });
     svg.innerHTML = parts.join("");
     svg.onmousemove = function (ev) {
@@ -555,8 +568,9 @@
   function drawHeat() {
     var svg = document.getElementById("heat");
     var S = sectorRows();
-    var rowH = 30, M = { l: 130, r: 4, t: 24, b: 6 };
+    var rowH = 38, M = { l: 150, r: 4, t: 26, b: 6 };
     var d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b);
+    if (d.w < 520) { rowH = 30; M.l = 120; d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b); }
     // Full wording where a column has room for it, matching the weight sliders; the
     // short form under 520px, where the three long heads overprinted - measured, two
     // of three collided at 390.
@@ -570,12 +584,12 @@
     });
     S.forEach(function (sec, i) {
       var y = M.t + i * rowH;
-      parts.push('<text class="slab" x="' + (M.l - 8) + '" y="' + (y + rowH / 2 + 4) + '" text-anchor="end">' + sec.sector + "</text>");
+      parts.push('<text class="slab" x="' + (M.l - 10) + '" y="' + (y + rowH / 2 + 4) + '" text-anchor="end">' + sec.sector + "</text>");
       COLS.forEach(function (c, j) {
         var v = sec.rows.map(function (r) { return r[c[0]]; }).filter(function (x) { return x !== null; }).sort(function (a, b) { return a - b; });
         var med = v.length ? v[Math.floor(v.length / 2)] : null;
         var x = M.l + cw * j;
-        parts.push('<rect class="hcell" data-s="' + i + '" data-c="' + j + '" x="' + x + '" y="' + y + '" width="' + cw + '" height="' + rowH +
+        parts.push('<rect class="hcell" rx="3" data-s="' + i + '" data-c="' + j + '" x="' + x + '" y="' + y + '" width="' + cw + '" height="' + rowH +
                    '" fill="' + (med === null ? "var(--rule)" : heatColour(med)) + '"/>');
         if (med !== null) parts.push('<text class="hval" x="' + (x + cw / 2) + '" y="' + (y + rowH / 2 + 4) +
                    '" fill="' + (Math.abs(med - 0.5) > 0.22 ? "#0f1319" : "#e6e9ee") + '">' + fmtPct(med) + "</text>");
@@ -739,7 +753,7 @@
       : rows.length + " of " + ROWS.length;
     clear.hidden = !q.value && picked === null;
 
-    if (!rows.length) { tb.innerHTML = '<tr><td class="empty" colspan="' + (HAS_DCF ? 8 : 7) + '">No companies match.</td></tr>'; return; }
+    if (!rows.length) { tb.innerHTML = '<tr><td class="empty" colspan="' + (HAS_DCF ? 7 : 6) + '">No companies match.</td></tr>'; return; }
     tb.innerHTML = rows.map(function (r) {
       var t = encodeURIComponent(r.ticker);
       return '<tr>' +
@@ -749,17 +763,14 @@
         '<td class="c-sect-cell">' + r.sector + "</td>" +
         // Tests is no longer a column of its own - it is a caveat on the score rather
         // than a measurement beside it, so it rides along as the cell's title.
-        '<td class="num" title="' + strainTip(r) + '">' + r.strain.toFixed(0) + "</td>" +
-        '<td class="num ' + r.reading + '" title="' + driftTip(r) + '">' +
-          (r.gap > 0 ? "+" : "") + r.gap.toFixed(1) + "</td>" +
-        (HAS_DCF ? '<td class="num c-dcf-cell" title="' + dcfTip(r) + '">' + (r.dcf === null
+        // Each figure opens the company on the site that measured it. A DCF of "-"
+        // has no page behind it, so that one stays a plain dash.
+        '<td class="num" title="' + strainTip(r) + '"><a class="src" href="https://charlietrenorden.com/shortfall/?q=' + t + '">' + r.strain.toFixed(0) + "</a></td>" +
+        '<td class="num ' + r.reading + '" title="' + driftTip(r) + '"><a class="src" href="https://charlietrenorden.com/consensus-drift/?q=' + t + '">' +
+          (r.gap > 0 ? "+" : "") + r.gap.toFixed(1) + "</a></td>" +
+        (HAS_DCF ? '<td class="num c-dcf-cell dcf-' + r.dcfband + '" title="' + dcfTip(r) + '">' + (r.dcf === null
           ? '<span class="none">-</span>'
-          : '<span class="dcf-' + r.dcfband + '">' + r.dcf.toFixed(2) + "x</span>") + "</td>" : "") +
-        '<td class="also c-also-cell">' +
-          '<a href="https://charlietrenorden.com/shortfall/?q=' + t + '">Shortfall</a>' +
-          '<a href="https://charlietrenorden.com/consensus-drift/?q=' + t + '">Consensus</a>' +
-          '<a href="https://dcf.charlietrenorden.com/' + t + '">DCF</a>' +
-        "</td>" +
+          : '<a class="src" href="https://dcf.charlietrenorden.com/' + t + '">' + r.dcf.toFixed(2) + "x</a>") + "</td>" : "") +
       "</tr>";
     }).join("");
   }
