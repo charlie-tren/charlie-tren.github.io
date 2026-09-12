@@ -89,10 +89,20 @@
      container pixel scale - the viewBox is set from the measured width, so a 10px
      label is 10px wherever it lands - and each redraws on weight, toggle, search and
      resize so it can never disagree with the table under it. */
-  .charts { position: relative; display: grid; gap: 1.6rem 2rem;
-            grid-template-columns: 1.1fr 1fr 1.1fr; margin: 0 0 1.2rem; }
+  .segmented { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px;
+               overflow: hidden; margin: 0 0 1rem; max-width: 100%; }
+  .segmented button { appearance: none; background: transparent; border: 0; cursor: pointer;
+                      color: var(--soft); padding: .48rem .9rem; white-space: nowrap;
+                      font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em;
+                      transition: background .15s, color .15s; }
+  .segmented button + button { border-left: 1px solid var(--rule); }
+  .segmented button:hover { color: var(--ink); }
+  .segmented button[aria-pressed="true"] { background: var(--raised); color: var(--ink); }
+  /* One chart, drawn large. 680px is where a 25-bin histogram and a nine-row strip
+     both read comfortably; wider and the strip's dots spread into a smear. */
+  .charts { position: relative; max-width: 680px; margin: 0 0 1.2rem; }
   .ch { margin: 0; padding: 0; min-width: 0; }
-  .ch h2 { margin: 0 0 .55rem; }
+  .ch[hidden] { display: none; }
   .ch svg { width: 100%; display: block; overflow: visible; }
   .bar-h { fill: var(--inline); fill-opacity: .7; }
   .bar-h.hot { fill: var(--accent); fill-opacity: 1; }
@@ -106,6 +116,7 @@
   .hval { font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; text-anchor: middle;
           font-variant-numeric: tabular-nums; pointer-events: none; }
   .guide { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 4; }
+  .rowrule { stroke: var(--rule); stroke-width: 1; }
   .tk { fill: var(--faint); font: 400 10.5px/1 ui-sans-serif, system-ui, sans-serif;
         font-variant-numeric: tabular-nums; }
   .ax { fill: var(--soft); font: 500 10px/1 ui-sans-serif, system-ui, sans-serif;
@@ -232,7 +243,8 @@
 
   @media (max-width: 720px) {
     .wrap { padding: 1.6rem 1rem 4rem; }
-    .charts { grid-template-columns: 1fr; }
+    .segmented { display: flex; }
+    .segmented button { flex: 1 1 0; padding: .48rem .3rem; font-size: 11px; letter-spacing: .02em; }
 
     h1 { font-size: 1.9rem; }
     .grid { grid-template-columns: auto repeat(3, 1fr); }
@@ -275,19 +287,26 @@
   <!-- Three charts, chosen from thirteen rendered on the live rows. All three are
        aria-hidden and the table below carries every value they draw: they are
        readings of the table, not the data. -->
+  <!-- One chart at a time. Three side by side at 340px each was the case the site
+       style already names - several small charts become unreadable - and its answer is
+       a way to flick between larger ones. The segmented control IS the chart title, so
+       the figures carry none of their own. All three are aria-hidden; the table below
+       holds every value they draw. -->
+  <div class="segmented" id="chartpick" role="group" aria-label="Choose a chart">
+    <button type="button" data-chart="heat" aria-pressed="true">What Drags Each Sector</button>
+    <button type="button" data-chart="sect" aria-pressed="false">Score by Sector</button>
+    <button type="button" data-chart="hist" aria-pressed="false">Where a Name Sits</button>
+  </div>
   <div class="charts">
-    <figure class="ch ch-hist">
-      <h2>Where a Name Sits</h2>
-      <svg id="hist" aria-hidden="true"></svg>
-    </figure>
-    <figure class="ch ch-sect">
-      <h2>Score by Sector</h2>
-      <svg id="sect" aria-hidden="true"></svg>
-    </figure>
-    <figure class="ch ch-heat">
-      <h2>What Drags Each Sector</h2>
+    <figure class="ch" id="fig-heat">
       <svg id="heat" aria-hidden="true"></svg>
       <div class="key" id="heatkey"></div>
+    </figure>
+    <figure class="ch" id="fig-sect" hidden>
+      <svg id="sect" aria-hidden="true"></svg>
+    </figure>
+    <figure class="ch" id="fig-hist" hidden>
+      <svg id="hist" aria-hidden="true"></svg>
     </figure>
     <div class="tip" id="tip" hidden></div>
   </div>
@@ -418,7 +437,7 @@
   // ---- 1. histogram of the combined score, one name marked ----
   function drawHist() {
     var svg = document.getElementById("hist");
-    var d = dims(svg, 220, 190), M = { l: 34, r: 10, t: 14, b: 30 };
+    var d = dims(svg, 300, 220), M = { l: 34, r: 10, t: 16, b: 30 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
     var rows = pool(), f = focus();
     var BINS = 25, counts = new Array(BINS).fill(0), members = [];
@@ -479,7 +498,7 @@
   function drawSectors() {
     var svg = document.getElementById("sect");
     var S = sectorRows(), f = focus();
-    var rowH = 22, M = { l: 108, r: 10, t: 6, b: 30 };
+    var rowH = 30, M = { l: 130, r: 10, t: 6, b: 30 };
     var d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b);
     var pw = d.w - M.l - M.r;
     var X = function (v) { return M.l + v * pw; };
@@ -491,16 +510,19 @@
     parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined score, median marked</text>');
     S.forEach(function (sec, i) {
       var cy = M.t + i * rowH + rowH / 2;
+      if (i > 0) parts.push('<line class="rowrule" x1="' + M.l + '" x2="' + (d.w - M.r) + '" y1="' + (cy - rowH / 2) + '" y2="' + (cy - rowH / 2) + '"/>');
       parts.push('<text class="slab" x="' + (M.l - 8) + '" y="' + (cy + 4) + '" text-anchor="end">' +
                  sec.sector + " (" + sec.rows.length + ")</text>");
       sec.rows.forEach(function (r, j) {
         // Deterministic jitter from the row's index, so a redraw does not shuffle the
         // dots and a hovered dot stays under the pointer.
-        var jit = ((Math.sin(j * 12.9898 + i * 78.233) * 43758.5453) % 1) * 14 - 7;
+        // +-8 in a 30px row leaves a 14px gutter, so one sector's dots never read as
+        // its neighbour's. At +-10 the bands merged into one cloud.
+        var jit = ((Math.sin(j * 12.9898 + i * 78.233) * 43758.5453) % 1) * 16 - 8;
         parts.push('<circle class="sdot' + (r === f ? " hot" : "") + '" data-i="' + ROWS.indexOf(r) +
                    '" cx="' + X(r.score).toFixed(1) + '" cy="' + (cy + jit).toFixed(1) + '" r="' + (r === f ? 4 : 2.4) + '"/>');
       });
-      parts.push('<line class="smed" x1="' + X(sec.median) + '" x2="' + X(sec.median) + '" y1="' + (cy - 8) + '" y2="' + (cy + 8) + '"/>');
+      parts.push('<line class="smed" x1="' + X(sec.median) + '" x2="' + X(sec.median) + '" y1="' + (cy - 11) + '" y2="' + (cy + 11) + '"/>');
     });
     svg.innerHTML = parts.join("");
     svg.onmousemove = function (ev) {
@@ -533,11 +555,14 @@
   function drawHeat() {
     var svg = document.getElementById("heat");
     var S = sectorRows();
-    // Short heads: three long ones overprinted at 340px per column, and the sliders
-    // directly beneath carry the full wording.
-    var COLS = [["pStrain", "Clean"], ["pDrift", "Behind"], ["pDcf", "Value"]];
-    var rowH = 22, M = { l: 108, r: 4, t: 24, b: 6 };
+    var rowH = 30, M = { l: 130, r: 4, t: 24, b: 6 };
     var d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b);
+    // Full wording where a column has room for it, matching the weight sliders; the
+    // short form under 520px, where the three long heads overprinted - measured, two
+    // of three collided at 390.
+    var COLS = d.w < 520
+      ? [["pStrain", "Clean"], ["pDrift", "Behind"], ["pDcf", "Value"]]
+      : [["pStrain", "Clean accounts"], ["pDrift", "Price behind"], ["pDcf", "Value above price"]];
     var cw = (d.w - M.l - M.r) / 3;
     var parts = [];
     COLS.forEach(function (c, j) {
@@ -574,7 +599,32 @@
   }
 
   function markPicked() {}   // the charts mark focus() on every redraw
-  function plot() { drawHist(); drawSectors(); drawHeat(); }
+  // Remembered per browser, never in the URL: a link should open on the page's own
+  // default, not on whichever chart the sender happened to be looking at.
+  var CHART = "heat";
+  try { CHART = localStorage.getItem("crosscheck.chart") || "heat"; } catch (e) {}
+  var DRAW = { heat: drawHeat, sect: drawSectors, hist: drawHist };
+  if (!DRAW[CHART]) CHART = "heat";
+
+  function showChart(k) {
+    CHART = k;
+    try { localStorage.setItem("crosscheck.chart", k); } catch (e) {}
+    ["heat", "sect", "hist"].forEach(function (id) {
+      document.getElementById("fig-" + id).hidden = id !== k;
+    });
+    document.querySelectorAll("#chartpick button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.chart === k));
+    });
+    hideTip();
+    plot();
+  }
+  document.querySelectorAll("#chartpick button").forEach(function (b) {
+    b.addEventListener("click", function () { showChart(b.dataset.chart); });
+  });
+
+  // Only the visible chart is drawn. A hidden figure measures zero wide, and drawing
+  // into it would size every label off nothing.
+  function plot() { DRAW[CHART](); }
 
   var rz;
   window.addEventListener("resize", function () {
@@ -743,6 +793,7 @@
   var incoming = new URLSearchParams(location.search).get("q");
   if (incoming) q.value = incoming;
 
+  showChart(CHART);
   readWeights();
   render();
 
