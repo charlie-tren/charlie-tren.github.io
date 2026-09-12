@@ -289,6 +289,58 @@ def check_universes(n_short: int, n_drift: int, n_join: int) -> None:
     )
 
 
+HISTORY = HERE / "history.jsonl"
+
+
+def parse_dcf_prices(text: str) -> dict:
+    """The price each DCF ratio was struck against: {ticker: [price, currency]}."""
+    return json.loads(text).get("prices", {})
+
+
+def append_history(rows: list[dict], prices: dict, date: str, path: Path = HISTORY) -> int:
+    """One line per company per build: the three component percentiles and the price.
+
+    WHY. Nothing available today correlates strongly with a composite of three
+    near-independent measures - scanned 12/09/2026 across the page's own fields,
+    Shortfall's underlying ratios and 25 Yahoo fields on all 494, and the best
+    non-arithmetic result was EV/EBITDA at rho -0.31. That is structural: a composite
+    dilutes anything tied to one of its inputs by root three. The one thing that
+    SHOULD relate to it is what the price does afterwards, and that cannot be measured
+    without a record of what the score said and when. This is that record.
+
+    COMPONENTS, NOT THE SCORE. The weights are user-adjustable on the page, so writing
+    the equal-weight score would freeze one weighting for ever. Writing the three
+    inputs lets any weighting be tested against what followed.
+
+    ONE LINE PER DAY. The build can run twice in a day - a manual dispatch after the
+    cron, a rebase that re-runs it - and a second line for the same date would
+    double-count that day in every later average. A date already present is skipped.
+
+    Compact keys because this file grows by ~600 lines a day for as long as the site
+    exists: d date, t ticker, s/r/v the strain, drift and value percentiles, p price,
+    c currency.
+    """
+    if path.exists():
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                # Compact separators, so no space after the colon - matching the writer
+                # below exactly. With a space here the check never matched and every
+                # rebuild in a day added a second copy, which the test caught.
+                if line.startswith('{"d":"%s"' % date):
+                    return 0
+    written = 0
+    with open(path, "a", encoding="utf-8") as fh:
+        for r in rows:
+            p = prices.get(r["ticker"])
+            fh.write(json.dumps({
+                "d": date, "t": r["ticker"],
+                "s": r["pStrain"], "r": r["pDrift"], "v": r["pDcf"],
+                "p": p[0] if p else None, "c": p[1] if p else None,
+            }, separators=(",", ":")) + "\n")
+            written += 1
+    return written
+
+
 def corners(rows: list[dict]) -> dict:
     """The four situations, counted. The page states these, so they are computed once."""
     top = sorted(rows, key=lambda r: -r["strain"])[: max(1, len(rows) // 4)]
@@ -312,8 +364,11 @@ def main() -> int:
     # run should fail loudly. DCF Studio is a third column on top, so a bad day there
     # costs a column rather than the site - and the column disappears rather than
     # filling with blanks, which would read as the model declining to answer.
+    prices: dict = {}
     try:
-        dcf = parse_dcf(fetch(DCF_URL))
+        dcf_text = fetch(DCF_URL)
+        dcf = parse_dcf(dcf_text)
+        prices = parse_dcf_prices(dcf_text)
     except Exception as exc:  # noqa: BLE001
         print(f"WARN: no DCF ratios ({type(exc).__name__}: {exc}); "
               f"the column will be omitted", file=sys.stderr)
@@ -321,6 +376,12 @@ def main() -> int:
 
     rows = join(names, drift, dcf)
     check_universes(len(names), len(drift), len(rows))
+    # After the guard, so a collapsed source never writes a day of nonsense into the
+    # record. Before the page, so a template error cannot cost the day's line.
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    recorded = append_history(rows, prices, today)
+    print(f"{HISTORY.name}: {recorded} lines for {today}"
+          + ("" if recorded else " (already recorded)"))
 
     from jinja2 import Template
 

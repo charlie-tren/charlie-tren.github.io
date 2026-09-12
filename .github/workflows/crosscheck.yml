@@ -68,7 +68,7 @@ jobs:
           # Explicit pathspecs. Several sessions push to this repo and routinely leave
           # work in the tree; a bare `git add -A` in a bot job is how an unrelated
           # change ends up inside a commit titled "crosscheck".
-          git add crosscheck/index.html crosscheck/tickers.json crosscheck/counts.json
+          git add crosscheck/index.html crosscheck/tickers.json crosscheck/counts.json crosscheck/history.jsonl
           git diff --staged --quiet && echo "no change" && exit 0
           git commit -m "crosscheck: $(date -u +%Y-%m-%d)"
           for attempt in 1 2 3; do
@@ -82,7 +82,7 @@ jobs:
             # and undid an estate-wide analytics change inside a commit titled
             # "Refresh card thumbnails".
             git reset --mixed origin/main
-            git add crosscheck/index.html crosscheck/tickers.json crosscheck/counts.json
+            git add crosscheck/index.html crosscheck/tickers.json crosscheck/counts.json crosscheck/history.jsonl
             git diff --staged --quiet && exit 0
             git commit -m "crosscheck: $(date -u +%Y-%m-%d)"
             sleep 3

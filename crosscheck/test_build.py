@@ -369,3 +369,63 @@ class TestComponentPercentiles:
         by = {r["ticker"]: r for r in self.rows()}
         assert by["A"]["complete"] is True
         assert by["D"]["complete"] is False
+
+
+class TestHistory:
+    """One line per company per build, so that in a few months the page can plot what
+    the score DID against what it said. Nothing in the data that exists today
+    correlates strongly with a composite of three near-independent measures - scanned
+    on 12/09/2026 across the page's own fields, Shortfall's underlying ratios and 25
+    Yahoo fields on all 494, best non-arithmetic result rho -0.31 - and the one thing
+    that should, forward return, cannot be measured without a history."""
+
+    def rows(self):
+        return [
+            {"ticker": "AMD", "pStrain": 0.1, "pDrift": 0.9, "pDcf": None, "complete": False},
+            {"ticker": "KO", "pStrain": 0.8, "pDrift": 0.4, "pDcf": 0.6, "complete": True},
+        ]
+
+    def test_appends_one_line_per_company_with_the_three_components_and_the_price(self, tmp_path):
+        path = tmp_path / "history.jsonl"
+        n = build.append_history(self.rows(), {"KO": [61.5, "USD"]}, "2026-09-12", path)
+        lines = [json.loads(l) for l in path.read_text().splitlines()]
+        assert n == 2 and len(lines) == 2
+        ko = next(l for l in lines if l["t"] == "KO")
+        assert ko["d"] == "2026-09-12"
+        assert ko["s"] == 0.8 and ko["r"] == 0.4 and ko["v"] == 0.6
+        assert ko["p"] == 61.5 and ko["c"] == "USD"
+
+    def test_records_the_components_not_the_score(self):
+        # The weights are user-adjustable. Recording the equal-weight score would fix
+        # one weighting for ever; recording the three inputs lets any weighting be
+        # tested against what happened afterwards.
+        import tempfile
+        from pathlib import Path
+        p = Path(tempfile.mkdtemp()) / "h.jsonl"
+        build.append_history(self.rows(), {}, "2026-09-12", p)
+        line = json.loads(p.read_text().splitlines()[0])
+        assert "score" not in line and "rank" not in line
+
+    def test_a_company_with_no_price_is_still_recorded_with_none(self, tmp_path):
+        # No price today does not mean no score today. The row is kept so the
+        # component history is complete; the return simply cannot be computed from it.
+        path = tmp_path / "h.jsonl"
+        build.append_history(self.rows(), {}, "2026-09-12", path)
+        amd = next(json.loads(l) for l in path.read_text().splitlines() if '"AMD"' in l)
+        assert amd["p"] is None and amd["v"] is None
+
+    def test_does_not_write_the_same_day_twice(self, tmp_path):
+        # The build can run more than once a day - a manual dispatch after the cron, a
+        # rebase that re-runs it. A second line for the same date would double-count
+        # that day in every later average.
+        path = tmp_path / "h.jsonl"
+        build.append_history(self.rows(), {}, "2026-09-12", path)
+        n = build.append_history(self.rows(), {}, "2026-09-12", path)
+        assert n == 0
+        assert len(path.read_text().splitlines()) == 2
+
+    def test_appends_rather_than_overwrites_on_a_new_day(self, tmp_path):
+        path = tmp_path / "h.jsonl"
+        build.append_history(self.rows(), {}, "2026-09-12", path)
+        build.append_history(self.rows(), {}, "2026-09-13", path)
+        assert len(path.read_text().splitlines()) == 4
