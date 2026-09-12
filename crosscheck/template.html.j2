@@ -85,62 +85,35 @@
   .lede { margin: 0 0 2.6rem; color: var(--soft); font-size: 1.05rem; max-width: 40rem; }
   h2 { font: 600 1.15rem/1.3 inherit; margin: 3rem 0 1rem; }
 
-  /* The cross-tab as a picture. Every company is a dot: Shortfall across, the drift
-     between estimates and price up, and the model's reading as colour - so all three
-     measures are on one chart rather than in a panel of counts.
-
-     It is a LOCATOR, not a claim about a relationship. The correlation between the two
-     axes is r = +0.087 against a standard error of 0.041, so the cloud is close to
-     round by construction, and that is the finding: the corners are populated
-     independently, which is why reading them is worth anything. */
-  /* Capped rather than full-bleed. At the page's full 1072px this was 3:1 and the
-     cloud came out as a horizontal smear with no vertical separation - the axis that
-     carries the drift had a third of the room the axis carrying the score had. */
-  /* Pickable axes, the same shape Shortfall's cross-plot already uses. The pairs on
-     offer were MEASURED across all 609 first rather than being every field the page
-     happens to hold: size against short interest is rho -0.65, analyst count against
-     how many accounting tests can be run is +0.49, one-year return against the DCF
-     ratio is -0.23. The page's own three measures are close to independent of each
-     other, which is why they are worth reading together, and the readout says so
-     rather than leaving the reader to guess from a round cloud. */
-  .axpick { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
-            margin: 0 0 .9rem; font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; }
-  .axpick select { background: var(--raised); color: var(--ink); border: 1px solid var(--rule);
-                   border-radius: 6px; padding: .35rem .5rem; font: inherit; }
-  .axpick select:focus { border-color: var(--accent); outline: none; }
-  .vs { color: var(--faint); }
-  .rho { color: var(--soft); font-variant-numeric: tabular-nums; margin-left: .3rem; }
-  .rho.noise { color: var(--faint); }
-  .plotwrap { position: relative; margin: 0 0 1rem; padding: 0; max-width: 660px; }
-  #plot { width: 100%; display: block; overflow: visible; }
-  .dot { cursor: pointer; }
-  .dot.cheaper { fill: var(--behind); fill-opacity: .72; }
-  .dot.dearer  { fill: var(--ahead);  fill-opacity: .72; }
-  .dot.middle  { fill: var(--inline); fill-opacity: .6; }
-  /* No reading is not a value, so it is drawn as an absence: hollow, quiet, still
-     locatable. Filling it in a fourth colour would make "we could not model this" look
-     like a fourth verdict. */
-  .dot.nodcf { fill: none; stroke: var(--faint); stroke-width: 1; }
-  /* Pinned at the axis edge because its true value is off the scale. Outlined so it
-     never reads as a company that happens to sit exactly on the boundary. */
-  .dot.clamped { stroke: var(--ink); stroke-width: 1.2; fill-opacity: .35; }
-  .dot.on { stroke: var(--accent); stroke-width: 2.5; fill-opacity: 1; }
+  /* Three charts in a row on a wide screen, stacked on a phone. Each is drawn at
+     container pixel scale - the viewBox is set from the measured width, so a 10px
+     label is 10px wherever it lands - and each redraws on weight, toggle, search and
+     resize so it can never disagree with the table under it. */
+  .charts { position: relative; display: grid; gap: 1.6rem 2rem;
+            grid-template-columns: 1.1fr 1fr 1.1fr; margin: 0 0 1.2rem; }
+  .ch { margin: 0; padding: 0; min-width: 0; }
+  .ch h2 { margin: 0 0 .55rem; }
+  .ch svg { width: 100%; display: block; overflow: visible; }
+  .bar-h { fill: var(--inline); fill-opacity: .7; }
+  .bar-h.hot { fill: var(--accent); fill-opacity: 1; }
+  .mark { stroke: var(--accent); stroke-width: 2; }
+  .mark-l { fill: var(--accent); font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; }
+  .sdot { fill: var(--inline); fill-opacity: .45; }
+  .sdot.hot { fill: var(--accent); fill-opacity: 1; }
+  .smed { stroke: var(--accent); stroke-width: 2.4; }
+  .slab { fill: var(--soft); font: 400 11px/1 ui-sans-serif, system-ui, sans-serif; }
+  .hcell { stroke: var(--bg); stroke-width: 1.5; }
+  .hval { font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; text-anchor: middle;
+          font-variant-numeric: tabular-nums; pointer-events: none; }
   .guide { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 4; }
-  .zero { stroke: var(--rule); stroke-width: 1; }
   .tk { fill: var(--faint); font: 400 10.5px/1 ui-sans-serif, system-ui, sans-serif;
         font-variant-numeric: tabular-nums; }
   .ax { fill: var(--soft); font: 500 10px/1 ui-sans-serif, system-ui, sans-serif;
         letter-spacing: .08em; text-transform: uppercase; }
-
   .key { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin-top: .5rem; }
   .ki { display: inline-flex; align-items: center; gap: .4rem; color: var(--soft);
         font: 400 11.5px/1.4 ui-sans-serif, system-ui, sans-serif; }
-  .sw { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-  .sw.cheaper { background: var(--behind); } .sw.dearer { background: var(--ahead); }
-  .sw.middle { background: var(--inline); }
-  .sw.nodcf { background: transparent; border: 1px solid var(--faint); }
-
-  /* Follows the pointer rather than parking in a corner over the data. */
+  .sw { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
   .tip { position: absolute; pointer-events: none; z-index: 5; max-width: 17rem;
          background: var(--raised); border: 1px solid var(--rule); border-radius: 6px;
          padding: .5rem .65rem; box-shadow: 0 6px 20px rgba(0,0,0,.35);
@@ -259,6 +232,7 @@
 
   @media (max-width: 720px) {
     .wrap { padding: 1.6rem 1rem 4rem; }
+    .charts { grid-template-columns: 1fr; }
 
     h1 { font-size: 1.9rem; }
     .grid { grid-template-columns: auto repeat(3, 1fr); }
@@ -298,23 +272,25 @@
   <h1>Crosscheck</h1>
   <p class="lede">Accounting strain against the drift from analyst estimates, for {{ n }} companies.</p>
 
-  <div class="axpick">
-    <label><select id="yvar" aria-label="Vertical axis"></select></label>
-    <span class="vs">against</span>
-    <label><select id="xvar" aria-label="Horizontal axis"></select></label>
-    <span class="rho" id="rho"></span>
-  </div>
-
-  <figure class="plotwrap">
-    <!-- The svg is aria-hidden and the table below carries every value it draws, which
-         is the honest arrangement: this is a locator, not the data. Its one action -
-         click a company - is mirrored by the search box, which is reachable by
-         keyboard. Marking it role="img" would be worse than either, because that
-         promises there is nothing inside worth reaching. -->
-    <svg id="plot" aria-hidden="true"></svg>
-    <div class="key" id="key"></div>
+  <!-- Three charts, chosen from thirteen rendered on the live rows. All three are
+       aria-hidden and the table below carries every value they draw: they are
+       readings of the table, not the data. -->
+  <div class="charts">
+    <figure class="ch ch-hist">
+      <h2>Where a Name Sits</h2>
+      <svg id="hist" aria-hidden="true"></svg>
+    </figure>
+    <figure class="ch ch-sect">
+      <h2>Score by Sector</h2>
+      <svg id="sect" aria-hidden="true"></svg>
+    </figure>
+    <figure class="ch ch-heat">
+      <h2>What Drags Each Sector</h2>
+      <svg id="heat" aria-hidden="true"></svg>
+      <div class="key" id="heatkey"></div>
+    </figure>
     <div class="tip" id="tip" hidden></div>
-  </figure>
+  </div>
 
   <div class="weights">
     <!-- Each label says what MORE WEIGHT FAVOURS, not which column it comes from.
@@ -392,243 +368,213 @@
   var clear = document.getElementById("clear");
   var sortKey = "rank", sortDir = 1;
 
-  var svg = document.getElementById("plot"), tip = document.getElementById("tip");
+  var tip = document.getElementById("tip");
   var picked = null;
 
-  // The drift axis is CLAMPED rather than fitted. Measured over the 609: the values run
-  // -211.1 to +56.7, but -60 to +60 already contains 606 of them, so fitting to the
-  // data spends 70% of the plot on three distressed names and squashes everyone else
-  // into a band. The three sit ON the edge as hollow marks with their true figure in
-  // the readout, because a point silently parked off-canvas is worse than a squashed
-  // axis - it reads as a company the page forgot.
-  // Every axis the page can draw. The list is not "every field we happen to hold" - the
-  // pairs were measured across all 609 first, and these are the ones where something
-  // actually relates: market cap against short interest is rho -0.65, analyst count
-  // against how many accounting tests can be run is +0.49, and one-year return against
-  // the DCF ratio is -0.23. The page's own three measures are near-independent of each
-  // other, which is exactly why they are worth reading together.
-  var AXES = {
-    strain:     { label: "Shortfall score",      get: function (r) { return r.strain; }, lo: 0, hi: 100 },
-    gap:        { label: "Drift (pp)",           get: function (r) { return r.gap; }, clamp: 60 },
-    dcf:        { label: "DCF, x market price",  get: function (r) { return r.dcf; }, clamp: 4 },
-    ret_1y:     { label: "Return, 1 year",       get: function (r) { return r.ret_1y == null ? null : r.ret_1y * 100; }, clamp: 200 },
-    short_int:  { label: "Short interest",       get: function (r) { return r.short_int == null ? null : r.short_int * 100; }, clamp: 25 },
-    mcap:       { label: "Market cap (log)",     get: function (r) { return r.mcap ? Math.log10(r.mcap) : null; } },
-    analysts:   { label: "Analysts covering",    get: function (r) { return r.analysts; } },
-    applicable: { label: "Tests that ran",       get: function (r) { return r.applicable; }, lo: 0, hi: 6 },
-    rev:        { label: "Estimate change, 90d", get: function (r) { return r.rev; }, clamp: 60 },
-    pxchg:      { label: "Price change, 90d",    get: function (r) { return r.pxchg; }, clamp: 100 }
-  };
-  var xKey = "ret_1y", yKey = "dcf";
+  // Sectors with fewer than ten names are folded into the chart's silence rather than
+  // drawn: a strip of two dots is not a category, and a heatmap row off two companies
+  // reports one company's accounts as a sector's habit.
+  var MIN_SECTOR = 10;
 
-  function fillPickers() {
-    ["yvar", "xvar"].forEach(function (id) {
-      var sel = document.getElementById(id);
-      sel.innerHTML = Object.keys(AXES).map(function (k) {
-        return '<option value="' + k + '">' + AXES[k].label + "</option>";
-      }).join("");
-      sel.value = id === "yvar" ? yKey : xKey;
-      sel.addEventListener("change", function () {
-        if (id === "yvar") { yKey = sel.value; } else { xKey = sel.value; }
-        plot();
-      });
-    });
+  function fmtPct(v) { return Math.round(v * 100); }
+
+  // The one company the charts single out: whatever the search box resolves to a
+  // single row, or the dot clicked last. Nothing is marked when the search is empty -
+  // a highlighted arbitrary company reads as a recommendation.
+  function focus() {
+    var v = visible();
+    if (v.length === 1) return v[0];
+    if (picked !== null && v.indexOf(ROWS[picked]) > -1) return ROWS[picked];
+    return null;
   }
 
-  // The dcfband value doubles as its CSS class, so this map is identity - it exists so
-  // a band renamed in the build cannot silently paint every dot as "no reading".
-  var BANDS = { cheaper: "cheaper", middle: "middle", dearer: "dearer" };
-
-  function drawKey() {
-    var items = [["cheaper", "Cheaper on the model"], ["middle", "Middle third"],
-                 ["dearer", "Dearer on the model"], ["nodcf", "No model reading"]];
-    document.getElementById("key").innerHTML = items.map(function (i) {
-      return '<span class="ki"><i class="sw ' + i[0] + '"></i>' + i[1] + "</span>";
-    }).join("");
+  function pool() {
+    // The set every chart draws: what the completeness toggle admits. NOT the search
+    // result - a histogram of one bar says nothing - the search only marks a name.
+    return ROWS.filter(function (r) { return !onlyAll.checked || r.complete; });
   }
 
-  function ranks(v) {
-    var idx = v.map(function (x, i) { return i; }).sort(function (a, b) { return v[a] - v[b]; });
-    var out = new Array(v.length), i = 0;
-    while (i < idx.length) {
-      var j = i;
-      while (j + 1 < idx.length && v[idx[j + 1]] === v[idx[i]]) { j++; }
-      for (var k = i; k <= j; k++) { out[idx[k]] = (i + j) / 2; }
-      i = j + 1;
-    }
-    return out;
-  }
-
-  // Spearman, because every one of these is heavy-tailed and one distressed name should
-  // not set the headline number.
-  function rho(pairs) {
-    var n = pairs.length;
-    if (n < 30) { return null; }
-    var ra = ranks(pairs.map(function (p) { return p[0]; }));
-    var rb = ranks(pairs.map(function (p) { return p[1]; }));
-    var ma = 0, mb = 0, i;
-    for (i = 0; i < n; i++) { ma += ra[i]; mb += rb[i]; }
-    ma /= n; mb /= n;
-    var num = 0, da = 0, db = 0;
-    for (i = 0; i < n; i++) {
-      num += (ra[i] - ma) * (rb[i] - mb);
-      da += (ra[i] - ma) * (ra[i] - ma);
-      db += (rb[i] - mb) * (rb[i] - mb);
-    }
-    return (da && db) ? { r: num / Math.sqrt(da * db), n: n } : null;
-  }
-
-  function plot() {
-    var ax = AXES[xKey], ay = AXES[yKey];
-    var pts = [];
-    visible().forEach(function (r) {
-      var x = ax.get(r), y = ay.get(r);
-      if (x == null || y == null || isNaN(x) || isNaN(y)) { return; }
-      pts.push({ row: r, x: x, y: y });
-    });
-
-    var w = Math.max(280, svg.clientWidth || svg.parentElement.clientWidth);
-    var h = w < 520 ? 300 : 430;
-    var M = { l: 54, r: 12, t: 12, b: 42 };
+  function dims(svg, hDesk, hPhone) {
+    var w = Math.max(240, svg.clientWidth || svg.parentElement.clientWidth);
+    var h = w < 420 ? hPhone : hDesk;
     svg.setAttribute("viewBox", "0 0 " + w + " " + h);
     svg.setAttribute("height", h);
-    var pw = w - M.l - M.r, ph = h - M.t - M.b;
-
-    if (!pts.length) { svg.innerHTML = ""; document.getElementById("rho").textContent = ""; return; }
-
-    // Bounds from the DATA, then held inside the axis's own clamp where it declares
-    // one. These distributions have long tails and fitting to the extreme spends the
-    // plot on three names; a clamped point is drawn ON the edge and outlined, never
-    // dropped, because a mark parked off-canvas reads as a company the page forgot.
-    function bounds(vals, a) {
-      var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
-      if (a.lo !== undefined) { lo = a.lo; }
-      if (a.hi !== undefined) { hi = a.hi; }
-      if (a.clamp !== undefined) {
-        lo = Math.max(lo, -a.clamp);
-        hi = Math.min(hi, a.clamp);
-      }
-      if (hi <= lo) { hi = lo + 1; }
-      var pad = (hi - lo) * 0.05;
-      return [lo - pad, hi + pad];
-    }
-    var bx = bounds(pts.map(function (p) { return p.x; }), ax);
-    var by = bounds(pts.map(function (p) { return p.y; }), ay);
-    var X = function (v) { return M.l + ((Math.min(Math.max(v, bx[0]), bx[1]) - bx[0]) / (bx[1] - bx[0])) * pw; };
-    var Y = function (v) { return M.t + ph * (1 - (Math.min(Math.max(v, by[0]), by[1]) - by[0]) / (by[1] - by[0])); };
-    var fmt = function (v) {
-      var a = Math.abs(v);
-      return a >= 100 ? v.toFixed(0) : a >= 10 ? v.toFixed(0) : a >= 1 ? v.toFixed(1) : v.toFixed(2);
-    };
-
-    var parts = [], t, yv, xv;
-    for (t = 0; t <= 4; t++) {
-      yv = by[0] + (by[1] - by[0]) * (t / 4);
-      xv = bx[0] + (bx[1] - bx[0]) * (t / 4);
-      parts.push('<line class="guide" x1="' + M.l + '" x2="' + (w - M.r) + '" y1="' + Y(yv) + '" y2="' + Y(yv) + '"/>');
-      parts.push('<text class="tk" x="' + (M.l - 7) + '" y="' + (Y(yv) + 3.5) + '" text-anchor="end">' + fmt(yv) + "</text>");
-      parts.push('<text class="tk" x="' + X(xv) + '" y="' + (h - 22) + '" text-anchor="middle">' + fmt(xv) + "</text>");
-    }
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (h - 5) + '">' + ax.label + "</text>");
-    parts.push('<text class="ax" transform="translate(13,' + (M.t + ph) + ') rotate(-90)">' + ay.label + "</text>");
-
-    var index = new Map();
-    ROWS.forEach(function (r, i) { index.set(r, i); });
-    pts.forEach(function (p) {
-      var cls = p.row.dcfband ? BANDS[p.row.dcfband] : "nodcf";
-      var clamped = (ax.clamp !== undefined && Math.abs(p.x) > ax.clamp) ||
-                    (ay.clamp !== undefined && Math.abs(p.y) > ay.clamp);
-      parts.push('<circle class="dot ' + cls + (clamped ? " clamped" : "") +
-                 '" data-i="' + index.get(p.row) + '" cx="' + X(p.x).toFixed(1) +
-                 '" cy="' + Y(p.y).toFixed(1) + '" r="' + (w < 520 ? 2.6 : 3.1) + '"/>');
-    });
-    svg.innerHTML = parts.join("");
-
-    // The readout is the whole point of letting the axes move: it says whether this
-    // pair relates at all. Anything inside three standard errors is called noise in as
-    // many words, because a round cloud with a number under it still reads as a
-    // finding to anyone moving quickly.
-    var out = document.getElementById("rho");
-    // Drift IS the estimate change minus the price change, so those two pairs are a
-    // definition rather than a relationship - plotting them prints rho -0.88 and reads
-    // as the strongest finding on the page. Say what it is instead of scoring it.
-    var pair = [xKey, yKey].sort().join("|");
-    if (pair === "gap|pxchg" || pair === "gap|rev") {
-      out.textContent = "drift is the estimate change less the price change, so this pair is arithmetic";
-      out.className = "rho noise";
-      markPicked();
-      return;
-    }
-    var st = rho(pts.map(function (p) { return [p.x, p.y]; }));
-    if (!st) {
-      out.textContent = "";
-      out.className = "rho";
-    } else {
-      var noise = Math.abs(st.r) < 3 / Math.sqrt(st.n);
-      out.textContent = "rho " + (st.r >= 0 ? "+" : "") + st.r.toFixed(2) +
-        " over " + st.n + (noise ? ", within noise" : "");
-      out.className = "rho" + (noise ? " noise" : "");
-    }
-    markPicked();
+    return { w: w, h: h };
   }
 
-  function markPicked() {
-    svg.querySelectorAll(".dot.on").forEach(function (d) { d.classList.remove("on"); });
-    if (picked === null) return;
-    var d = svg.querySelector('.dot[data-i="' + picked + '"]');
-    if (d) d.classList.add("on");
-  }
-
-  function nearest(ev) {
-    var b = svg.getBoundingClientRect();
-    var vb = svg.viewBox.baseVal;
-    var x = (ev.clientX - b.left) * (vb.width / b.width);
-    var y = (ev.clientY - b.top) * (vb.height / b.height);
-    var best = null, bd = 14 * 14;
-    svg.querySelectorAll(".dot").forEach(function (d) {
-      var dx = d.cx.baseVal.value - x, dy = d.cy.baseVal.value - y;
-      var dist = dx * dx + dy * dy;
-      if (dist < bd) { bd = dist; best = +d.dataset.i; }
-    });
-    return best;
-  }
-
-  function showTip(i, ev) {
-    var r = ROWS[i];
-    tip.innerHTML =
-      '<b>' + r.ticker + "</b> " + r.name +
-      '<span class="tl">Shortfall <b>' + r.strain.toFixed(0) + "</b> of 100, " +
-        r.applicable + " of 6 tests</span>" +
-      '<span class="tl">Drift <b>' + (r.gap > 0 ? "+" : "") + r.gap.toFixed(1) + "pp</b> " +
-        (r.gap > 0 ? "price behind" : r.gap < 0 ? "price ahead" : "level") + "</span>" +
-      '<span class="tl">DCF ' + (r.dcf === null ? "<b>no reading</b>"
-        : "<b>" + r.dcf.toFixed(2) + "x</b> the market price") + "</span>";
-    tip.hidden = false;
-    // Follows the pointer, and flips before it can run off the right edge.
+  function place(ev, wrap) {
     var box = tip.getBoundingClientRect();
-    var wrap = svg.parentElement.getBoundingClientRect();
     var left = ev.clientX - wrap.left + 14;
     if (left + box.width > wrap.width) left = ev.clientX - wrap.left - box.width - 14;
     tip.style.left = Math.max(0, left) + "px";
     tip.style.top = Math.max(0, ev.clientY - wrap.top - box.height - 10) + "px";
   }
+  function showTip(html, ev) {
+    tip.innerHTML = html; tip.hidden = false;
+    place(ev, document.querySelector(".charts").getBoundingClientRect());
+  }
+  function hideTip() { tip.hidden = true; }
 
-  svg.addEventListener("mousemove", function (ev) {
-    var i = nearest(ev);
-    if (i === null) { tip.hidden = true; return; }
-    showTip(i, ev);
-  });
-  svg.addEventListener("mouseleave", function () { tip.hidden = true; });
-  svg.addEventListener("click", function (ev) {
-    var i = nearest(ev);
-    if (i === null) return;
-    // Drops the ticker into the search box rather than filtering invisibly, so the
-    // control that did it is the one a keyboard reaches, and clearing is obvious.
-    q.value = ROWS[i].ticker;
-    picked = i;
-    render();
-    markPicked();
-  });
+  // ---- 1. histogram of the combined score, one name marked ----
+  function drawHist() {
+    var svg = document.getElementById("hist");
+    var d = dims(svg, 220, 190), M = { l: 34, r: 10, t: 14, b: 30 };
+    var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
+    var rows = pool(), f = focus();
+    var BINS = 25, counts = new Array(BINS).fill(0), members = [];
+    for (var i = 0; i < BINS; i++) members.push([]);
+    rows.forEach(function (r) {
+      var k = Math.min(BINS - 1, Math.floor(r.score * 100 / (100 / BINS)));
+      counts[k]++; members[k].push(r);
+    });
+    var top = Math.max.apply(null, counts) || 1;
+    var X = function (v) { return M.l + (v / 100) * pw; };
+    var Y = function (c) { return M.t + ph * (1 - c / top); };
+    var parts = [];
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      parts.push('<text class="tk" x="' + X(v) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
+    });
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined score</text>');
+    var fk = f ? Math.min(BINS - 1, Math.floor(f.score * 100 / (100 / BINS))) : -1;
+    for (i = 0; i < BINS; i++) {
+      var x0 = X(i * (100 / BINS)), x1 = X((i + 1) * (100 / BINS));
+      parts.push('<rect class="bar-h' + (i === fk ? " hot" : "") + '" data-b="' + i +
+                 '" x="' + (x0 + 0.5).toFixed(1) + '" y="' + Y(counts[i]).toFixed(1) +
+                 '" width="' + Math.max(1, x1 - x0 - 1).toFixed(1) + '" height="' + (M.t + ph - Y(counts[i])).toFixed(1) + '"/>');
+    }
+    if (f) {
+      var fx = X(f.score * 100);
+      parts.push('<line class="mark" x1="' + fx + '" x2="' + fx + '" y1="' + M.t + '" y2="' + (M.t + ph) + '"/>');
+      var anchor = f.score > 0.6 ? "end" : "start", dx = f.score > 0.6 ? -5 : 5;
+      parts.push('<text class="mark-l" x="' + (fx + dx) + '" y="' + (M.t + 10) + '" text-anchor="' + anchor + '">' +
+                 f.ticker + " " + Math.round(f.score * 100) + "</text>");
+    }
+    svg.innerHTML = parts.join("");
+    svg.onmousemove = function (ev) {
+      var t = ev.target;
+      if (!t.classList || !t.classList.contains("bar-h")) { hideTip(); return; }
+      var k = +t.dataset.b, lo = Math.round(k * 100 / BINS), hi = Math.round((k + 1) * 100 / BINS);
+      var m = members[k].slice().sort(function (a, b) { return b.score - a.score; });
+      showTip("<b>" + counts[k] + "</b> companies score " + lo + " to " + hi +
+              (m.length ? '<span class="tl">' + m.slice(0, 6).map(function (r) { return r.ticker; }).join(", ") +
+              (m.length > 6 ? " +" + (m.length - 6) : "") + "</span>" : ""), ev);
+    };
+    svg.onmouseleave = hideTip;
+  }
+
+  // ---- sectors, shared by the strip and the heatmap so their rows line up ----
+  function sectorRows() {
+    var by = {};
+    pool().forEach(function (r) { (by[r.sector] = by[r.sector] || []).push(r); });
+    var out = Object.keys(by).filter(function (k) { return by[k].length >= MIN_SECTOR; })
+      .map(function (k) {
+        var v = by[k].map(function (r) { return r.score; }).sort(function (a, b) { return a - b; });
+        return { sector: k, rows: by[k], median: v[Math.floor(v.length / 2)] };
+      });
+    out.sort(function (a, b) { return b.median - a.median; });
+    return out;
+  }
+
+  // ---- 8. score by sector, strip with the median marked ----
+  function drawSectors() {
+    var svg = document.getElementById("sect");
+    var S = sectorRows(), f = focus();
+    var rowH = 22, M = { l: 108, r: 10, t: 6, b: 30 };
+    var d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b);
+    var pw = d.w - M.l - M.r;
+    var X = function (v) { return M.l + v * pw; };
+    var parts = [];
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      parts.push('<line class="guide" x1="' + X(v / 100) + '" x2="' + X(v / 100) + '" y1="' + M.t + '" y2="' + (M.t + S.length * rowH) + '"/>');
+      parts.push('<text class="tk" x="' + X(v / 100) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
+    });
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined score, median marked</text>');
+    S.forEach(function (sec, i) {
+      var cy = M.t + i * rowH + rowH / 2;
+      parts.push('<text class="slab" x="' + (M.l - 8) + '" y="' + (cy + 4) + '" text-anchor="end">' +
+                 sec.sector + " (" + sec.rows.length + ")</text>");
+      sec.rows.forEach(function (r, j) {
+        // Deterministic jitter from the row's index, so a redraw does not shuffle the
+        // dots and a hovered dot stays under the pointer.
+        var jit = ((Math.sin(j * 12.9898 + i * 78.233) * 43758.5453) % 1) * 14 - 7;
+        parts.push('<circle class="sdot' + (r === f ? " hot" : "") + '" data-i="' + ROWS.indexOf(r) +
+                   '" cx="' + X(r.score).toFixed(1) + '" cy="' + (cy + jit).toFixed(1) + '" r="' + (r === f ? 4 : 2.4) + '"/>');
+      });
+      parts.push('<line class="smed" x1="' + X(sec.median) + '" x2="' + X(sec.median) + '" y1="' + (cy - 8) + '" y2="' + (cy + 8) + '"/>');
+    });
+    svg.innerHTML = parts.join("");
+    svg.onmousemove = function (ev) {
+      var t = ev.target;
+      if (!t.classList || !t.classList.contains("sdot")) { hideTip(); return; }
+      var r = ROWS[+t.dataset.i];
+      showTip("<b>" + r.ticker + "</b> " + r.name + '<span class="tl">score <b>' + Math.round(r.score * 100) +
+              "</b>, rank " + r.rank + " of " + pool().length + "</span>", ev);
+    };
+    svg.onmouseleave = hideTip;
+    svg.onclick = function (ev) {
+      var t = ev.target;
+      if (!t.classList || !t.classList.contains("sdot")) return;
+      picked = +t.dataset.i; q.value = ROWS[picked].ticker; render(); plot();
+    };
+  }
+
+  // ---- 9. sector x component, median percentile ----
+  // Diverging around 50, the median percentile: teal above, amber below, the page's
+  // own direction colours. A sector at 82 on value and 37 on price-behind is the
+  // finding this chart exists for - each sector is dragged by a DIFFERENT measure, and
+  // no correlation anywhere on the page could have said that.
+  function heatColour(v) {
+    var t = Math.max(-1, Math.min(1, (v - 0.5) / 0.35));
+    var teal = [111, 159, 168], amber = [193, 154, 91], mid = [125, 135, 152];
+    var c = t >= 0 ? [mid[0] + (teal[0] - mid[0]) * t, mid[1] + (teal[1] - mid[1]) * t, mid[2] + (teal[2] - mid[2]) * t]
+                   : [mid[0] + (amber[0] - mid[0]) * -t, mid[1] + (amber[1] - mid[1]) * -t, mid[2] + (amber[2] - mid[2]) * -t];
+    return "rgb(" + c.map(Math.round).join(",") + ")";
+  }
+  function drawHeat() {
+    var svg = document.getElementById("heat");
+    var S = sectorRows();
+    // Short heads: three long ones overprinted at 340px per column, and the sliders
+    // directly beneath carry the full wording.
+    var COLS = [["pStrain", "Clean"], ["pDrift", "Behind"], ["pDcf", "Value"]];
+    var rowH = 22, M = { l: 108, r: 4, t: 24, b: 6 };
+    var d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b);
+    var cw = (d.w - M.l - M.r) / 3;
+    var parts = [];
+    COLS.forEach(function (c, j) {
+      parts.push('<text class="ax" x="' + (M.l + cw * j + cw / 2) + '" y="' + (M.t - 9) + '" text-anchor="middle">' + c[1] + "</text>");
+    });
+    S.forEach(function (sec, i) {
+      var y = M.t + i * rowH;
+      parts.push('<text class="slab" x="' + (M.l - 8) + '" y="' + (y + rowH / 2 + 4) + '" text-anchor="end">' + sec.sector + "</text>");
+      COLS.forEach(function (c, j) {
+        var v = sec.rows.map(function (r) { return r[c[0]]; }).filter(function (x) { return x !== null; }).sort(function (a, b) { return a - b; });
+        var med = v.length ? v[Math.floor(v.length / 2)] : null;
+        var x = M.l + cw * j;
+        parts.push('<rect class="hcell" data-s="' + i + '" data-c="' + j + '" x="' + x + '" y="' + y + '" width="' + cw + '" height="' + rowH +
+                   '" fill="' + (med === null ? "var(--rule)" : heatColour(med)) + '"/>');
+        if (med !== null) parts.push('<text class="hval" x="' + (x + cw / 2) + '" y="' + (y + rowH / 2 + 4) +
+                   '" fill="' + (Math.abs(med - 0.5) > 0.22 ? "#0f1319" : "#e6e9ee") + '">' + fmtPct(med) + "</text>");
+      });
+    });
+    svg.innerHTML = parts.join("");
+    document.getElementById("heatkey").innerHTML =
+      '<span class="ki"><i class="sw" style="background:' + heatColour(0.85) + '"></i>Sector sits high on this measure</span>' +
+      '<span class="ki"><i class="sw" style="background:' + heatColour(0.5) + '"></i>Middle</span>' +
+      '<span class="ki"><i class="sw" style="background:' + heatColour(0.15) + '"></i>Sits low</span>';
+    svg.onmousemove = function (ev) {
+      var t = ev.target;
+      if (!t.classList || !t.classList.contains("hcell")) { hideTip(); return; }
+      var sec = S[+t.dataset.s], c = COLS[+t.dataset.c];
+      var v = sec.rows.map(function (r) { return r[c[0]]; }).filter(function (x) { return x !== null; }).sort(function (a, b) { return a - b; });
+      showTip("<b>" + sec.sector + "</b> on " + c[1].toLowerCase() +
+              '<span class="tl">median percentile <b>' + (v.length ? fmtPct(v[Math.floor(v.length / 2)]) : "-") +
+              "</b> across " + v.length + " companies</span>", ev);
+    };
+    svg.onmouseleave = hideTip;
+  }
+
+  function markPicked() {}   // the charts mark focus() on every redraw
+  function plot() { drawHist(); drawSectors(); drawHeat(); }
 
   var rz;
   window.addEventListener("resize", function () {
@@ -787,7 +733,7 @@
     });
   });
 
-  q.addEventListener("input", render);
+  q.addEventListener("input", function () { render(); plot(); });
   clear.addEventListener("click", function () {
     q.value = ""; picked = null;
     render(); markPicked();
@@ -797,10 +743,7 @@
   var incoming = new URLSearchParams(location.search).get("q");
   if (incoming) q.value = incoming;
 
-  drawKey();
-  fillPickers();
   readWeights();
-  plot();
   render();
 
   var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
