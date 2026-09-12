@@ -322,7 +322,7 @@
     <label class="w"><span>Clean accounts</span>
       <input type="range" id="wStrain" min="0" max="100" step="5" value="35">
       <b id="wStrainV">33%</b></label>
-    <label class="w"><span>Price behind estimates</span>
+    <label class="w"><span>Estimates rising, price behind</span>
       <input type="range" id="wDrift" min="0" max="100" step="5" value="35">
       <b id="wDriftV">33%</b></label>
     <label class="w"><span>Value above price</span>
@@ -361,18 +361,6 @@
     </table>
   </div>
 
-  <h2>Notes</h2>
-  <p class="foot">
-    <!-- Cut from eight sentences to three on 10/09/2026: "way too long". What went was
-         everything explaining a column that its own header and values already say -
-         what Tests counted, what the DCF bands mean, why the two measures are
-         independent. What stays is the three things a reader cannot deduce from the
-         page: which way each scale runs, and that Rank is a combination. -->
-    Shortfall runs 0 to 100, higher is more strained. A positive drift means the price
-    sits behind analyst estimates. Rank combines all three and puts clean accounts,
-    a price behind estimates and a model value above the price at the top. General
-    information, not advice.
-  </p>
 </div>
 
 <script id="rows" type="application/json">{{ rows_json }}</script>
@@ -554,13 +542,14 @@
   }
 
   // ---- 9. sector x component, median percentile ----
-  // Diverging around 50, the median percentile: teal above, amber below, the page's
-  // own direction colours. A sector at 82 on value and 37 on price-behind is the
+  // Diverging around 50, the median percentile: green above, red below. A sector at 82 on value and 37 on price-behind is the
   // finding this chart exists for - each sector is dragged by a DIFFERENT measure, and
   // no correlation anywhere on the page could have said that.
   function heatColour(v) {
     var t = Math.max(-1, Math.min(1, (v - 0.5) / 0.35));
-    var teal = [111, 159, 168], amber = [193, 154, 91], mid = [125, 135, 152];
+    // Green above the median, red below: asked for by name on 12/09/2026, in place of
+    // the drift column's teal and amber. Shared by the histogram and the strip.
+    var teal = [92, 166, 118], amber = [201, 96, 88], mid = [125, 135, 152];
     var c = t >= 0 ? [mid[0] + (teal[0] - mid[0]) * t, mid[1] + (teal[1] - mid[1]) * t, mid[2] + (teal[2] - mid[2]) * t]
                    : [mid[0] + (amber[0] - mid[0]) * -t, mid[1] + (amber[1] - mid[1]) * -t, mid[2] + (amber[2] - mid[2]) * -t];
     return "rgb(" + c.map(Math.round).join(",") + ")";
@@ -658,13 +647,23 @@
   // absence would rank a company by how much data exists about it: 53% of utilities
   // have no DCF reading, and they would all sink together for a reason that is about
   // the model rather than about them.
+  // Mirrors build.py: a weighted GEOMETRIC mean of the legs, so one strong leg cannot
+  // pay for a weak one, and the drift leg is the geometric mean of the gap and the
+  // estimate change, so falling estimates cannot score as "price behind".
+  var P_FLOOR = 0.005;
+  function driftLeg(r) {
+    if (r.pDrift === null) return null;
+    if (r.pRev === null || r.pRev === undefined) return r.pDrift;
+    return Math.sqrt(Math.max(r.pDrift, P_FLOOR) * Math.max(r.pRev, P_FLOOR));
+  }
   function rescore() {
     ROWS.forEach(function (r) {
       var num = 0, den = 0;
-      if (r.pStrain !== null) { num += W.strain * r.pStrain; den += W.strain; }
-      if (r.pDrift !== null) { num += W.drift * r.pDrift; den += W.drift; }
-      if (r.pDcf !== null) { num += W.dcf * r.pDcf; den += W.dcf; }
-      r.score = den > 0 ? num / den : 0;
+      [[W.strain, r.pStrain], [W.drift, driftLeg(r)], [W.dcf, r.pDcf]].forEach(function (lw) {
+        if (lw[1] === null || lw[0] <= 0) return;
+        num += lw[0] * Math.log(Math.max(lw[1], P_FLOOR)); den += lw[0];
+      });
+      r.score = den > 0 ? Math.exp(num / den) : 0;
     });
     var pool = ROWS.filter(function (r) { return !onlyAll.checked || r.complete; });
     var ordered = pool.slice().sort(function (a, b) {

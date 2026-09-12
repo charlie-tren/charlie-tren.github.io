@@ -296,6 +296,27 @@ class TestCombinedRank:
         ])
         assert a[0]["ticker"] == "TWOGOOD"
 
+    def test_falling_estimates_cannot_score_as_price_behind(self):
+        # Both have the price 20 points behind the estimates. One got there because the
+        # estimates rose; the other because the price fell faster than estimates that
+        # were themselves falling. Only the first is what the page means by behind.
+        a = build.rank_rows([
+            {"ticker": "RISING", "strain": 50, "gap": 20.0, "rev": 15.0, "dcf": 0.6},
+            {"ticker": "FALLING", "strain": 50, "gap": 20.0, "rev": -15.0, "dcf": 0.6},
+        ])
+        assert [r["ticker"] for r in a] == ["RISING", "FALLING"]
+
+    def test_one_strong_leg_does_not_pay_for_a_weak_one(self):
+        # Arithmetic mean: (1 + 1 + 0) / 3 = 0.67 beats (0.5 + 0.5 + 0.5) / 3 = 0.5.
+        # Geometric: the name that is last on any measure sits below the one that is
+        # middling on all three, which is what "all three agree" has to mean.
+        a = build.rank_rows([
+            {"ticker": "TWOBEST", "strain": 0, "gap": 40.0, "rev": 10.0, "dcf": 0.1},
+            {"ticker": "MIDDLING", "strain": 50, "gap": 10.0, "rev": 5.0, "dcf": 1.0},
+            {"ticker": "LOW", "strain": 100, "gap": -40.0, "rev": -10.0, "dcf": 0.5},
+        ])
+        assert a[0]["ticker"] == "MIDDLING"
+
     def test_every_row_gets_a_distinct_rank_from_one_upward(self):
         ranked = build.rank_rows(self.rows())
         assert sorted(r["rank"] for r in ranked) == [1, 2, 3]
@@ -360,10 +381,13 @@ class TestComponentPercentiles:
         assert by["D"]["pDcf"] is None
         assert by["D"]["pStrain"] is not None
 
-    def test_the_shipped_score_is_the_equal_weighted_mean_of_what_is_present(self):
+    def test_the_shipped_score_is_the_geometric_mean_of_what_is_present(self):
+        import math
         for r in self.rows():
-            parts = [r[k] for k in ("pStrain", "pDrift", "pDcf") if r[k] is not None]
-            assert abs(r["score"] - sum(parts) / len(parts)) < 1e-9
+            legs = [r["pStrain"], build.drift_leg(r["pDrift"], r.get("pRev")), r["pDcf"]]
+            parts = [max(p, build.P_FLOOR) for p in legs if p is not None]
+            want = math.exp(sum(math.log(p) for p in parts) / len(parts))
+            assert abs(r["score"] - want) < 1e-9
 
     def test_complete_says_whether_all_three_are_present(self):
         by = {r["ticker"]: r for r in self.rows()}
