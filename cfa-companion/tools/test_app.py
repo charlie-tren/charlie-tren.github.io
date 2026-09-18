@@ -17,7 +17,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SHOTS = ROOT / "tools" / "shots"
-PORT = 8731
+PORT = 0          # an ephemeral port: another session may hold a fixed one
 
 results = []
 
@@ -40,7 +40,7 @@ def main() -> int:
     if shots:
         SHOTS.mkdir(parents=True, exist_ok=True)
     httpd = serve()
-    url = f"http://127.0.0.1:{PORT}/"
+    url = f"http://127.0.0.1:{httpd.server_address[1]}/"
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
