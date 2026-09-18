@@ -99,6 +99,19 @@ def main() -> int:
               page.inner_text("#pl-need"))
         check("today is shown separately", page.inner_text("#pl-today") == "1h 30m",
               page.inner_text("#pl-today"))
+        # The calendar runs from the first recorded day to the exam, capped so the
+        # squares stay legible, with exactly one square marked as today.
+        check("the calendar is drawn", page.locator("#calwrap").is_visible())
+        cells = page.evaluate("() => document.querySelectorAll('#cal i').length")
+        check("the calendar is capped at 180 days", cells == 180, str(cells))
+        check("exactly one square is today",
+              page.evaluate("() => document.querySelectorAll('#cal i.now').length") == 1)
+        check("past days are marked either practised or missed",
+              page.evaluate("() => document.querySelectorAll('#cal i.done, #cal i.miss').length") > 0)
+        # text_content, not inner_text: the label is uppercased in CSS.
+        check("the count reads back", "practised" in page.text_content("#cal-count"),
+              page.text_content("#cal-count"))
+
         # The controls live behind Settings now, so the figures on home have to be
         # read there and the inputs driven here.
         page.click("#to-settings")
@@ -114,10 +127,12 @@ def main() -> int:
               page.inner_text("#pl-done") == "50h 0m", page.inner_text("#pl-done"))
         check("off-site hours reduce the daily requirement",
               page.inner_text("#pl-need") == "4.2", page.inner_text("#pl-need"))
-        check("the bar tracks the target",
-              page.evaluate("() => document.getElementById('pl-bar').style.width")
-              .startswith("16.6"),
-              page.evaluate("() => document.getElementById('pl-bar').style.width"))
+        # 50 of 300 hours is a sixth of the ring: 616 x (1 - 0.1667) = 513.
+        off = page.evaluate("() => document.getElementById('ring-hours').style.strokeDashoffset")
+        check("the hours ring tracks the target", off in ("513", "513px"), off)
+        check("the day ring moves too",
+              page.evaluate("() => document.getElementById('ring-days').style.strokeDashoffset") != "452",
+              page.evaluate("() => document.getElementById('ring-days').style.strokeDashoffset"))
 
         # The clock must actually advance, and must stop when left untouched.
         before = page.evaluate("() => window.CFA_COMPANION.clock()")
