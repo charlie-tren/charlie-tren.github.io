@@ -486,33 +486,47 @@ table#grid th.soft { text-decoration: underline dotted var(--ink-faint); text-un
 
 
 /* ---- dark ----------------------------------------------------------------
-   Terminal: black ground, amber signal. Not an inversion of the salmon - the
-   register changes on purpose, from a printed markets page to the machine you
-   read numbers off. Every token the light theme defines is redefined here, so
-   nothing falls through to a salmon value on a black ground.
+   Ink: the light theme's navy becomes the ground and the teal stays the accent, so
+   the switch turns the palette over rather than changing the subject. Every token
+   the light theme defines is redefined here, so nothing falls through to a salmon
+   value.
+
+   Replaced a black-and-amber terminal theme on 18/09/2026. That theme's fault was
+   measurable, not a matter of taste: --map-land #1a1a1a on --map-sea #0a0a0a is a
+   ~1.1:1 luminance ratio, so the unshaded continents did not exist and the
+   thirty-four shaded markets read as blobs on a void. The land here is LIGHTER
+   than the sea and the panel, which is what makes a world visible behind the data.
+
    NOTE: app.js reads --ramp1..6 at draw time, so the switch has to re-render the
    map, not just swap the CSS. It does. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --ink: #e8e8e8;
-  --ink-soft: #a0a0a0;
-  --ink-faint: #8a8a8a;
-  --rule: #242424;
-  --bg: #000000;
-  --panel: #0b0b0b;
-  --accent: #ffa028;
-  --over: #ffa028;
-  --under: #ff5f45;
-  --bench: #8a8a8a;
-  --hover: #191919;
-  --map-land: #1a1a1a;
-  --map-line: #2e2e2e;
-  --map-sea: #0a0a0a;
-  --dot: #ffa028;
-  --ease-fill: #ffa028;
-  --ease-track: #242424;
-  --ramp1: #2b2214; --ramp2: #4a3818; --ramp3: #6d4f1a;
-  --ramp4: #946817; --ramp5: #c3840f; --ramp6: #ffa028;
+  --ink: #e9eef2;
+  --ink-soft: #9fb3c1;
+  /* 5.9:1 on the panel. Same constraint as the light theme: the uppercase 11px
+     column headers are the tightest thing on the page. */
+  --ink-faint: #8ba0b0;
+  --rule: #1c3549;
+  --bg: #071a2b;
+  --panel: #0c2439;
+  --accent: #3fb6bf;
+  --over: #3fb6bf;
+  --under: #e2705a;
+  --bench: #7e94a3;
+  --hover: #123048;
+  --map-land: #132f45;
+  --map-line: #1f4560;
+  --map-sea: #061726;
+  --dot: #3fb6bf;
+  --ease-fill: #3fb6bf;
+  --ease-track: #1c3549;
+  /* ramp1 lifted from #173c4a, which cleared the unshaded land by only 1.17:1 -
+     a lowest-ease market would have read as land, and on this map land means NO
+     DATA, which is a different claim about a country than "hard to buy in".
+     Solved against the constraint rather than nudged: the least-loud teal that
+     clears land by 1.25 and still leaves a visible step up to ramp2. */
+  --ramp1: #15424c; --ramp2: #1c5460; --ramp3: #1f6d78;
+  --ramp4: #25878f; --ramp5: #2fa0a6; --ramp6: #5ed0d4;
 }
 
 /* ---- the switch ----

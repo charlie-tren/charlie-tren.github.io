@@ -42,3 +42,12 @@ jobs:
       - name: The shipped data against the rates it was built from
         working-directory: property-atlas
         run: python test_data.py
+
+      # The palette. A theme is a block of hex in a stylesheet that nothing read until
+      # 18/09/2026, when the dark map turned out to render the unshaded continents
+      # invisibly and no check noticed. These are pytest-style, unlike the two above.
+      - name: The theme contrast and colour-separation floors
+        working-directory: property-atlas
+        run: |
+          pip install --quiet pytest
+          python -m pytest test_theme.py -q
