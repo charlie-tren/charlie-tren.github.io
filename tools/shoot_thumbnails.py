@@ -200,6 +200,16 @@ PREPARE = {
         document.getElementById('f-start').click();
         document.querySelector('#t-choices .choice').click();
     }""",
+    # #filters-panel is ~300px of sliders and three "Any" dropdowns sitting between
+    # the masthead and the map. The ANCHOR below claimed to show "the map with the
+    # masthead above it" and could not: at 0.22 the frame started mid-filters, so the
+    # card opened on a strip of half-cut controls and the page's name never got in
+    # shot. Taking the panel out of shot puts the masthead directly above the map,
+    # which is what the frame was always meant to be. The page is unaffected - this
+    # runs in the shooter's browser only.
+    "property-atlas": """() => {
+        document.getElementById('filters-panel').style.display = 'none';
+    }""",
 }
 
 # Sites that look better - or are designed - dark. Playwright emulates light by
@@ -244,7 +254,10 @@ ANCHOR = {
     # truncated table is not, so the card shows the map with the masthead above
     # it. (Before that it was "#rank-panel", an element deleted two redesigns
     # earlier - ANCHOR is coupled to the markup exactly like READY is.)
-    "property-atlas": {"selector": "#map-panel", "context_above": 0.22},
+    # 0.22 was set when the filter panel was still in shot and it framed on the
+    # panel's bottom edge, not the masthead. With the panel hidden in PREPARE this
+    # reaches the wordmark and the tagline and stops.
+    "property-atlas": {"selector": "#map-panel", "context_above": 0.30},
     # The top of the page is the hero and a scatter that is currently just a sorted
     # curve. The cards, with real company names and per-flag scores, are the product.
     #
