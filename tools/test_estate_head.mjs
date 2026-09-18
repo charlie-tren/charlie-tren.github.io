@@ -177,7 +177,11 @@ for (const [name, url] of Object.entries(SITES)) {
      in a report nobody re-reads. Delete a name as you fix it; the list only
      shrinks. */
   const NO_APPLE_YET = new Set([
-    "Beyond Small Talk", "Crowdwise", "DCF Studio", "Lexicon",
+    // Lexicon came off 18/09/2026: it was the only one of the eight with its own
+    // favicon.svg, so it was the only one a run of make_icons.py could fix. The other
+    // five in the hub repo have NO source mark at all, which is the "give every
+    // project a real mark" item and a design decision, not a script run.
+    "Beyond Small Talk", "Crowdwise", "DCF Studio",
     "Shortfall", "Spectrum", "Split the Room", "Worst Case Scenario",
   ]);
   const hasApple = icons.some((m) => m[1].toLowerCase() === "apple-touch-icon");
