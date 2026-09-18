@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
@@ -43,7 +43,7 @@
     </svg><span class="wordmark">CFA Companion</span></h1>
   <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
   </div>
-  <p class="standfirst">Practice questions for the CFA<sup>&reg;</sup> Level I exam.</p>
+  <p class="standfirst">CFA<sup>&reg;</sup> Level I practice</p>
 </header>
 
 <main class="wrap">
@@ -53,13 +53,32 @@
     <div id="loaderr" class="loaderr" hidden></div>
 
     <section id="plan" class="plan">
-      <div class="planstats">
-        <div class="stat"><span class="figure" id="pl-days">set a date</span><span class="cap">days to go</span></div>
-        <div class="stat"><span class="figure" id="pl-done">0h</span><span class="cap" id="pl-donecap">of 300 hours</span></div>
-        <div class="stat"><span class="figure" id="pl-need">set a date</span><span class="cap">hours a day needed</span></div>
-        <div class="stat"><span class="figure" id="pl-today">0m</span><span class="cap">today</span></div>
+      <div class="planhero">
+        <div class="dialwrap">
+          <svg viewBox="0 0 218 218" width="218" height="218" aria-hidden="true">
+            <circle cx="109" cy="109" r="98" fill="none" stroke="var(--rule)" stroke-width="17"></circle>
+            <circle cx="109" cy="109" r="98" fill="none" stroke="var(--accent)" stroke-width="17"
+              stroke-linecap="round" id="ring-hours" stroke-dasharray="616" stroke-dashoffset="616"></circle>
+            <circle cx="109" cy="109" r="72" fill="none" stroke="var(--rule)" stroke-width="17"></circle>
+            <circle cx="109" cy="109" r="72" fill="none" stroke="var(--accent-2)" stroke-width="17"
+              stroke-linecap="round" id="ring-days" stroke-dasharray="452" stroke-dashoffset="452"></circle>
+          </svg>
+          <div class="dialmid" id="dialmid">
+            <b id="pl-days">set a date</b><span>days to go</span>
+          </div>
+        </div>
+        <div class="planright">
+          <div class="planstats">
+            <div class="stat"><span class="figure" id="pl-done">0h</span><span class="cap"><i class="dot hours"></i><span id="pl-donecap">of 300 hours</span></span></div>
+            <div class="stat"><span class="figure" id="pl-need">set a date</span><span class="cap">hours a day needed</span></div>
+            <div class="stat"><span class="figure" id="pl-today">0m</span><span class="cap">today</span></div>
+          </div>
+          <div class="calwrap" id="calwrap" hidden>
+            <div class="calhead"><span><i class="dot days"></i>Every day</span><span id="cal-count"></span></div>
+            <div class="cal" id="cal"></div>
+          </div>
+        </div>
       </div>
-      <div class="pbar"><span id="pl-bar"></span></div>
       <div class="planfoot">
         <span class="syncstate" id="pl-sync">not syncing</span>
         <button type="button" class="chip" id="to-settings">Settings</button>

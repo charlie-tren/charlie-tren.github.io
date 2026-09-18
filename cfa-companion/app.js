@@ -25,10 +25,11 @@
    "modenote", "t-pos", "t-topic", "t-clock", "t-flag", "t-hl", "t-overview", "t-end", "t-stem",
    "t-choices", "t-feedback", "t-prev", "t-next", "t-ovpanel", "ov-grid", "ov-close",
    "b-topics", "b-count", "b-timed", "b-strict", "b-cancel", "f-topics", "f-start",
-   "f-cancel", "banksize", "loaderr", "br-count", "br-go", "r-what", "r-pct", "r-count", "r-verdict", "r-topic",
+   "f-cancel", "banksize", "loaderr", "cal", "cal-count", "calwrap",
+   "ring-hours", "ring-days", "dialmid", "br-count", "br-go", "r-what", "r-pct", "r-count", "r-verdict", "r-topic",
    "r-pace", "r-review", "r-done", "h-topic", "h-pace", "p-answered", "p-acc",
    "p-pace", "p-weak", "wipe", "plan", "pl-days", "pl-done", "pl-donecap",
-   "pl-need", "pl-today", "pl-bar", "pl-exam", "pl-target", "pl-extra",
+   "pl-need", "pl-today", "pl-exam", "pl-target", "pl-extra",
    "pl-addbtn", "pl-resetbtn", "pl-key", "pl-keysave", "pl-keynew", "pl-sync"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   /* ---------------------------------------------------------------- storage */
@@ -349,11 +350,7 @@
   var lastTouch = Date.now();
   var unsaved = 0;
 
-  function today() {
-    var d = new Date();
-    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-"
-      + String(d.getDate()).padStart(2, "0");
-  }
+  function today() { return dayKey(new Date()); }
 
   function counting() {
     return document.visibilityState === "visible" && (Date.now() - lastTouch) < IDLE;
@@ -420,6 +417,65 @@
     el["pl-today"].classList.toggle("paused", !counting());
   }
 
+  var RING_HOURS = 616;        // 2 pi r, r = 98
+  var RING_DAYS = 452;         // 2 pi r, r = 72
+  var CAL_MAX = 180;           // beyond this the squares get too small to read
+
+  function ring(id, circumference, fraction) {
+    var f = Math.max(0, Math.min(1, fraction || 0));
+    el[id].style.strokeDashoffset = String(Math.round(circumference * (1 - f)));
+  }
+
+  /* The window the calendar covers: from the first day anything was recorded to
+     the exam. Without either end there is nothing honest to draw. */
+  function windowStart() {
+    var days = Object.keys(store.time.days).filter(function (d) { return daySeconds(d) > 0; });
+    store.attempts.forEach(function (a) { days.push(dayKey(new Date(a.at))); });
+    if (!days.length) return null;
+    return days.sort()[0];
+  }
+
+  function dayKey(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-"
+      + String(d.getDate()).padStart(2, "0");
+  }
+
+  function paintCal() {
+    var start = windowStart();
+    var exam = store.plan.exam;
+    if (!start || !exam) { el.calwrap.hidden = true; return; }
+
+    var from = new Date(start + "T00:00:00");
+    var to = new Date(exam + "T00:00:00");
+    var total = Math.round((to - from) / DAY) + 1;
+    if (total < 1) { el.calwrap.hidden = true; return; }
+    if (total > CAL_MAX) {
+      from = new Date(to.getTime() - (CAL_MAX - 1) * DAY);
+      total = CAL_MAX;
+    }
+
+    var now = dayKey(new Date());
+    var done = 0;
+    var gone = 0;
+    el.cal.textContent = "";
+    for (var i = 0; i < total; i++) {
+      var key = dayKey(new Date(from.getTime() + i * DAY));
+      var cell = document.createElement("i");
+      var cls = [];
+      if (key <= now) {
+        gone += 1;
+        if (daySeconds(key) > 0) { cls.push("done"); done += 1; }
+        else { cls.push("miss"); }
+      }
+      if (key === now) cls.push("now");
+      cell.className = cls.join(" ");
+      cell.title = key;
+      el.cal.appendChild(cell);
+    }
+    el["cal-count"].textContent = done + " of " + gone + " days practised";
+    el.calwrap.hidden = false;
+  }
+
   function paintPlan() {
     var target = store.plan.target || 300;
     var done = hoursDone();
@@ -427,21 +483,35 @@
 
     el["pl-done"].textContent = hm(done);
     el["pl-donecap"].textContent = "of " + target + " hours";
-    el["pl-bar"].style.width = Math.min(100, 100 * done / target) + "%";
+    ring("ring-hours", RING_HOURS, done / target);
 
     if (left === null) {
       el["pl-days"].textContent = "set a date";
       el["pl-need"].textContent = "set a date";
+      el.dialmid.classList.add("small");
+      ring("ring-days", RING_DAYS, 0);
     } else if (left < 0) {
       el["pl-days"].textContent = "passed";
       el["pl-need"].textContent = "done";
+      el.dialmid.classList.add("small");
+      ring("ring-days", RING_DAYS, 1);
     } else {
       el["pl-days"].textContent = String(left);
+      el.dialmid.classList.remove("small");
       var remaining = Math.max(0, target - done);
       el["pl-need"].textContent = left === 0
         ? hm(remaining)
         : (remaining / left).toFixed(1);
+      var start = windowStart();
+      if (start) {
+        var span = Math.round((new Date(store.plan.exam + "T00:00:00")
+          - new Date(start + "T00:00:00")) / DAY) + 1;
+        ring("ring-days", RING_DAYS, span > 0 ? (span - left) / span : 0);
+      } else {
+        ring("ring-days", RING_DAYS, 0);
+      }
     }
+    paintCal();
     paintToday();
   }
 
