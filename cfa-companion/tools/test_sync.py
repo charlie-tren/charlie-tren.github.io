@@ -23,7 +23,7 @@ import threading
 from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-PORT = 8750
+PORT = 0          # an ephemeral port: another session may hold a fixed one
 
 results = []
 
@@ -57,9 +57,10 @@ def answer(page, n, choice=0):
 def main() -> int:
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(ROOT))
     httpd = socketserver.TCPServer(("127.0.0.1", PORT), handler)
+    port = httpd.server_address[1]
     httpd.allow_reuse_address = True
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    url = f"http://127.0.0.1:{PORT}/"
+    url = f"http://127.0.0.1:{port}/"
     key = "t" + secrets.token_hex(12)
     print(f"key for this run: {key}\n")
 
