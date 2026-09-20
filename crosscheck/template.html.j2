@@ -115,7 +115,9 @@
   .slab { fill: var(--soft); font: 400 12px/1 ui-sans-serif, system-ui, sans-serif; }
   .slab .n { fill: var(--faint); }
   .hcell { stroke: var(--bg); stroke-width: 2; }
-  .hval { font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; text-anchor: middle;
+  .hval { fill: var(--soft); font: 400 12px/1 ui-sans-serif, system-ui, sans-serif; text-anchor: middle; }
+  .hval.strong { fill: var(--ink); font-weight: 600; }
+  .hval, .hval.strong {
           font-variant-numeric: tabular-nums; pointer-events: none; }
   .guide { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 4; }
   .rowrule { stroke: var(--rule); stroke-width: 1; }
@@ -186,10 +188,11 @@
   /* Alignment is a property of the COLUMN, never of the value, or a placeholder in a
      numeric column lands on the opposite side from the figures. */
   .num { text-align: right; font-variant-numeric: tabular-nums; }
-  col.c-rank { width: 4rem; }    col.c-tick { width: 5.5rem; }
+  col.c-rank { width: 7.2rem; }  col.c-tick { width: 5.5rem; }
   col.c-name { width: 26%; }     col.c-sect { width: 12%; }
   col.c-score { width: 6rem; }   col.c-gap { width: 6rem; }
-  col.c-dcf { width: 6.5rem; }
+  col.c-dcf { width: 6.5rem; }   col.c-move { width: 6rem; }
+  td.move { color: var(--soft); }
   .tick { font-weight: 500; }
   /* On a phone the ticker moves INSIDE the company cell. Five columns need 376px of
      declared width against 358px of content, so the name column was being squeezed to
@@ -244,6 +247,7 @@
 
   @media (max-width: 720px) {
     .wrap { padding: 1.6rem 1rem 4rem; }
+    /* Four full names run to 568px at 390: the short forms fit one row at 11px. */
     .segmented { display: flex; }
     .segmented button { flex: 1 1 0; padding: .48rem .3rem; font-size: 11px; letter-spacing: .02em; }
 
@@ -253,8 +257,8 @@
     .cell .cn { font-size: 1.15rem; }
     .cell .cd { display: none; }
     .gh { font-size: 9px; letter-spacing: .06em; }
-    col.c-sect, col.c-tick, col.c-dcf { display: none; }
-    .c-sect-cell, .c-tick-cell, .c-dcf-cell { display: none; }
+    col.c-sect, col.c-tick, col.c-dcf, col.c-move { display: none; }
+    .c-sect-cell, .c-tick-cell, .c-dcf-cell, .c-move-cell { display: none; }
     col.c-rank { width: 13%; }  col.c-name { width: 47%; }
     col.c-score { width: 19%; } col.c-gap { width: 21%; }
     .hfull { display: none; } .hshort { display: inline; }
@@ -294,9 +298,10 @@
        the figures carry none of their own. All three are aria-hidden; the table below
        holds every value they draw. -->
   <div class="segmented" id="chartpick" role="group" aria-label="Choose a chart">
-    <button type="button" data-chart="heat" aria-pressed="true">Sector Medians by Measure</button>
-    <button type="button" data-chart="sect" aria-pressed="false">Combined Score by Sector</button>
-    <button type="button" data-chart="hist" aria-pressed="false">Combined Score Distribution</button>
+    <button type="button" data-chart="heat" aria-pressed="true"><span class="hfull">Sector Medians by Measure</span><span class="hshort">By Measure</span></button>
+    <button type="button" data-chart="sect" aria-pressed="false"><span class="hfull">Combined Score by Sector</span><span class="hshort">By Sector</span></button>
+    <button type="button" data-chart="hist" aria-pressed="false"><span class="hfull">Combined Score Distribution</span><span class="hshort">Distribution</span></button>
+    {% if has_moves %}<button type="button" data-chart="move" aria-pressed="false"><span class="hfull">Move Since Scored</span><span class="hshort">Move</span></button>{% endif %}
   </div>
   <div class="charts">
     <figure class="ch" id="fig-heat">
@@ -309,6 +314,9 @@
     <figure class="ch" id="fig-hist" hidden>
       <svg id="hist" aria-hidden="true"></svg>
     </figure>
+    {% if has_moves %}<figure class="ch" id="fig-move" hidden>
+      <svg id="move" aria-hidden="true"></svg>
+    </figure>{% endif %}
     <div class="tip" id="tip" hidden></div>
   </div>
 
@@ -346,16 +354,17 @@
     <table id="tbl">
       <colgroup>
         <col class="c-rank"><col class="c-tick"><col class="c-name"><col class="c-sect">
-        <col class="c-score"><col class="c-gap">{% if has_dcf %}<col class="c-dcf">{% endif %}
+        <col class="c-score"><col class="c-gap">{% if has_dcf %}<col class="c-dcf">{% endif %}{% if has_moves %}<col class="c-move">{% endif %}
       </colgroup>
       <thead><tr>
-        <th data-k="rank" class="num" title="Position among the companies on this page, combining all three measures at the weights set below. Rank 1 has the cleanest accounts, the price furthest behind estimates and the highest model value against price.">Rank<span class="ar">&#9650;</span></th>
+        <th data-k="rank" class="num" title="Position among the companies on this page, combining all three measures at the weights set below. Rank 1 has the cleanest accounts, the price furthest behind estimates and the highest model value against price."><span class="hfull">Rank (1 = best)</span><span class="hshort">Rank</span><span class="ar">&#9650;</span></th>
         <th data-k="ticker" class="c-tick-cell">Ticker<span class="ar">&#9650;</span></th>
         <th data-k="name">Company<span class="ar">&#9650;</span></th>
         <th data-k="sector" class="c-sect-cell">Sector<span class="ar">&#9650;</span></th>
         <th data-k="strain" class="num"><span class="hfull">Shortfall</span><span class="hshort">Score</span><span class="ar">&#9650;</span></th>
         <th data-k="gap" class="num">Drift (pp)<span class="ar">&#9650;</span></th>
         {% if has_dcf %}<th data-k="dcf" class="c-dcf-cell">DCF<span class="ar">&#9650;</span></th>{% endif %}
+        {% if has_moves %}<th data-k="move" class="num c-move-cell" title="Price move since the company was first scored here, on {{ since }}. A move in the share price, not a return: no dividends, no position.">Move<span class="ar">&#9650;</span></th>{% endif %}
       </tr></thead>
       <tbody id="tb"></tbody>
     </table>
@@ -368,6 +377,7 @@
 (function () {
   var ROWS = JSON.parse(document.getElementById("rows").textContent);
   var HAS_DCF = {{ 'true' if has_dcf else 'false' }};
+  var HAS_MOVES = {{ 'true' if has_moves else 'false' }}, SINCE = "{{ since }}", N_DAYS = {{ n_days }};
   var N_DCF = {{ n_dcf }};
   var CUT = {{ corners.cut }};
   var tb = document.getElementById("tb");
@@ -395,6 +405,15 @@
     return null;
   }
 
+  // Where a score sits among the pool, 0 to 1. The ramp is centred on the pool's
+  // median, not on 50: the geometric mean pulls scores down (median about 40), and
+  // centred on 50 the histogram and the strip painted most of the page red.
+  var POOL_SORTED = [];
+  function scorePct(v) {
+    var a = POOL_SORTED, lo = 0, hi = a.length;
+    while (lo < hi) { var m = (lo + hi) >> 1; if (a[m] < v) lo = m + 1; else hi = m; }
+    return a.length > 1 ? lo / (a.length - 1) : 0.5;
+  }
   function pool() {
     // The set every chart draws: what the completeness toggle admits. NOT the search
     // result - a histogram of one bar says nothing - the search only marks a name.
@@ -428,6 +447,7 @@
     var d = dims(svg, 380, 230), M = { l: 36, r: 12, t: 22, b: 32 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
     var rows = pool(), f = focus();
+    POOL_SORTED = rows.map(function (r) { return r.score; }).sort(function (a, b) { return a - b; });
     var BINS = 25, counts = new Array(BINS).fill(0), members = [];
     for (var i = 0; i < BINS; i++) members.push([]);
     rows.forEach(function (r) {
@@ -454,7 +474,7 @@
       var x0 = X(i * (100 / BINS)), x1 = X((i + 1) * (100 / BINS));
       // The bar takes the same colour its score would get on the heatmap, so the three
       // charts share one meaning for amber and teal.
-      parts.push('<rect class="bar-h' + (i === fk ? " hot" : "") + '" data-b="' + i + '" fill="' + heatColour((i + 0.5) / BINS) +
+      parts.push('<rect class="bar-h' + (i === fk ? " hot" : "") + '" data-b="' + i + '" fill="' + markColour(scorePct((i + 0.5) / BINS)) +
                  '" x="' + (x0 + 0.5).toFixed(1) + '" y="' + Y(counts[i]).toFixed(1) +
                  '" width="' + Math.max(1, x1 - x0 - 1).toFixed(1) + '" height="' + (M.t + ph - Y(counts[i])).toFixed(1) + '"/>');
     }
@@ -495,6 +515,7 @@
   function drawSectors() {
     var svg = document.getElementById("sect");
     var S = sectorRows(), f = focus();
+    POOL_SORTED = pool().map(function (r) { return r.score; }).sort(function (a, b) { return a - b; });
     var rowH = 38, M = { l: 150, r: 12, t: 8, b: 32 };
     var d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b);
     if (d.w < 520) { rowH = 30; M.l = 120; d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b); }
@@ -520,7 +541,7 @@
         // its neighbour's. At +-10 the bands merged into one cloud.
         var amp = rowH * 0.3;
         var jit = ((Math.sin(j * 12.9898 + i * 78.233) * 43758.5453) % 1) * amp * 2 - amp;
-        parts.push('<circle class="sdot' + (r === f ? " hot" : "") + '" data-i="' + ROWS.indexOf(r) + '" fill="' + heatColour(r.score) +
+        parts.push('<circle class="sdot' + (r === f ? " hot" : "") + '" data-i="' + ROWS.indexOf(r) + '" fill="' + markColour(scorePct(r.score)) +
                    '" cx="' + X(r.score).toFixed(1) + '" cy="' + (cy + jit).toFixed(1) + '" r="' + (r === f ? 5 : 3) + '"/>');
       });
       parts.push('<line class="smed" x1="' + X(sec.median) + '" x2="' + X(sec.median) + '" y1="' + (cy - rowH * 0.42) + '" y2="' + (cy + rowH * 0.42) + '"/>');
@@ -545,15 +566,26 @@
   // Diverging around 50, the median percentile: green above, red below. A sector at 82 on value and 37 on price-behind is the
   // finding this chart exists for - each sector is dragged by a DIFFERENT measure, and
   // no correlation anywhere on the page could have said that.
-  function heatColour(v) {
+  // Green above 50, red below, and QUIET in the middle: chosen 20/09/2026 from ten
+  // renderings ("Quiet middle: colour only where a sector departs from 50"). The
+  // previous ramp gave every middling cell a grey-mauve fill that carried no meaning
+  // and let nine solid blocks per column shout as loudly as the four that mattered.
+  // Two mids: a cell sits on the page and fades to the tinted ground, a mark (a dot,
+  // a bar) sits ON that ground and needs a slate it cannot vanish into. Both follow
+  // the theme, so the toggle redraws.
+  function isLight() { return document.documentElement.getAttribute("data-theme") === "light"; }
+  function ramp(v, mid) {
     var t = Math.max(-1, Math.min(1, (v - 0.5) / 0.35));
-    // Green above the median, red below: asked for by name on 12/09/2026, in place of
-    // the drift column's teal and amber. Shared by the histogram and the strip.
-    var teal = [92, 166, 118], amber = [201, 96, 88], mid = [125, 135, 152];
-    var c = t >= 0 ? [mid[0] + (teal[0] - mid[0]) * t, mid[1] + (teal[1] - mid[1]) * t, mid[2] + (teal[2] - mid[2]) * t]
-                   : [mid[0] + (amber[0] - mid[0]) * -t, mid[1] + (amber[1] - mid[1]) * -t, mid[2] + (amber[2] - mid[2]) * -t];
+    var green = isLight() ? [72, 146, 100] : [92, 166, 118];
+    var red = isLight() ? [186, 82, 74] : [201, 96, 88];
+    var a = t >= 0 ? green : red; t = Math.abs(t);
+    var c = [0, 1, 2].map(function (i) { return mid[i] + (a[i] - mid[i]) * t; });
     return "rgb(" + c.map(Math.round).join(",") + ")";
   }
+  function heatColour(v) { return ramp(v, isLight() ? [231, 234, 239] : [20, 26, 34]); }
+  function markColour(v) { return ramp(v, isLight() ? [178, 186, 198] : [62, 71, 86]); }
+  // How far a value sits from the middle, 0 at 50 and 1 at the ends of the ramp.
+  function heatDepth(v) { return Math.min(1, Math.abs(v - 0.5) / 0.35); }
   function drawHeat() {
     var svg = document.getElementById("heat");
     var S = sectorRows();
@@ -563,9 +595,11 @@
     // Full wording where a column has room for it, matching the weight sliders; the
     // short form under 520px, where the three long heads overprinted - measured, two
     // of three collided at 390.
+    // The middle column is the drift LEG the rank uses (estimates rising AND price
+    // behind), not the gap alone, so the chart and the sliders describe one thing.
     var COLS = d.w < 520
-      ? [["pStrain", "Clean"], ["pDrift", "Behind"], ["pDcf", "Value"]]
-      : [["pStrain", "Clean accounts"], ["pDrift", "Price behind"], ["pDcf", "Value above price"]];
+      ? [["pStrain", "Clean"], ["leg", "Behind"], ["pDcf", "Value"]]
+      : [["pStrain", "Clean accounts"], ["leg", "Estimates rising, price behind"], ["pDcf", "Value above price"]];
     var cw = (d.w - M.l - M.r) / 3;
     var parts = [];
     COLS.forEach(function (c, j) {
@@ -575,28 +609,115 @@
       var y = M.t + i * rowH;
       parts.push('<text class="slab" x="' + (M.l - 10) + '" y="' + (y + rowH / 2 + 4) + '" text-anchor="end">' + sec.sector + "</text>");
       COLS.forEach(function (c, j) {
-        var v = sec.rows.map(function (r) { return r[c[0]]; }).filter(function (x) { return x !== null; }).sort(function (a, b) { return a - b; });
+        var v = sec.rows.map(function (r) { return c[0] === "leg" ? driftLeg(r) : r[c[0]]; }).filter(function (x) { return x !== null; }).sort(function (a, b) { return a - b; });
         var med = v.length ? v[Math.floor(v.length / 2)] : null;
         var x = M.l + cw * j;
         parts.push('<rect class="hcell" rx="3" data-s="' + i + '" data-c="' + j + '" x="' + x + '" y="' + y + '" width="' + cw + '" height="' + rowH +
                    '" fill="' + (med === null ? "var(--rule)" : heatColour(med)) + '"/>');
-        if (med !== null) parts.push('<text class="hval" x="' + (x + cw / 2) + '" y="' + (y + rowH / 2 + 4) +
-                   '" fill="' + (Math.abs(med - 0.5) > 0.22 ? "#0f1319" : "#e6e9ee") + '">' + fmtPct(med) + "</text>");
+        // A middling figure is set soft, a strong one in ink and bold: the four numbers
+        // that matter are the ones that read first.
+        if (med !== null) parts.push('<text class="hval' + (heatDepth(med) > 0.5 ? " strong" : "") + '" x="' + (x + cw / 2) + '" y="' + (y + rowH / 2 + 4) +
+                   '">' + fmtPct(med) + "</text>");
       });
     });
     svg.innerHTML = parts.join("");
     document.getElementById("heatkey").innerHTML =
       '<span class="ki"><i class="sw" style="background:' + heatColour(0.85) + '"></i>Sector sits high on this measure</span>' +
-      '<span class="ki"><i class="sw" style="background:' + heatColour(0.5) + '"></i>Middle</span>' +
+      '<span class="ki"><i class="sw" style="background:' + heatColour(0.5) + ';border:1px solid var(--rule)"></i>Middle</span>' +
       '<span class="ki"><i class="sw" style="background:' + heatColour(0.15) + '"></i>Sits low</span>';
     svg.onmousemove = function (ev) {
       var t = ev.target;
       if (!t.classList || !t.classList.contains("hcell")) { hideTip(); return; }
       var sec = S[+t.dataset.s], c = COLS[+t.dataset.c];
-      var v = sec.rows.map(function (r) { return r[c[0]]; }).filter(function (x) { return x !== null; }).sort(function (a, b) { return a - b; });
+      var v = sec.rows.map(function (r) { return c[0] === "leg" ? driftLeg(r) : r[c[0]]; }).filter(function (x) { return x !== null; }).sort(function (a, b) { return a - b; });
       showTip("<b>" + sec.sector + "</b> on " + c[1].toLowerCase() +
               '<span class="tl">median percentile <b>' + (v.length ? fmtPct(v[Math.floor(v.length / 2)]) : "-") +
               "</b> across " + v.length + " companies</span>", ev);
+    };
+    svg.onmouseleave = hideTip;
+  }
+
+  // ---- 4. move since first scored, by quintile of the score on that day ----
+  // The forward test: the score as it stood on the first day a company was recorded,
+  // against what its price did afterwards. Scored with the CURRENT weights from the
+  // day-one components, so the sliders move this chart too. The axis carries the
+  // window, because a fortnight is not a result and a quarter might be; the chart is
+  // here from day eight so the reader watches it become one rather than being handed
+  // a verdict. Spearman rho and n are printed for the same reason.
+  function score0(r) {
+    if (!r.h0) return null;
+    var h = { pStrain: r.h0[0], pDrift: r.h0[1], pRev: r.h0[2], pDcf: r.h0[3] };
+    var num = 0, den = 0;
+    [[W.strain, h.pStrain], [W.drift, driftLeg(h)], [W.dcf, h.pDcf]].forEach(function (lw) {
+      if (lw[1] === null || lw[1] === undefined || lw[0] <= 0) return;
+      num += lw[0] * Math.log(Math.max(lw[1], P_FLOOR)); den += lw[0];
+    });
+    return den > 0 ? Math.exp(num / den) : null;
+  }
+  function spearman(pairs) {
+    function ranks(a) {
+      var idx = a.map(function (v, i) { return [v, i]; }).sort(function (p, q) { return p[0] - q[0]; });
+      var out = new Array(a.length), i = 0;
+      while (i < idx.length) {
+        var j = i; while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++;
+        for (var k = i; k <= j; k++) out[idx[k][1]] = (i + j) / 2;
+        i = j + 1;
+      }
+      return out;
+    }
+    var n = pairs.length; if (n < 3) return null;
+    var ra = ranks(pairs.map(function (p) { return p[0]; })), rb = ranks(pairs.map(function (p) { return p[1]; }));
+    var ma = ra.reduce(function (s, v) { return s + v; }, 0) / n, mb = rb.reduce(function (s, v) { return s + v; }, 0) / n;
+    var num = 0, da = 0, db = 0;
+    for (var i = 0; i < n; i++) { num += (ra[i] - ma) * (rb[i] - mb); da += (ra[i] - ma) * (ra[i] - ma); db += (rb[i] - mb) * (rb[i] - mb); }
+    return da && db ? num / Math.sqrt(da * db) : null;
+  }
+  function drawMove() {
+    var svg = document.getElementById("move");
+    var d = dims(svg, 380, 240), M = { l: 44, r: 12, t: 22, b: 44 };
+    var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
+    var rows = pool().map(function (r) { return { r: r, s: score0(r), m: r.move }; })
+      .filter(function (x) { return x.s !== null && x.m !== null; })
+      .sort(function (a, b) { return a.s - b.s; });
+    var Q = 5, bins = [];
+    for (var q = 0; q < Q; q++) {
+      var lo = Math.floor(q * rows.length / Q), hi = Math.floor((q + 1) * rows.length / Q);
+      var m = rows.slice(lo, hi).map(function (x) { return x.m; }).sort(function (a, b) { return a - b; });
+      bins.push({ n: m.length, med: m.length ? m[Math.floor(m.length / 2)] : 0, members: rows.slice(lo, hi) });
+    }
+    var ext = Math.max(1, Math.max.apply(null, bins.map(function (b) { return Math.abs(b.med); })) * 1.25);
+    var Y = function (v) { return M.t + ph / 2 - (v / ext) * (ph / 2); };
+    var bw = pw / Q, parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
+    parts.push('<line class="rowrule" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(0) + '" y2="' + Y(0) + '"/>');
+    [ext, -ext].forEach(function (v) {
+      var t = Math.round(v * 10) / 10;
+      parts.push('<line class="guide" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(v * 0.8).toFixed(1) + '" y2="' + Y(v * 0.8).toFixed(1) + '"/>');
+      parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(v * 0.8) + 4).toFixed(1) + '" text-anchor="end">' + (v > 0 ? "+" : "") + (Math.round(v * 8) / 10).toFixed(1) + "%</text>");
+    });
+    parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(0) + 4) + '" text-anchor="end">0</text>');
+    var LAB = ["Lowest fifth", "", "Middle", "", "Highest fifth"];
+    bins.forEach(function (b, i) {
+      var x = M.l + i * bw + bw * 0.18, w = bw * 0.64;
+      var y0 = Y(Math.max(0, b.med)), h = Math.abs(Y(b.med) - Y(0));
+      parts.push('<rect class="mbar" data-q="' + i + '" x="' + x.toFixed(1) + '" y="' + y0.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(1, h).toFixed(1) +
+                 '" fill="' + markColour(0.5 + Math.sign(b.med) * Math.min(0.35, Math.abs(b.med) / ext * 0.35)) + '"/>');
+      parts.push('<text class="hval' + (b.med < 0 ? " strong" : "") + '" x="' + (x + w / 2) + '" y="' + (b.med >= 0 ? y0 - 6 : y0 + 15).toFixed(1) + '">' + (b.med > 0 ? "+" : "") + b.med.toFixed(1) + "%</text>");
+      parts.push('<text class="tk" x="' + (x + w / 2) + '" y="' + (M.t + ph + 14) + '" text-anchor="middle">n ' + b.n + "</text>");
+      if (LAB[i]) parts.push('<text class="tk" x="' + (x + w / 2) + '" y="' + (M.t + ph + 27) + '" text-anchor="middle">' + LAB[i] + "</text>");
+    });
+    var rho = spearman(rows.map(function (x) { return [x.s, x.m]; }));
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Score on ' + SINCE + ", by fifth</text>");
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 6) + '">Median move since, ' + N_DAYS + " trading days" +
+               (rho === null ? "" : ", rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " on " + rows.length) + "</text>");
+    svg.innerHTML = parts.join("");
+    svg.onmousemove = function (ev) {
+      var t = ev.target;
+      if (!t.classList || !t.classList.contains("mbar")) { hideTip(); return; }
+      var b = bins[+t.dataset.q];
+      var best = b.members.slice().sort(function (p, q) { return q.m - p.m; });
+      showTip("<b>" + b.n + "</b> companies, median " + (b.med > 0 ? "+" : "") + b.med.toFixed(1) + "%" +
+              '<span class="tl">best ' + best.slice(0, 3).map(function (x) { return x.r.ticker + " " + (x.m > 0 ? "+" : "") + x.m.toFixed(1) + "%"; }).join(", ") +
+              "</span>", ev);
     };
     svg.onmouseleave = hideTip;
   }
@@ -607,12 +728,13 @@
   var CHART = "heat";
   try { CHART = localStorage.getItem("crosscheck.chart") || "heat"; } catch (e) {}
   var DRAW = { heat: drawHeat, sect: drawSectors, hist: drawHist };
+  if (HAS_MOVES) DRAW.move = drawMove;
   if (!DRAW[CHART]) CHART = "heat";
 
   function showChart(k) {
     CHART = k;
     try { localStorage.setItem("crosscheck.chart", k); } catch (e) {}
-    ["heat", "sect", "hist"].forEach(function (id) {
+    Object.keys(DRAW).forEach(function (id) {
       document.getElementById("fig-" + id).hidden = id !== k;
     });
     document.querySelectorAll("#chartpick button").forEach(function (b) {
@@ -628,6 +750,7 @@
   // Only the visible chart is drawn. A hidden figure measures zero wide, and drawing
   // into it would size every label off nothing.
   function plot() { DRAW[CHART](); }
+  window.crosscheckRedraw = function () { plot(); render(); };
 
   var rz;
   window.addEventListener("resize", function () {
@@ -732,6 +855,11 @@
     return "Consensus earnings estimates " + s + ", so the price is " +
            (r.gap > 0 ? "behind" : r.gap < 0 ? "ahead of" : "level with") + " the estimates.";
   }
+  function moveTip(r) {
+    if (r.move === null) return "No price on record for this company on two days in one currency.";
+    return "The share price has moved " + (r.move > 0 ? "+" : "") + r.move.toFixed(1) + "% since " +
+           SINCE + ", when this company was first scored here (" + N_DAYS + " trading days).";
+  }
   function dcfTip(r) {
     if (r.dcf === null) return "DCF Studio could not produce a usable value for this company.";
     return "DCF Studio's model values the shares at " + r.dcf.toFixed(2) +
@@ -752,11 +880,14 @@
       : rows.length + " of " + ROWS.length;
     clear.hidden = !q.value && picked === null;
 
-    if (!rows.length) { tb.innerHTML = '<tr><td class="empty" colspan="' + (HAS_DCF ? 7 : 6) + '">No companies match.</td></tr>'; return; }
+    if (!rows.length) { tb.innerHTML = '<tr><td class="empty" colspan="' + (6 + (HAS_DCF ? 1 : 0) + (HAS_MOVES ? 1 : 0)) + '">No companies match.</td></tr>'; return; }
     tb.innerHTML = rows.map(function (r) {
       var t = encodeURIComponent(r.ticker);
       return '<tr>' +
-        '<td class="num rank">' + (r.rank === null ? "-" : r.rank) + "</td>" +
+        // The rank number takes the score's own colour, so the top of the table reads
+        // green, the bottom red, and the middle stays quiet - the order is visible
+        // without reading the header.
+        '<td class="num rank" style="color:' + (r.rank === null ? "var(--soft)" : markColour(1 - (r.rank - 1) / Math.max(1, pool().length - 1))) + '">' + (r.rank === null ? "-" : r.rank) + "</td>" +
         '<td class="tick c-tick-cell">' + r.ticker + "</td>" +
         '<td><span class="tick-inline">' + r.ticker + '</span><span class="cname">' + r.name + "</span></td>" +
         '<td class="c-sect-cell">' + r.sector + "</td>" +
@@ -770,6 +901,9 @@
         (HAS_DCF ? '<td class="num c-dcf-cell dcf-' + r.dcfband + '" title="' + dcfTip(r) + '">' + (r.dcf === null
           ? '<span class="none">-</span>'
           : '<a class="src" href="https://dcf.charlietrenorden.com/' + t + '">' + r.dcf.toFixed(2) + "x</a>") + "</td>" : "") +
+        (HAS_MOVES ? '<td class="num move c-move-cell" title="' + moveTip(r) + '">' + (r.move === null
+          ? '<span class="none">-</span>'
+          : (r.move > 0 ? "+" : "") + r.move.toFixed(1) + "%") + "</td>" : "") +
       "</tr>";
     }).join("");
   }
@@ -817,6 +951,7 @@
     document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
     try { localStorage.setItem("theme", dark ? "light" : "dark"); } catch (e) {}
     label();
+    if (window.crosscheckRedraw) window.crosscheckRedraw();
   });
 })();
 </script>

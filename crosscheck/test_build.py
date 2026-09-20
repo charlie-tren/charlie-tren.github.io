@@ -395,6 +395,53 @@ class TestComponentPercentiles:
         assert by["D"]["complete"] is False
 
 
+class TestMoves:
+    """The move since first scored is read back out of the record, never recomputed
+    from a source that may have changed its universe since."""
+
+    def lines(self):
+        return {
+            "KO": [
+                {"d": "2026-09-12", "t": "KO", "s": .9, "r": .5, "e": None, "v": .4, "p": 60.0, "c": "USD"},
+                {"d": "2026-09-13", "t": "KO", "s": .9, "r": .5, "e": .6, "v": .4, "p": 63.0, "c": "USD"},
+                {"d": "2026-09-14", "t": "KO", "s": .9, "r": .5, "e": .6, "v": .4, "p": 66.0, "c": "USD"},
+            ],
+            "NOPX": [{"d": "2026-09-12", "t": "NOPX", "s": .1, "r": .1, "e": None, "v": None, "p": None, "c": None}],
+            "ONEDAY": [{"d": "2026-09-14", "t": "ONEDAY", "s": .5, "r": .5, "e": .5, "v": .5, "p": 10.0, "c": "USD"}],
+            "SWAP": [
+                {"d": "2026-09-12", "t": "SWAP", "s": .5, "r": .5, "e": None, "v": .5, "p": 10.0, "c": "AUD"},
+                {"d": "2026-09-14", "t": "SWAP", "s": .5, "r": .5, "e": .5, "v": .5, "p": 7.0, "c": "USD"},
+            ],
+        }
+
+    def test_move_is_first_price_to_latest_price_in_percent(self):
+        moves, since, n = build.moves_since_first(self.lines())
+        assert moves["KO"]["move"] == 10.0
+        assert moves["KO"]["from"] == "2026-09-12"
+        assert since == "2026-09-12" and n == 3
+
+    def test_carries_the_components_from_the_first_day_not_the_latest(self):
+        # Day one had no "e"; the chart must score that day the way it was scored.
+        moves, _, _ = build.moves_since_first(self.lines())
+        assert moves["KO"]["h0"] == [.9, .5, None, .4]
+
+    def test_no_move_without_two_priced_days_in_one_currency(self):
+        moves, _, _ = build.moves_since_first(self.lines())
+        assert "NOPX" not in moves
+        assert "ONEDAY" not in moves
+        assert "SWAP" not in moves   # a currency change is not a price move
+
+    def test_reads_the_record_in_date_order_whatever_order_it_was_written(self, tmp_path):
+        path = tmp_path / "h.jsonl"
+        path.write_text(
+            '{"d":"2026-09-14","t":"KO","s":0.9,"r":0.5,"e":0.6,"v":0.4,"p":66.0,"c":"USD"}\n'
+            '{"d":"2026-09-12","t":"KO","s":0.9,"r":0.5,"e":null,"v":0.4,"p":60.0,"c":"USD"}\n',
+            encoding="utf-8")
+        h = build.read_history(path)
+        assert [r["d"] for r in h["KO"]] == ["2026-09-12", "2026-09-14"]
+        assert build.moves_since_first(h)[0]["KO"]["move"] == 10.0
+
+
 class TestHistory:
     """One line per company per build, so that in a few months the page can plot what
     the score DID against what it said. Nothing in the data that exists today
