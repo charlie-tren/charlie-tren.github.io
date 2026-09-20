@@ -104,8 +104,8 @@
      them. td.n's 1.12rem right padding above exists solely to offset the glyph the
      sortable headers print after their label; the Closed headers are plain, so the
      same padding pushed every figure 0.82rem right of the label it belongs to. */
-  .shutbook td.n { padding-right: .3rem; }
-  .shutbook td.n:last-child { padding-right: 0; }
+  .shutbook td.n, .watchbook td.n { padding-right: .3rem; }
+  .shutbook td.n:last-child, .watchbook td.n:last-child { padding-right: 0; }
   .book .sub { color: var(--faint); }
   /* Only the columns that compare across instruments sort. A peso entry price and
      an index entry price are not on the same scale, so ordering by one is noise. */
@@ -239,17 +239,26 @@
        Restated here because the card layout is what broke it. */
     .book tr[hidden] { display: none; }
 
+    /* A watched pair's reading takes the slot R has on a position card. It is
+       excluded from the label and font rules below by name, the way R is, because
+       a stronger selector here would be a second copy of the same exception. */
+    .watchbook tbody.pos td[data-label="Now"] { grid-column: 3; grid-row: 1;
+        text-align: right; align-self: center;
+        font: 500 21px/1 ui-sans-serif, system-ui, sans-serif;
+        font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+
     /* Stop and target are the track's own end labels; do not print them twice. */
     .book tbody.pos td[data-label="Stop"] { display: none; }
 
     /* No DIR label: the pill says "Long". A label naming what the thing beside it
        already says is clutter, and the label was colliding with the pill's border
-       because a bordered inline-block grows upward past its line box. */
-    .book tbody.pos td[data-label]:not([data-label="R"]):not([data-label="Dir"])::before {
+       because a bordered inline-block grows upward past its line box. The Long and
+       Short cells of a watched pair are the same pill and get the same treatment. */
+    .book tbody.pos td[data-label]:not([data-label="R"]):not([data-label="Now"]):not([data-label="Dir"]):not([data-label="Long"]):not([data-label="Short"])::before {
         content: attr(data-label); display: block;
         font: 600 9px/1.5 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
         text-transform: uppercase; color: var(--faint); margin-bottom: 2px; }
-    .book tbody.pos td[data-label]:not([data-label="R"]) {
+    .book tbody.pos td[data-label]:not([data-label="R"]):not([data-label="Now"]) {
         font: 400 12.5px/1.2 ui-sans-serif, system-ui, sans-serif; color: var(--soft);
         font-variant-numeric: tabular-nums; text-align: left; }
     .book tbody.pos td.kind { font-size: 12.5px; }
@@ -380,6 +389,46 @@
         <dt>Catalyst</dt><dd>{{ c.catalyst }}</dd>
         <dt>Breaks if</dt><dd>{{ c.breaks }}</dd>
         <dt class="pm">Post-mortem</dt><dd class="pm">{{ c.postmortem }}</dd>
+      </dl></td></tr>
+    </tbody>
+{% endfor %}  </table>
+  </div>
+{% endif %}
+
+{% if watching %}
+  <h2 class="sec">Watching</h2>
+  <div class="scroller">
+  <table class="book watchbook">
+    <thead><tr>
+      <th>Pair</th>
+      <th>Type</th>
+      <th>Long</th>
+      <th>Short</th>
+      <th class="n">Trigger</th>
+      <th class="n">Now</th>
+      <th class="n">Exit</th>
+      <th></th>
+    </tr></thead>
+{# A watched pair carries no entry, stop or R, so it is not a position and never
+   joins the Open table: the reading is the long leg's price over the short leg's,
+   against its one-year mean, and Trigger is the level written down before any
+   entry. `armed` colours Now once it is through the trigger. #}
+{% for w in watching %}    <tbody class="pos watch" data-name="{{ w.name }}">
+      <tr>
+        <td style="white-space:normal"><span class="nm">{{ w.name }}</span></td>
+        <td class="kind" data-label="Type">{{ w.kind }}</td>
+        <td data-label="Long"><span class="dir long">{{ w.long.name }}</span></td>
+        <td data-label="Short"><span class="dir short">{{ w.short.name }}</span></td>
+        <td class="n" data-label="Trigger">{{ '%+.0f'|format(w.trigger_pct) }}%</td>
+        <td class="n r {{ 'dn' if w.armed else '' }}" data-label="Now">{{ '%+.1f'|format(w.now_pct) }}%</td>
+        <td class="n" data-label="Exit">{{ w.exit_days }} days</td>
+        <td class="n ctl"><button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
+      </tr>
+      <tr class="why"><td colspan="8"><dl>
+        <dt>Thesis</dt><dd>{{ w.thesis }}</dd>
+        <dt>Measure</dt><dd>{{ w.measure }}</dd>
+        <dt>Costs</dt><dd>{{ w.costs }}</dd>
+        <dt>Breaks if</dt><dd>{{ w.breaks }}</dd>
       </dl></td></tr>
     </tbody>
 {% endfor %}  </table>

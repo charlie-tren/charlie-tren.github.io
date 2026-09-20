@@ -11,6 +11,14 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 
+def _section(html, heading):
+    """The page from `heading` to the next section heading, or to the end. The
+    Closed table used to be everything after its heading; Watching now follows it."""
+    start = html.find(heading)
+    nxt = html.find('<h2 class="sec">', start + len(heading))
+    return html[start:] if nxt < 0 else html[start:nxt]
+
+
 def test_r_matches_entry_and_stop():
     """1R is entry to stop. Recomputed from the raw fields rather than trusting enrich()."""
     sys.path.insert(0, str(HERE))
@@ -61,6 +69,9 @@ def test_every_position_is_its_own_tbody_with_its_sort_keys():
     # because the toggle adds `shut` to every collapsed row at runtime, open or
     # closed, and the shared name has already caused two bugs.
     bodies = re.findall(r'<tbody class="pos([^"]*)"(.*?)</tbody>', page, re.S)
+    # `watch` is a watched pair: it shares the class so the toggle and the phone
+    # card apply, and it is not a position, so it is not counted as one.
+    bodies = [(extra, rest) for extra, rest in bodies if "watch" not in extra]
     live = [rest for extra, rest in bodies if "done" not in extra]
     total = len(src.get("open") or []) + len(src.get("closed") or [])
     assert len(bodies) == total, f"{len(bodies)} tbodies for {total} positions in the file"
@@ -93,9 +104,13 @@ def test_the_reasoning_ships_visible_and_is_collapsed_by_the_script():
     rows render open and the script closes them, never the other way round."""
     page = (HERE / "index.html").read_text(encoding="utf-8")
     assert 'class="why"' in page and "<dt>Thesis</dt>" in page
-    for slot in ("Thesis", "Catalyst", "Breaks if"):
-        assert page.count(f"<dt>{slot}</dt>") == len(json.loads(
-            (HERE / "positions.json").read_text(encoding="utf-8"))["open"]),             f"every position needs a {slot} slot, filled or not"
+    src = json.loads((HERE / "positions.json").read_text(encoding="utf-8"))
+    n_pos = len(src.get("open") or []) + len(src.get("closed") or [])
+    n_watch = len(src.get("watching") or [])
+    # A watched pair's panel has a Thesis and a Breaks if, and no Catalyst: there
+    # has been no entry to have a catalyst for.
+    for slot, n in (("Thesis", n_pos + n_watch), ("Catalyst", n_pos), ("Breaks if", n_pos + n_watch)):
+        assert page.count(f"<dt>{slot}</dt>") == n,             f"every position needs a {slot} slot, filled or not"
     assert 'hidden' not in page.split('<tr class="why">')[1][:200], "shipped already closed"
     assert 'aria-expanded="true"' in page, "the button must ship in its open state"
     assert "_set(false);" in page, "nothing collapses the rows on load"
@@ -339,11 +354,11 @@ def test_the_closed_table_does_not_compensate_for_arrows_it_has_not_got():
     is what Charlie saw on 11/09/2026. Measured at 0.0px across both tables after
     the override; this pins the reasoning so deleting the override goes red."""
     html = (HERE / "index.html").read_text(encoding="utf-8")
-    closed = html[html.find(">Closed</h2>"):]
+    closed = _section(html, ">Closed</h2>")
     head = closed[closed.find("<thead>"):closed.find("</thead>")]
     assert "data-sort" not in head, \
         "the Closed headers sort now, so they carry a glyph and this rule must change"
-    assert ".shutbook td.n { padding-right: .3rem; }" in html, \
+    assert ".shutbook td.n, .watchbook td.n { padding-right: .3rem; }" in html, \
         "the Closed table is compensating for a sort arrow it does not have"
 
 
@@ -351,7 +366,51 @@ def test_the_closed_control_names_the_post_mortem():
     """Charlie, 11/09/2026: the control should imply a post-mortem is behind it. The
     entry reasoning is on the open rows too; the judgement of it only exists here."""
     html = (HERE / "index.html").read_text(encoding="utf-8")
-    op, cl = html[:html.find(">Closed</h2>")], html[html.find(">Closed</h2>"):]
+    op, cl = html[:html.find(">Closed</h2>")], _section(html, ">Closed</h2>")
     assert ">Thesis</button>" in op, "the open control should still say Thesis"
     assert ">Post-mortem</button>" in cl, "the closed control should say Post-mortem"
     assert ">Thesis</button>" not in cl, "a closed row still says Thesis"
+
+
+def test_a_watched_pair_is_read_from_prices_not_typed():
+    """`Now` is the long leg over the short leg against its one-year mean, and it
+    changes every session. A typed reading would be stale beside the trigger it is
+    judged against, which is the same fault as a typed price beside a stop."""
+    import build, math
+    w = {"long": {"symbol": "A"}, "short": {"symbol": "B"}, "trigger_pct": -7.0}
+    row = build.watch_row(w, {"value": -4.1, "asof": "2026-09-18"})
+    assert row["now_pct"] == -4.1 and row["asof"] == "2026-09-18"
+    assert row["armed"] is False, "-4.1 is not through a -7 trigger"
+    assert build.watch_row(w, {"value": -7.0, "asof": "x"})["armed"] is True
+    up = dict(w, trigger_pct=5.0)
+    assert build.watch_row(up, {"value": 4.9, "asof": "x"})["armed"] is False
+    assert build.watch_row(up, {"value": 5.2, "asof": "x"})["armed"] is True
+    page = (HERE / "index.html").read_text(encoding="utf-8")
+    src = json.loads((HERE / "positions.json").read_text(encoding="utf-8"))
+    if src.get("watching"):
+        assert ">Watching</h2>" in page
+        sec = _section(page, ">Watching</h2>")
+        assert 'data-label="Now">' in sec and "%" in sec
+        for slot in ("Thesis", "Measure", "Costs", "Breaks if"):
+            assert f"<dt>{slot}</dt>" in sec, f"a watched pair needs a {slot} slot"
+        assert "<dt>Catalyst</dt>" not in sec, "no entry, so nothing to have a catalyst for"
+
+
+def test_a_watch_reading_survives_a_reload_and_a_nan_does_not():
+    """A failed fetch republishes the last reading with its date rather than a
+    blank, so the reading is kept by load_prices - and a NaN is dropped, the way a
+    NaN price is."""
+    import build
+    orig = build.PRICES
+    tmp = HERE / "_prices_watch_test.json"
+    tmp.write_text(json.dumps({"watch:MA/V": {"value": -4.1, "asof": "2026-09-18"},
+                               "watch:X/Y": {"value": float("nan"), "asof": "2026-09-18"}},
+                              allow_nan=True), encoding="utf-8")
+    try:
+        build.PRICES = tmp
+        cache = build.load_prices()
+        assert cache["watch:MA/V"]["value"] == -4.1
+        assert "watch:X/Y" not in cache
+    finally:
+        build.PRICES = orig
+        tmp.unlink()
