@@ -120,6 +120,11 @@
   .hval, .hval.strong {
           font-variant-numeric: tabular-nums; pointer-events: none; }
   .guide { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 4; }
+  .mline { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .mline.mid { stroke-width: 1.5; }
+  .mdot { stroke: var(--bg); stroke-width: 1.5; }
+  .recon { fill: var(--rule); fill-opacity: .35; }
+  .cursor { stroke: var(--soft); stroke-width: 1; }
   .rowrule { stroke: var(--rule); stroke-width: 1; }
   .tk { fill: var(--faint); font: 400 11px/1 ui-sans-serif, system-ui, sans-serif;
         font-variant-numeric: tabular-nums; }
@@ -133,7 +138,7 @@
          background: var(--raised); border: 1px solid var(--rule); border-radius: 6px;
          padding: .5rem .65rem; box-shadow: 0 6px 20px rgba(0,0,0,.35);
          font: 400 12px/1.45 ui-sans-serif, system-ui, sans-serif; color: var(--ink); }
-  .tip .tl { display: block; color: var(--soft); }
+  .tip .tl { display: block; color: var(--soft); font-variant-numeric: tabular-nums; }
   .tip b { color: var(--ink); font-weight: 600; }
 
   /* The weights are EXPOSED because the combined score is the page's own opinion, and
@@ -316,6 +321,7 @@
     </figure>
     {% if has_moves %}<figure class="ch" id="fig-move" hidden>
       <svg id="move" aria-hidden="true"></svg>
+      <div class="key" id="movekey"></div>
     </figure>{% endif %}
     <div class="tip" id="tip" hidden></div>
   </div>
@@ -378,6 +384,7 @@
   var ROWS = JSON.parse(document.getElementById("rows").textContent);
   var HAS_DCF = {{ 'true' if has_dcf else 'false' }};
   var HAS_MOVES = {{ 'true' if has_moves else 'false' }}, SINCE = "{{ since }}", N_DAYS = {{ n_days }};
+  var DATES = {{ dates_json }}, BACKFILLED_UNTIL = {{ ('"' + backfilled_until + '"') if backfilled_until else 'null' }};
   var N_DCF = {{ n_dcf }};
   var CUT = {{ corners.cut }};
   var tb = document.getElementById("tb");
@@ -672,54 +679,95 @@
     for (var i = 0; i < n; i++) { num += (ra[i] - ma) * (rb[i] - mb); da += (ra[i] - ma) * (ra[i] - ma); db += (rb[i] - mb) * (rb[i] - mb); }
     return da && db ? num / Math.sqrt(da * db) : null;
   }
+  function fmtDate(d) {
+    var p = d.split("-"), M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return (+p[2]) + " " + M[+p[1] - 1];
+  }
+  var FIFTH = ["Lowest fifth", "Second", "Middle", "Fourth", "Highest fifth"];
+  function fifthColour(q) { return markColour([0.05, 0.3, 0.5, 0.7, 0.95][q]); }
   function drawMove() {
     var svg = document.getElementById("move");
-    var d = dims(svg, 380, 240), M = { l: 44, r: 12, t: 22, b: 44 };
+    var d = dims(svg, 400, 260), M = { l: 46, r: 14, t: 24, b: 30 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
-    var rows = pool().map(function (r) { return { r: r, s: score0(r), m: r.move }; })
-      .filter(function (x) { return x.s !== null && x.m !== null; })
+    // The cohort scored on the first recorded date, so every line measures the same
+    // window. A name that entered later has its own Move in the table and no line.
+    var rows = pool().map(function (r) { return { r: r, s: score0(r) }; })
+      .filter(function (x) { return x.s !== null && x.r.i0 === 0 && x.r.mvs; })
       .sort(function (a, b) { return a.s - b.s; });
-    var Q = 5, bins = [];
-    for (var q = 0; q < Q; q++) {
-      var lo = Math.floor(q * rows.length / Q), hi = Math.floor((q + 1) * rows.length / Q);
-      var m = rows.slice(lo, hi).map(function (x) { return x.m; }).sort(function (a, b) { return a - b; });
-      bins.push({ n: m.length, med: m.length ? m[Math.floor(m.length / 2)] : 0, members: rows.slice(lo, hi) });
+    var Q = 5, fifths = [];
+    for (var q = 0; q < Q; q++) fifths.push(rows.slice(Math.floor(q * rows.length / Q), Math.floor((q + 1) * rows.length / Q)));
+    // Median path per fifth, at every date the record has.
+    var series = fifths.map(function (f) {
+      return DATES.map(function (_, j) {
+        var v = f.map(function (x) { return x.r.mvs[j]; }).filter(function (m) { return m !== null; }).sort(function (a, b) { return a - b; });
+        return v.length ? v[Math.floor(v.length / 2)] : null;
+      });
+    });
+    var all = [].concat.apply([], series).filter(function (v) { return v !== null; });
+    var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max(0, Math.max.apply(null, all));
+    var pad = Math.max(0.5, (hi - lo) * 0.15); lo -= pad; hi += pad;
+    var t0 = Date.parse(DATES[0]), t1 = Date.parse(DATES[DATES.length - 1]);
+    var X = function (j) { return M.l + (Date.parse(DATES[j]) - t0) / Math.max(1, t1 - t0) * pw; };
+    var Y = function (v) { return M.t + (hi - v) / (hi - lo) * ph; };
+    var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
+    // The reconstructed span, shaded and named, so five weeks of backfill never read
+    // as five weeks of observation.
+    var kb = BACKFILLED_UNTIL ? DATES.indexOf(BACKFILLED_UNTIL) : -1;
+    if (kb >= 0 && kb < DATES.length - 1) {
+      var xb = (X(kb) + X(kb + 1)) / 2;
+      parts.push('<rect class="recon" x="' + M.l + '" y="' + M.t + '" width="' + (xb - M.l).toFixed(1) + '" height="' + ph + '"/>');
+      parts.push('<text class="tk" x="' + (M.l + 6) + '" y="' + (M.t + ph - 6) + '">reconstructed weekly</text>');
+      parts.push('<text class="tk" x="' + (xb + 6) + '" y="' + (M.t + ph - 6) + '">daily record</text>');
     }
-    var ext = Math.max(1, Math.max.apply(null, bins.map(function (b) { return Math.abs(b.med); })) * 1.25);
-    var Y = function (v) { return M.t + ph / 2 - (v / ext) * (ph / 2); };
-    var bw = pw / Q, parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
-    parts.push('<line class="rowrule" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(0) + '" y2="' + Y(0) + '"/>');
-    [ext, -ext].forEach(function (v) {
-      var t = Math.round(v * 10) / 10;
-      parts.push('<line class="guide" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(v * 0.8).toFixed(1) + '" y2="' + Y(v * 0.8).toFixed(1) + '"/>');
-      parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(v * 0.8) + 4).toFixed(1) + '" text-anchor="end">' + (v > 0 ? "+" : "") + (Math.round(v * 8) / 10).toFixed(1) + "%</text>");
+    // Gridlines at even divisions, the zero line solid.
+    var step = (hi - lo) > 16 ? 5 : (hi - lo) > 6 ? 2 : 1;
+    for (var g = Math.ceil(lo / step) * step; g <= hi; g += step) {
+      parts.push('<line class="' + (g === 0 ? "rowrule" : "guide") + '" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '"/>');
+      parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g) + 4).toFixed(1) + '" text-anchor="end">' + (g > 0 ? "+" : "") + g + "%</text>");
+    }
+    // Date ticks: every recorded date while they are sparse, thinned once the daily
+    // record makes them crowd - a label is drawn only if it clears the one before.
+    var lastX = -1e9;
+    DATES.forEach(function (dt, j) {
+      var x = X(j);
+      if (x - lastX < 56) return;
+      lastX = x;
+      parts.push('<text class="tk" x="' + x.toFixed(1) + '" y="' + (d.h - 12) + '" text-anchor="' + (j === DATES.length - 1 ? "end" : j === 0 ? "start" : "middle") + '">' + fmtDate(dt) + "</text>");
     });
-    parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(0) + 4) + '" text-anchor="end">0</text>');
-    var LAB = ["Lowest fifth", "", "Middle", "", "Highest fifth"];
-    bins.forEach(function (b, i) {
-      var x = M.l + i * bw + bw * 0.18, w = bw * 0.64;
-      var y0 = Y(Math.max(0, b.med)), h = Math.abs(Y(b.med) - Y(0));
-      parts.push('<rect class="mbar" data-q="' + i + '" x="' + x.toFixed(1) + '" y="' + y0.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(1, h).toFixed(1) +
-                 '" fill="' + markColour(0.5 + Math.sign(b.med) * Math.min(0.35, Math.abs(b.med) / ext * 0.35)) + '"/>');
-      parts.push('<text class="hval' + (b.med < 0 ? " strong" : "") + '" x="' + (x + w / 2) + '" y="' + (b.med >= 0 ? y0 - 6 : y0 + 15).toFixed(1) + '">' + (b.med > 0 ? "+" : "") + b.med.toFixed(1) + "%</text>");
-      parts.push('<text class="tk" x="' + (x + w / 2) + '" y="' + (M.t + ph + 14) + '" text-anchor="middle">n ' + b.n + "</text>");
-      if (LAB[i]) parts.push('<text class="tk" x="' + (x + w / 2) + '" y="' + (M.t + ph + 27) + '" text-anchor="middle">' + LAB[i] + "</text>");
+    // The middle fifth drawn first and thin, the extremes last and on top.
+    [2, 1, 3, 0, 4].forEach(function (q) {
+      var pts = [];
+      series[q].forEach(function (v, j) { if (v !== null) pts.push(X(j).toFixed(1) + "," + Y(v).toFixed(1)); });
+      if (pts.length > 1) parts.push('<polyline class="mline' + (q === 2 ? " mid" : "") + '" stroke="' + fifthColour(q) + '" points="' + pts.join(" ") + '"/>');
+      var lastJ = -1;
+      series[q].forEach(function (v, j) { if (v !== null) lastJ = j; });
+      if (lastJ >= 0) parts.push('<circle class="mdot" cx="' + X(lastJ).toFixed(1) + '" cy="' + Y(series[q][lastJ]).toFixed(1) + '" r="3.5" fill="' + fifthColour(q) + '"/>');
     });
-    var rho = spearman(rows.map(function (x) { return [x.s, x.m]; }));
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Score on ' + SINCE + ", by fifth</text>");
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 6) + '">Median move since, ' + N_DAYS + " trading days" +
-               (rho === null ? "" : ", rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " on " + rows.length) + "</text>");
+    var rho = spearman(rows.map(function (x) { return [x.s, x.r.move]; }));
+    // The full caption runs past a phone's width; the short form keeps the window
+    // and the grouping, and the key beneath carries the rest.
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 8) + '">Median move since ' + fmtDate(DATES[0]) + (d.w < 520 ? ", by fifth" :
+               ", by fifth of the score that day" + (rho === null ? "" : " (rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " on " + rows.length + ")")) + "</text>");
+    parts.push('<line class="cursor" id="mcursor" x1="0" x2="0" y1="' + M.t + '" y2="' + (M.t + ph) + '" visibility="hidden"/>');
     svg.innerHTML = parts.join("");
+    document.getElementById("movekey").innerHTML = fifths.map(function (f, q) {
+      var last = null; series[q].forEach(function (v) { if (v !== null) last = v; });
+      return '<span class="ki"><i class="sw" style="background:' + fifthColour(q) + '"></i>' + FIFTH[q] +
+             (last === null ? "" : " <b>" + (last > 0 ? "+" : "") + last.toFixed(1) + "%</b>") + "</span>";
+    }).join("");
+    var cur = document.getElementById("mcursor");
     svg.onmousemove = function (ev) {
-      var t = ev.target;
-      if (!t.classList || !t.classList.contains("mbar")) { hideTip(); return; }
-      var b = bins[+t.dataset.q];
-      var best = b.members.slice().sort(function (p, q) { return q.m - p.m; });
-      showTip("<b>" + b.n + "</b> companies, median " + (b.med > 0 ? "+" : "") + b.med.toFixed(1) + "%" +
-              '<span class="tl">best ' + best.slice(0, 3).map(function (x) { return x.r.ticker + " " + (x.m > 0 ? "+" : "") + x.m.toFixed(1) + "%"; }).join(", ") +
-              "</span>", ev);
+      var box = svg.getBoundingClientRect(), mx = ev.clientX - box.left;
+      if (mx < M.l || mx > M.l + pw) { hideTip(); cur.setAttribute("visibility", "hidden"); return; }
+      var j = 0, best = 1e9;
+      DATES.forEach(function (_, k) { var dx = Math.abs(X(k) - mx); if (dx < best) { best = dx; j = k; } });
+      cur.setAttribute("x1", X(j)); cur.setAttribute("x2", X(j)); cur.setAttribute("visibility", "visible");
+      showTip("<b>" + fmtDate(DATES[j]) + "</b>" + (kb >= 0 && j <= kb ? " (reconstructed)" : "") +
+              '<span class="tl">' + series.map(function (sr, q) {
+                return FIFTH[q] + " " + (sr[j] === null ? "-" : (sr[j] > 0 ? "+" : "") + sr[j].toFixed(1) + "%");
+              }).join("<br>") + "</span>", ev);
     };
-    svg.onmouseleave = hideTip;
+    svg.onmouseleave = function () { hideTip(); cur.setAttribute("visibility", "hidden"); };
   }
 
   function markPicked() {}   // the charts mark focus() on every redraw
