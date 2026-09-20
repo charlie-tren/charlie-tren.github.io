@@ -80,6 +80,27 @@
         "Holding the pair costs 5.4% a year, 6.35% charged on the long and 0.95% received on the short, plus US$10 a side on each leg."
       ],
       "breaks": "Mastercard's revenue growth stays below Visa's and the old ratio never comes back."
+    },
+    {
+      "name": "Brent / WTI",
+      "kind": "Commodity pair",
+      "long": {
+        "name": "Brent crude",
+        "symbol": "BZ=F"
+      },
+      "short": {
+        "name": "WTI crude",
+        "symbol": "CL=F"
+      },
+      "window_days": 252,
+      "trigger_pct": -4.0,
+      "exit_days": 90,
+      "thesis": [
+        "Brent and WTI price the same barrel in two places, and the ratio between them has been stationary in every window since 2007.",
+        "The spread is $3 against a one-year average near $6. The reading is Brent's price over WTI's against that average, and 18 of the 23 prior readings through the trigger were back at it within 90 days.",
+        "On forward contracts there is no holding cost. The round trip is the two spreads, about 0.4% for the pair, plus a roll if held past expiry."
+      ],
+      "breaks": "US crude exports or a Cushing glut keep WTI bid against seaborne barrels for longer than a quarter."
     }
   ],
   "_watching_note": "A watched pair is not a position. Trigger and exit are written down before the entry so the entry cannot be talked into later. Now is built by build.py from a year of daily closes and is never typed.",
