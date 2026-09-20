@@ -55,7 +55,7 @@
       "thesis": "Nearshoring keeps pulling investment into Mexico while Banxico holds real rates high. Both push the peso up against the dollar.",
       "catalyst": "The peso set fresh twelve-month highs twice in the three sessions before entry.",
       "breaks": "The USMCA review goes against Mexico, and the nearshoring case with it.",
-      "postmortem": "The entry chased a twelve-month high. The stop was 1.1% away in the week of a Fed meeting, and the peso moved 1.7%."
+      "postmortem": "USD/MXN ranges 0.6% a day. The stop was set 1.1% away, too narrow for that volatility."
     }
   ],
   "closed": [],
@@ -74,14 +74,16 @@
       "window_days": 252,
       "trigger_pct": -7.0,
       "exit_days": 90,
-      "thesis": "Mastercard and Visa have moved together since 2008 and the ratio between them has no trend. Mastercard has lagged since April, and gaps this size have closed in a median of four months.",
-      "measure": "Mastercard's price divided by Visa's, against its average over the last year.",
-      "costs": "Holding the pair costs 5.4% a year: 6.35% charged on the long, 0.95% received on the short. Commission is US$10 a side on each leg, and the Mastercard spread has to be checked in session.",
+      "thesis": [
+        "Mastercard and Visa have moved together since 2008 and the ratio between them has no trend.",
+        "Mastercard has lagged since April. The reading is Mastercard's price over Visa's against its one-year average, and gaps this size have closed in a median of four months.",
+        "Holding the pair costs 5.4% a year, 6.35% charged on the long and 0.95% received on the short, plus US$10 a side on each leg."
+      ],
       "breaks": "Mastercard's revenue growth stays below Visa's and the old ratio never comes back."
     }
   ],
   "_watching_note": "A watched pair is not a position. Trigger and exit are written down before the entry so the entry cannot be talked into later. Now is built by build.py from a year of daily closes and is never typed.",
-  "_thesis_note": "thesis: why the PRICE moves this way, or why the carry is not handed back in the exchange rate. Describing the carry is not a thesis. Caps: thesis 24 words, catalyst 22, breaks 20. See the position-thesis skill.",
+  "_thesis_note": "thesis: why the PRICE moves this way, or why the carry is not handed back in the exchange rate. Describing the carry is not a thesis. Caps: thesis 24 words, catalyst 22, breaks 20. See the position-thesis skill. A watched pair's thesis may be a list of up to three sentences, and it carries the measure and the costs, which have no slot of their own.",
   "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it.",
   "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index.",
   "_sources_note": "As at 10/09/2026. Policy rates on Bloomberg: UKBRBASE 3.75, SZLTDEP 0.00, MXONBR 6.50, FDTR 3.75. Advantest over the 10% cap at the 31/07 review, weight cut from 01/10 (Nikkei Inc). Mexican FDI and the 2026 USMCA joint review from press coverage, not a primary source - re-check before quoting."

@@ -391,9 +391,15 @@ def test_a_watched_pair_is_read_from_prices_not_typed():
         assert ">Watching</h2>" in page
         sec = _section(page, ">Watching</h2>")
         assert 'data-label="Now">' in sec and "%" in sec
-        for slot in ("Thesis", "Measure", "Costs", "Breaks if"):
+        for slot in ("Thesis", "Breaks if"):
             assert f"<dt>{slot}</dt>" in sec, f"a watched pair needs a {slot} slot"
-        assert "<dt>Catalyst</dt>" not in sec, "no entry, so nothing to have a catalyst for"
+        for slot in ("Catalyst", "Measure", "Costs"):
+            assert f"<dt>{slot}</dt>" not in sec, f"{slot} has no slot on a watched pair"
+        # A list thesis renders as points, at most three: Charlie's cap, 20/09/2026.
+        for w in src["watching"]:
+            if not isinstance(w["thesis"], str):
+                assert 1 <= len(w["thesis"]) <= 3, "a watched pair's thesis is at most three points"
+                assert sec.count("<li>") >= len(w["thesis"])
 
 
 def test_a_watch_reading_survives_a_reload_and_a_nan_does_not():

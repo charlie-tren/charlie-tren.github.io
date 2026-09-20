@@ -146,6 +146,9 @@
             text-transform: uppercase; color: var(--faint); }
   .why dd { margin: 0; font: 400 12.5px/1.6 ui-sans-serif, system-ui, sans-serif;
             color: var(--soft); min-height: 1.6em; }
+  .why .pts { margin: 0; padding-left: 1.1em; }
+  .why .pts li { margin: 0 0 .3em; }
+  .why .pts li:last-child { margin-bottom: 0; }
 
   .scroller { overflow-x: auto; }
 
@@ -425,9 +428,9 @@
         <td class="n ctl"><button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
       </tr>
       <tr class="why"><td colspan="8"><dl>
-        <dt>Thesis</dt><dd>{{ w.thesis }}</dd>
-        <dt>Measure</dt><dd>{{ w.measure }}</dd>
-        <dt>Costs</dt><dd>{{ w.costs }}</dd>
+        {# Up to three points, Charlie's call 20/09/2026: the measure and the costs
+           live in here rather than in slots of their own. #}
+        <dt>Thesis</dt><dd>{% if w.thesis is string %}{{ w.thesis }}{% else %}<ul class="pts">{% for t in w.thesis %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}</dd>
         <dt>Breaks if</dt><dd>{{ w.breaks }}</dd>
       </dl></td></tr>
     </tbody>
