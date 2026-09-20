@@ -45,6 +45,8 @@ def load_prices():
                 out[k] = v
             elif v.get("bars"):
                 out[k] = {"bars": v["bars"]}
+            elif k.startswith("watch:") and isinstance(v.get("value"), (int, float))                     and math.isfinite(v["value"]):
+                out[k] = v                       # a watched pair's reading, not a price
         return out
     return {}
 
@@ -259,6 +261,47 @@ def shut_row(p):
     return row
 
 
+def ratio_now(w, cache):
+    """Where a watched pair's price ratio sits against its own mean, in percent.
+
+    log(long / short) over the last `window_days` sessions, minus its mean over the
+    same window. Negative means the long leg has lagged the short leg. BUILT, never
+    typed: the number moves every session, and the whole point of publishing a
+    trigger is that the reading beside it is current.
+
+    Cached under "watch:<long>/<short>" with the session it was taken from, so a
+    failed fetch republishes the last reading with its date rather than a blank.
+    """
+    import math
+    import yfinance as yf
+    key = f"watch:{w['long']['symbol']}/{w['short']['symbol']}"
+    try:
+        n = int(w["window_days"])
+        a = yf.Ticker(w["long"]["symbol"]).history(period="2y", auto_adjust=True)["Close"]
+        b = yf.Ticker(w["short"]["symbol"]).history(period="2y", auto_adjust=True)["Close"]
+        both = a.to_frame("a").join(b.to_frame("b"), how="inner").dropna().tail(n)
+        if len(both) < n * 0.9:
+            raise ValueError(f"only {len(both)} sessions for a {n}-session window")
+        ratio = (both["a"] / both["b"]).map(math.log)
+        value = round(float(ratio.iloc[-1] - ratio.mean()) * 100, 2)
+        if not math.isfinite(value):
+            raise ValueError(f"ratio is {value!r}")
+        cache[key] = {"value": value, "asof": str(both.index[-1].date())}
+    except Exception as exc:                           # noqa: BLE001
+        print(f"  ! {key}: {type(exc).__name__}: {exc}"[:120])
+    return cache.get(key)
+
+
+def watch_row(w, reading):
+    """A watched pair, with the live reading beside the trigger it is measured against."""
+    row = dict(w)
+    row["now_pct"] = reading["value"]
+    row["asof"] = reading["asof"]
+    # Armed when the reading is through the trigger, on the trigger's own side.
+    row["armed"] = (reading["value"] <= w["trigger_pct"]) if w["trigger_pct"] < 0                    else (reading["value"] >= w["trigger_pct"])
+    return row
+
+
 def _days(a: str, b: str) -> int:
     from datetime import date
     return (date.fromisoformat(b) - date.fromisoformat(a)).days
@@ -320,6 +363,16 @@ def main():
     shut = sorted((shut_row(c) for c in closed),
                   key=lambda c: c["exit_date"], reverse=True)
 
+    # A watched pair is not a position: no entry, no stop, no R. What it carries is
+    # a trigger written down in advance and a reading against it, and the reading is
+    # subject to the same guard as a price - stale with its date beats blank.
+    watch = []
+    for w in data.get("watching") or []:
+        reading = ratio_now(w, cache)
+        if not reading:
+            sys.exit(f"ERROR: no reading at all for {w['name']}. index.html left untouched.")
+        watch.append(watch_row(w, reading))
+
     def px(v, dp, ccy=""):
         """A letter code needs a space before the digits; a glyph does not. CHF1.10
         reads as a typo, CHF 1.10 reads as a price."""
@@ -360,11 +413,12 @@ def main():
     html = env.get_template(TEMPLATE.name).render(
         rows=rows,
         closed=shut,
+        watching=watch,
         built=datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M"),
     )
     OUT.write_text(html, encoding="utf-8", newline="\n")
     PRICES.write_text(json.dumps(cache, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8", newline="\n")
-    print(f"  wrote {OUT.relative_to(HERE.parent)} - {len(rows)} open, {len(shut)} closed")
+    print(f"  wrote {OUT.relative_to(HERE.parent)} - {len(rows)} open, {len(shut)} closed, {len(watch)} watched")
 
 
 if __name__ == "__main__":

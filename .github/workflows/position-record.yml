@@ -1,0 +1,54 @@
+name: Refresh position record
+
+# The page states a live price and a distance to the stop for every open position,
+# and a stop-out closes itself off the daily bars - but only when build.py RUNS.
+# Until 20/09/2026 nothing ran it: USD/MXN traded through its stop on 14/09 and
+# sat in Open for six days because the last build was a hand-run on 11/09.
+#
+# Daily, not weekdays: FX and index CFDs trade Sunday night AEST, so a Monday bar
+# can hold a stop-out a weekday-only job would report a day late. 21:58 UTC is
+# after the US close either side of daylight saving; odd minute on purpose,
+# GitHub's scheduler drops on-the-hour jobs. Charlie reads this page at 07:55
+# AEST (21:55 UTC), so the cron alone lands after him on a normal night - the
+# heartbeat dispatch below is what gets there first.
+on:
+  schedule:
+    - cron: "58 21 * * *"
+  workflow_dispatch:
+  # The heartbeat Worker (site-stats/heartbeat) already fires `heartbeat-prices`
+  # at this repo on weekdays for the research page. Listening to the same event
+  # costs no Worker change and puts both price pages in the same slot.
+  repository_dispatch:
+    types: [heartbeat-prices]
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - run: pip install --quiet yfinance jinja2 pytest
+
+      # The stop-out derivation, the R arithmetic and the missing-price guard are
+      # what keep this page honest; they run before any quote is fetched.
+      - run: python -m pytest position-record -q
+
+      # build.py exits non-zero if an open position has no price at all, old or new,
+      # and leaves index.html untouched rather than publishing a blank distance.
+      - run: python position-record/build.py
+
+      - name: Commit if anything moved
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add position-record/index.html position-record/prices.json
+          git diff --cached --quiet && echo "no change" && exit 0
+          git commit -m "Position record: $(date -u +%Y-%m-%d)"
+          git pull --rebase --autostash
+          git push
