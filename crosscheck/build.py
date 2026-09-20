@@ -403,12 +403,15 @@ def read_history(path: Path = HISTORY) -> dict:
 
 def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
     """Each name's price move from the first day it was recorded with a price to the
-    latest day it has one, plus the components it carried on that first day.
+    latest day it has one, plus the components it carried on that first day, plus the
+    whole path between.
 
-    Returns ({ticker: {"move": pct, "from": date, "h0": [s, r, e, v]}}, earliest date,
-    number of distinct dates). The move is the price move, not a return - no
-    dividends, no position - and it is only ever between two prices in the same
-    currency; a name whose currency changed between the two days gets no move.
+    Returns ({ticker: {"move": pct, "from": date, "h0": [s, r, e, v], "i0": index of
+    the first priced date, "mvs": move at every recorded date, null where there is no
+    price}}, earliest date, number of distinct dates). The move is the price move, not
+    a return - no dividends, no position - and it is only ever between two prices in
+    the same currency; a price in another currency is a gap in the path, and a name
+    whose currency changed between first and last gets no move at all.
 
     This is the forward test the page could not run on day one: what the price did
     AFTER the score was struck, not what it had done before. It is honest about its
@@ -417,21 +420,43 @@ def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
     """
     out: dict = {}
     dates: set = set()
-    for t, lines in history.items():
-        priced = [r for r in lines if r.get("p") is not None]
+    for lines in history.values():
         for r in lines:
             dates.add(r["d"])
+    order = sorted(dates)
+    index = {d: i for i, d in enumerate(order)}
+    for t, lines in history.items():
+        priced = [r for r in lines if r.get("p")]
         if len(priced) < 2:
             continue
         first, last = priced[0], priced[-1]
-        if first["d"] == last["d"] or first.get("c") != last.get("c") or not first["p"]:
+        if first["d"] == last["d"] or first.get("c") != last.get("c"):
             continue
+        mvs: list = [None] * len(order)
+        for r in priced:
+            if r.get("c") == first.get("c"):
+                mvs[index[r["d"]]] = round((r["p"] / first["p"] - 1) * 100, 1)
         out[t] = {
             "move": round((last["p"] / first["p"] - 1) * 100, 2),
             "from": first["d"],
             "h0": [first.get("s"), first.get("r"), first.get("e"), first.get("v")],
+            "i0": index[first["d"]],
+            "mvs": mvs,
         }
-    return out, (min(dates) if dates else None), len(dates)
+    return out, (order[0] if order else None), len(order)
+
+
+def history_dates(history: dict) -> tuple[list, str | None]:
+    """Every recorded date in order, and the last one that was reconstructed rather
+    than observed ("b": 1, written by backfill.py), so the chart can shade it."""
+    dates: set = set()
+    back: set = set()
+    for lines in history.values():
+        for r in lines:
+            dates.add(r["d"])
+            if r.get("b"):
+                back.add(r["d"])
+    return sorted(dates), (max(back) if back else None)
 
 
 def corners(rows: list[dict]) -> dict:
@@ -476,11 +501,15 @@ def main() -> int:
     print(f"{HISTORY.name}: {recorded} lines for {today}"
           + ("" if recorded else " (already recorded)"))
     # Read back AFTER today's line is in, so today's price is the latest leg.
-    moves, since, n_days = moves_since_first(read_history())
+    history = read_history()
+    moves, since, n_days = moves_since_first(history)
+    dates, backfilled_until = history_dates(history)
     for r in rows:
         m = moves.get(r["ticker"])
         r["move"] = m["move"] if m else None
         r["h0"] = m["h0"] if m else None
+        r["i0"] = m["i0"] if m else None
+        r["mvs"] = m["mvs"] if m else None
     n_moves = sum(1 for r in rows if r["move"] is not None)
     print(f"moves: {n_moves} names since {since}, {n_days} days")
 
@@ -496,6 +525,8 @@ def main() -> int:
         corners=corners(rows),
         since=since,
         n_days=n_days,
+        dates_json=json.dumps(dates),
+        backfilled_until=backfilled_until,
         has_moves=n_moves >= 100,
         built=datetime.now(timezone.utc).strftime("%d %B %Y"),
     )
