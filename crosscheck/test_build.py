@@ -500,3 +500,42 @@ class TestHistory:
         build.append_history(self.rows(), {}, "2026-09-12", path)
         build.append_history(self.rows(), {}, "2026-09-13", path)
         assert len(path.read_text().splitlines()) == 4
+
+
+class TestBloombergIngest:
+    """The quarterly cohorts are built by the same join and rank as the page, from an
+    estimate history and a price history, one line per name per cohort date."""
+
+    def _ingest(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("ingest", Path(__file__).parent / "bbg" / "ingest.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_a_cohort_line_carries_three_legs_and_the_price_on_the_day(self):
+        ing = self._ingest()
+        t1, t2, t3 = ing.SAMPLE["tickers"][:3]
+        q = ing.QUARTERS
+        eps = {t1: {q[0]: 1.0, q[1]: 1.2}, t2: {q[0]: 1.0, q[1]: 0.9}, t3: {q[0]: 1.0, q[1]: 1.0}}
+        prices = {t1: {q[0]: 10.0, q[1]: 10.0}, t2: {q[0]: 10.0, q[1]: 12.0}, t3: {q[0]: 10.0, q[1]: 10.0}}
+        names = [{"ticker": t, "name": t, "sector": "Technology", "market": "US", "composite": c, "applicable": 6}
+                 for t, c in ((t1, 10), (t2, 50), (t3, 90))]
+        value = {t1: 20.0, t2: 6.0, t3: 10.0}
+        lines = [json.loads(l) for l in ing.cohort_lines(eps, prices, names, value)]
+        first = [l for l in lines if l["d"] == q[1]]
+        assert len(first) == 3
+        best = {l["t"]: l for l in first}[t1]
+        # estimates up 20%, price flat, cleanest accounts, value twice the price: top on all
+        assert best["s"] == 1.0 and best["r"] == 1.0 and best["e"] == 1.0 and best["v"] == 1.0
+        assert best["p"] == 10.0 and best["c"] == "USD" and best["b"] == 1
+
+    def test_a_name_missing_the_prior_quarter_gets_no_line_that_date(self):
+        ing = self._ingest()
+        t1, t2 = ing.SAMPLE["tickers"][:2]
+        q = ing.QUARTERS
+        eps = {t1: {q[0]: 1.0, q[1]: 1.1}, t2: {q[1]: 1.1}}
+        prices = {t1: {q[0]: 10.0, q[1]: 11.0}, t2: {q[0]: 10.0, q[1]: 11.0}}
+        names = [{"ticker": t, "name": t, "sector": "Technology", "market": "US", "composite": 50, "applicable": 6} for t in (t1, t2)]
+        lines = [json.loads(l) for l in ing.cohort_lines(eps, prices, names, {})]
+        assert [l["t"] for l in lines if l["d"] == q[1]] == [t1]
