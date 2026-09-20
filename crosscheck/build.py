@@ -446,6 +446,35 @@ def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
     return out, (order[0] if order else None), len(order)
 
 
+def event_dates(history: dict) -> list:
+    """The dates a name can be SCORED on for the forward test: every reconstructed
+    date (weekly or quarterly, "b": 1) and the first observed one. Not every daily
+    date, because a cohort a day apart from the last is the same cohort again and
+    would drown the record in copies of itself."""
+    back: set = set()
+    seen: set = set()
+    for lines in history.values():
+        for r in lines:
+            seen.add(r["d"])
+            if r.get("b"):
+                back.add(r["d"])
+    observed = sorted(seen - back)
+    return sorted(back | ({observed[0]} if observed else set()))
+
+
+def events_for(lines: list, dates: list, ev_dates: list) -> list:
+    """[[date index, s, r, e, v], ...] for each event date on which this name has
+    components and a price - what the chart scores it on that day."""
+    index = {d: i for i, d in enumerate(dates)}
+    by_date = {r["d"]: r for r in lines}
+    out = []
+    for d in ev_dates:
+        r = by_date.get(d)
+        if r and r.get("p") and r.get("s") is not None:
+            out.append([index[d], r.get("s"), r.get("r"), r.get("e"), r.get("v")])
+    return out
+
+
 def history_dates(history: dict) -> tuple[list, str | None]:
     """Every recorded date in order, and the last one that was reconstructed rather
     than observed ("b": 1, written by backfill.py), so the chart can shade it."""
@@ -504,12 +533,14 @@ def main() -> int:
     history = read_history()
     moves, since, n_days = moves_since_first(history)
     dates, backfilled_until = history_dates(history)
+    ev_dates = event_dates(history)
     for r in rows:
         m = moves.get(r["ticker"])
         r["move"] = m["move"] if m else None
         r["h0"] = m["h0"] if m else None
         r["i0"] = m["i0"] if m else None
         r["mvs"] = m["mvs"] if m else None
+        r["ev"] = events_for(history.get(r["ticker"], []), dates, ev_dates) if m else None
     n_moves = sum(1 for r in rows if r["move"] is not None)
     print(f"moves: {n_moves} names since {since}, {n_days} days")
 

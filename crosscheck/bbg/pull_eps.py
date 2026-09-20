@@ -1,6 +1,7 @@
 """Pull a quarterly consensus-EPS history for the 199-name sample from Bloomberg.
 
-Runs on a machine with the Terminal logged in:   py -3.11 pull_eps.py
+Runs on a machine with the Terminal logged in:   PYTHONIOENCODING=utf-8 python pull_eps.py
+(blpapi from Bloomberg's own index plus xbbg, installed into Python 3.14 on 20/09/2026)
 Writes bbg_eps.csv beside this file (ticker, date, best_eps). Commit the CSV; the
 ingest step (ingest.py) turns it into history lines here, no Terminal needed.
 
@@ -44,17 +45,25 @@ def main() -> int:
     # Probe: one name, one date, so a bad override fails for one hit.
     probe = blp.bdh(tickers[:1], FIELD, "2026-06-30", "2026-06-30", Per="Q", **OVERRIDE)
     print("probe:\n", probe)
-    if probe is None or probe.empty:
+    if probe is None or len(probe) == 0:
         print("probe returned nothing: check the field and override on FLDS <GO> before spending 199 more")
         return 1
 
     df = blp.bdh(tickers, FIELD, START, END, Per="Q", Days="A", Fill="P", **OVERRIDE)
-    print(df.shape)
-    if isinstance(df.columns, pd.MultiIndex):
-        df.columns = [f"{t}__{f}" for t, f in df.columns]
-    long = df.reset_index().melt(id_vars=df.index.name or "index", var_name="col", value_name="best_eps")
-    long = long.rename(columns={long.columns[0]: "date"})
-    long["ticker"] = long["col"].str.split("__").str[0].map(back)
+    print(type(df))
+    # The return shape varies by install (bloomberg-data-pull skill, 11/09/2026): a
+    # Narwhals frame over a pyarrow table in long form here, a pandas MultiIndex
+    # elsewhere. Print, then branch.
+    try:
+        long = df.to_native().to_pandas()          # ticker, date, field, value
+        long = long.rename(columns={"value": "best_eps"})
+    except AttributeError:
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = [f"{t}__{f}" for t, f in df.columns]
+        long = df.reset_index().melt(id_vars=df.index.name or "index", var_name="col", value_name="best_eps")
+        long = long.rename(columns={long.columns[0]: "date"})
+        long["ticker"] = long["col"].str.split("__").str[0]
+    long["ticker"] = long["ticker"].map(back)
     long = long.dropna(subset=["best_eps", "ticker"])
     long["date"] = pd.to_datetime(long["date"]).dt.strftime("%Y-%m-%d")
     long[["ticker", "date", "best_eps"]].sort_values(["ticker", "date"]).to_csv(OUT, index=False)
