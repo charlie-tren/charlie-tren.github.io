@@ -64,7 +64,18 @@ def decide(watching, cache, open_titles):
 
 
 def gh(*args):
-    return subprocess.run(["gh", *args], check=True, capture_output=True, text=True).stdout
+    r = subprocess.run(["gh", *args], capture_output=True, text=True)
+    if r.returncode:
+        # gh's reason is on stderr; a bare CalledProcessError hid it on the first run.
+        sys.exit(f"gh {' '.join(args[:2])} failed: {r.stderr.strip() or r.stdout.strip()}")
+    return r.stdout
+
+
+def ensure_label():
+    """`gh issue create --label X` refuses a label that does not exist, and a fresh
+    repo has none. --force makes this idempotent."""
+    gh("label", "create", LABEL, "--force", "--color", "D93F0B",
+       "--description", "A watched pair on the Position Record is through its trigger")
 
 
 def open_issues():
@@ -76,6 +87,7 @@ def main(argv):
     data = json.loads(SOURCE.read_text(encoding="utf-8"))
     cache = json.loads(PRICES.read_text(encoding="utf-8"))
     watching = data.get("watching") or []
+    ensure_label()
     if "--test" in argv:
         # A real issue, assigned and then closed, so the email path is proven end to
         # end rather than assumed. The title says what it is.
@@ -85,15 +97,7 @@ def main(argv):
         gh("issue", "close", num, "--comment", "Test complete.")
         print(f"  test issue #{num} opened and closed")
         return
-    try:
-        current = open_issues()
-    except subprocess.CalledProcessError as exc:
-        # The label does not exist until the first issue carries it; gh treats an
-        # unknown label as an error rather than an empty list.
-        if "not found" in (exc.stderr or "").lower():
-            current = {}
-        else:
-            raise
+    current = open_issues()
     acts = decide(watching, cache, set(current))
     if not acts:
         print(f"  {len(watching)} watched, nothing to tell")
