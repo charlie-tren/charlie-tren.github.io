@@ -384,6 +384,56 @@ def append_history(rows: list[dict], prices: dict, date: str, path: Path = HISTO
     return written
 
 
+def read_history(path: Path = HISTORY) -> dict:
+    """{ticker: [line, ...]} in date order, from the daily record."""
+    out: dict = {}
+    if not path.exists():
+        return out
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            r = json.loads(line)
+            out.setdefault(r["t"], []).append(r)
+    for v in out.values():
+        v.sort(key=lambda r: r["d"])
+    return out
+
+
+def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
+    """Each name's price move from the first day it was recorded with a price to the
+    latest day it has one, plus the components it carried on that first day.
+
+    Returns ({ticker: {"move": pct, "from": date, "h0": [s, r, e, v]}}, earliest date,
+    number of distinct dates). The move is the price move, not a return - no
+    dividends, no position - and it is only ever between two prices in the same
+    currency; a name whose currency changed between the two days gets no move.
+
+    This is the forward test the page could not run on day one: what the price did
+    AFTER the score was struck, not what it had done before. It is honest about its
+    own window - the chart prints the date and the day count - because eight trading
+    days is not a result and ninety might be. Every build extends it by a day.
+    """
+    out: dict = {}
+    dates: set = set()
+    for t, lines in history.items():
+        priced = [r for r in lines if r.get("p") is not None]
+        for r in lines:
+            dates.add(r["d"])
+        if len(priced) < 2:
+            continue
+        first, last = priced[0], priced[-1]
+        if first["d"] == last["d"] or first.get("c") != last.get("c") or not first["p"]:
+            continue
+        out[t] = {
+            "move": round((last["p"] / first["p"] - 1) * 100, 2),
+            "from": first["d"],
+            "h0": [first.get("s"), first.get("r"), first.get("e"), first.get("v")],
+        }
+    return out, (min(dates) if dates else None), len(dates)
+
+
 def corners(rows: list[dict]) -> dict:
     """The four situations, counted. The page states these, so they are computed once."""
     top = sorted(rows, key=lambda r: -r["strain"])[: max(1, len(rows) // 4)]
@@ -425,6 +475,14 @@ def main() -> int:
     recorded = append_history(rows, prices, today)
     print(f"{HISTORY.name}: {recorded} lines for {today}"
           + ("" if recorded else " (already recorded)"))
+    # Read back AFTER today's line is in, so today's price is the latest leg.
+    moves, since, n_days = moves_since_first(read_history())
+    for r in rows:
+        m = moves.get(r["ticker"])
+        r["move"] = m["move"] if m else None
+        r["h0"] = m["h0"] if m else None
+    n_moves = sum(1 for r in rows if r["move"] is not None)
+    print(f"moves: {n_moves} names since {since}, {n_days} days")
 
     from jinja2 import Template
 
@@ -436,6 +494,9 @@ def main() -> int:
         n_dcf=sum(1 for r in rows if r["dcf"] is not None),
         has_dcf=has_dcf(rows),
         corners=corners(rows),
+        since=since,
+        n_days=n_days,
+        has_moves=n_moves >= 100,
         built=datetime.now(timezone.utc).strftime("%d %B %Y"),
     )
     OUT.write_text(html, encoding="utf-8")
