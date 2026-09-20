@@ -689,82 +689,93 @@
     var svg = document.getElementById("move");
     var d = dims(svg, 400, 260), M = { l: 46, r: 14, t: 24, b: 30 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
-    // The cohort scored on the first recorded date, so every line measures the same
-    // window. A name that entered later has its own Move in the table and no line.
-    var rows = pool().map(function (r) { return { r: r, s: score0(r) }; })
-      .filter(function (x) { return x.s !== null && x.r.i0 === 0 && x.r.mvs; })
-      .sort(function (a, b) { return a.s - b.s; });
-    var Q = 5, fifths = [];
-    for (var q = 0; q < Q; q++) fifths.push(rows.slice(Math.floor(q * rows.length / Q), Math.floor((q + 1) * rows.length / Q)));
-    // Median path per fifth, at every date the record has.
-    var series = fifths.map(function (f) {
-      return DATES.map(function (_, j) {
-        var v = f.map(function (x) { return x.r.mvs[j]; }).filter(function (m) { return m !== null; }).sort(function (a, b) { return a - b; });
-        return v.length ? v[Math.floor(v.length / 2)] : null;
-      });
+    // EVENT TIME: x is days since the name was scored, not the calendar, so a cohort
+    // scored last June and one scored in August lie on the same axis and a fifth is
+    // the median across every name that has reached that horizon. A name is in at
+    // horizon h only while its record extends that far - the last known move is
+    // carried across the gaps between quarterly points, never past the end.
+    var DAY = 86400000, T = DATES.map(function (x) { return Date.parse(x); });
+    var names = pool().map(function (r) {
+      if (!r.mvs || r.i0 === null || r.i0 === undefined) return null;
+      var s0 = score0(r); if (s0 === null) return null;
+      var pts = [];
+      r.mvs.forEach(function (m, j) { if (m !== null && j >= r.i0) pts.push([(T[j] - T[r.i0]) / DAY, m]); });
+      return pts.length > 1 ? { r: r, s: s0, c: r.i0, pts: pts, last: pts[pts.length - 1][0] } : null;
+    }).filter(Boolean);
+    // Fifths are struck WITHIN each cohort, so a name is compared with the names
+    // scored beside it on the same day.
+    var byCohort = {};
+    names.forEach(function (x) { (byCohort[x.c] = byCohort[x.c] || []).push(x); });
+    var cohorts = Object.keys(byCohort);
+    cohorts.forEach(function (c) {
+      var g = byCohort[c].sort(function (p, q) { return p.s - q.s; });
+      g.forEach(function (x, i) { x.q = Math.min(4, Math.floor(i * 5 / g.length)); });
+    });
+    var hmax = Math.max.apply(null, names.map(function (x) { return x.last; }));
+    var step = hmax > 240 ? 7 : hmax > 60 ? 3 : 1, H = [];
+    for (var h = 0; h <= hmax; h += step) H.push(h);
+    if (H[H.length - 1] !== hmax) H.push(hmax);
+    function at(x, h) {   // last known move at or before h, or null past the record
+      if (h > x.last + 0.5) return null;
+      var v = null;
+      for (var i = 0; i < x.pts.length && x.pts[i][0] <= h + 0.5; i++) v = x.pts[i][1];
+      return v;
+    }
+    var MIN_N = 40, series = [], counts = [];
+    H.forEach(function (h, k) {
+      var n = 0, meds = [];
+      for (var q = 0; q < 5; q++) {
+        var v = names.filter(function (x) { return x.q === q; }).map(function (x) { return at(x, h); })
+          .filter(function (m) { return m !== null; }).sort(function (p, r) { return p - r; });
+        n += v.length; meds.push(v.length ? v[Math.floor(v.length / 2)] : null);
+      }
+      counts.push(n); series.push(n >= MIN_N ? meds : [null, null, null, null, null]);
     });
     var all = [].concat.apply([], series).filter(function (v) { return v !== null; });
     var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max(0, Math.max.apply(null, all));
     var pad = Math.max(0.5, (hi - lo) * 0.15); lo -= pad; hi += pad;
-    var t0 = Date.parse(DATES[0]), t1 = Date.parse(DATES[DATES.length - 1]);
-    var X = function (j) { return M.l + (Date.parse(DATES[j]) - t0) / Math.max(1, t1 - t0) * pw; };
+    var X = function (h) { return M.l + h / Math.max(1, hmax) * pw; };
     var Y = function (v) { return M.t + (hi - v) / (hi - lo) * ph; };
     var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
-    // The reconstructed span, shaded and named, so five weeks of backfill never read
-    // as five weeks of observation.
-    var kb = BACKFILLED_UNTIL ? DATES.indexOf(BACKFILLED_UNTIL) : -1;
-    if (kb >= 0 && kb < DATES.length - 1) {
-      var xb = (X(kb) + X(kb + 1)) / 2;
-      parts.push('<rect class="recon" x="' + M.l + '" y="' + M.t + '" width="' + (xb - M.l).toFixed(1) + '" height="' + ph + '"/>');
-      parts.push('<text class="tk" x="' + (M.l + 6) + '" y="' + (M.t + ph - 6) + '">reconstructed weekly</text>');
-      parts.push('<text class="tk" x="' + (xb + 6) + '" y="' + (M.t + ph - 6) + '">daily record</text>');
-    }
-    // Gridlines at even divisions, the zero line solid.
-    var step = (hi - lo) > 16 ? 5 : (hi - lo) > 6 ? 2 : 1;
-    for (var g = Math.ceil(lo / step) * step; g <= hi; g += step) {
+    var gstep = (hi - lo) > 16 ? 5 : (hi - lo) > 6 ? 2 : 1;
+    for (var g = Math.ceil(lo / gstep) * gstep; g <= hi; g += gstep) {
       parts.push('<line class="' + (g === 0 ? "rowrule" : "guide") + '" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '"/>');
       parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g) + 4).toFixed(1) + '" text-anchor="end">' + (g > 0 ? "+" : "") + g + "%</text>");
     }
-    // Date ticks: every recorded date while they are sparse, thinned once the daily
-    // record makes them crowd - a label is drawn only if it clears the one before.
-    var lastX = -1e9;
-    DATES.forEach(function (dt, j) {
-      var x = X(j);
-      if (x - lastX < 56) return;
-      lastX = x;
-      parts.push('<text class="tk" x="' + x.toFixed(1) + '" y="' + (d.h - 12) + '" text-anchor="' + (j === DATES.length - 1 ? "end" : j === 0 ? "start" : "middle") + '">' + fmtDate(dt) + "</text>");
-    });
-    // The middle fifth drawn first and thin, the extremes last and on top.
+    // Day ticks at a round step that keeps labels apart.
+    var tstep = [7, 14, 30, 60, 90, 180].filter(function (t) { return X(t) - X(0) >= 52; })[0] || 180;
+    for (var t = 0; t <= hmax; t += tstep) {
+      parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (d.h - 12) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + t + "d</text>");
+    }
     [2, 1, 3, 0, 4].forEach(function (q) {
-      var pts = [];
-      series[q].forEach(function (v, j) { if (v !== null) pts.push(X(j).toFixed(1) + "," + Y(v).toFixed(1)); });
+      var pts = [], lastK = -1;
+      series.forEach(function (m, k) { if (m[q] !== null) { pts.push(X(H[k]).toFixed(1) + "," + Y(m[q]).toFixed(1)); lastK = k; } });
       if (pts.length > 1) parts.push('<polyline class="mline' + (q === 2 ? " mid" : "") + '" stroke="' + fifthColour(q) + '" points="' + pts.join(" ") + '"/>');
-      var lastJ = -1;
-      series[q].forEach(function (v, j) { if (v !== null) lastJ = j; });
-      if (lastJ >= 0) parts.push('<circle class="mdot" cx="' + X(lastJ).toFixed(1) + '" cy="' + Y(series[q][lastJ]).toFixed(1) + '" r="3.5" fill="' + fifthColour(q) + '"/>');
+      if (lastK >= 0) parts.push('<circle class="mdot" cx="' + X(H[lastK]).toFixed(1) + '" cy="' + Y(series[lastK][q]).toFixed(1) + '" r="3.5" fill="' + fifthColour(q) + '"/>');
     });
-    var rho = spearman(rows.map(function (x) { return [x.s, x.r.move]; }));
-    // The full caption runs past a phone's width; the short form keeps the window
-    // and the grouping, and the key beneath carries the rest.
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 8) + '">Median move since ' + fmtDate(DATES[0]) + (d.w < 520 ? ", by fifth" :
-               ", by fifth of the score that day" + (rho === null ? "" : " (rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " on " + rows.length + ")")) + "</text>");
+    var rho = spearman(names.map(function (x) { return [x.s, x.pts[x.pts.length - 1][1]]; }));
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 8) + '">Median move by fifth of the score when scored' + (d.w < 520 ? "" :
+               (rho === null ? "" : " (rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " on " + names.length + ")")) + "</text>");
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Days since scored</text>');
     parts.push('<line class="cursor" id="mcursor" x1="0" x2="0" y1="' + M.t + '" y2="' + (M.t + ph) + '" visibility="hidden"/>');
     svg.innerHTML = parts.join("");
-    document.getElementById("movekey").innerHTML = fifths.map(function (f, q) {
-      var last = null; series[q].forEach(function (v) { if (v !== null) last = v; });
+    var lastK = series.length - 1; while (lastK > 0 && series[lastK][0] === null) lastK--;
+    document.getElementById("movekey").innerHTML = [0, 1, 2, 3, 4].map(function (q) {
+      var v = series[lastK][q];
       return '<span class="ki"><i class="sw" style="background:' + fifthColour(q) + '"></i>' + FIFTH[q] +
-             (last === null ? "" : " <b>" + (last > 0 ? "+" : "") + last.toFixed(1) + "%</b>") + "</span>";
-    }).join("");
+             (v === null ? "" : " <b>" + (v > 0 ? "+" : "") + v.toFixed(1) + "%</b>") + "</span>";
+    }).join("") + '<span class="ki">' + names.length + " names in " + cohorts.length + " cohort" + (cohorts.length === 1 ? "" : "s") +
+      (BACKFILLED_UNTIL ? ", reconstructed before " + fmtDate(BACKFILLED_UNTIL === DATES[DATES.length - 1] ? BACKFILLED_UNTIL : DATES[DATES.indexOf(BACKFILLED_UNTIL) + 1]) : "") + "</span>";
     var cur = document.getElementById("mcursor");
     svg.onmousemove = function (ev) {
       var box = svg.getBoundingClientRect(), mx = ev.clientX - box.left;
       if (mx < M.l || mx > M.l + pw) { hideTip(); cur.setAttribute("visibility", "hidden"); return; }
-      var j = 0, best = 1e9;
-      DATES.forEach(function (_, k) { var dx = Math.abs(X(k) - mx); if (dx < best) { best = dx; j = k; } });
-      cur.setAttribute("x1", X(j)); cur.setAttribute("x2", X(j)); cur.setAttribute("visibility", "visible");
-      showTip("<b>" + fmtDate(DATES[j]) + "</b>" + (kb >= 0 && j <= kb ? " (reconstructed)" : "") +
-              '<span class="tl">' + series.map(function (sr, q) {
-                return FIFTH[q] + " " + (sr[j] === null ? "-" : (sr[j] > 0 ? "+" : "") + sr[j].toFixed(1) + "%");
+      var k = 0, best = 1e9;
+      H.forEach(function (h, i) { var dx = Math.abs(X(h) - mx); if (dx < best) { best = dx; k = i; } });
+      cur.setAttribute("x1", X(H[k])); cur.setAttribute("x2", X(H[k])); cur.setAttribute("visibility", "visible");
+      showTip("<b>" + H[k] + " days</b> after scoring, " + counts[k] + " names" +
+              '<span class="tl">' + series[k].map(function (v, q) {
+                return FIFTH[q] + " " + (v === null ? "-" : (v > 0 ? "+" : "") + v.toFixed(1) + "%");
               }).join("<br>") + "</span>", ev);
     };
     svg.onmouseleave = function () { hideTip(); cur.setAttribute("visibility", "hidden"); };
