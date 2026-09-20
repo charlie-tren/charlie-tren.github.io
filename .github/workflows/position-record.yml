@@ -15,6 +15,11 @@ on:
   schedule:
     - cron: "58 21 * * *"
   workflow_dispatch:
+    inputs:
+      alert_test:
+        description: "Open and close a test issue to prove the trigger email arrives"
+        type: boolean
+        default: false
   # The heartbeat Worker (site-stats/heartbeat) already fires `heartbeat-prices`
   # at this repo on weekdays for the research page. Listening to the same event
   # costs no Worker change and puts both price pages in the same slot.
@@ -27,6 +32,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: write
+      issues: write          # alert.py opens an issue when a watched pair triggers
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -42,6 +48,13 @@ jobs:
       # build.py exits non-zero if an open position has no price at all, old or new,
       # and leaves index.html untouched rather than publishing a blank distance.
       - run: python position-record/build.py
+
+      # A watched pair through its trigger opens an issue assigned to Charlie, which
+      # GitHub emails him; it closes itself when the reading comes back. Runs off
+      # the reading build.py just cached, so page and alert cannot disagree.
+      - run: python position-record/alert.py ${{ inputs.alert_test && '--test' || '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Commit if anything moved
         run: |

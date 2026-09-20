@@ -420,3 +420,21 @@ def test_a_watch_reading_survives_a_reload_and_a_nan_does_not():
     finally:
         build.PRICES = orig
         tmp.unlink()
+
+
+def test_the_trigger_alert_opens_once_and_closes_itself():
+    """An issue is the alert. One per pair while it is through the trigger, none
+    while it is already open, and closed when the reading comes back."""
+    import alert
+    w = {"name": "A / B", "long": {"name": "A", "symbol": "A"}, "short": {"name": "B", "symbol": "B"},
+         "trigger_pct": -7.0, "exit_days": 90}
+    key = "watch:A/B"
+    t = alert.title(w)
+    assert [a[0] for a in alert.decide([w], {key: {"value": -7.2, "asof": "d"}}, set())] == ["open"]
+    assert alert.decide([w], {key: {"value": -7.2, "asof": "d"}}, {t}) == []
+    assert alert.decide([w], {key: {"value": -4.0, "asof": "d"}}, set()) == []
+    assert [a[0] for a in alert.decide([w], {key: {"value": -4.0, "asof": "d"}}, {t})] == ["close"]
+    assert alert.decide([w], {}, set()) == [], "no reading, no alert"
+    up = dict(w, trigger_pct=5.0)
+    assert [a[0] for a in alert.decide([up], {key: {"value": 5.1, "asof": "d"}}, set())] == ["open"]
+    assert "-7.2%" in alert.body(w, {"value": -7.2, "asof": "2026-09-18"})
