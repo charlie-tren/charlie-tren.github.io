@@ -685,95 +685,127 @@
   }
   var FIFTH = ["Lowest fifth", "Second", "Middle", "Fourth", "Highest fifth"];
   function fifthColour(q) { return markColour([0.05, 0.3, 0.5, 0.7, 0.95][q]); }
+  function scoreAt(ev) {   // the combined score from one event's components, at the current weights
+    var h = { pStrain: ev[1], pDrift: ev[2], pRev: ev[3], pDcf: ev[4] };
+    var num = 0, den = 0;
+    [[W.strain, h.pStrain], [W.drift, driftLeg(h)], [W.dcf, h.pDcf]].forEach(function (lw) {
+      if (lw[1] === null || lw[1] === undefined || lw[0] <= 0) return;
+      num += lw[0] * Math.log(Math.max(lw[1], P_FLOOR)); den += lw[0];
+    });
+    return den > 0 ? Math.exp(num / den) : null;
+  }
   function drawMove() {
     var svg = document.getElementById("move");
     var d = dims(svg, 400, 260), M = { l: 46, r: 14, t: 24, b: 30 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
-    // EVENT TIME: x is days since the name was scored, not the calendar, so a cohort
-    // scored last June and one scored in August lie on the same axis and a fifth is
-    // the median across every name that has reached that horizon. A name is in at
-    // horizon h only while its record extends that far - the last known move is
-    // carried across the gaps between quarterly points, never past the end.
+    // AN EVENT STUDY. Every (name, scoring date) is one event: the score as the
+    // components stood that day, then the price move from that day to each later
+    // date the record holds. Scoring dates are the reconstructed ones (quarterly to
+    // June 2026, weekly through August) and the first observed day, so a name
+    // scored in June 2025 is five events, one a quarter. Fifths are struck within
+    // each scoring date. At each horizon a fifth's line is the median over the
+    // events with an observation there - a quarterly event has one at 90 days, a
+    // weekly one at 7 - and a horizon with fewer than 40 events is not drawn.
     var DAY = 86400000, T = DATES.map(function (x) { return Date.parse(x); });
-    var names = pool().map(function (r) {
-      if (!r.mvs || r.i0 === null || r.i0 === undefined) return null;
-      var s0 = score0(r); if (s0 === null) return null;
-      var pts = [];
-      r.mvs.forEach(function (m, j) { if (m !== null && j >= r.i0) pts.push([(T[j] - T[r.i0]) / DAY, m]); });
-      return pts.length > 1 ? { r: r, s: s0, c: r.i0, pts: pts, last: pts[pts.length - 1][0] } : null;
-    }).filter(Boolean);
-    // Fifths are struck WITHIN each cohort, so a name is compared with the names
-    // scored beside it on the same day.
-    var byCohort = {};
-    names.forEach(function (x) { (byCohort[x.c] = byCohort[x.c] || []).push(x); });
-    var cohorts = Object.keys(byCohort);
-    cohorts.forEach(function (c) {
-      var g = byCohort[c].sort(function (p, q) { return p.s - q.s; });
-      g.forEach(function (x, i) { x.q = Math.min(4, Math.floor(i * 5 / g.length)); });
+    var events = [];
+    pool().forEach(function (r) {
+      if (!r.ev || !r.mvs) return;
+      r.ev.forEach(function (ev) {
+        var j = ev[0], s0 = scoreAt(ev); if (s0 === null || r.mvs[j] === null) return;
+        var base = 1 + r.mvs[j] / 100, obs = [];
+        for (var k = j + 1; k < r.mvs.length; k++) {
+          if (r.mvs[k] !== null) obs.push([(T[k] - T[j]) / DAY, ((1 + r.mvs[k] / 100) / base - 1) * 100]);
+        }
+        if (obs.length) events.push({ r: r, j: j, s: s0, obs: obs, last: obs[obs.length - 1] });
+      });
     });
-    var hmax = Math.max.apply(null, names.map(function (x) { return x.last; }));
-    var step = hmax > 240 ? 7 : hmax > 60 ? 3 : 1, H = [];
-    for (var h = 0; h <= hmax; h += step) H.push(h);
-    if (H[H.length - 1] !== hmax) H.push(hmax);
-    function at(x, h) {   // last known move at or before h, or null past the record
-      if (h > x.last + 0.5) return null;
-      var v = null;
-      for (var i = 0; i < x.pts.length && x.pts[i][0] <= h + 0.5; i++) v = x.pts[i][1];
-      return v;
-    }
+    var byDate = {};
+    events.forEach(function (e) { (byDate[e.j] = byDate[e.j] || []).push(e); });
+    Object.keys(byDate).forEach(function (j) {
+      var g = byDate[j].sort(function (p, q) { return p.s - q.s; });
+      g.forEach(function (e, i) { e.q = Math.min(4, Math.floor(i * 5 / g.length)); });
+    });
+    var hmax = Math.max.apply(null, events.map(function (e) { return e.last[0]; }));
+    // FIXED horizons, so every point pools whichever cohorts have reached it: weekly
+    // to six weeks, where the weekly and daily record is dense, then quarters, where
+    // a quarterly event has its observation. Reading every observed day instead
+    // drew each cohort's own path in turn and the line was the seams between them.
+    var H = [], TOL = {};
+    for (var h1 = 7; h1 <= Math.min(42, hmax); h1 += 7) { H.push(h1); TOL[h1] = 3; }
+    for (var h2 = 90; h2 <= hmax + 12; h2 += 90) { H.push(h2); TOL[h2] = 12; }
+    var step = 7;
     var MIN_N = 40, series = [], counts = [];
-    H.forEach(function (h, k) {
-      var n = 0, meds = [];
+    H.forEach(function (h) {
+      var n = 0, meds = [], tol = TOL[h];
       for (var q = 0; q < 5; q++) {
-        var v = names.filter(function (x) { return x.q === q; }).map(function (x) { return at(x, h); })
-          .filter(function (m) { return m !== null; }).sort(function (p, r) { return p - r; });
+        var v = [];
+        events.forEach(function (e) {
+          if (e.q !== q) return;
+          var bestI = -1, bestD = 1e9;
+          for (var i = 0; i < e.obs.length; i++) { var dd = Math.abs(e.obs[i][0] - h); if (dd <= tol && dd < bestD) { bestD = dd; bestI = i; } }
+          if (bestI >= 0) v.push(e.obs[bestI][1]);
+        });
+        v.sort(function (p, r) { return p - r; });
         n += v.length; meds.push(v.length ? v[Math.floor(v.length / 2)] : null);
       }
       counts.push(n); series.push(n >= MIN_N ? meds : [null, null, null, null, null]);
     });
     var all = [].concat.apply([], series).filter(function (v) { return v !== null; });
+    if (!all.length) { svg.innerHTML = ""; return; }
     var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max(0, Math.max.apply(null, all));
     var pad = Math.max(0.5, (hi - lo) * 0.15); lo -= pad; hi += pad;
     var X = function (h) { return M.l + h / Math.max(1, hmax) * pw; };
     var Y = function (v) { return M.t + (hi - v) / (hi - lo) * ph; };
     var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
-    var gstep = (hi - lo) > 16 ? 5 : (hi - lo) > 6 ? 2 : 1;
+    var gstep = (hi - lo) > 40 ? 10 : (hi - lo) > 16 ? 5 : (hi - lo) > 6 ? 2 : 1;
     for (var g = Math.ceil(lo / gstep) * gstep; g <= hi; g += gstep) {
       parts.push('<line class="' + (g === 0 ? "rowrule" : "guide") + '" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '"/>');
       parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g) + 4).toFixed(1) + '" text-anchor="end">' + (g > 0 ? "+" : "") + g + "%</text>");
     }
-    // Day ticks at a round step that keeps labels apart.
     var tstep = [7, 14, 30, 60, 90, 180].filter(function (t) { return X(t) - X(0) >= 52; })[0] || 180;
     for (var t = 0; t <= hmax; t += tstep) {
       parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (d.h - 12) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + t + "d</text>");
     }
+    // Lines join the drawn horizons; dots mark each one, because between a 90-day
+    // observation and a 180-day one nothing was measured.
     [2, 1, 3, 0, 4].forEach(function (q) {
       var pts = [], lastK = -1;
       series.forEach(function (m, k) { if (m[q] !== null) { pts.push(X(H[k]).toFixed(1) + "," + Y(m[q]).toFixed(1)); lastK = k; } });
       if (pts.length > 1) parts.push('<polyline class="mline' + (q === 2 ? " mid" : "") + '" stroke="' + fifthColour(q) + '" points="' + pts.join(" ") + '"/>');
-      if (lastK >= 0) parts.push('<circle class="mdot" cx="' + X(H[lastK]).toFixed(1) + '" cy="' + Y(series[lastK][q]).toFixed(1) + '" r="3.5" fill="' + fifthColour(q) + '"/>');
+      if (step > 1) series.forEach(function (m, k) { if (m[q] !== null) parts.push('<circle class="mdot" cx="' + X(H[k]).toFixed(1) + '" cy="' + Y(m[q]).toFixed(1) + '" r="3" fill="' + fifthColour(q) + '"/>'); });
+      else if (lastK >= 0) parts.push('<circle class="mdot" cx="' + X(H[lastK]).toFixed(1) + '" cy="' + Y(series[lastK][q]).toFixed(1) + '" r="3.5" fill="' + fifthColour(q) + '"/>');
     });
-    var rho = spearman(names.map(function (x) { return [x.s, x.pts[x.pts.length - 1][1]]; }));
+    // Rho at the longest horizon most events reach, so it is one horizon and not a
+    // mix of a week and a year.
+    // The headline horizon is 90 days - the first one every quarterly cohort reaches,
+    // so it pools the most events at a length that means something - falling back to
+    // the longest horizon with enough events while the record is shorter than that.
+    var bestK = -1;
+    counts.forEach(function (n, k) { if (H[k] === 90 && n >= MIN_N) bestK = k; });
+    if (bestK < 0) counts.forEach(function (n, k) { if (n >= MIN_N) bestK = k; });
+    var pairs = [], tolB = TOL[H[bestK]];
+    events.forEach(function (e) { for (var i = 0; i < e.obs.length; i++) if (Math.abs(e.obs[i][0] - H[bestK]) <= tolB) { pairs.push([e.s, e.obs[i][1]]); break; } });
+    var rho = spearman(pairs);
     parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 8) + '">Median move by fifth of the score when scored' + (d.w < 520 ? "" :
-               (rho === null ? "" : " (rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " on " + names.length + ")")) + "</text>");
+               (rho === null ? "" : " (rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " at " + H[bestK] + " days, " + pairs.length + " events)")) + "</text>");
     parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Days since scored</text>');
     parts.push('<line class="cursor" id="mcursor" x1="0" x2="0" y1="' + M.t + '" y2="' + (M.t + ph) + '" visibility="hidden"/>');
     svg.innerHTML = parts.join("");
-    var lastK = series.length - 1; while (lastK > 0 && series[lastK][0] === null) lastK--;
+    var nNames = {}; events.forEach(function (e) { nNames[e.r.ticker] = 1; });
     document.getElementById("movekey").innerHTML = [0, 1, 2, 3, 4].map(function (q) {
-      var v = series[lastK][q];
+      var v = series[bestK][q];
       return '<span class="ki"><i class="sw" style="background:' + fifthColour(q) + '"></i>' + FIFTH[q] +
              (v === null ? "" : " <b>" + (v > 0 ? "+" : "") + v.toFixed(1) + "%</b>") + "</span>";
-    }).join("") + '<span class="ki">' + names.length + " names in " + cohorts.length + " cohort" + (cohorts.length === 1 ? "" : "s") +
-      (BACKFILLED_UNTIL ? ", reconstructed before " + fmtDate(BACKFILLED_UNTIL === DATES[DATES.length - 1] ? BACKFILLED_UNTIL : DATES[DATES.indexOf(BACKFILLED_UNTIL) + 1]) : "") + "</span>";
+    }).join("") + '<span class="ki">' + events.length + " events over " + Object.keys(nNames).length + " names, scored on " + Object.keys(byDate).length + " dates" +
+      (BACKFILLED_UNTIL ? ", reconstructed before " + fmtDate(DATES[Math.min(DATES.length - 1, DATES.indexOf(BACKFILLED_UNTIL) + 1)]) : "") + "</span>";
     var cur = document.getElementById("mcursor");
     svg.onmousemove = function (ev) {
       var box = svg.getBoundingClientRect(), mx = ev.clientX - box.left;
       if (mx < M.l || mx > M.l + pw) { hideTip(); cur.setAttribute("visibility", "hidden"); return; }
       var k = 0, best = 1e9;
-      H.forEach(function (h, i) { var dx = Math.abs(X(h) - mx); if (dx < best) { best = dx; k = i; } });
+      H.forEach(function (h, i) { if (counts[i] < MIN_N) return; var dx = Math.abs(X(h) - mx); if (dx < best) { best = dx; k = i; } });
       cur.setAttribute("x1", X(H[k])); cur.setAttribute("x2", X(H[k])); cur.setAttribute("visibility", "visible");
-      showTip("<b>" + H[k] + " days</b> after scoring, " + counts[k] + " names" +
+      showTip("<b>" + H[k] + " days</b> after scoring, " + counts[k] + " events" +
               '<span class="tl">' + series[k].map(function (v, q) {
                 return FIFTH[q] + " " + (v === null ? "-" : (v > 0 ? "+" : "") + v.toFixed(1) + "%");
               }).join("<br>") + "</span>", ev);

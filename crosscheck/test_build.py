@@ -539,3 +539,23 @@ class TestBloombergIngest:
         names = [{"ticker": t, "name": t, "sector": "Technology", "market": "US", "composite": 50, "applicable": 6} for t in (t1, t2)]
         lines = [json.loads(l) for l in ing.cohort_lines(eps, prices, names, {})]
         assert [l["t"] for l in lines if l["d"] == q[1]] == [t1]
+
+
+class TestEvents:
+    def test_event_dates_are_the_reconstructed_ones_plus_the_first_observed(self):
+        h = {"KO": [
+            {"d": "2025-06-30", "t": "KO", "b": 1, "p": 1, "s": .5},
+            {"d": "2026-08-09", "t": "KO", "b": 1, "p": 1, "s": .5},
+            {"d": "2026-09-12", "t": "KO", "p": 1, "s": .5},
+            {"d": "2026-09-13", "t": "KO", "p": 1, "s": .5},
+        ]}
+        assert build.event_dates(h) == ["2025-06-30", "2026-08-09", "2026-09-12"]
+
+    def test_events_carry_the_components_on_each_event_date_the_name_has_a_price(self):
+        dates = ["2025-06-30", "2026-08-09", "2026-09-12"]
+        lines = [
+            {"d": "2025-06-30", "t": "KO", "p": 10, "s": .1, "r": .2, "e": .3, "v": .4},
+            {"d": "2026-08-09", "t": "KO", "p": None, "s": .5, "r": .5, "e": .5, "v": .5},
+            {"d": "2026-09-12", "t": "KO", "p": 12, "s": .9, "r": .8, "e": None, "v": .7},
+        ]
+        assert build.events_for(lines, dates, dates) == [[0, .1, .2, .3, .4], [2, .9, .8, None, .7]]
