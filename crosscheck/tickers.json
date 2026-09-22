@@ -1,7 +1,7 @@
 {
  "site": "Crosscheck",
  "url": "https://charlietrenorden.com/crosscheck/",
- "as_of": "2026-09-21",
+ "as_of": "2026-09-22",
  "tickers": [
   "A",
   "A2M.AX",
@@ -82,7 +82,6 @@
   "BIIB",
   "BKNG",
   "BKR",
-  "BLDR",
   "BMY",
   "BNY",
   "BOQ.AX",
@@ -525,7 +524,6 @@
   "SYK",
   "SYY",
   "T",
-  "TAP",
   "TCL.AX",
   "TDG",
   "TDY",
