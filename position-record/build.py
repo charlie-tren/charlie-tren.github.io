@@ -261,6 +261,33 @@ def shut_row(p):
     return row
 
 
+def crack_now(w, cache):
+    """A refining crack in dollars a barrel: product x barrels, less the crude.
+
+    A LEVEL, not a ratio against its own mean, because a crack has a meaning of its
+    own - $105 a barrel says something a reader can check against the $25 the last
+    decade averaged, where "+2.1% vs its mean" says nothing. Its row is waiting on a
+    headline rather than a level, so the number is context and never a trigger.
+    """
+    import math
+    import yfinance as yf
+    f = w["formula"]
+    key = f"watch:{f['product']}-{f['crude']}"
+    try:
+        prod = yf.Ticker(f["product"]).history(period="6mo", auto_adjust=False)["Close"]
+        crude = yf.Ticker(f["crude"]).history(period="6mo", auto_adjust=False)["Close"]
+        both = prod.to_frame("p").join(crude.to_frame("c"), how="inner").dropna()
+        if both.empty:
+            raise ValueError("no overlapping sessions")
+        value = round(float(both["p"].iloc[-1] * f["barrels"] - both["c"].iloc[-1]), 1)
+        if not math.isfinite(value):
+            raise ValueError(f"crack is {value!r}")
+        cache[key] = {"value": value, "asof": str(both.index[-1].date())}
+    except Exception as exc:                           # noqa: BLE001
+        print(f"  ! {key}: {type(exc).__name__}: {exc}"[:120])
+    return cache.get(key)
+
+
 def ratio_now(w, cache):
     """Where a watched pair's price ratio sits against its own mean, in percent.
 
@@ -293,10 +320,22 @@ def ratio_now(w, cache):
 
 
 def watch_row(w, reading):
-    """A watched pair, with the live reading beside the trigger it is measured against."""
+    """A watched item, with the live reading beside whatever it is waiting for.
+
+    Two kinds. A PAIR carries `trigger_pct`, a level its ratio is measured against,
+    and arms itself when the reading goes through it. An EVENT carries
+    `trigger_event`, a sentence, and can never arm: no number it reads decides it,
+    so a reading beside it is context and the alert must stay silent. Writing that
+    as `armed=False` rather than leaving the key off keeps every consumer - the
+    page, the alert - on one shape.
+    """
     row = dict(w)
     row["now_pct"] = reading["value"]
     row["asof"] = reading["asof"]
+    row["is_event"] = bool(w.get("trigger_event"))
+    if row["is_event"]:
+        row["armed"] = False
+        return row
     # Armed when the reading is through the trigger, on the trigger's own side.
     row["armed"] = (reading["value"] <= w["trigger_pct"]) if w["trigger_pct"] < 0                    else (reading["value"] >= w["trigger_pct"])
     return row
@@ -368,7 +407,7 @@ def main():
     # subject to the same guard as a price - stale with its date beats blank.
     watch = []
     for w in data.get("watching") or []:
-        reading = ratio_now(w, cache)
+        reading = crack_now(w, cache) if w.get("reading") == "level" else ratio_now(w, cache)
         if not reading:
             sys.exit(f"ERROR: no reading at all for {w['name']}. index.html left untouched.")
         watch.append(watch_row(w, reading))
