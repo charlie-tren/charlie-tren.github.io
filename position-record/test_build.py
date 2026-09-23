@@ -438,3 +438,44 @@ def test_the_trigger_alert_opens_once_and_closes_itself():
     up = dict(w, trigger_pct=5.0)
     assert [a[0] for a in alert.decide([up], {key: {"value": 5.1, "asof": "d"}}, set())] == ["open"]
     assert "-7.2%" in alert.body(w, {"value": -7.2, "asof": "2026-09-18"})
+
+
+def test_an_event_row_waits_on_a_headline_and_never_arms():
+    """A trigger written as a sentence has no number that can fire it. The row shows
+    its condition and a level for context, takes no alert colour, and opens no issue."""
+    import build, alert
+    w = {"name": "Crack", "kind": "Refining spread",
+         "long": {"name": "A", "symbol": "A"}, "short": {"name": "B", "symbol": "B"},
+         "reading": "level", "unit": "$/bbl",
+         "trigger_event": "A ceasefire, or a refinery restart", "exit_days": 60}
+    row = build.watch_row(w, {"value": 104.6, "asof": "2026-09-23"})
+    assert row["is_event"] is True
+    assert row["armed"] is False, "an event row can never arm"
+    assert row["now_pct"] == 104.6
+    # and the alert stays silent on it whatever the reading says
+    assert alert.decide([w], {"watch:A/B": {"value": 104.6, "asof": "d"}}, set()) == []
+    # a pair row is unchanged by the event branch
+    pair = {"name": "P", "long": {"name": "A", "symbol": "A"}, "short": {"name": "B", "symbol": "B"},
+            "trigger_pct": -7.0, "exit_days": 90}
+    assert build.watch_row(pair, {"value": -7.2, "asof": "d"})["armed"] is True
+    assert build.watch_row(pair, {"value": -7.2, "asof": "d"})["is_event"] is False
+
+
+def test_the_event_row_renders_its_sentence_not_a_percentage():
+    page = (HERE / "index.html").read_text(encoding="utf-8")
+    src = json.loads((HERE / "positions.json").read_text(encoding="utf-8"))
+    events = [w for w in src.get("watching") or [] if w.get("trigger_event")]
+    if not events:
+        return
+    sec = _section(page, ">Watching</h2>")
+    for w in events:
+        assert w["name"] in sec
+        # The condition is printed, in the panel - a sentence in the Trigger cell ran
+        # under the neighbouring column on desktop and over Exit on a phone.
+        assert w["trigger_event"] in sec, "the condition is the trigger; print it"
+        assert "<dt class=\"pm\">Waiting for</dt>" in sec
+        panel = sec.split('<tr class="why">')[-1]
+        assert w["trigger_event"] in panel, "the sentence belongs in the panel"
+        cells = sec[:sec.find('<tr class="why">')]
+        assert w["trigger_event"] not in cells, "and NOT in the table cell"
+    assert '>Headline</td>' in sec, "the table carries the short token"

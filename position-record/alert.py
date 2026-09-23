@@ -52,6 +52,11 @@ def decide(watching, cache, open_titles):
     nothing. Pure, so it is testable without a token."""
     acts = []
     for w in watching:
+        # An event row waits on a headline. Nothing it reads can fire it, so it must
+        # never open an issue - an alert that cannot be triggered by its own data
+        # would either never fire or fire on the wrong thing.
+        if w.get("trigger_event"):
+            continue
         reading = cache.get(f"watch:{w['long']['symbol']}/{w['short']['symbol']}")
         if not reading:
             continue

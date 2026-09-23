@@ -101,9 +101,37 @@
         "On forward contracts there is no holding cost. The round trip is the two spreads, about 0.4% for the pair, plus a roll if held past expiry."
       ],
       "breaks": "The gap stays narrow for three months. That is what happens when the world keeps buying American oil."
+    },
+    {
+      "name": "Diesel crack",
+      "kind": "Refining spread",
+      "long": {
+        "name": "WTI crude",
+        "symbol": "CL=F"
+      },
+      "short": {
+        "name": "Heating oil",
+        "symbol": "HO=F"
+      },
+      "reading": "level",
+      "formula": {
+        "kind": "crack",
+        "product": "HO=F",
+        "crude": "CL=F",
+        "barrels": 42
+      },
+      "unit": "$/bbl",
+      "trigger_event": "A ceasefire, or a refinery restart, or Russia lifting the export ban",
+      "exit_days": 60,
+      "thesis": [
+        "Diesel is the most dislocated thing on the board. The crack is $105 a barrel against a 2015-2024 average of $25, and it touched $118 on 16 September, the highest in the 26 years Yahoo carries.",
+        "It is there because supply left: the Iran conflict took about 3mb/d of refining offline, Russia extended its diesel export ban to the end of 2026, and US distillate stocks are the lowest for the time of year since 1951.",
+        "Nothing about the level says when it ends, which is why this one has no number on it. Every analogue turns on a headline, so the entry is a restart or a ceasefire, not a z-score."
+      ],
+      "breaks": "Refining capacity stays offline into the northern winter and the crack holds above $100."
     }
   ],
-  "_watching_note": "A watched pair is not a position. Trigger and exit are written down before the entry so the entry cannot be talked into later. Now is built by build.py from a year of daily closes and is never typed.",
+  "_watching_note": "A watched pair is not a position. Trigger and exit are written down before the entry so the entry cannot be talked into later. Now is built by build.py from a year of daily closes and is never typed. A row with trigger_event instead of trigger_pct is waiting on a headline rather than a level: it is never armed, and it raises no alert, because nothing it reads can fire it.",
   "_thesis_note": "thesis: why the PRICE moves this way, or why the carry is not handed back in the exchange rate. Describing the carry is not a thesis. Caps: thesis 24 words, catalyst 22, breaks 20. See the position-thesis skill. A watched pair's thesis may be a list of up to three sentences, and it carries the measure and the costs, which have no slot of their own.",
   "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it.",
   "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index.",

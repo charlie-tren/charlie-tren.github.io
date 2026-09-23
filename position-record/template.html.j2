@@ -422,14 +422,19 @@
         <td class="kind" data-label="Type">{{ w.kind }}</td>
         <td data-label="Long"><span class="dir long">{{ w.long.name }}</span></td>
         <td data-label="Short"><span class="dir short">{{ w.short.name }}</span></td>
-        <td class="n" data-label="Trigger">{{ '%+.0f'|format(w.trigger_pct) }}%</td>
-        <td class="n r {{ 'dn' if w.armed else '' }}" data-label="Now">{{ '%+.1f'|format(w.now_pct) }}%</td>
+        {# An event row waits on a headline, so its Trigger is a word and the condition
+           itself sits in the panel: a sentence in this cell ran under the Short column
+           on desktop and printed over Exit on a phone. One register per column, and
+           prose belongs where the other prose is. #}
+        <td class="n" data-label="Trigger">{% if w.is_event %}Headline{% else %}{{ '%+.0f'|format(w.trigger_pct) }}%{% endif %}</td>
+        <td class="n r {{ 'dn' if w.armed else '' }}" data-label="Now">{% if w.is_event %}${{ '%.0f'|format(w.now_pct) }}{% else %}{{ '%+.1f'|format(w.now_pct) }}%{% endif %}</td>
         <td class="n" data-label="Exit">{{ w.exit_days }} days</td>
         <td class="n ctl"><button class="thesis" type="button" aria-expanded="true">Thesis</button></td>
       </tr>
       <tr class="why"><td colspan="8"><dl>
         {# Up to three points, Charlie's call 20/09/2026: the measure and the costs
            live in here rather than in slots of their own. #}
+        {% if w.is_event %}<dt class="pm">Waiting for</dt><dd class="pm">{{ w.trigger_event }}</dd>{% endif %}
         <dt>Thesis</dt><dd>{% if w.thesis is string %}{{ w.thesis }}{% else %}<ul class="pts">{% for t in w.thesis %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}</dd>
         <dt>Breaks if</dt><dd>{{ w.breaks }}</dd>
       </dl></td></tr>
