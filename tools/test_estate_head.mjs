@@ -33,6 +33,7 @@ const SITES = {
   "Property Atlas":    "https://charlietrenorden.com/property-atlas/",
   "Bookmark":          "https://charlietrenorden.com/bookmark/",
   "Pendulum: Inequality": "https://charlietrenorden.com/inequality/",
+  "Pendulum: Polarisation": "https://charlietrenorden.com/polarisation/",
   "Equity Research":   "https://charlietrenorden.com/research/",
   "Position Record":   "https://charlietrenorden.com/position-record/",
   "Crowdwise":         "https://crowdwise.charlietrenorden.com/",
