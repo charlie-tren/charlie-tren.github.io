@@ -1,7 +1,7 @@
 {
  "site": "Crosscheck",
  "url": "https://charlietrenorden.com/crosscheck/",
- "as_of": "2026-09-27",
+ "as_of": "2026-09-28",
  "tickers": [
   "A",
   "A2M.AX",
@@ -292,6 +292,7 @@
   "IDXX",
   "IEX",
   "IFF",
+  "IFT.AX",
   "IGO.AX",
   "IMD.AX",
   "INCY",
@@ -435,7 +436,6 @@
   "PFE",
   "PFG",
   "PG",
-  "PGR",
   "PH",
   "PHM",
   "PKG",
@@ -505,7 +505,6 @@
   "SNA",
   "SNPS",
   "SO",
-  "SOL.AX",
   "SOLV",
   "SPGI",
   "SPK.AX",
