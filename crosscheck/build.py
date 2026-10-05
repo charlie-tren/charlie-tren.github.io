@@ -74,6 +74,55 @@ def parse_shortfall(js: str) -> list[dict]:
     return data["names"]
 
 
+# A source whose own as-of date is older than this is not ranked on. Every leg
+# refreshes at least weekly, so ten days is a missed run with room to spare. A stale
+# leg drops out of the score - averaged over the others, like any missing leg -
+# rather than ranking 608 companies on last month's prices.
+STALE_DAYS = 10
+
+# The DCF leg is ranked WITHIN SECTOR, like Shortfall's, from 05/10/2026. Ranked
+# across the universe it rewarded whole sectors the model happens to be generous
+# to: the top fifth of the page ran 38.7pp away from the universe's sector mix,
+# and 26.7pp with this and the coverage cut. A sector with fewer readings than this
+# is ranked against everyone, since a percentile among five companies says little.
+DCF_SECTOR_MIN = 10
+
+
+def _iso_date(text: str | None) -> str | None:
+    m = re.match(r"\d{4}-\d{2}-\d{2}$", text or "")
+    return m.group(0) if m else None
+
+
+def shortfall_asof(js: str) -> str | None:
+    """Shortfall's own as_of, from the same object `parse_shortfall` reads."""
+    start = js.index("{")
+    return _iso_date(json.loads(js[start:].rstrip().rstrip(";")).get("as_of"))
+
+
+def drift_asof(html: str) -> str | None:
+    """The date Consensus Drift prints in its stat row, which is baked at its build."""
+    m = re.search(r"updated <b>(\d{4}-\d{2}-\d{2})</b>", html)
+    return m.group(1) if m else None
+
+
+def days_old(asof: str | None, today: str) -> int | None:
+    if not asof:
+        return None
+    return (datetime.fromisoformat(today) - datetime.fromisoformat(asof)).days
+
+
+def dcf_cohorts(rows: list[dict]) -> tuple[list[list[int]], list[int], list[int]]:
+    """How the DCF leg is grouped: (sectors big enough to rank within, the indices
+    ranked against everyone instead, every index with a reading)."""
+    have = [i for i, r in enumerate(rows) if r.get("dcf") is not None]
+    by: dict = {}
+    for i in have:
+        by.setdefault(rows[i].get("sector"), []).append(i)
+    big = [idx for sec, idx in by.items() if sec is not None and len(idx) >= DCF_SECTOR_MIN]
+    pooled = {i for idx in big for i in idx}
+    return big, [i for i in have if i not in pooled], have
+
+
 def parse_drift(html: str) -> list[dict]:
     """Consensus Drift inlines its rows as <script id="rows" type="application/json">."""
     m = re.search(r'<script id="rows"[^>]*>(.*?)</script>', html, re.S)
@@ -131,6 +180,27 @@ def dcf_band(ratio: float | None, cuts: tuple[float, float]) -> str | None:
     if ratio >= hi:
         return "cheaper"
     return "middle"
+
+
+def leg_rho(rows: list[dict], a: str, b: str) -> float:
+    """Rank correlation between two legs over the names carrying both.
+
+    The composite rests on the legs being close to independent, so agreement between
+    them is information rather than one thing counted twice. Pinned by a test, so if
+    two legs ever start measuring the same thing the build says so.
+    """
+    import math
+
+    pairs = [(r[a], r[b]) for r in rows if r.get(a) is not None and r.get(b) is not None]
+    if len(pairs) < 3:
+        return 0.0
+    xs = _percentiles([x for x, _ in pairs])
+    ys = _percentiles([y for _, y in pairs])
+    mx, my = sum(xs) / len(xs), sum(ys) / len(ys)
+    cov = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+    vx = sum((x - mx) ** 2 for x in xs)
+    vy = sum((y - my) ** 2 for y in ys)
+    return cov / math.sqrt(vx * vy) if vx and vy else 0.0
 
 
 def has_dcf(rows: list[dict]) -> bool:
@@ -219,7 +289,7 @@ def rank_rows(rows: list[dict]) -> list[dict]:
     strained, a price that sits behind analyst estimates, and a model value above the
     market price. The top of the table is where all three point the same way and the
     bottom is where they point the other way. That is coherent precisely because the
-    measures are close to independent - r = +0.087 between the first two - so agreement
+    measures are close to independent - see `leg_rho`, printed every build - so agreement
     between them is information rather than one number counted three times.
 
     Shortfall is FLIPPED, because its own scale runs the other way: 100 is the most
@@ -244,9 +314,19 @@ def rank_rows(rows: list[dict]) -> list[dict]:
     name with estimates going down cannot score high on it whatever the price did.
     """
     strain = _percentiles([100 - r["strain"] for r in rows])
-    gap = _percentiles([r["gap"] for r in rows])
-    rev = _percentiles([r.get("rev") for r in rows])
-    dcf = _percentiles([r.get("dcf") for r in rows])
+    # A thin-coverage name has no drift leg: it scores on the other two, like a name
+    # with no DCF reading, and stays out of the distribution the others rank in.
+    gap = _percentiles([None if r.get("thin") else r["gap"] for r in rows])
+    rev = _percentiles([None if r.get("thin") else r.get("rev") for r in rows])
+    dcf: list = [None] * len(rows)
+    big, rest, have = dcf_cohorts(rows)
+    for idx in big:
+        for i, pct in zip(idx, _percentiles([rows[i]["dcf"] for i in idx])):
+            dcf[i] = pct
+    everyone = _percentiles([rows[i]["dcf"] for i in have])
+    for i, pct in zip(have, everyone):
+        if i in rest:
+            dcf[i] = pct
     for r, s, g, e, d in zip(rows, strain, gap, rev, dcf):
         # Shipped per row so the page can REWEIGHT live without carrying the whole
         # distribution three times over and re-ranking 609 rows on every slider move.
@@ -300,13 +380,25 @@ def join(names: list[dict], drift: list[dict], dcf: dict | None = None) -> list[
             "ret_1y": n.get("ret_1y"),
             "mcap": d.get("mcap"),
             "analysts": d.get("analysts"),
+            # Consensus Drift's own coverage cut, read rather than re-derived. With one
+            # or two desks the "consensus" is one or two opinions, and those names were
+            # setting both tails of the drift leg.
+            "thin": bool(d.get("thin")),
             "dcf": (dcf or {}).get(n["ticker"]),
         })
-    # Banded after the loop, because the cuts are a property of the whole set rather
-    # than of any one company.
-    cuts = dcf_cuts([r["dcf"] for r in rows if r["dcf"] is not None])
+    # Banded after the loop, because the cuts are a property of a set rather than of
+    # any one company - and the SAME set the leg is ranked in, within sector, so a
+    # cell's colour can never disagree with what the leg contributed to the score.
     for r in rows:
-        r["dcfband"] = dcf_band(r["dcf"], cuts)
+        r["dcfband"] = None
+    big, rest, have = dcf_cohorts(rows)
+    everyone = dcf_cuts([rows[i]["dcf"] for i in have])
+    for idx in big:
+        cuts = dcf_cuts([rows[i]["dcf"] for i in idx])
+        for i in idx:
+            rows[i]["dcfband"] = dcf_band(rows[i]["dcf"], cuts)
+    for i in rest:
+        rows[i]["dcfband"] = dcf_band(rows[i]["dcf"], everyone)
     # Ordered by the three measures combined rather than by Shortfall alone. Sorting on
     # one of three columns made that column the page's opinion by default, which is the
     # opposite of what a cross-tab is for.
@@ -504,8 +596,21 @@ def corners(rows: list[dict]) -> dict:
 
 
 def main() -> int:
-    names = parse_shortfall(fetch(SHORTFALL_URL))
-    drift = parse_drift(fetch(DRIFT_URL))
+    shortfall_js = fetch(SHORTFALL_URL)
+    names = parse_shortfall(shortfall_js)
+    drift_html = fetch(DRIFT_URL)
+    drift = parse_drift(drift_html)
+    today_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    asof = {"shortfall": shortfall_asof(shortfall_js), "drift": drift_asof(drift_html),
+            "dcf": None}
+    # Past STALE_DAYS the drift leg is not a reading of now, so nobody is ranked on
+    # it: every name loses the leg together and the page says why.
+    drift_stale = (days_old(asof["drift"], today_iso) or 0) > STALE_DAYS
+    if drift_stale:
+        print(f"WARN: Consensus Drift is from {asof['drift']}, over {STALE_DAYS} days "
+              f"old; the drift leg is left out of today's ranking", file=sys.stderr)
+        for d in drift:
+            d["thin"] = True
     # Best effort, and deliberately the ONLY one of the three that is. Shortfall and
     # Consensus Drift are the page; without either there is nothing to render and the
     # run should fail loudly. DCF Studio is a third column on top, so a bad day there
@@ -516,6 +621,7 @@ def main() -> int:
         dcf_text = fetch(DCF_URL)
         dcf = parse_dcf(dcf_text)
         prices = parse_dcf_prices(dcf_text)
+        asof["dcf"] = _iso_date(json.loads(dcf_text).get("as_of"))
     except Exception as exc:  # noqa: BLE001
         print(f"WARN: no DCF ratios ({type(exc).__name__}: {exc}); "
               f"the column will be omitted", file=sys.stderr)
@@ -559,6 +665,9 @@ def main() -> int:
         dates_json=json.dumps(dates),
         backfilled_until=backfilled_until,
         has_moves=n_moves >= 100,
+        asof=asof,
+        drift_stale=drift_stale,
+        stale_days=STALE_DAYS,
         built=datetime.now(timezone.utc).strftime("%d %B %Y"),
     )
     OUT.write_text(html, encoding="utf-8")
@@ -572,6 +681,8 @@ def main() -> int:
         encoding="utf-8",
     )
     n_dcf = sum(1 for r in rows if r["dcf"] is not None)
+    for a, b in (("pStrain", "pDrift"), ("pStrain", "pDcf"), ("pDrift", "pDcf")):
+        print(f"leg independence {a} vs {b}: rho {leg_rho(rows, a, b):+.3f}")
     print(f"{OUT}: {len(rows)} companies from {len(names)} x {len(drift)}"
           f", {n_dcf} with a DCF reading"
           f"{'' if has_dcf(rows) else ' (column OMITTED - too few)'}")
