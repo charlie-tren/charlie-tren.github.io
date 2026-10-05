@@ -162,6 +162,14 @@
            font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; }
   .clear:hover { border-color: var(--accent); color: var(--ink); }
   .count { font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
+  /* Each source dated on its own, never one page date: the three refresh on different
+     schedules and a single "updated" would be a claim about the freshest applied to
+     the stalest. */
+  .asat { font: 400 13px/1.6 ui-sans-serif, system-ui, sans-serif; color: var(--soft);
+          margin: .9rem 0 0; }
+  .asat .overdue { color: var(--ink); font-weight: 600; }
+  /* A source and its date stay together; the line may only break between sources. */
+  .asat span { white-space: nowrap; }
 
   /* The control sits closer to the table than to what precedes it, or the eye files it
      with the block above. Measured: 8px below, 31px above. */
@@ -376,6 +384,10 @@
     </table>
   </div>
 
+  <p class="asat">As at: <span data-asof="{{ asof.shortfall or '' }}">Shortfall {{ asof.shortfall or 'not dated' }}</span>
+    &middot; <span data-asof="{{ asof.drift or '' }}">Consensus Drift {{ asof.drift or 'not dated' }}{% if drift_stale %}, not ranked on{% endif %}</span>{% if has_dcf %}
+    &middot; <span data-asof="{{ asof.dcf or '' }}">DCF Studio {{ asof.dcf or 'not dated' }}</span>{% endif %}</p>
+
 </div>
 
 <script id="rows" type="application/json">{{ rows_json }}</script>
@@ -386,6 +398,18 @@
   var HAS_MOVES = {{ 'true' if has_moves else 'false' }}, SINCE = "{{ since }}", N_DAYS = {{ n_days }};
   var DATES = {{ dates_json }}, BACKFILLED_UNTIL = {{ ('"' + backfilled_until + '"') if backfilled_until else 'null' }};
   var N_DCF = {{ n_dcf }};
+  /* Run in the READER's browser against their clock, because if Crosscheck's own
+     daily build stops, every date it baked stops with it and nothing at build time
+     can say so. */
+  (function () {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-asof]"), function (el) {
+      var t = Date.parse(el.getAttribute("data-asof") + "T00:00:00Z");
+      if (t && (Date.now() - t) / 864e5 > {{ stale_days }} && !el.classList.contains("overdue")) {
+        el.classList.add("overdue");
+        el.appendChild(document.createTextNode(", overdue"));
+      }
+    });
+  })();
   var CUT = {{ corners.cut }};
   var tb = document.getElementById("tb");
   var q = document.getElementById("q"), count = document.getElementById("count");
