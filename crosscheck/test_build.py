@@ -559,3 +559,66 @@ class TestEvents:
             {"d": "2026-09-12", "t": "KO", "p": 12, "s": .9, "r": .8, "e": None, "v": .7},
         ]
         assert build.events_for(lines, dates, dates) == [[0, .1, .2, .3, .4], [2, .9, .8, None, .7]]
+
+
+class TestReviewFindings0510:
+    """From an external review on 03/10/2026, each one checked against live data
+    before it was built. The cases are the ones that motivated each rule."""
+
+    @staticmethod
+    def _row(t, strain=50.0, gap=0.0, rev=0.0, dcf=None, sector=None, thin=False):
+        return {"ticker": t, "strain": strain, "gap": gap, "rev": rev, "dcf": dcf,
+                "sector": sector, "thin": thin}
+
+    def test_a_thin_name_loses_its_drift_leg_and_scores_on_the_other_two(self):
+        # CPT sat second on Consensus Drift on ONE analyst. Its drift leg must be
+        # missing, not low: it is averaged over the legs that remain.
+        rows = [self._row("CPT", gap=56.0, rev=40.0, dcf=1.0, thin=True),
+                self._row("A", gap=10.0, rev=5.0, dcf=0.5),
+                self._row("B", gap=-5.0, rev=-1.0, dcf=0.4)]
+        by = {r["ticker"]: r for r in build.rank_rows(rows)}
+        assert by["CPT"]["pDrift"] is None and by["CPT"]["pRev"] is None
+        assert by["CPT"]["complete"] is False
+        assert by["CPT"]["score"] > 0
+        # and it is not in the distribution the others rank in: with it gone, A is top
+        assert by["A"]["pDrift"] == 1.0
+
+    def test_the_dcf_leg_ranks_within_sector_once_a_sector_is_big_enough(self):
+        # Ten utilities all valued generously and ten tech names all valued low. Across
+        # the universe every utility outranks every tech name; within sector each
+        # group spans the full range, which is the point.
+        rows = ([self._row(f"U{i}", dcf=1.5 + i / 100, sector="Utilities") for i in range(10)]
+                + [self._row(f"T{i}", dcf=0.2 + i / 100, sector="Technology") for i in range(10)])
+        by = {r["ticker"]: r for r in build.rank_rows([dict(r) for r in rows])}
+        assert by["T9"]["pDcf"] == pytest.approx(1.0)
+        assert by["U0"]["pDcf"] == pytest.approx(0.0)
+
+    def test_a_small_sector_is_ranked_against_everyone(self):
+        rows = ([self._row(f"U{i}", dcf=1.0 + i / 10, sector="Utilities") for i in range(10)]
+                + [self._row("LONE", dcf=0.05, sector="Other")])
+        by = {r["ticker"]: r for r in build.rank_rows([dict(r) for r in rows])}
+        assert by["LONE"]["pDcf"] == pytest.approx(0.0)   # lowest of all eleven, not 0.5 of one
+
+    def test_the_band_comes_from_the_same_cohort_as_the_score(self):
+        # A cell's colour must never disagree with what the leg contributed.
+        rows = ([self._row(f"U{i}", dcf=1.5 + i / 100, sector="Utilities") for i in range(10)]
+                + [self._row(f"T{i}", dcf=0.2 + i / 100, sector="Technology") for i in range(10)])
+        names = [{"ticker": r["ticker"], "name": r["ticker"], "sector": r["sector"],
+                  "market": "M", "composite": 50.0, "applicable": 6} for r in rows]
+        drift = [{"ticker": r["ticker"], "gap": 0.0, "rev": 0.0} for r in rows]
+        by = {r["ticker"]: r for r in build.join(names, drift, {r["ticker"]: r["dcf"] for r in rows})}
+        assert by["T9"]["dcfband"] == "cheaper"     # the best of its own sector
+        assert by["U0"]["dcfband"] == "dearer"      # the worst of its own sector
+
+    def test_reads_each_sources_own_date(self):
+        js = 'window.SHORTFALL = ' + json.dumps({"names": [], "as_of": "2026-09-29"}) + ';'
+        assert build.shortfall_asof(js) == "2026-09-29"
+        assert build.drift_asof('<span>updated <b>2026-10-04</b></span>') == "2026-10-04"
+        assert build.drift_asof("<html>redesigned</html>") is None
+        assert build.days_old("2026-09-20", "2026-10-05") == 15
+        assert build.days_old(None, "2026-10-05") is None
+
+    def test_leg_rho_measures_what_it_says(self):
+        rows = [{"a": i, "b": i, "c": -i} for i in range(20)]
+        assert build.leg_rho(rows, "a", "b") == pytest.approx(1.0)
+        assert build.leg_rho(rows, "a", "c") == pytest.approx(-1.0)
