@@ -357,10 +357,10 @@ class TestComponentPercentiles:
 
     def rows(self):
         return build.rank_rows([
-            {"ticker": "A", "strain": 0, "gap": 40.0, "dcf": 2.0},
-            {"ticker": "B", "strain": 50, "gap": 0.0, "dcf": 0.6},
-            {"ticker": "C", "strain": 100, "gap": -40.0, "dcf": 0.2},
-            {"ticker": "D", "strain": 25, "gap": 10.0, "dcf": None},
+            {"ticker": "A", "strain": 0, "gap": 40.0, "dcf": 2.0, "ret_1y": 0.30},
+            {"ticker": "B", "strain": 50, "gap": 0.0, "dcf": 0.6, "ret_1y": 0.05},
+            {"ticker": "C", "strain": 100, "gap": -40.0, "dcf": 0.2, "ret_1y": -0.20},
+            {"ticker": "D", "strain": 25, "gap": 10.0, "dcf": None, "ret_1y": 0.10},
         ])
 
     def test_each_row_carries_its_three_component_percentiles(self):
@@ -384,12 +384,12 @@ class TestComponentPercentiles:
     def test_the_shipped_score_is_the_geometric_mean_of_what_is_present(self):
         import math
         for r in self.rows():
-            legs = [r["pStrain"], build.drift_leg(r["pDrift"], r.get("pRev")), r["pDcf"]]
+            legs = [r["pStrain"], build.drift_leg(r["pDrift"], r.get("pRev")), r["pDcf"], r["pMom"]]
             parts = [max(p, build.P_FLOOR) for p in legs if p is not None]
             want = math.exp(sum(math.log(p) for p in parts) / len(parts))
             assert abs(r["score"] - want) < 1e-9
 
-    def test_complete_says_whether_all_three_are_present(self):
+    def test_complete_says_whether_all_four_are_present(self):
         by = {r["ticker"]: r for r in self.rows()}
         assert by["A"]["complete"] is True
         assert by["D"]["complete"] is False
@@ -423,7 +423,8 @@ class TestMoves:
     def test_carries_the_components_from_the_first_day_not_the_latest(self):
         # Day one had no "e"; the chart must score that day the way it was scored.
         moves, _, _ = build.moves_since_first(self.lines())
-        assert moves["KO"]["h0"] == [.9, .5, None, .4]
+        # Lines before 06/10/2026 carry no "m": the trend leg is absent, not zero.
+        assert moves["KO"]["h0"] == [.9, .5, None, .4, None]
 
     def test_no_move_without_two_priced_days_in_one_currency(self):
         moves, _, _ = build.moves_since_first(self.lines())
@@ -558,7 +559,7 @@ class TestEvents:
             {"d": "2026-08-09", "t": "KO", "p": None, "s": .5, "r": .5, "e": .5, "v": .5},
             {"d": "2026-09-12", "t": "KO", "p": 12, "s": .9, "r": .8, "e": None, "v": .7},
         ]
-        assert build.events_for(lines, dates, dates) == [[0, .1, .2, .3, .4], [2, .9, .8, None, .7]]
+        assert build.events_for(lines, dates, dates) == [[0, .1, .2, .3, .4, None], [2, .9, .8, None, .7, None]]
 
 
 class TestReviewFindings0510:
@@ -622,3 +623,41 @@ class TestReviewFindings0510:
         rows = [{"a": i, "b": i, "c": -i} for i in range(20)]
         assert build.leg_rho(rows, "a", "b") == pytest.approx(1.0)
         assert build.leg_rho(rows, "a", "c") == pytest.approx(-1.0)
+
+
+class TestPriceTrend:
+    """The fourth leg, 06/10/2026: Shortfall's 12-month return, ranked within market.
+    Tested on 15 years of this universe's prices before it was added; see rank_rows."""
+
+    def rows(self):
+        return build.rank_rows([
+            {"ticker": "U1", "market": "US", "strain": 50, "gap": 0.0, "dcf": 1.0, "ret_1y": 0.10},
+            {"ticker": "U2", "market": "US", "strain": 50, "gap": 0.0, "dcf": 1.0, "ret_1y": 0.20},
+            {"ticker": "A1", "market": "ASX", "strain": 50, "gap": 0.0, "dcf": 1.0, "ret_1y": 0.50},
+            {"ticker": "A2", "market": "ASX", "strain": 50, "gap": 0.0, "dcf": 1.0, "ret_1y": 0.60},
+        ])
+
+    def test_a_higher_return_ranks_higher(self):
+        by = {r["ticker"]: r for r in self.rows()}
+        assert by["U2"]["pMom"] > by["U1"]["pMom"]
+
+    def test_ranked_within_market_not_across(self):
+        # Across both, the best US name would sit at a third, below both ASX names,
+        # because the ASX had the stronger year. Within market it tops its own.
+        by = {r["ticker"]: r for r in self.rows()}
+        assert by["U2"]["pMom"] == pytest.approx(1.0)
+        assert by["A1"]["pMom"] == pytest.approx(0.0)
+
+    def test_no_return_is_no_reading(self):
+        rows = build.rank_rows([
+            {"ticker": "X", "market": "US", "strain": 50, "gap": 0.0, "dcf": 1.0, "ret_1y": None},
+            {"ticker": "Y", "market": "US", "strain": 50, "gap": 0.0, "dcf": 1.0, "ret_1y": 0.1},
+        ])
+        by = {r["ticker"]: r for r in rows}
+        assert by["X"]["pMom"] is None and by["X"]["complete"] is False
+
+    def test_the_record_carries_it(self, tmp_path):
+        path = tmp_path / "h.jsonl"
+        build.append_history(self.rows(), {}, "2026-10-06", path)
+        line = json.loads(path.read_text(encoding="utf-8").splitlines()[0])
+        assert "m" in line and line["m"] is not None
