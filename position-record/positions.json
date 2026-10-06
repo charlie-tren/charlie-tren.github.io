@@ -18,7 +18,9 @@
       "carry_dir": "received",
       "thesis": "The SNB caps the franc: rates at zero, and it sells francs when the currency runs. That is what protects the 3.75% sterling pays.",
       "catalyst": "The MPC meets on 17 September. The market expects a rise, widening the gap this earns.",
-      "breaks": "The Bank of England starts cutting, or the SNB stops selling francs into a rally."
+      "breaks": "The Bank of England starts cutting, or the SNB stops selling francs into a rally.",
+      "exit_date": "2026-09-21",
+      "exit": 1.10098
     },
     {
       "name": "Japan 225",
@@ -98,9 +100,9 @@
       "thesis": [
         "Brent and WTI price the same barrel in two places, and the ratio between them has been stationary in every window since 2007.",
         "Brent is $3 over WTI today and has averaged $6 over the last year. Of the 23 times the gap has been this narrow since 2008, 18 closed within 90 days.",
-        "On forward contracts there is no holding cost. The round trip is the two spreads, about 0.4% for the pair, plus a roll if held past expiry."
+        "On forward contracts there is no holding cost. It costs about 0.4% in spreads to open and close, plus a roll past expiry."
       ],
-      "breaks": "The gap stays narrow for three months. That is what happens when the world keeps buying American oil."
+      "breaks": "The gap stays narrow for three months."
     },
     {
       "name": "Diesel crack",
@@ -124,9 +126,9 @@
       "trigger_event": "A ceasefire, or a refinery restart, or Russia lifting the export ban",
       "exit_days": 60,
       "thesis": [
-        "Diesel is the most dislocated thing on the board. The crack is $105 a barrel against a 2015-2024 average of $25, and it touched $118 on 16 September, the highest in the 26 years Yahoo carries.",
+        "Diesel costs $105 a barrel more than the crude it is made from, against a 2015-2024 average of $25. It touched $118 on 16 September, the highest in the 26 years Yahoo carries.",
         "It is there because supply left: the Iran conflict took about 3mb/d of refining offline, Russia extended its diesel export ban to the end of 2026, and US distillate stocks are the lowest for the time of year since 1951.",
-        "Nothing about the level says when it ends, which is why this one has no number on it. Every analogue turns on a headline, so the entry is a restart or a ceasefire, not a z-score."
+        "Past spikes in the diesel margin ended when supply returned."
       ],
       "breaks": "Refining capacity stays offline into the northern winter and the crack holds above $100."
     }
