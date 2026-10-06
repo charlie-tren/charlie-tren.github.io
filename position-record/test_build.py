@@ -6,9 +6,37 @@ been taken out, and an R that disagrees with the entry and stop is the whole uni
 page being wrong.
 """
 import json, subprocess, sys, hashlib
+from contextlib import contextmanager
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+
+
+_EXIT_FIELDS = ("exit", "exit_date", "postmortem", "stopped")
+
+
+@contextmanager
+def _page_with_an_open_position():
+    """The page built with one open position added. The book can hold none - on
+    06/10/2026 all three had closed - and a test of the open table must not depend
+    on what is being traded. The fixture is the first entry with its exit removed
+    and a stop it cannot have traded through, so the build keeps it open."""
+    paths = [HERE / n for n in ("positions.json", "prices.json", "index.html")]
+    before = [p.read_bytes() for p in paths]
+    try:
+        data = json.loads(before[0])
+        first = ((data.get("open") or []) + (data.get("closed") or []))[0]
+        fixture = {k: v for k, v in first.items() if k not in _EXIT_FIELDS}
+        far = 0.5 if fixture["direction"] == "Long" else 2.0
+        fixture.update(name="Fixture", stop=fixture["entry"] * far, target=fixture["entry"] / far)
+        data.setdefault("open", []).append(fixture)
+        paths[0].write_text(json.dumps(data, indent=2), encoding="utf-8")
+        r = subprocess.run([sys.executable, str(HERE / "build.py")], capture_output=True, text=True)
+        assert r.returncode == 0, (r.stdout + r.stderr)[-500:]
+        yield paths[2].read_text(encoding="utf-8")
+    finally:
+        for p, b in zip(paths, before):
+            p.write_bytes(b)
 
 
 def _section(html, heading):
@@ -87,7 +115,8 @@ def test_every_column_sorts_and_has_a_key_to_sort_on():
     """A header carrying the arrow is a promise. Each one needs the matching
     data attribute on every tbody, or clicking it silently does nothing."""
     import re
-    page = (HERE / "index.html").read_text(encoding="utf-8")
+    with _page_with_an_open_position() as page:
+        pass
     head = re.search(r"<thead>(.*?)</thead>", page, re.S).group(1)
     labelled = [c.strip() for c in re.findall(r"<th[^>]*>(.+?)</th>", head, re.S)]
     sortable = re.findall(r'<th[^>]*data-sort="([a-z]+)"[^>]*>(.+?)</th>', head, re.S)
@@ -147,7 +176,8 @@ def test_an_exit_date_moves_a_position_to_closed():
     sys.path.insert(0, str(HERE))
     import build
     data = json.loads((HERE / "positions.json").read_text(encoding="utf-8"))
-    live = dict(data["open"][0])
+    first = ((data.get("open") or []) + (data.get("closed") or []))[0]
+    live = {k: v for k, v in first.items() if k not in _EXIT_FIELDS}
     shut = dict(live, name="Fixture", exit_date="2026-09-10", exit=live["entry"],
                 postmortem="x")
     # Still sitting in `open`, with an exit on it: it must be classified as closed.
@@ -180,7 +210,8 @@ def test_a_close_without_an_exit_price_refuses_to_build():
     digest_before = hashlib.md5(out_p.read_bytes()).hexdigest()
     try:
         broken = json.loads(src_before)
-        broken["open"][0]["exit_date"] = "2026-09-10"      # no `exit` alongside it
+        broken["open"][0]["exit_date"] = "2026-09-10"
+        broken["open"][0].pop("exit", None)                # no `exit` alongside it
         src_p.write_text(json.dumps(broken, indent=2), encoding="utf-8")
         r = subprocess.run([sys.executable, str(HERE / "build.py")],
                            capture_output=True, text=True)
@@ -365,7 +396,8 @@ def test_the_closed_table_does_not_compensate_for_arrows_it_has_not_got():
 def test_the_closed_control_names_the_post_mortem():
     """Charlie, 11/09/2026: the control should imply a post-mortem is behind it. The
     entry reasoning is on the open rows too; the judgement of it only exists here."""
-    html = (HERE / "index.html").read_text(encoding="utf-8")
+    with _page_with_an_open_position() as html:
+        pass
     op, cl = html[:html.find(">Closed</h2>")], _section(html, ">Closed</h2>")
     assert ">Thesis</button>" in op, "the open control should still say Thesis"
     assert ">Post-mortem</button>" in cl, "the closed control should say Post-mortem"
