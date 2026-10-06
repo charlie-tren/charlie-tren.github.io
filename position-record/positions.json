@@ -20,7 +20,8 @@
       "catalyst": "The MPC meets on 17 September. The market expects a rise, widening the gap this earns.",
       "breaks": "The Bank of England starts cutting, or the SNB stops selling francs into a rally.",
       "exit_date": "2026-09-21",
-      "exit": 1.10098
+      "exit": 1.10098,
+      "postmortem": "It was closed on 21 September to free margin for a takeover trade due that week. The MPC had already held without a rise."
     },
     {
       "name": "Japan 225",
