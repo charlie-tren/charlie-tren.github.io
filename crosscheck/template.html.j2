@@ -98,6 +98,8 @@
   .segmented button + button { border-left: 1px solid var(--rule); }
   .segmented button:hover { color: var(--ink); }
   .segmented button[aria-pressed="true"] { background: var(--raised); color: var(--ink); }
+  .segmented.hz { margin: 0; }
+  .weights.hzrow + .weights { margin-top: .9rem; }
   /* One chart, drawn large: most of the 1120px column. The plot area sits on its own
      tinted ground so it separates from the paper. */
   .charts { position: relative; max-width: 920px; margin: 0 0 1.4rem; }
@@ -142,8 +144,8 @@
   .tip b { color: var(--ink); font-weight: 600; }
 
   /* The weights are EXPOSED because the combined score is the page's own opinion, and
-     an opinion with a hidden formula is not one a reader can argue with. Equal thirds
-     is a default, not a finding. */
+     an opinion with a hidden formula is not one a reader can argue with. The horizon
+     presets are defaults, not findings. */
   .weights { display: flex; align-items: center; gap: .5rem 1.3rem; flex-wrap: wrap;
              margin: 1.4rem 0 0; }
   .wl { font: 500 10px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .09em;
@@ -263,6 +265,8 @@
     /* Four full names run to 568px at 390: the short forms fit one row at 11px. */
     .segmented { display: flex; }
     .segmented button { flex: 1 1 0; padding: .48rem .3rem; font-size: 11px; letter-spacing: .02em; }
+    .segmented.hz { display: inline-flex; }
+    .segmented.hz button { flex: 0 0 auto; padding: .48rem .8rem; }
 
     h1 { font-size: 1.9rem; }
     .grid { grid-template-columns: auto repeat(3, 1fr); }
@@ -334,6 +338,13 @@
     <div class="tip" id="tip" hidden></div>
   </div>
 
+  <div class="weights hzrow">
+    <span class="wl">Horizon</span>
+    <div class="segmented hz" id="horizon" role="group" aria-label="Horizon">
+      <button type="button" data-h="months" aria-pressed="true">Months</button>
+      <button type="button" data-h="years" aria-pressed="false">Years</button>
+    </div>
+  </div>
   <div class="weights">
     <!-- Each label says what MORE WEIGHT FAVOURS, not which column it comes from.
          Labelled "Shortfall", turning the slider to 100% surfaces the companies scoring
@@ -342,14 +353,14 @@
          job: to say which way it pulls. -->
     <span class="wl">Rank favours</span>
     <label class="w"><span>Clean accounts</span>
-      <input type="range" id="wStrain" min="0" max="100" step="5" value="35">
-      <b id="wStrainV">33%</b></label>
+      <input type="range" id="wStrain" min="0" max="100" step="5" value="25">
+      <b id="wStrainV">25%</b></label>
     <label class="w"><span>Estimates rising, price behind</span>
-      <input type="range" id="wDrift" min="0" max="100" step="5" value="35">
-      <b id="wDriftV">33%</b></label>
+      <input type="range" id="wDrift" min="0" max="100" step="5" value="75">
+      <b id="wDriftV">75%</b></label>
     <label class="w"><span>Value above price</span>
-      <input type="range" id="wDcf" min="0" max="100" step="5" value="35">
-      <b id="wDcfV">33%</b></label>
+      <input type="range" id="wDcf" min="0" max="100" step="5" value="0">
+      <b id="wDcfV">0%</b></label>
     <button class="clear" id="wReset" type="button">Even</button>
   </div>
 
@@ -873,7 +884,7 @@
     rz = setTimeout(plot, 150);
   });
 
-  var W = { strain: 33, drift: 33, dcf: 33 };
+  var W = { strain: 25, drift: 75, dcf: 0 };
   var onlyAll = document.getElementById("onlyAll");
 
   // Rescore and re-rank the whole set. The three components arrive as percentiles from
@@ -924,10 +935,42 @@
       document.getElementById(id + "V").textContent =
         total > 0 ? Math.round((raw[k] / total) * 100) + "%" : "-";
     });
+    markHorizon();
     rescore();
     render();
     plot();
   }
+  // Horizon presets. The legs work on different clocks, and averaging them evenly is
+  // what left the combined score with no predictive power: measured 06/10/2026 off this
+  // page's own record (live from 12/09, ~410 names a day, forward to 06/10), estimate
+  // revisions ran a rank IC of about +0.3 and the DCF leg about -0.3, so at equal
+  // weights they cancelled to zero. Revisions and price drift are a weeks-to-months
+  // signal; a DCF ratio and accounting quality are signals about years, which three
+  // weeks cannot test either way. So Months leans on drift with a share for clean
+  // accounts (accrual quality is documented over 6-12 months), and Years drops drift
+  // and splits value and accounts. Neither is a finding yet: re-test both on 06/01/2027
+  // (hub-notes TODO), and change these numbers only from that test, not from a glance.
+  var HORIZON = {
+    months: { strain: 25, drift: 75, dcf: 0 },
+    years:  { strain: 50, drift: 0,  dcf: 50 }
+  };
+  var SLIDER = { strain: "wStrain", drift: "wDrift", dcf: "wDcf" };
+  function setWeights(w) {
+    Object.keys(SLIDER).forEach(function (k) { document.getElementById(SLIDER[k]).value = w[k]; });
+    readWeights();
+  }
+  // A preset reads as pressed only while the sliders still say exactly what it set, so
+  // touching a slider or pressing Even leaves neither horizon claiming the result.
+  function markHorizon() {
+    document.querySelectorAll("#horizon button").forEach(function (b) {
+      var p = HORIZON[b.dataset.h];
+      var on = Object.keys(SLIDER).every(function (k) { return W[k] === p[k]; });
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+  document.querySelectorAll("#horizon button").forEach(function (b) {
+    b.addEventListener("click", function () { setWeights(HORIZON[b.dataset.h]); });
+  });
   ["wStrain", "wDrift", "wDcf"].forEach(function (id) {
     document.getElementById(id).addEventListener("input", readWeights);
   });
@@ -1053,7 +1096,7 @@
   if (incoming) q.value = incoming;
 
   showChart(CHART);
-  readWeights();
+  setWeights(HORIZON.months);
   render();
 
   var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
