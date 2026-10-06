@@ -105,8 +105,8 @@
       "breaks": "The gap stays narrow for three months."
     },
     {
-      "name": "Diesel crack",
-      "kind": "Refining spread",
+      "name": "WTI / Diesel",
+      "kind": "Commodity pair",
       "long": {
         "name": "WTI crude",
         "symbol": "CL=F"
@@ -126,7 +126,7 @@
       "trigger_event": "A ceasefire, or a refinery restart, or Russia lifting the export ban",
       "exit_days": 60,
       "thesis": [
-        "Diesel costs $105 a barrel more than the crude it is made from, against a 2015-2024 average of $25. It touched $118 on 16 September, the highest in the 26 years Yahoo carries.",
+        "On 6 October diesel cost $101 a barrel more than the crude it is made from, against a 2015-2024 average of $25. It touched $118 on 16 September, the highest in the 26 years Yahoo carries.",
         "It is there because supply left: the Iran conflict took about 3mb/d of refining offline, Russia extended its diesel export ban to the end of 2026, and US distillate stocks are the lowest for the time of year since 1951.",
         "Past spikes in the diesel margin ended when supply returned."
       ],
