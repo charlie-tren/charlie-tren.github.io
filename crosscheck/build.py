@@ -314,6 +314,21 @@ def rank_rows(rows: list[dict]) -> list[dict]:
     name with estimates going down cannot score high on it whatever the price did.
     """
     strain = _percentiles([100 - r["strain"] for r in rows])
+    # PRICE TREND, added 06/10/2026: the one leg with a long out-of-sample record on
+    # this universe. Tested on 15 years of monthly prices for these 610 names, ranked
+    # within market against the next month's return: 12-1 momentum IC +0.018 in
+    # 2011-2020 AND in a 2021-2026 holdout read once, the plain 12-month return +0.014
+    # and +0.022. Weak and consistent, which is what a real factor looks like. Shortfall
+    # already publishes the 12-month return for every name (rank correlation 0.955 with
+    # 12-1), so this leg needs no fetch of its own. Ranked WITHIN market, as tested, so
+    # a strong year for one exchange does not rank every name on it above the other.
+    # Over 12 months the same signal is noise (IC +0.018, t 0.39, sign flipping year to
+    # year), which is why the page's Years preset leaves it out.
+    mom: list = [None] * len(rows)
+    for mkt in {r.get("market") for r in rows}:
+        idx = [i for i, r in enumerate(rows) if r.get("market") == mkt]
+        for i, pct in zip(idx, _percentiles([rows[i].get("ret_1y") for i in idx])):
+            mom[i] = pct
     # A thin-coverage name has no drift leg: it scores on the other two, like a name
     # with no DCF reading, and stays out of the distribution the others rank in.
     gap = _percentiles([None if r.get("thin") else r["gap"] for r in rows])
@@ -327,12 +342,12 @@ def rank_rows(rows: list[dict]) -> list[dict]:
     for i, pct in zip(have, everyone):
         if i in rest:
             dcf[i] = pct
-    for r, s, g, e, d in zip(rows, strain, gap, rev, dcf):
+    for r, s, g, e, d, m in zip(rows, strain, gap, rev, dcf, mom):
         # Shipped per row so the page can REWEIGHT live without carrying the whole
-        # distribution three times over and re-ranking 609 rows on every slider move.
-        r["pStrain"], r["pDrift"], r["pRev"], r["pDcf"] = s, g, e, d
-        r["complete"] = None not in (s, g, d)
-        r["score"] = combine(s, drift_leg(g, e), d)
+        # distribution four times over and re-ranking 609 rows on every slider move.
+        r["pStrain"], r["pDrift"], r["pRev"], r["pDcf"], r["pMom"] = s, g, e, d, m
+        r["complete"] = None not in (s, g, d, m)
+        r["score"] = combine(s, drift_leg(g, e), d, m)
     ordered = sorted(rows, key=lambda r: (-r["score"], r["ticker"]))
     for i, r in enumerate(ordered, 1):
         r["rank"] = i
@@ -451,7 +466,8 @@ def append_history(rows: list[dict], prices: dict, date: str, path: Path = HISTO
     double-count that day in every later average. A date already present is skipped.
 
     Compact keys because this file grows by ~600 lines a day for as long as the site
-    exists: d date, t ticker, s/r/v the strain, drift and value percentiles, p price,
+    exists: d date, t ticker, s/r/v the strain, drift and value percentiles, e the
+    estimate change, m the price trend (from 06/10/2026; absent before), p price,
     c currency.
     """
     if path.exists():
@@ -469,7 +485,7 @@ def append_history(rows: list[dict], prices: dict, date: str, path: Path = HISTO
             fh.write(json.dumps({
                 "d": date, "t": r["ticker"],
                 "s": r["pStrain"], "r": r["pDrift"], "v": r["pDcf"],
-                "e": r.get("pRev"),
+                "e": r.get("pRev"), "m": r.get("pMom"),
                 "p": p[0] if p else None, "c": p[1] if p else None,
             }, separators=(",", ":")) + "\n")
             written += 1
@@ -498,7 +514,7 @@ def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
     latest day it has one, plus the components it carried on that first day, plus the
     whole path between.
 
-    Returns ({ticker: {"move": pct, "from": date, "h0": [s, r, e, v], "i0": index of
+    Returns ({ticker: {"move": pct, "from": date, "h0": [s, r, e, v, m], "i0": index of
     the first priced date, "mvs": move at every recorded date, null where there is no
     price}}, earliest date, number of distinct dates). The move is the price move, not
     a return - no dividends, no position - and it is only ever between two prices in
@@ -531,7 +547,7 @@ def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
         out[t] = {
             "move": round((last["p"] / first["p"] - 1) * 100, 2),
             "from": first["d"],
-            "h0": [first.get("s"), first.get("r"), first.get("e"), first.get("v")],
+            "h0": [first.get("s"), first.get("r"), first.get("e"), first.get("v"), first.get("m")],
             "i0": index[first["d"]],
             "mvs": mvs,
         }
@@ -555,7 +571,7 @@ def event_dates(history: dict) -> list:
 
 
 def events_for(lines: list, dates: list, ev_dates: list) -> list:
-    """[[date index, s, r, e, v], ...] for each event date on which this name has
+    """[[date index, s, r, e, v, m], ...] for each event date on which this name has
     components and a price - what the chart scores it on that day."""
     index = {d: i for i, d in enumerate(dates)}
     by_date = {r["d"]: r for r in lines}
@@ -563,7 +579,7 @@ def events_for(lines: list, dates: list, ev_dates: list) -> list:
     for d in ev_dates:
         r = by_date.get(d)
         if r and r.get("p") and r.get("s") is not None:
-            out.append([index[d], r.get("s"), r.get("r"), r.get("e"), r.get("v")])
+            out.append([index[d], r.get("s"), r.get("r"), r.get("e"), r.get("v"), r.get("m")])
     return out
 
 
@@ -681,7 +697,8 @@ def main() -> int:
         encoding="utf-8",
     )
     n_dcf = sum(1 for r in rows if r["dcf"] is not None)
-    for a, b in (("pStrain", "pDrift"), ("pStrain", "pDcf"), ("pDrift", "pDcf")):
+    for a, b in (("pStrain", "pDrift"), ("pStrain", "pDcf"), ("pDrift", "pDcf"),
+                 ("pMom", "pStrain"), ("pMom", "pDrift"), ("pMom", "pDcf")):
         print(f"leg independence {a} vs {b}: rho {leg_rho(rows, a, b):+.3f}")
     print(f"{OUT}: {len(rows)} companies from {len(names)} x {len(drift)}"
           f", {n_dcf} with a DCF reading"
