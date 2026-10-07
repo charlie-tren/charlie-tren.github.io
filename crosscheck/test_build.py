@@ -559,7 +559,7 @@ class TestEvents:
             {"d": "2026-08-09", "t": "KO", "p": None, "s": .5, "r": .5, "e": .5, "v": .5},
             {"d": "2026-09-12", "t": "KO", "p": 12, "s": .9, "r": .8, "e": None, "v": .7},
         ]
-        assert build.events_for(lines, dates, dates) == [[0, .1, .2, .3, .4, None, 0], [2, .9, .8, None, .7, None, 0]]
+        assert build.events_for(lines, dates, dates) == [[0, .1, .2, .3, .4, None, 0, None], [2, .9, .8, None, .7, None, 0, None]]
 
     def test_a_reconstructed_day_is_flagged_so_the_page_can_drop_its_hindsight_legs(self):
         dates = ["2025-06-30", "2026-09-12"]
@@ -568,7 +568,7 @@ class TestEvents:
             {"d": "2026-09-12", "t": "KO", "p": 12, "s": .9, "r": .8, "e": .7, "v": .6},
         ]
         ev = build.events_for(lines, dates, dates)
-        assert [e[-1] for e in ev] == [1, 0]
+        assert [e[6] for e in ev] == [1, 0]
 
 
 class TestReviewFindings0510:
@@ -687,7 +687,7 @@ class TestExtendedRecord:
         h = self.history()
         dates = ["2021-06-30", "2025-06-30", "2026-09-12"]
         ev = build.events_for(h["KO"], dates, dates)
-        assert ev[0][0] == 0 and ev[0][1] is None and ev[0][-1] == 1
+        assert ev[0][0] == 0 and ev[0][1] is None and ev[0][6] == 1
 
     def test_the_table_move_starts_outside_the_extended_record(self):
         moves, since, n = build.moves_since_first(self.history())
@@ -698,3 +698,14 @@ class TestExtendedRecord:
     def test_the_path_still_runs_from_the_earliest_line(self):
         moves, _, _ = build.moves_since_first(self.history())
         assert moves["KO"]["i0"] == 0 and moves["KO"]["mvs"][0] == 0.0
+
+
+class TestOneMonthMove:
+    def test_the_forward_move_rides_on_each_event(self):
+        dates = ["2025-06-30", "2026-09-12"]
+        lines = [
+            {"d": "2025-06-30", "t": "KO", "b": 1, "p": 10, "s": None, "r": .2, "e": .3, "v": None, "m": .5, "f1": 0.031},
+            {"d": "2026-09-12", "t": "KO", "p": 12, "s": .9, "r": .8, "e": .7, "v": .6},
+        ]
+        ev = build.events_for(lines, dates, dates)
+        assert ev[0][7] == 0.031 and ev[1][7] is None

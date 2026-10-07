@@ -164,13 +164,17 @@
   .mline { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
   .mline.mid { stroke-width: 1.5; }
   .mdot { stroke: var(--bg); stroke-width: 1.5; }
+  .m1dot { fill-opacity: .75; stroke: var(--bg); stroke-width: 1; }
+  .m1dot.hot { stroke: var(--ink); stroke-width: 1.5; fill-opacity: 1; }
+  .m1avg { stroke: var(--ink); stroke-width: 2.4; }
+  .m1lab { fill: var(--ink); font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; }
   .recon { fill: var(--rule); fill-opacity: .35; }
   .cursor { stroke: var(--soft); stroke-width: 1; }
   .rowrule { stroke: var(--rule); stroke-width: 1; }
   .tk { fill: var(--faint); font: 400 11px/1 ui-sans-serif, system-ui, sans-serif;
         font-variant-numeric: tabular-nums; }
   .ctitle { font-size: 12.5px !important; fill: var(--ink); }
-  .knote { flex-basis: 100%; color: var(--faint); justify-content: center; }
+  .knote { flex-basis: 100%; color: var(--faint); justify-content: center; text-align: center; }
   .ax { fill: var(--soft); font: 500 10px/1 ui-sans-serif, system-ui, sans-serif;
         letter-spacing: .08em; text-transform: uppercase; }
   .key { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin-top: .7rem; justify-content: center; }
@@ -359,7 +363,8 @@
     <button type="button" data-chart="heat" aria-pressed="true"><span class="hfull">Sector Heatmap</span><span class="hshort">Heatmap</span></button>
     <button type="button" data-chart="sect" aria-pressed="false"><span class="hfull">Score by Sector</span><span class="hshort">By Sector</span></button>
     <button type="button" data-chart="hist" aria-pressed="false"><span class="hfull">Score Distribution</span><span class="hshort">Distribution</span></button>
-    {% if has_moves %}<button type="button" data-chart="move" aria-pressed="false"><span class="hfull">Move Since Scored</span><span class="hshort">Move</span></button>{% endif %}
+    {% if has_moves %}<button type="button" data-chart="move" aria-pressed="false"><span class="hfull">Move Since Scored</span><span class="hshort">Move</span></button>
+    <button type="button" data-chart="m1" aria-pressed="false"><span class="hfull">1-Month Move</span><span class="hshort">1M</span></button>{% endif %}
   </div>
   <div class="charts">
     <figure class="ch" id="fig-heat">
@@ -372,7 +377,11 @@
     <figure class="ch" id="fig-hist" hidden>
       <svg id="hist" aria-hidden="true"></svg>
     </figure>
-    {% if has_moves %}<figure class="ch" id="fig-move" hidden>
+    {% if has_moves %}<figure class="ch" id="fig-m1" hidden>
+      <svg id="m1" aria-hidden="true"></svg>
+      <div class="key" id="m1key"></div>
+    </figure>
+    <figure class="ch" id="fig-move" hidden>
       <svg id="move" aria-hidden="true"></svg>
       <div class="key" id="movekey"></div>
     </figure>{% endif %}
@@ -828,6 +837,95 @@
     o.hk = hk; o.vals = vals;
     return vals;
   }
+  // ---- 1-Month Move: every scoring date, each quintile's move over the next month ----
+  // Charlie, 07/10/2026: rather than one median path, take every start date the record
+  // can score (the reconstructed quarter-ends since 2021 and the August weekly cohorts),
+  // cut that date's names into quintiles at the CURRENT weights, and take each quintile's
+  // median move over the following month (f1, from daily closes). One dot per start date
+  // per quintile; the bar is the average across start dates. The spread is the point: an
+  // average carried by one good month looks very different from one every month agrees on.
+  function drawM1() {
+    var svg = document.getElementById("m1");
+    var d = dims(svg, 380, 300), M = { l: 52, r: 14, t: 30, b: 40 };
+    var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
+    var byDate = {};
+    pool().forEach(function (r) {
+      if (!r.ev) return;
+      r.ev.forEach(function (ev) {
+        if (ev[7] === null || ev[7] === undefined) return;
+        var s0 = scoreAt(ev); if (s0 === null) return;
+        (byDate[ev[0]] = byDate[ev[0]] || []).push({ s: s0, f: ev[7] * 100 });
+      });
+    });
+    var starts = [];   // [{j, med: [5]}]
+    Object.keys(byDate).forEach(function (j) {
+      var g = byDate[j].sort(function (a, b) { return a.s - b.s; });
+      if (g.length < 25) return;             // 5 a quintile at the least
+      var qs = [[], [], [], [], []];
+      g.forEach(function (e, i) { qs[Math.min(4, Math.floor(i * 5 / g.length))].push(e.f); });
+      starts.push({ j: +j, n: g.length, med: qs.map(function (v) { v.sort(function (a, b) { return a - b; }); return v[Math.floor(v.length / 2)]; }) });
+    });
+    if (!starts.length) {
+      svg.innerHTML = "";
+      document.getElementById("m1key").style.paddingLeft = "0";
+      document.getElementById("m1key").innerHTML = '<span class="ki knote">Accounts and valuation have no record before 12 Sep 2026, and no month since then has finished, so these weights have nothing to show yet.</span>';
+      return;
+    }
+    starts.sort(function (a, b) { return a.j - b.j; });
+    var all = [].concat.apply([], starts.map(function (x) { return x.med; }));
+    var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max(0, Math.max.apply(null, all));
+    var pad = Math.max(0.5, (hi - lo) * 0.1); lo -= pad; hi += pad;
+    var Y = function (v) { return M.t + (hi - v) / (hi - lo) * ph; };
+    var cw = pw / 5, Xc = function (q) { return M.l + cw * q + cw / 2; };
+    var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
+    var gstep = (hi - lo) > 40 ? 10 : (hi - lo) > 16 ? 5 : (hi - lo) > 6 ? 2 : 1;
+    for (var g0 = Math.ceil(lo / gstep) * gstep; g0 <= hi; g0 += gstep) {
+      parts.push('<line class="' + (g0 === 0 ? "rowrule" : "guide") + '" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(g0).toFixed(1) + '" y2="' + Y(g0).toFixed(1) + '"/>');
+      parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g0) + 4).toFixed(1) + '" text-anchor="end">' + (g0 > 0 ? "+" : "") + g0 + "%</text>");
+    }
+    var SHORT = d.w < 520 ? ["Bottom", "2nd", "Middle", "4th", "Top"] : FIFTH;
+    var avg = [0, 1, 2, 3, 4].map(function (q) {
+      var v = starts.map(function (x) { return x.med[q]; }).filter(function (x) { return x !== undefined && x !== null; });
+      return v.reduce(function (a, b) { return a + b; }, 0) / v.length;
+    });
+    // Dots sit on their column's centre line: the horizontal axis is the quintile, so a
+    // sideways offset would claim a second variable. Overlap shows through transparency.
+    starts.forEach(function (st, si) {
+      st.med.forEach(function (v, q) {
+        parts.push('<circle class="m1dot" data-s="' + si + '" data-q="' + q + '" cx="' + Xc(q).toFixed(1) + '" cy="' + Y(v).toFixed(1) + '" r="4.5" fill="' + fifthColour(q) + '"/>');
+      });
+    });
+    avg.forEach(function (v, q) {
+      var half = d.w < 520 ? cw * 0.36 : cw * 0.28;
+      parts.push('<line class="m1avg" x1="' + (Xc(q) - half).toFixed(1) + '" x2="' + (Xc(q) + half).toFixed(1) + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '"/>');
+      // Beside the bar where the column has room; above it, centred, on a phone, where a
+      // label to the right ran into the next column.
+      var narrow = d.w < 520;
+      parts.push('<text class="m1lab" x="' + (narrow ? Xc(q) : Xc(q) + cw * 0.3).toFixed(1) + '" y="' + (narrow ? Y(v) - 8 : Y(v) + 4).toFixed(1) + '"' +
+                 (narrow ? ' text-anchor="middle"' : '') + '>' + (v > 0 ? "+" : "") + v.toFixed(1) + "%</text>");
+      parts.push('<text class="tk" x="' + Xc(q).toFixed(1) + '" y="' + (M.t + ph + 16).toFixed(1) + '" text-anchor="middle">' + SHORT[q] + "</text>");
+    });
+    parts.push('<text class="ax ctitle" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (M.t - 11) + '" text-anchor="middle">' + (d.w < 520 ? "1-Month Move by Quintile" : "1-Month Share Price Move by Score Quintile") + '</text>');
+    svg.innerHTML = parts.join("");
+    var wins = starts.filter(function (x) { return x.med[4] > x.med[0]; }).length;
+    document.getElementById("m1key").style.paddingLeft = M.l + "px";
+    document.getElementById("m1key").innerHTML =
+      '<span class="ki"><i class="sw" style="background:var(--ink)"></i>Average across start dates</span>' +
+      '<span class="ki knote">' + starts.length + ' start dates, ' + fmtDate(DATES[starts[0].j]) + ' ' + DATES[starts[0].j].slice(0, 4) +
+      ' to ' + fmtDate(DATES[starts[starts.length - 1].j]) + ' ' + DATES[starts[starts.length - 1].j].slice(0, 4) +
+      ' &middot; top quintile beat bottom in ' + wins + '</span>';
+    svg.onmousemove = throttled(function (ev) {
+      var t = ev.target;
+      document.querySelectorAll("#m1 .m1dot.hot").forEach(function (c) { c.classList.remove("hot"); });
+      if (!t.classList || !t.classList.contains("m1dot")) { hideTip(); return; }
+      var st = starts[+t.dataset.s];
+      document.querySelectorAll('#m1 .m1dot[data-s="' + t.dataset.s + '"]').forEach(function (c) { c.classList.add("hot"); });
+      showTip("<b>From " + fmtDate(DATES[st.j]) + " " + DATES[st.j].slice(0, 4) + "</b>, " + st.n + " companies" +
+              '<span class="tl">' + st.med.map(function (v, q) { return FIFTH[q] + " " + (v > 0 ? "+" : "") + v.toFixed(1) + "%"; }).join("<br>") + "</span>", ev);
+    });
+    svg.onmouseleave = function () { hideTip(); document.querySelectorAll("#m1 .m1dot.hot").forEach(function (c) { c.classList.remove("hot"); }); };
+  }
+
   function isRecon(e) { return !!(e.r.ev && e.r.ev.some(function (ev) { return ev[0] === e.j && ev[6]; })); }
   function drawMove() {
     var svg = document.getElementById("move");
@@ -973,7 +1071,7 @@
   var CHART = "heat";
   try { CHART = localStorage.getItem("crosscheck.chart") || "heat"; } catch (e) {}
   var DRAW = { heat: drawHeat, sect: drawSectors, hist: drawHist };
-  if (HAS_MOVES) DRAW.move = drawMove;
+  if (HAS_MOVES) { DRAW.move = drawMove; DRAW.m1 = drawM1; }
   if (!DRAW[CHART]) CHART = "heat";
 
   function showChart(k) {
