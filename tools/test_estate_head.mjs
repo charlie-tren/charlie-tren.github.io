@@ -35,6 +35,7 @@ const SITES = {
   "Pendulum: Inequality": "https://charlietrenorden.com/inequality/",
   "Pendulum: Polarisation": "https://charlietrenorden.com/polarisation/",
   "Equity Research":   "https://charlietrenorden.com/research/",
+  "Crosscheck":        "https://charlietrenorden.com/crosscheck/",
   "Position Record":   "https://charlietrenorden.com/position-record/",
   "Crowdwise":         "https://crowdwise.charlietrenorden.com/",
   "DCF Studio":        "https://dcf.charlietrenorden.com/GOOGL",
