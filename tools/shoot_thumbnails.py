@@ -49,6 +49,7 @@ SITES = {
     "the-aftertimes": "https://aftertimes.charlietrenorden.com/",
     "photocopy": "https://charlietrenorden.com/photocopy/",
     "consensus-drift": "https://charlietrenorden.com/consensus-drift/",
+    "crosscheck": "https://charlietrenorden.com/crosscheck/",
     "lindy-effect": "https://charlietrenorden.com/lindy-effect/",
     "property-atlas": "https://charlietrenorden.com/property-atlas/",
     "crowdwise": "https://crowdwise.charlietrenorden.com/",
@@ -92,6 +93,9 @@ DISMISS = {
 # "Performing security verification". A managed challenge clears itself in a few
 # seconds, so waiting on real content rides it out instead of racing it.
 READY = {
+    # The table rows are drawn by script from the baked JSON; before that the card is
+    # a header and an empty table.
+    "crosscheck": "#tbl tbody tr",
     "thinkerings": "a[href*='/p/']",     # post links in the archive list
     # Pendulum draws its charts from a megabyte of JSON after load. Without this
     # the shot lands on the loading state, which is a card showing nothing.
@@ -267,6 +271,8 @@ PREPARE = {
 # default, so a site that keys off prefers-color-scheme renders in its light theme
 # unless told otherwise.
 SCHEME = {
+    # Defaults to dark unless the browser asks for light, so emulation picks the theme.
+    "crosscheck": "dark",
     "cfa-companion": "dark",
     # Bookmark has no light mode at all: a wall of cloth spines on a pale ground
     # reads as swatches. The emulation is set anyway so the shot cannot drift.
