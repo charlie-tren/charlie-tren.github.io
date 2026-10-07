@@ -190,6 +190,12 @@ MAX_WIDEN = 1.22        # how much side margin the frame may spend before the ty
 # not leave its card to chance - Beyond Small Talk drew "What's the highest you've
 # ever been?", which is not the line to lead a public site with.
 PREPARE = {
+    # The 16:10 frame ends inside the weights row, which put a strip of half-cut slider
+    # labels along the bottom of the card. Hide the controls so the frame ends on the
+    # chart key and the start of the table instead (07/10/2026).
+    "crosscheck": """() => {
+        document.querySelectorAll('.weights, .allbar').forEach(e => { e.style.display = 'none'; });
+    }""",
     # Set the text, then restore the page's own class contract: "q" plus a len-*
     # bucket that drives the type size. Setting only the bucket dropped the base
     # class and the question rendered at body size.
