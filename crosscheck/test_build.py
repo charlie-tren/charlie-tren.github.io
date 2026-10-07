@@ -670,3 +670,31 @@ class TestPriceTrend:
         build.append_history(self.rows(), {}, "2026-10-06", path)
         line = json.loads(path.read_text(encoding="utf-8").splitlines()[0])
         assert "m" in line and line["m"] is not None
+
+
+class TestExtendedRecord:
+    """The 2021-2024 cohorts ("b": 1, "x": 1): no strain leg, still events; the table's
+    move ignores them."""
+
+    def history(self):
+        return {"KO": [
+            {"d": "2021-06-30", "t": "KO", "p": 50.0, "s": None, "r": .3, "e": .4, "v": None, "m": .5, "b": 1, "x": 1},
+            {"d": "2025-06-30", "t": "KO", "p": 60.0, "s": .9, "r": .5, "e": .2, "v": .4, "b": 1},
+            {"d": "2026-09-12", "t": "KO", "p": 66.0, "s": .9, "r": .5, "e": None, "v": .4},
+        ]}
+
+    def test_an_extended_line_with_no_strain_is_still_an_event(self):
+        h = self.history()
+        dates = ["2021-06-30", "2025-06-30", "2026-09-12"]
+        ev = build.events_for(h["KO"], dates, dates)
+        assert ev[0][0] == 0 and ev[0][1] is None and ev[0][-1] == 1
+
+    def test_the_table_move_starts_outside_the_extended_record(self):
+        moves, since, n = build.moves_since_first(self.history())
+        assert moves["KO"]["from"] == "2025-06-30"
+        assert moves["KO"]["move"] == 10.0          # 60 -> 66, not 50 -> 66
+        assert since == "2025-06-30" and n == 2
+
+    def test_the_path_still_runs_from_the_earliest_line(self):
+        moves, _, _ = build.moves_since_first(self.history())
+        assert moves["KO"]["i0"] == 0 and moves["KO"]["mvs"][0] == 0.0
