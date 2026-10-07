@@ -2,3 +2,4 @@ utc,script,batch,securities,fields,dates,worst_case_hits,rows_returned,names_ret
 2026-10-07T11:20Z,"probe (BEST_EPS_3MO_PCT_CHG, not a historical field)",-,1,1,2,2,0,0
 2026-10-07T11:25Z,BQL probe (not authorised on this login),-,1,1,2,0,0,0
 2026-10-07T11:26Z,pull_history.py,1,50,1,16,800,789,50
+2026-10-07T11:36Z,pull_history.py,2,50,1,16,800,783,49
