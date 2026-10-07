@@ -400,11 +400,11 @@
       <div class="wc"><div class="wlab"><label for="wStrain">Accounting Quality</label><span class="info" tabindex="0" role="button" aria-label="About Accounting Quality">i<span class="itip" role="tooltip">Shortfall's six accounting tests, ranked within sector. Cleaner accounts score higher.</span></span></div>
         <div class="wrow"><input type="range" id="wStrain" min="0" max="100" step="5" value="20"><b id="wStrainV">20%</b></div></div>
       <div class="wc"><div class="wlab"><label for="wDrift">Estimate Revisions</label><span class="info" tabindex="0" role="button" aria-label="About Estimate Revisions">i<span class="itip" role="tooltip">From Consensus Drift: analysts raising earnings estimates while the share price has not caught up. Both have to hold to score high.</span></span></div>
-        <div class="wrow"><input type="range" id="wDrift" min="0" max="100" step="5" value="40"><b id="wDriftV">40%</b></div></div>
+        <div class="wrow"><input type="range" id="wDrift" min="0" max="100" step="5" value="50"><b id="wDriftV">50%</b></div></div>
       <div class="wc"><div class="wlab"><label for="wDcf">Valuation</label><span class="info" tabindex="0" role="button" aria-label="About Valuation">i<span class="itip" role="tooltip">DCF Studio's value per share against the price, ranked within sector. Cheaper scores higher.</span></span></div>
         <div class="wrow"><input type="range" id="wDcf" min="0" max="100" step="5" value="0"><b id="wDcfV">0%</b></div></div>
       <div class="wc"><div class="wlab"><label for="wMom">Price Momentum</label><span class="info" tabindex="0" role="button" aria-label="About Price Momentum">i<span class="itip" role="tooltip">The share price over the past year, ranked within each exchange. A stronger year scores higher.</span></span></div>
-        <div class="wrow"><input type="range" id="wMom" min="0" max="100" step="5" value="40"><b id="wMomV">40%</b></div></div>
+        <div class="wrow"><input type="range" id="wMom" min="0" max="100" step="5" value="30"><b id="wMomV">30%</b></div></div>
     </div>
   </div>
 
@@ -828,6 +828,7 @@
     o.hk = hk; o.vals = vals;
     return vals;
   }
+  function isRecon(e) { return !!(e.r.ev && e.r.ev.some(function (ev) { return ev[0] === e.j && ev[6]; })); }
   function drawMove() {
     var svg = document.getElementById("move");
     var d = dims(svg, 400, 260), M = { l: 46, r: 14, t: 30, b: 48 };
@@ -840,11 +841,11 @@
     // each scoring date. At each horizon a fifth's line is the median over the
     // events with an observation there - a quarterly event has one at 90 days, a
     // weekly one at 7 - and a horizon with fewer than 40 events is not drawn.
-    var events = [];
+    var events = [], droppedRecon = 0;
     pool().forEach(function (r) {
       if (!r.ev || !r.mvs) return;
       r.ev.forEach(function (ev) {
-        var s0 = scoreAt(ev); if (s0 === null) return;
+        var s0 = scoreAt(ev); if (s0 === null) { if (ev[6]) droppedRecon++; return; }
         var o = obsFor(r, ev[0]); if (!o) return;
         events.push({ r: r, j: ev[0], s: s0, o: o, last: o.last });
       });
@@ -896,8 +897,13 @@
     // horizon short of MIN_N events draws nothing and would leave the right of the axis empty.
     var hdraw = 0; H.forEach(function (h, k) { if (counts[k] >= MIN_N) hdraw = h; });
     hdraw = hdraw || hmax;
-    var tstep = [7, 14, 30, 60, 90, 180, 365].filter(function (t) { return t / Math.max(1, hdraw) * pw >= 72; })[0] || 365;
-    var xmax = Math.max(tstep, Math.ceil(hdraw / tstep) * tstep);
+    // Past about 18 months the axis counts YEARS (Charlie, 07/10/2026); shorter records
+    // keep days, where a week is a meaningful step.
+    var YR = 365.25, inYears = hdraw > 540;
+    var tstep = inYears
+      ? ([1, 2].map(function (k) { return k * YR; }).filter(function (t) { return t / hdraw * pw >= 72; })[0] || 2 * YR)
+      : ([7, 14, 30, 60, 90, 180, 365].filter(function (t) { return t / Math.max(1, hdraw) * pw >= 72; })[0] || 365);
+    var xmax = Math.max(tstep, Math.ceil(hdraw / tstep - 1e-9) * tstep);
     var X = function (h) { return M.l + h / xmax * pw; };
     var Y = function (v) { return M.t + (hi - v) / (hi - lo) * ph; };
     var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
@@ -906,8 +912,10 @@
       parts.push('<line class="' + (g === 0 ? "rowrule" : "guide") + '" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '"/>');
       parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g) + 4).toFixed(1) + '" text-anchor="end">' + (g > 0 ? "+" : "") + g + "%</text>");
     }
-    for (var t = 0; t <= xmax; t += tstep) {
-      parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (M.t + ph + 16).toFixed(1) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + t + "d</text>");
+    for (var ti = 0; ti * tstep <= xmax + 1e-6; ti++) {
+      var t = ti * tstep;
+      var tl = inYears ? (ti === 0 ? "0" : Math.round(t / YR) + "y") : t + "d";
+      parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (M.t + ph + 16).toFixed(1) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + tl + "</text>");
     }
     // Lines join the drawn horizons; dots mark each one, because between a 90-day
     // observation and a 180-day one nothing was measured.
@@ -930,7 +938,7 @@
     events.forEach(function (e) { var v = e.v[bestK]; if (v !== null) pairs.push([e.s, v]); });
     var rho = spearman(pairs);
     parts.push('<text class="ax ctitle" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (M.t - 11) + '" text-anchor="middle">Share Price Move by Score Quintile</text>');
-    parts.push('<text class="ax" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (d.h - 3) + '" text-anchor="middle">Days Since Scored</text>');
+    parts.push('<text class="ax" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (d.h - 3) + '" text-anchor="middle">' + (inYears ? "Years" : "Days") + ' Since Scored</text>');
     parts.push('<line class="cursor" id="mcursor" x1="0" x2="0" y1="' + M.t + '" y2="' + (M.t + ph) + '" visibility="hidden"/>');
     svg.innerHTML = parts.join("");
     var nNames = {}; events.forEach(function (e) { nNames[e.r.ticker] = 1; });
@@ -939,7 +947,11 @@
       var v = series[bestK][q];
       return '<span class="ki"><i class="sw" style="background:' + fifthColour(q) + '"></i>' + FIFTH[q] +
              (v === null ? "" : " <b>" + (v > 0 ? "+" : "") + v.toFixed(1) + "%</b>") + "</span>";
-    }).join("");
+    }).join("") +
+      // Only when the weights leave the earlier record nothing to score it on (the 2-year
+      // preset): the chart is then a few weeks long, and without a word it reads as broken.
+      (droppedRecon > 0 && !events.some(function (e) { return isRecon(e); })
+        ? '<span class="ki knote">Accounts and valuation have no record before 12 Sep 2026, so these weights start there.</span>' : "");
     var cur = document.getElementById("mcursor");
     svg.onmousemove = throttled(function (ev) {
       var box = svg.getBoundingClientRect(), mx = ev.clientX - box.left;
@@ -947,7 +959,7 @@
       var k = 0, best = 1e9;
       H.forEach(function (h, i) { if (counts[i] < MIN_N) return; var dx = Math.abs(X(h) - mx); if (dx < best) { best = dx; k = i; } });
       cur.setAttribute("x1", X(H[k])); cur.setAttribute("x2", X(H[k])); cur.setAttribute("visibility", "visible");
-      showTip("<b>" + H[k] + " days</b>, " + counts[k] + " scores" +
+      showTip("<b>" + (H[k] >= YR ? (H[k] / YR).toFixed(1) + " years" : H[k] + " days") + "</b>, " + counts[k] + " scores" +
               '<span class="tl">' + series[k].map(function (v, q) {
                 return FIFTH[q] + " " + (v === null ? "-" : (v > 0 ? "+" : "") + v.toFixed(1) + "%");
               }).join("<br>") + "</span>", ev);
@@ -1002,7 +1014,7 @@
     rz = setTimeout(plot, 150);
   });
 
-  var W = { strain: 20, drift: 40, dcf: 0, mom: 40 };
+  var W = { strain: 20, drift: 50, dcf: 0, mom: 30 };
   var onlyAll = document.getElementById("onlyAll");
 
   // Rescore and re-rank the whole set. The three components arrive as percentiles from
@@ -1083,9 +1095,15 @@
   // at those horizons by the 06/01/2027 re-test (2 years at 12 months until the record is
   // long enough). The 6-month preset is a prior, not a finding: halfway, leaning on
   // accounts, the leg the literature puts at 6-12 months.
+  //
+  // Revised 07/10/2026. The reconstructed record (2021 onward) can only be scored on
+  // revisions and momentum, so presets that weighted those two 1:1 drew IDENTICAL charts
+  // (Charlie: "why does the graph not move at all between 1 month and 6 month"). The
+  // split now follows the horizon each signal works at: revisions fade within weeks,
+  // momentum is a 3-12 month effect. Both are priors, graded at the 06/01/2027 re-test.
   var HORIZON = {
-    short:  { strain: 20, drift: 40, dcf: 0,  mom: 40 },
-    medium: { strain: 35, drift: 20, dcf: 25, mom: 20 },
+    short:  { strain: 20, drift: 50, dcf: 0,  mom: 30 },
+    medium: { strain: 30, drift: 15, dcf: 20, mom: 35 },
     long:   { strain: 50, drift: 0,  dcf: 50, mom: 0 }
   };
   var SLIDER = { strain: "wStrain", drift: "wDrift", dcf: "wDcf", mom: "wMom" };
