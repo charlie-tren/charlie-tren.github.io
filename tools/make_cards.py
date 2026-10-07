@@ -54,7 +54,7 @@ SITES = {
     "cfa-companion": {
         "name": "CFA Companion",
         "css": "cfa-companion/style.css",
-        "copy": ("cfa-companion/index.html", "description"),
+        "copy": ("cfa-companion/index.html", "og:description"),
         "tokens": {"bg": "bg", "panel": "panel", "ink": "ink", "dim": "ink-2",
                    "faint": "ink-3", "rule": "rule", "accent": "accent"},
         "fonts": "Newsreader:wght@400;600&family=Inter:wght@400;500",
@@ -66,7 +66,7 @@ SITES = {
     "lexicon": {
         "name": "Lexicon",
         "css": "lexicon/index.html",
-        "copy": ("lexicon/index.html", "description"),
+        "copy": ("lexicon/index.html", "og:description"),
         "tokens": {"bg": "paper", "panel": "card", "ink": "ink", "dim": "ink-soft",
                    "faint": "ink-soft", "rule": "line", "accent": "oxblood"},
         "fonts": "Spectral:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600",
