@@ -411,7 +411,7 @@
         <div class="wrow"><input type="range" id="wStrain" min="0" max="100" step="5" value="20"><b id="wStrainV">20%</b></div></div>
       <div class="wc"><div class="wlab"><label for="wDrift">Estimate Revisions</label><span class="info" tabindex="0" role="button" aria-label="About Estimate Revisions">i<span class="itip" role="tooltip">From Consensus Drift: analysts raising earnings estimates while the share price has not caught up. Both have to hold to score high.</span></span></div>
         <div class="wrow"><input type="range" id="wDrift" min="0" max="100" step="5" value="50"><b id="wDriftV">50%</b></div></div>
-      <div class="wc"><div class="wlab"><label for="wDcf">Valuation</label><span class="info" tabindex="0" role="button" aria-label="About Valuation">i<span class="itip" role="tooltip">DCF Studio's value per share against the price, ranked within sector. Cheaper scores higher. No record before 12 Sep 2026, so on Move Since Scored it only shapes the weeks since.</span></span></div>
+      <div class="wc"><div class="wlab"><label for="wDcf">Valuation</label><span class="info" tabindex="0" role="button" aria-label="About Valuation">i<span class="itip" role="tooltip">DCF Studio's value per share against the price, ranked within sector. Cheaper scores higher. Rebuilt back to 2021 for US companies from the SEC filings, price and Treasury yield at each date; ASX companies only from 12 Sep 2026.</span></span></div>
         <div class="wrow"><input type="range" id="wDcf" min="0" max="100" step="5" value="0"><b id="wDcfV">0%</b></div></div>
       <div class="wc"><div class="wlab"><label for="wMom">Price Momentum</label><span class="info" tabindex="0" role="button" aria-label="About Price Momentum">i<span class="itip" role="tooltip">The share price over the past year, ranked within each exchange. A stronger year scores higher.</span></span></div>
         <div class="wrow"><input type="range" id="wMom" min="0" max="100" step="5" value="30"><b id="wMomV">30%</b></div></div>
@@ -770,7 +770,7 @@
   // a verdict. Spearman rho and n are printed for the same reason.
   function score0(r) {
     if (!r.h0) return null;
-    return r.h0[5] ? scoreOf({ pStrain: r.h0[6], pDrift: r.h0[1], pRev: r.h0[2], pMom: r.h0[4] })
+    return r.h0[5] ? scoreOf({ pStrain: r.h0[6], pDrift: r.h0[1], pRev: r.h0[2], pDcf: r.h0[7], pMom: r.h0[4] })
                    : scoreOf({ pStrain: r.h0[0], pDrift: r.h0[1], pRev: r.h0[2], pDcf: r.h0[3], pMom: r.h0[4] });
   }
   function spearman(pairs) {
@@ -800,9 +800,10 @@
   function scoreAt(ev) {   // the combined score from one event's components, at the current weights
     // A reconstructed day (ev[6]) is scored on its point-in-time legs only: estimate
     // revisions, price momentum (prices up to that date) and, for US names, Accounting
-    // Quality rebuilt from the SEC filings public by then (ev[9], strain_history.py) -
+    // Quality and Valuation rebuilt from the SEC filings public by then (ev[9],
+    // strain_history.py; ev[10], dcf_history.py running DCF Studio's own model) -
     // never the hindsight strain or DCF figures the line also carries.
-    return ev[6] ? scoreOf({ pStrain: ev[9], pDrift: ev[2], pRev: ev[3], pMom: ev[5] })
+    return ev[6] ? scoreOf({ pStrain: ev[9], pDrift: ev[2], pRev: ev[3], pDcf: ev[10], pMom: ev[5] })
                  : scoreOf({ pStrain: ev[1], pDrift: ev[2], pRev: ev[3], pDcf: ev[4], pMom: ev[5] });
   }
   // An event's price path does not depend on the weights, so it is built once per
