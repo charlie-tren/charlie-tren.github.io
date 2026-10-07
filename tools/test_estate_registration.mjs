@@ -116,8 +116,17 @@ for (const href of firstHop) {
   const child = path.join(ROOT, seg, "index.html");
   if (existsSync(child)) for (const h of linksIn(readFileSync(child, "utf8"))) reachable.add(h);
 }
+/* Links that live on a page this file cannot read. The one-hop walk above only
+   opens pages stored in THIS repo, and the project-Pages sites (Shortfall,
+   Consensus Drift, Lindy, Woop Woop, Photocopy) are separate repos served under
+   the same domain, so a link in their headers is invisible here. Each entry names
+   the page that carries the link, checked by hand on the date given. */
+const OFF_REPO_LINKS = {
+  crosscheck: "consensus-drift/ header and dcf.charlietrenorden.com header, checked 07/10/2026",
+};
 const reaches = (url) => {
   const seg = hubPath(url);
+  if (seg !== null && OFF_REPO_LINKS[seg]) return true;
   if (seg === null) return [...reachable].some((h) => h.includes(new URL(url).hostname));
   return [...reachable].some((h) => {
     const c = h.replace(/^https:\/\/charlietrenorden\.com/, "").replace(/^\.\.\//, "/").replace(/^\//, "");
