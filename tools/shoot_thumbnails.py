@@ -194,7 +194,7 @@ PREPARE = {
     # labels along the bottom of the card. Hide the controls so the frame ends on the
     # chart key and the start of the table instead (07/10/2026).
     "crosscheck": """() => {
-        document.querySelectorAll('.weights, .allbar').forEach(e => { e.style.display = 'none'; });
+        document.querySelectorAll('.controls, .allbar').forEach(e => { e.style.display = 'none'; });
     }""",
     # Set the text, then restore the page's own class contract: "q" plus a len-*
     # bucket that drives the type size. Setting only the bucket dropped the base
