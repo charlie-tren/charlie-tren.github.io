@@ -64,48 +64,6 @@
   "closed": [],
   "watching": [
     {
-      "name": "Mastercard / Visa",
-      "kind": "Equity pair",
-      "long": {
-        "name": "Mastercard",
-        "symbol": "MA"
-      },
-      "short": {
-        "name": "Visa",
-        "symbol": "V"
-      },
-      "window_days": 252,
-      "trigger_pct": -7.0,
-      "exit_days": 90,
-      "thesis": [
-        "Mastercard and Visa have moved together since 2008 and the ratio between them has no trend.",
-        "Mastercard has lagged since April. The reading is Mastercard's price over Visa's against its one-year average, and gaps this size have closed in a median of four months.",
-        "Holding the pair costs 5.4% a year, 6.35% charged on the long and 0.95% received on the short."
-      ],
-      "breaks": "Mastercard's revenue growth stays below Visa's and the old ratio never comes back."
-    },
-    {
-      "name": "Brent / WTI",
-      "kind": "Commodity pair",
-      "long": {
-        "name": "Brent crude",
-        "symbol": "BZ=F"
-      },
-      "short": {
-        "name": "WTI crude",
-        "symbol": "CL=F"
-      },
-      "window_days": 252,
-      "trigger_pct": -4.0,
-      "exit_days": 90,
-      "thesis": [
-        "Brent and WTI price the same barrel in two places, and the ratio between them has been stationary in every window since 2007.",
-        "Brent is $3 over WTI today and has averaged $6 over the last year. Of the 23 times the gap has been this narrow since 2008, 18 closed within 90 days.",
-        "On forward contracts there is no holding cost. It costs about 0.4% in spreads to open and close, plus a roll past expiry."
-      ],
-      "breaks": "The gap stays narrow for three months."
-    },
-    {
       "name": "WTI / Diesel",
       "kind": "Commodity pair",
       "long": {
