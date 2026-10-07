@@ -422,7 +422,13 @@ def test_a_watched_pair_is_read_from_prices_not_typed():
     if src.get("watching"):
         assert ">Watching</h2>" in page
         sec = _section(page, ">Watching</h2>")
-        assert 'data-label="Now">' in sec and "%" in sec
+        assert 'data-label="Now">' in sec
+        # A ratio pair reads in percent from its mean; a level (the diesel crack) in
+        # its own unit. Asserting "%" alone failed the day only the crack was watched.
+        if any(w.get("reading") != "level" for w in src["watching"]):
+            assert "%" in sec
+        if any(w.get("reading") == "level" for w in src["watching"]):
+            assert 'data-label="Now">$' in sec
         for slot in ("Thesis", "Breaks if"):
             assert f"<dt>{slot}</dt>" in sec, f"a watched pair needs a {slot} slot"
         for slot in ("Catalyst", "Measure", "Costs"):
