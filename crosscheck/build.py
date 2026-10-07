@@ -557,7 +557,7 @@ def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
             # Last element: 1 if the day was reconstructed ("b": 1). The page scores a
             # reconstructed day on its point-in-time legs only - see events_for.
             "h0": [first.get("s"), first.get("r"), first.get("e"), first.get("v"), first.get("m"),
-                   1 if first.get("b") else 0],
+                   1 if first.get("b") else 0, first.get("sp")],
             "i0": index[first["d"]],
             "mvs": mvs,
         }
@@ -581,7 +581,7 @@ def event_dates(history: dict) -> list:
 
 
 def events_for(lines: list, dates: list, ev_dates: list) -> list:
-    """[[date index, s, r, e, v, m, b, f1, f6], ...] for each event date on which this name has
+    """[[date index, s, r, e, v, m, b, f1, f6, sp], ...] for each event date on which this name has
     components and a price - what the chart scores it on that day."""
     index = {d: i for i, d in enumerate(dates)}
     by_date = {r["d"]: r for r in lines}
@@ -598,8 +598,10 @@ def events_for(lines: list, dates: list, ev_dates: list) -> list:
             # the long horizons of the forward test carry no hindsight (07/10/2026).
             # Then the 1-month and 6-month forward moves ("f1", "f6",
             # bbg/forward_returns.py), or None.
+            # Last: the point-in-time Accounting Quality percentile rebuilt from SEC
+            # filings ("sp", strain_history.py), US reconstructed lines only.
             out.append([index[d], r.get("s"), r.get("r"), r.get("e"), r.get("v"), r.get("m"),
-                        1 if r.get("b") else 0, r.get("f1"), r.get("f6")])
+                        1 if r.get("b") else 0, r.get("f1"), r.get("f6"), r.get("sp")])
     return out
 
 

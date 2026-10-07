@@ -411,7 +411,7 @@
          Accounting Quality pulls toward clean accounts, never toward Shortfall's raw
          strain score, which runs the other way. -->
     <div class="wgrid">
-      <div class="wc"><div class="wlab"><label for="wStrain">Accounting Quality</label><span class="info" tabindex="0" role="button" aria-label="About Accounting Quality">i<span class="itip" role="tooltip">Shortfall's six accounting tests, ranked within sector. Cleaner accounts score higher. No record before 12 Sep 2026, so on Move Since Scored it only shapes the weeks since.</span></span></div>
+      <div class="wc"><div class="wlab"><label for="wStrain">Accounting Quality</label><span class="info" tabindex="0" role="button" aria-label="About Accounting Quality">i<span class="itip" role="tooltip">Shortfall's six accounting tests, ranked within sector. Cleaner accounts score higher. Rebuilt back to 2021 for US companies from the SEC filings public at each date; ASX companies only from 12 Sep 2026.</span></span></div>
         <div class="wrow"><input type="range" id="wStrain" min="0" max="100" step="5" value="20"><b id="wStrainV">20%</b></div></div>
       <div class="wc"><div class="wlab"><label for="wDrift">Estimate Revisions</label><span class="info" tabindex="0" role="button" aria-label="About Estimate Revisions">i<span class="itip" role="tooltip">From Consensus Drift: analysts raising earnings estimates while the share price has not caught up. Both have to hold to score high.</span></span></div>
         <div class="wrow"><input type="range" id="wDrift" min="0" max="100" step="5" value="50"><b id="wDriftV">50%</b></div></div>
@@ -774,7 +774,7 @@
   // a verdict. Spearman rho and n are printed for the same reason.
   function score0(r) {
     if (!r.h0) return null;
-    return r.h0[5] ? scoreOf({ pDrift: r.h0[1], pRev: r.h0[2], pMom: r.h0[4] })
+    return r.h0[5] ? scoreOf({ pStrain: r.h0[6], pDrift: r.h0[1], pRev: r.h0[2], pMom: r.h0[4] })
                    : scoreOf({ pStrain: r.h0[0], pDrift: r.h0[1], pRev: r.h0[2], pDcf: r.h0[3], pMom: r.h0[4] });
   }
   function spearman(pairs) {
@@ -803,10 +803,10 @@
   function fifthColour(q) { return markColour([0.05, 0.3, 0.5, 0.7, 0.95][q]); }
   function scoreAt(ev) {   // the combined score from one event's components, at the current weights
     // A reconstructed day (ev[6]) is scored on its point-in-time legs only: estimate
-    // revisions and price momentum (backfill_momentum.py, prices up to that date). Its
-    // strain and DCF legs were filled in from later data, which is hindsight. With both
-    // of those weights at zero (the 2-year preset) such a day has no score and drops out.
-    return ev[6] ? scoreOf({ pDrift: ev[2], pRev: ev[3], pMom: ev[5] })
+    // revisions, price momentum (prices up to that date) and, for US names, Accounting
+    // Quality rebuilt from the SEC filings public by then (ev[9], strain_history.py) -
+    // never the hindsight strain or DCF figures the line also carries.
+    return ev[6] ? scoreOf({ pStrain: ev[9], pDrift: ev[2], pRev: ev[3], pMom: ev[5] })
                  : scoreOf({ pStrain: ev[1], pDrift: ev[2], pRev: ev[3], pDcf: ev[4], pMom: ev[5] });
   }
   // An event's price path does not depend on the weights, so it is built once per
@@ -874,7 +874,7 @@
     if (!starts.length) {
       svg.innerHTML = "";
       document.getElementById("m1key").style.paddingLeft = "0";
-      document.getElementById("m1key").innerHTML = '<span class="ki knote">Accounts and valuation have no record before 12 Sep 2026, and no ' +
+      document.getElementById("m1key").innerHTML = '<span class="ki knote">These weights have no record before 12 Sep 2026, and no ' +
         (M1P === 6 ? "six months have" : "month has") + ' finished since then, so these weights have nothing to show yet.</span>';
       return;
     }
@@ -1061,7 +1061,7 @@
       // Only when the weights leave the earlier record nothing to score it on (the 2-year
       // preset): the chart is then a few weeks long, and without a word it reads as broken.
       (droppedRecon > 0 && !events.some(function (e) { return isRecon(e); })
-        ? '<span class="ki knote">Accounts and valuation have no record before 12 Sep 2026, so these weights start there.</span>' : "");
+        ? '<span class="ki knote">These weights have no record before 12 Sep 2026, so they start there.</span>' : "");
     var cur = document.getElementById("mcursor");
     svg.onmousemove = throttled(function (ev) {
       var box = svg.getBoundingClientRect(), mx = ev.clientX - box.left;
