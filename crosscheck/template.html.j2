@@ -216,8 +216,13 @@
             font: 400 14px/1.3 ui-sans-serif, system-ui, sans-serif; }
   .search:focus { border-color: var(--accent); outline: none; }
 
+  /* content-visibility: the 400-row table is 7,000 elements, and every chart switch or
+     slider move re-laid it out even below the fold - about 100ms a switch on a slower CPU
+     (measured 07/10/2026). The browser now skips its layout and paint until it scrolls
+     into view. */
   .tablewrap { overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
-               border: 1px solid var(--rule); border-radius: 6px; }
+               border: 1px solid var(--rule); border-radius: 6px;
+               content-visibility: auto; contain-intrinsic-size: auto 2400px; }
   .tablewrap::-webkit-scrollbar { display: none; }
   /* Fixed layout: auto layout shifts every column whenever the widest value in one of
      them changes, which happens on every sort. */
@@ -538,7 +543,7 @@
   // ---- 1. histogram of the combined score, one name marked ----
   function drawHist() {
     var svg = document.getElementById("hist");
-    var d = dims(svg, 380, 230), M = { l: 56, r: 12, t: 12, b: 32 };
+    var d = dims(svg, 380, 230), M = { l: 56, r: 12, t: 12, b: 42 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
     var rows = pool(), f = focus();
     POOL_SORTED = rows.map(function (r) { return r.score; }).sort(function (a, b) { return a - b; });
@@ -559,7 +564,7 @@
       parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g) + 4).toFixed(1) + '" text-anchor="end">' + g + "</text>");
     }
     [0, 25, 50, 75, 100].forEach(function (v) {
-      parts.push('<text class="tk" x="' + X(v) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
+      parts.push('<text class="tk" x="' + X(v) + '" y="' + (M.t + ph + 16).toFixed(1) + '" text-anchor="middle">' + v + "</text>");
     });
     parts.push('<text class="ax" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (d.h - 2) + '" text-anchor="middle">Score</text>');
     // A y-axis title in its own column, rotated, rather than sharing the tick gutter.
@@ -611,7 +616,7 @@
     var svg = document.getElementById("sect");
     var S = sectorRows(), f = focus();
     POOL_SORTED = pool().map(function (r) { return r.score; }).sort(function (a, b) { return a - b; });
-    var rowH = 38, M = { l: 150, r: 12, t: 8, b: 32 };
+    var rowH = 38, M = { l: 150, r: 12, t: 8, b: 42 };
     var d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b);
     if (d.w < 520) { rowH = 30; M.l = 120; d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b); }
     var pw = d.w - M.l - M.r;
@@ -619,7 +624,7 @@
     var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + (S.length * rowH) + '"/>'];
     [0, 25, 50, 75, 100].forEach(function (v) {
       parts.push('<line class="guide" x1="' + X(v / 100) + '" x2="' + X(v / 100) + '" y1="' + M.t + '" y2="' + (M.t + S.length * rowH) + '"/>');
-      parts.push('<text class="tk" x="' + X(v / 100) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
+      parts.push('<text class="tk" x="' + X(v / 100) + '" y="' + (M.t + S.length * rowH + 16) + '" text-anchor="middle">' + v + "</text>");
     });
     parts.push('<text class="ax" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (d.h - 2) + '" text-anchor="middle">Score</text>');
     S.forEach(function (sec, i) {
@@ -755,7 +760,7 @@
   // a verdict. Spearman rho and n are printed for the same reason.
   function score0(r) {
     if (!r.h0) return null;
-    return r.h0[5] ? scoreOf({ pDrift: r.h0[1], pRev: r.h0[2] })
+    return r.h0[5] ? scoreOf({ pDrift: r.h0[1], pRev: r.h0[2], pMom: r.h0[4] })
                    : scoreOf({ pStrain: r.h0[0], pDrift: r.h0[1], pRev: r.h0[2], pDcf: r.h0[3], pMom: r.h0[4] });
   }
   function spearman(pairs) {
@@ -783,15 +788,49 @@
   var FIFTH = ["Bottom quintile", "Second", "Middle", "Fourth", "Top quintile"];
   function fifthColour(q) { return markColour([0.05, 0.3, 0.5, 0.7, 0.95][q]); }
   function scoreAt(ev) {   // the combined score from one event's components, at the current weights
-    // A reconstructed day (ev[6]) is scored on estimate revisions alone: its strain and
-    // DCF legs were filled in from later data, which is hindsight. With the revisions
-    // weight at zero (the 2-year preset) such a day has no score and drops out.
-    return ev[6] ? scoreOf({ pDrift: ev[2], pRev: ev[3] })
+    // A reconstructed day (ev[6]) is scored on its point-in-time legs only: estimate
+    // revisions and price momentum (backfill_momentum.py, prices up to that date). Its
+    // strain and DCF legs were filled in from later data, which is hindsight. With both
+    // of those weights at zero (the 2-year preset) such a day has no score and drops out.
+    return ev[6] ? scoreOf({ pDrift: ev[2], pRev: ev[3], pMom: ev[5] })
                  : scoreOf({ pStrain: ev[1], pDrift: ev[2], pRev: ev[3], pDcf: ev[4], pMom: ev[5] });
+  }
+  // An event's price path does not depend on the weights, so it is built once per
+  // (company, scoring date) and its value at each horizon is memoised. The chart used to
+  // rebuild every path and search it at every horizon on every draw, about five million
+  // steps, which was most of the 400ms a switch to this chart took on a slower CPU.
+  var DAY = 86400000, T = DATES.map(function (x) { return Date.parse(x); }), OBS = {};
+  function obsFor(r, j) {
+    var key = r.ticker + "|" + j;
+    if (key in OBS) return OBS[key];
+    var out = null;
+    if (r.mvs && r.mvs[j] !== null) {
+      var base = 1 + r.mvs[j] / 100, obs = [];
+      for (var k = j + 1; k < r.mvs.length; k++)
+        if (r.mvs[k] !== null) obs.push([(T[k] - T[j]) / DAY, ((1 + r.mvs[k] / 100) / base - 1) * 100]);
+      if (obs.length) out = { obs: obs, last: obs[obs.length - 1], hk: null, vals: null };
+    }
+    return (OBS[key] = out);
+  }
+  // Every horizon in one walk of the path (both lists are in day order), cached against
+  // the horizon list it was computed for.
+  function valuesAt(o, H, TOL, hk) {
+    if (o.hk === hk) return o.vals;
+    var vals = new Array(H.length), i = 0, obs = o.obs;
+    for (var k = 0; k < H.length; k++) {
+      var h = H[k], tol = TOL[h], best = null, bestD = 1e9;
+      while (i < obs.length && obs[i][0] < h - tol) i++;
+      for (var m = i; m < obs.length && obs[m][0] <= h + tol; m++) {
+        var dd = Math.abs(obs[m][0] - h); if (dd < bestD) { bestD = dd; best = obs[m][1]; }
+      }
+      vals[k] = best;
+    }
+    o.hk = hk; o.vals = vals;
+    return vals;
   }
   function drawMove() {
     var svg = document.getElementById("move");
-    var d = dims(svg, 400, 260), M = { l: 46, r: 14, t: 30, b: 40 };
+    var d = dims(svg, 400, 260), M = { l: 46, r: 14, t: 30, b: 48 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
     // AN EVENT STUDY. Every (name, scoring date) is one event: the score as the
     // components stood that day, then the price move from that day to each later
@@ -801,17 +840,13 @@
     // each scoring date. At each horizon a fifth's line is the median over the
     // events with an observation there - a quarterly event has one at 90 days, a
     // weekly one at 7 - and a horizon with fewer than 40 events is not drawn.
-    var DAY = 86400000, T = DATES.map(function (x) { return Date.parse(x); });
     var events = [];
     pool().forEach(function (r) {
       if (!r.ev || !r.mvs) return;
       r.ev.forEach(function (ev) {
-        var j = ev[0], s0 = scoreAt(ev); if (s0 === null || r.mvs[j] === null) return;
-        var base = 1 + r.mvs[j] / 100, obs = [];
-        for (var k = j + 1; k < r.mvs.length; k++) {
-          if (r.mvs[k] !== null) obs.push([(T[k] - T[j]) / DAY, ((1 + r.mvs[k] / 100) / base - 1) * 100]);
-        }
-        if (obs.length) events.push({ r: r, j: j, s: s0, obs: obs, last: obs[obs.length - 1] });
+        var s0 = scoreAt(ev); if (s0 === null) return;
+        var o = obsFor(r, ev[0]); if (!o) return;
+        events.push({ r: r, j: ev[0], s: s0, o: o, last: o.last });
       });
     });
     var byDate = {};
@@ -829,17 +864,14 @@
     for (var h1 = 7; h1 <= Math.min(42, hmax); h1 += 7) { H.push(h1); TOL[h1] = 3; }
     for (var h2 = 90; h2 <= hmax + 12; h2 += 90) { H.push(h2); TOL[h2] = 12; }
     var step = 7;
-    var MIN_N = 40, series = [], counts = [];
-    H.forEach(function (h) {
-      var n = 0, meds = [], tol = TOL[h];
+    var MIN_N = 40, series = [], counts = [], HK = H.join(",");
+    events.forEach(function (e) { e.v = valuesAt(e.o, H, TOL, HK); });
+    H.forEach(function (h, hi) {
+      var n = 0, meds = [];
+      var byQ = [[], [], [], [], []];
+      events.forEach(function (e) { var v = e.v[hi]; if (v !== null) byQ[e.q].push(v); });
       for (var q = 0; q < 5; q++) {
-        var v = [];
-        events.forEach(function (e) {
-          if (e.q !== q) return;
-          var bestI = -1, bestD = 1e9;
-          for (var i = 0; i < e.obs.length; i++) { var dd = Math.abs(e.obs[i][0] - h); if (dd <= tol && dd < bestD) { bestD = dd; bestI = i; } }
-          if (bestI >= 0) v.push(e.obs[bestI][1]);
-        });
+        var v = byQ[q];
         v.sort(function (p, r) { return p - r; });
         n += v.length; meds.push(v.length ? v[Math.floor(v.length / 2)] : null);
       }
@@ -862,7 +894,7 @@
     }
     var tstep = [7, 14, 30, 60, 90, 120, 180, 240].filter(function (t) { return xmax % t === 0 && X(t) - X(0) >= 72; })[0] || xmax;
     for (var t = 0; t <= xmax; t += tstep) {
-      parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (d.h - 22) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + t + "d</text>");
+      parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (M.t + ph + 16).toFixed(1) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + t + "d</text>");
     }
     // Lines join the drawn horizons; dots mark each one, because between a 90-day
     // observation and a 180-day one nothing was measured.
@@ -882,9 +914,9 @@
     counts.forEach(function (n, k) { if (H[k] === 90 && n >= MIN_N) bestK = k; });
     if (bestK < 0) counts.forEach(function (n, k) { if (n >= MIN_N) bestK = k; });
     var pairs = [], tolB = TOL[H[bestK]];
-    events.forEach(function (e) { for (var i = 0; i < e.obs.length; i++) if (Math.abs(e.obs[i][0] - H[bestK]) <= tolB) { pairs.push([e.s, e.obs[i][1]]); break; } });
+    events.forEach(function (e) { var v = e.v[bestK]; if (v !== null) pairs.push([e.s, v]); });
     var rho = spearman(pairs);
-    parts.push('<text class="ax ctitle" x="' + M.l + '" y="' + (M.t - 11) + '">Share Price Move by Score Quintile</text>');
+    parts.push('<text class="ax ctitle" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (M.t - 11) + '" text-anchor="middle">Share Price Move by Score Quintile</text>');
     parts.push('<text class="ax" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (d.h - 3) + '" text-anchor="middle">Days Since Scored</text>');
     parts.push('<line class="cursor" id="mcursor" x1="0" x2="0" y1="' + M.t + '" y2="' + (M.t + ph) + '" visibility="hidden"/>');
     svg.innerHTML = parts.join("");
@@ -894,11 +926,7 @@
       var v = series[bestK][q];
       return '<span class="ki"><i class="sw" style="background:' + fifthColour(q) + '"></i>' + FIFTH[q] +
              (v === null ? "" : " <b>" + (v > 0 ? "+" : "") + v.toFixed(1) + "%</b>") + "</span>";
-    }).join("") + '<span class="ki knote">Medians &middot; ' +
-      (rho === null ? "" : "rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " at " + H[bestK] + " days &middot; ") +
-      Object.keys(nNames).length + " names" +
-      (BACKFILLED_UNTIL ? " &middot; days before " + fmtDate(DATES[Math.min(DATES.length - 1, DATES.indexOf(BACKFILLED_UNTIL) + 1)]) +
-        " reconstructed and scored on estimate revisions only" : "") + "</span>";
+    }).join("");
     var cur = document.getElementById("mcursor");
     svg.onmousemove = throttled(function (ev) {
       var box = svg.getBoundingClientRect(), mx = ev.clientX - box.left;
@@ -941,7 +969,18 @@
 
   // Only the visible chart is drawn. A hidden figure measures zero wide, and drawing
   // into it would size every label off nothing.
-  function plot() { DRAW[CHART](); }
+  // A chart already drawn for the same inputs is left alone, so flicking back to one
+  // costs nothing. VER moves whenever the scores or the pool change (rescore), and the
+  // key also carries the width, the search and the theme, which change the drawing.
+  var VER = 0, DRAWN = {};
+  function plot() {
+    var svg = document.getElementById(CHART);
+    var key = [VER, svg ? svg.parentElement.clientWidth : 0, q.value, picked,
+               document.documentElement.getAttribute("data-theme")].join("|");
+    if (DRAWN[CHART] === key) return;
+    DRAW[CHART]();
+    DRAWN[CHART] = key;
+  }
   window.crosscheckRedraw = function () { plot(); render(); };
 
   var rz;
@@ -983,6 +1022,7 @@
     return den > 0 ? Math.exp(num / den) : null;
   }
   function rescore() {
+    VER++;
     ROWS.forEach(function (r) { r.score = scoreOf(r) || 0; });
     var pool = ROWS.filter(function (r) { return !onlyAll.checked || r.complete; });
     var ordered = pool.slice().sort(function (a, b) {
@@ -1054,8 +1094,15 @@
   document.querySelectorAll("#horizon button").forEach(function (b) {
     b.addEventListener("click", function () { setWeights(HORIZON[b.dataset.h]); });
   });
+  // One redraw per frame while a slider is dragged; input fires far faster than that.
+  var weightsQueued = false;
+  function queueWeights() {
+    if (weightsQueued) return;
+    weightsQueued = true;
+    requestAnimationFrame(function () { weightsQueued = false; readWeights(); });
+  }
   ["wStrain", "wDrift", "wDcf", "wMom"].forEach(function (id) {
-    document.getElementById(id).addEventListener("input", readWeights);
+    document.getElementById(id).addEventListener("input", queueWeights);
   });
   document.getElementById("wReset").addEventListener("click", function () {
     ["wStrain", "wDrift", "wDcf", "wMom"].forEach(function (id) {
