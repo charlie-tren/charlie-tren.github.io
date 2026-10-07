@@ -78,7 +78,7 @@ def scores_by_year(build_data, fetch_us, meta):
         rows = []
         for t, recs in history.items():
             # The latest year and the THREE before it, as live Shortfall sweeps four
-            # years (run_build.YEARS): some tests average over every prior they are
+            # years (run_build.years_for, rolling on 1 April): some tests average over every prior they are
             # handed, so a deeper history would score a different test.
             upto = [r for r in recs if fy - 3 <= r.year <= fy]
             row = build_data.assemble_name(upto)
