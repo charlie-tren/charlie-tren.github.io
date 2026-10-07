@@ -70,7 +70,14 @@
   .nav { order: 2; display: flex; align-items: baseline; gap: 1.3rem; flex-wrap: wrap;
          justify-content: flex-end; }
   .home { order: 0; }
-  .sib { letter-spacing: .08em; }
+  /* The three sites this page is built from are pills in mixed case; the way back
+     to the hub stays the plain uppercase link. Charlie, 07/10/2026: the four read as
+     one kind of thing when they all wore the same treatment. */
+  .sib { text-transform: none; letter-spacing: .02em; font-size: 13px; border: 1px solid var(--rule);
+         border-radius: 999px; padding: .38rem .8rem; }
+  .sib:hover { border-color: var(--accent); }
+  .nav { gap: .55rem; align-items: center; }
+  .nav .home:not(.sib) { margin-left: .9rem; }
   /* Muted, not accent. A single bright glyph in a grey line is the loudest thing in
      the header and it points away from the page. */
   .home .back { font-size: 14px; position: relative; top: 1px; }
@@ -92,13 +99,14 @@
   .segmented { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px;
                overflow: hidden; margin: 0 0 1rem; max-width: 100%; }
   .segmented button { appearance: none; background: transparent; border: 0; cursor: pointer;
-                      color: var(--soft); padding: .48rem .9rem; white-space: nowrap;
-                      font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em;
+                      color: var(--soft); padding: .62rem 1.1rem; white-space: nowrap;
+                      font: 500 13.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .03em;
                       transition: background .15s, color .15s; }
   .segmented button + button { border-left: 1px solid var(--rule); }
   .segmented button:hover { color: var(--ink); }
   .segmented button[aria-pressed="true"] { background: var(--raised); color: var(--ink); }
   .segmented.hz { margin: 0; }
+  .weights.hzrow { gap: .6rem 1.05rem; }
   .weights.hzrow + .weights { margin-top: .9rem; }
   /* One chart, drawn large: most of the 1120px column. The plot area sits on its own
      tinted ground so it separates from the paper. */
@@ -130,6 +138,8 @@
   .rowrule { stroke: var(--rule); stroke-width: 1; }
   .tk { fill: var(--faint); font: 400 11px/1 ui-sans-serif, system-ui, sans-serif;
         font-variant-numeric: tabular-nums; }
+  .ctitle { font-size: 12.5px !important; fill: var(--ink); }
+  .knote { flex-basis: 100%; color: var(--faint); }
   .ax { fill: var(--soft); font: 500 10px/1 ui-sans-serif, system-ui, sans-serif;
         letter-spacing: .08em; text-transform: uppercase; }
   .key { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin-top: .5rem; }
@@ -148,22 +158,23 @@
      presets are defaults, not findings. */
   .weights { display: flex; align-items: center; gap: .5rem 1.05rem; flex-wrap: wrap;
              margin: 1.4rem 0 0; }
-  .wl { font: 500 10px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .09em;
+  .wl { font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .09em;
         text-transform: uppercase; color: var(--faint); }
-  .w { display: inline-flex; align-items: center; gap: .5rem;
-       font: 400 12px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
+  .w { display: inline-flex; align-items: center; gap: .55rem;
+       font: 400 13.5px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
   /* 64px, not 82: four sliders on one row of the 1072px column needed the room back
      (measured 06/10/2026, when the fourth leg arrived). */
   .w input { width: 64px; accent-color: var(--accent); }
   .w b { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500;
          min-width: 2.6em; }
-  .chk { display: inline-flex; align-items: center; gap: .45rem; cursor: pointer;
-         font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
+  .chk { display: inline-flex; align-items: center; gap: .5rem; cursor: pointer;
+         font: 400 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
+  .chk input { width: 16px; height: 16px; }
   .chk input { accent-color: var(--accent); }
   .allbar { display: flex; align-items: center; gap: 1rem; margin: 1rem 0 0; flex-wrap: wrap; }
   .clear { appearance: none; background: transparent; border: 1px solid var(--rule);
-           border-radius: 999px; padding: .3rem .8rem; cursor: pointer; color: var(--soft);
-           font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; }
+           border-radius: 999px; padding: .45rem .95rem; cursor: pointer; color: var(--soft);
+           font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .03em; }
   .clear:hover { border-color: var(--accent); color: var(--ink); }
   .count { font: 400 13px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
   /* Each source dated on its own, never one page date: the three refresh on different
@@ -269,7 +280,7 @@
     .segmented { display: flex; }
     .segmented button { flex: 1 1 0; padding: .48rem .3rem; font-size: 11px; letter-spacing: .02em; }
     .segmented.hz { display: inline-flex; }
-    .segmented.hz button { flex: 0 0 auto; padding: .48rem .8rem; }
+    .segmented.hz button { flex: 0 0 auto; padding: .58rem .8rem; font-size: 12.5px; }
 
     h1 { font-size: 1.9rem; }
     .grid { grid-template-columns: auto repeat(3, 1fr); }
@@ -344,12 +355,14 @@
   <div class="weights hzrow">
     <span class="wl">Horizon</span>
     <div class="segmented hz" id="horizon" role="group" aria-label="Horizon">
-      <button type="button" data-h="months" aria-pressed="true">Months</button>
-      <button type="button" data-h="years" aria-pressed="false">Years</button>
+      <button type="button" data-h="short" aria-pressed="true"><span class="hfull">Short-term</span><span class="hshort">Short</span></button>
+      <button type="button" data-h="medium" aria-pressed="false"><span class="hfull">Medium-term</span><span class="hshort">Medium</span></button>
+      <button type="button" data-h="long" aria-pressed="false"><span class="hfull">Long-term</span><span class="hshort">Long</span></button>
     </div>
-    <!-- Even sits with the horizons rather than at the end of the sliders: it is a
-         preset like them, and four sliders plus a button did not fit one row. -->
-    <button class="clear" id="wReset" type="button">Even</button>
+    <!-- Even is a preset like the horizons, so it wears the same pill at the same size. -->
+    <div class="segmented hz" role="group" aria-label="Equal weights">
+      <button type="button" id="wReset" aria-pressed="false">Even</button>
+    </div>
   </div>
   <div class="weights">
     <!-- Each label says what MORE WEIGHT FAVOURS, not which column it comes from.
@@ -357,7 +370,7 @@
          ZERO on Shortfall - correct, because a high score is worse and the measure is
          inverted before it is weighted, but it reads as a bug. A weight control has one
          job: to say which way it pulls. -->
-    <span class="wl">Rank favours</span>
+    <span class="wl">Weights</span>
     <label class="w"><span>Clean accounts</span>
       <input type="range" id="wStrain" min="0" max="100" step="5" value="20">
       <b id="wStrainV">20%</b></label>
@@ -390,7 +403,7 @@
         <col class="c-score"><col class="c-gap">{% if has_dcf %}<col class="c-dcf">{% endif %}<col class="c-trend">{% if has_moves %}<col class="c-move">{% endif %}
       </colgroup>
       <thead><tr>
-        <th data-k="rank" class="num" title="Position among the companies on this page, combining the four measures at the weights set below. Rank 1 scores best on them at those weights."><span class="hfull">Rank (1 = best)</span><span class="hshort">Rank</span><span class="ar">&#9650;</span></th>
+        <th data-k="rank" class="num" title="Rank 1 scores best on the four measures at the weights below."><span class="hfull">Rank (1 = best)</span><span class="hshort">Rank</span><span class="ar">&#9650;</span></th>
         <th data-k="ticker" class="c-tick-cell">Ticker<span class="ar">&#9650;</span></th>
         <th data-k="name">Company<span class="ar">&#9650;</span></th>
         <th data-k="sector" class="c-sect-cell">Sector<span class="ar">&#9650;</span></th>
@@ -398,7 +411,7 @@
         <th data-k="gap" class="num">Drift (pp)<span class="ar">&#9650;</span></th>
         {% if has_dcf %}<th data-k="dcf" class="c-dcf-cell">DCF<span class="ar">&#9650;</span></th>{% endif %}
         <th data-k="ret_1y" class="num c-trend-cell">Past Year<span class="ar">&#9650;</span></th>
-        {% if has_moves %}<th data-k="move" class="num c-move-cell" title="Price move since the company was first scored here, on {{ since }}. A move in the share price, not a return: no dividends, no position.">Move<span class="ar">&#9650;</span></th>{% endif %}
+        {% if has_moves %}<th data-k="move" class="num c-move-cell" title="Share price move since first scored here on {{ since }}, without dividends.">Move<span class="ar">&#9650;</span></th>{% endif %}
       </tr></thead>
       <tbody id="tb"></tbody>
     </table>
@@ -518,7 +531,7 @@
     [0, 25, 50, 75, 100].forEach(function (v) {
       parts.push('<text class="tk" x="' + X(v) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
     });
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined score</text>');
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined Score</text>');
     parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 6) + '">Companies</text>');
     var fk = f ? Math.min(BINS - 1, Math.floor(f.score * 100 / (100 / BINS))) : -1;
     for (i = 0; i < BINS; i++) {
@@ -577,7 +590,7 @@
       parts.push('<line class="guide" x1="' + X(v / 100) + '" x2="' + X(v / 100) + '" y1="' + M.t + '" y2="' + (M.t + S.length * rowH) + '"/>');
       parts.push('<text class="tk" x="' + X(v / 100) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
     });
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined score, median marked</text>');
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined Score</text>');
     S.forEach(function (sec, i) {
       var cy = M.t + i * rowH + rowH / 2;
       if (i > 0) parts.push('<line class="rowrule" x1="' + M.l + '" x2="' + (d.w - M.r) + '" y1="' + (cy - rowH / 2) + '" y2="' + (cy - rowH / 2) + '"/>');
@@ -673,9 +686,9 @@
     });
     svg.innerHTML = parts.join("");
     document.getElementById("heatkey").innerHTML =
-      '<span class="ki"><i class="sw" style="background:' + heatColour(0.85) + '"></i>Sector sits high on this measure</span>' +
+      '<span class="ki"><i class="sw" style="background:' + heatColour(0.85) + '"></i>High</span>' +
       '<span class="ki"><i class="sw" style="background:' + heatColour(0.5) + ';border:1px solid var(--rule)"></i>Middle</span>' +
-      '<span class="ki"><i class="sw" style="background:' + heatColour(0.15) + '"></i>Sits low</span>';
+      '<span class="ki"><i class="sw" style="background:' + heatColour(0.15) + '"></i>Low</span>';
     svg.onmousemove = function (ev) {
       var t = ev.target;
       if (!t.classList || !t.classList.contains("hcell")) { hideTip(); return; }
@@ -728,7 +741,7 @@
   }
   function drawMove() {
     var svg = document.getElementById("move");
-    var d = dims(svg, 400, 260), M = { l: 46, r: 14, t: 24, b: 30 };
+    var d = dims(svg, 400, 260), M = { l: 46, r: 14, t: 30, b: 40 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
     // AN EVENT STUDY. Every (name, scoring date) is one event: the score as the
     // components stood that day, then the price move from that day to each later
@@ -794,9 +807,9 @@
       parts.push('<line class="' + (g === 0 ? "rowrule" : "guide") + '" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '"/>');
       parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g) + 4).toFixed(1) + '" text-anchor="end">' + (g > 0 ? "+" : "") + g + "%</text>");
     }
-    var tstep = [7, 14, 30, 60, 90, 180].filter(function (t) { return X(t) - X(0) >= 52; })[0] || 180;
+    var tstep = [7, 14, 30, 60, 90, 180].filter(function (t) { return X(t) - X(0) >= 72; })[0] || 180;
     for (var t = 0; t <= hmax; t += tstep) {
-      parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (d.h - 12) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + t + "d</text>");
+      parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (d.h - 22) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + t + "d</text>");
     }
     // Lines join the drawn horizons; dots mark each one, because between a 90-day
     // observation and a 180-day one nothing was measured.
@@ -804,7 +817,7 @@
       var pts = [], lastK = -1;
       series.forEach(function (m, k) { if (m[q] !== null) { pts.push(X(H[k]).toFixed(1) + "," + Y(m[q]).toFixed(1)); lastK = k; } });
       if (pts.length > 1) parts.push('<polyline class="mline' + (q === 2 ? " mid" : "") + '" stroke="' + fifthColour(q) + '" points="' + pts.join(" ") + '"/>');
-      if (step > 1) series.forEach(function (m, k) { if (m[q] !== null) parts.push('<circle class="mdot" cx="' + X(H[k]).toFixed(1) + '" cy="' + Y(m[q]).toFixed(1) + '" r="3" fill="' + fifthColour(q) + '"/>'); });
+      if (step > 1) series.forEach(function (m, k) { if (m[q] !== null) parts.push('<circle class="mdot" cx="' + X(H[k]).toFixed(1) + '" cy="' + Y(m[q]).toFixed(1) + '" r="2.2" fill="' + fifthColour(q) + '"/>'); });
       else if (lastK >= 0) parts.push('<circle class="mdot" cx="' + X(H[lastK]).toFixed(1) + '" cy="' + Y(series[lastK][q]).toFixed(1) + '" r="3.5" fill="' + fifthColour(q) + '"/>');
     });
     // Rho at the longest horizon most events reach, so it is one horizon and not a
@@ -818,9 +831,8 @@
     var pairs = [], tolB = TOL[H[bestK]];
     events.forEach(function (e) { for (var i = 0; i < e.obs.length; i++) if (Math.abs(e.obs[i][0] - H[bestK]) <= tolB) { pairs.push([e.s, e.obs[i][1]]); break; } });
     var rho = spearman(pairs);
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 8) + '">Median move by fifth of the score when scored' + (d.w < 520 ? "" :
-               (rho === null ? "" : " (rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " at " + H[bestK] + " days, " + pairs.length + " events)")) + "</text>");
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Days since scored</text>');
+    parts.push('<text class="ax ctitle" x="' + M.l + '" y="' + (M.t - 11) + '">Median Move by Score Fifth</text>');
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 3) + '">Days Since Scored</text>');
     parts.push('<line class="cursor" id="mcursor" x1="0" x2="0" y1="' + M.t + '" y2="' + (M.t + ph) + '" visibility="hidden"/>');
     svg.innerHTML = parts.join("");
     var nNames = {}; events.forEach(function (e) { nNames[e.r.ticker] = 1; });
@@ -828,8 +840,10 @@
       var v = series[bestK][q];
       return '<span class="ki"><i class="sw" style="background:' + fifthColour(q) + '"></i>' + FIFTH[q] +
              (v === null ? "" : " <b>" + (v > 0 ? "+" : "") + v.toFixed(1) + "%</b>") + "</span>";
-    }).join("") + '<span class="ki">' + events.length + " events over " + Object.keys(nNames).length + " names, scored on " + Object.keys(byDate).length + " dates" +
-      (BACKFILLED_UNTIL ? ", reconstructed before " + fmtDate(DATES[Math.min(DATES.length - 1, DATES.indexOf(BACKFILLED_UNTIL) + 1)]) : "") + "</span>";
+    }).join("") + '<span class="ki knote">' +
+      (rho === null ? "" : "Rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " at " + H[bestK] + " days &middot; ") +
+      Object.keys(nNames).length + " names" +
+      (BACKFILLED_UNTIL ? " &middot; reconstructed before " + fmtDate(DATES[Math.min(DATES.length - 1, DATES.indexOf(BACKFILLED_UNTIL) + 1)]) : "") + "</span>";
     var cur = document.getElementById("mcursor");
     svg.onmousemove = function (ev) {
       var box = svg.getBoundingClientRect(), mx = ev.clientX - box.left;
@@ -837,7 +851,7 @@
       var k = 0, best = 1e9;
       H.forEach(function (h, i) { if (counts[i] < MIN_N) return; var dx = Math.abs(X(h) - mx); if (dx < best) { best = dx; k = i; } });
       cur.setAttribute("x1", X(H[k])); cur.setAttribute("x2", X(H[k])); cur.setAttribute("visibility", "visible");
-      showTip("<b>" + H[k] + " days</b> after scoring, " + counts[k] + " events" +
+      showTip("<b>" + H[k] + " days</b>, " + counts[k] + " scores" +
               '<span class="tl">' + series[k].map(function (v, q) {
                 return FIFTH[q] + " " + (v === null ? "-" : (v > 0 ? "+" : "") + v.toFixed(1) + "%");
               }).join("<br>") + "</span>", ev);
@@ -941,7 +955,7 @@
     render();
     plot();
   }
-  // Horizon presets. The legs work on different clocks, and averaging them evenly is
+  // Horizon presets (Short = the old Months, Long = the old Years). The legs work on different clocks, and averaging them evenly is
   // what left the combined score with no predictive power: measured 06/10/2026 off this
   // page's own record (live from 12/09, ~410 names a day, forward to 06/10), estimate
   // revisions ran a rank IC of about +0.3 and the DCF leg about -0.3, so at equal
@@ -956,9 +970,14 @@
   // leg with a 15-year record on this universe (monthly IC +0.018 in 2011-2020 and in
   // a 2021-2026 holdout), where drift has three weeks. Over 12 months the same signal
   // is noise (IC +0.018, t 0.39), so Years leaves it out.
+  //
+  // Medium-term (07/10/2026) is a prior, not a finding: halfway between the two,
+  // leaning on accounts, the leg the literature puts at 6-12 months. The 06/01/2027
+  // re-test grades it on 3-6 month returns.
   var HORIZON = {
-    months: { strain: 20, drift: 40, dcf: 0,  mom: 40 },
-    years:  { strain: 50, drift: 0,  dcf: 50, mom: 0 }
+    short:  { strain: 20, drift: 40, dcf: 0,  mom: 40 },
+    medium: { strain: 35, drift: 20, dcf: 25, mom: 20 },
+    long:   { strain: 50, drift: 0,  dcf: 50, mom: 0 }
   };
   var SLIDER = { strain: "wStrain", drift: "wDrift", dcf: "wDcf", mom: "wMom" };
   function setWeights(w) {
@@ -966,13 +985,15 @@
     readWeights();
   }
   // A preset reads as pressed only while the sliders still say exactly what it set, so
-  // touching a slider or pressing Even leaves neither horizon claiming the result.
+  // touching a slider leaves no preset claiming the result. Even counts as one.
   function markHorizon() {
     document.querySelectorAll("#horizon button").forEach(function (b) {
       var p = HORIZON[b.dataset.h];
       var on = Object.keys(SLIDER).every(function (k) { return W[k] === p[k]; });
       b.setAttribute("aria-pressed", on ? "true" : "false");
     });
+    var ks = Object.keys(SLIDER), even = W[ks[0]] > 0 && ks.every(function (k) { return W[k] === W[ks[0]]; });
+    document.getElementById("wReset").setAttribute("aria-pressed", even ? "true" : "false");
   }
   document.querySelectorAll("#horizon button").forEach(function (b) {
     b.addEventListener("click", function () { setWeights(HORIZON[b.dataset.h]); });
@@ -1021,18 +1042,15 @@
   }
   function moveTip(r) {
     if (r.move === null) return "No price on record for this company on two days in one currency.";
-    return "The share price has moved " + (r.move > 0 ? "+" : "") + r.move.toFixed(1) + "% since " +
-           SINCE + ", when this company was first scored here (" + N_DAYS + " trading days).";
+    return "Share price " + (r.move > 0 ? "+" : "") + r.move.toFixed(1) + "% since first scored on " + SINCE + ".";
   }
   function trendTip(r) {
     if (r.ret_1y === null || r.ret_1y === undefined) return "No 12-month price history for this company.";
-    return "The share price moved " + (r.ret_1y > 0 ? "+" : "") + (r.ret_1y * 100).toFixed(1) +
-           "% over the past year, ranked against the other companies on its own exchange.";
+    return "Share price " + (r.ret_1y > 0 ? "+" : "") + (r.ret_1y * 100).toFixed(1) + "% over the past year.";
   }
   function dcfTip(r) {
     if (r.dcf === null) return "DCF Studio could not produce a usable value for this company.";
-    return "DCF Studio's model values the shares at " + r.dcf.toFixed(2) +
-           " times the market price, which is the " + r.dcfband +
+    return "DCF Studio values the shares at " + r.dcf.toFixed(2) + "x the price: the " + r.dcfband +
            " third of the " + N_DCF + " it can value.";
   }
 
@@ -1111,7 +1129,7 @@
   if (incoming) q.value = incoming;
 
   showChart(CHART);
-  setWeights(HORIZON.months);
+  setWeights(HORIZON.short);
   render();
 
   var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
