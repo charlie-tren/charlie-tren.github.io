@@ -13,3 +13,16 @@ project's own repo, since most directories here are deploy targets.
   - The **Thinkerings card** links to `https://thinkerings.substack.com/`. The
     blog and the podcast share a name, so a card with two destinations needs a
     decision about which one the card is for.
+
+- [ ] **Point the Position Record trigger alert at an inbox that is read.**
+  **Charlie-only.** `position-record/alert.py` opens a GitHub issue assigned to
+  `charlie-tren` when a watched pair crosses its trigger, and GitHub emails the
+  assignee. That account's notification address is charlie.rochfordgroup@gmail.com,
+  so a trigger fires into an inbox he does not read. charlie.tren@gmail.com cannot
+  be added: GitHub answers "email is already in use", because the dormant
+  `charlietren` account holds it. The fix is about two minutes, all on his side:
+  sign into `charlietren` (GitHub's account switcher keeps `charlie-tren` signed
+  in), remove the address there, add and verify it on `charlie-tren`, and set it
+  as the default under Settings, Notifications. A session can then re-fire the
+  test with `gh workflow run "Refresh position record" -f alert_test=true` and
+  confirm the mail lands. Left mid-flow 23/09/2026; nothing has fired since.
