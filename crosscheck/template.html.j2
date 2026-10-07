@@ -862,9 +862,15 @@
     // drew each cohort's own path in turn and the line was the seams between them.
     var H = [], TOL = {};
     for (var h1 = 7; h1 <= Math.min(42, hmax); h1 += 7) { H.push(h1); TOL[h1] = 3; }
-    for (var h2 = 90; h2 <= hmax + 12; h2 += 90) { H.push(h2); TOL[h2] = 12; }
+    // Quarterly horizons step by a QUARTER (91.31 days), not 90: the cohorts and their
+    // observations sit on quarter-ends, and 90-day steps drift ~1.3 days a quarter off
+    // them, so past ~900 days every point fell outside the tolerance and the lines
+    // stopped (07/10/2026, once the 2021-2024 record arrived).
+    for (var kq = 1; Math.round(kq * 91.3125) <= hmax + 12; kq++) { var h2 = Math.round(kq * 91.3125); H.push(h2); TOL[h2] = 12; }
     var step = 7;
-    var MIN_N = 40, series = [], counts = [], HK = H.join(",");
+    // At least 100 events at a horizon (20 a quintile on average) before it is drawn:
+    // at 40, a horizon reached by a few dozen names drew one stock's jump as a quintile.
+    var MIN_N = 100, series = [], counts = [], HK = H.join(",");
     events.forEach(function (e) { e.v = valuesAt(e.o, H, TOL, HK); });
     H.forEach(function (h, hi) {
       var n = 0, meds = [];
@@ -883,7 +889,15 @@
     var pad = Math.max(0.5, (hi - lo) * 0.15); lo -= pad; hi += pad;
     // The axis ends on a round number at or past the last observation, so the final tick
     // is the end of the axis rather than wherever the 60-day steps happened to stop.
-    var xmax = hmax > 60 ? Math.ceil(hmax / 30) * 30 : Math.max(7, Math.ceil(hmax / 7) * 7);
+    // Tick step first (the smallest that leaves 72px between labels at this width), then
+    // the axis end rounded UP to a multiple of it, so the last tick is the axis end and
+    // the labels are evenly spaced whatever the record's length.
+    // The axis runs to the last horizon actually DRAWN, not the last observation: a
+    // horizon short of MIN_N events draws nothing and would leave the right of the axis empty.
+    var hdraw = 0; H.forEach(function (h, k) { if (counts[k] >= MIN_N) hdraw = h; });
+    hdraw = hdraw || hmax;
+    var tstep = [7, 14, 30, 60, 90, 180, 365].filter(function (t) { return t / Math.max(1, hdraw) * pw >= 72; })[0] || 365;
+    var xmax = Math.max(tstep, Math.ceil(hdraw / tstep) * tstep);
     var X = function (h) { return M.l + h / xmax * pw; };
     var Y = function (v) { return M.t + (hi - v) / (hi - lo) * ph; };
     var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
@@ -892,7 +906,6 @@
       parts.push('<line class="' + (g === 0 ? "rowrule" : "guide") + '" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '"/>');
       parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g) + 4).toFixed(1) + '" text-anchor="end">' + (g > 0 ? "+" : "") + g + "%</text>");
     }
-    var tstep = [7, 14, 30, 60, 90, 120, 180, 240].filter(function (t) { return xmax % t === 0 && X(t) - X(0) >= 72; })[0] || xmax;
     for (var t = 0; t <= xmax; t += tstep) {
       parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (M.t + ph + 16).toFixed(1) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + t + "d</text>");
     }
@@ -911,7 +924,7 @@
     // so it pools the most events at a length that means something - falling back to
     // the longest horizon with enough events while the record is shorter than that.
     var bestK = -1;
-    counts.forEach(function (n, k) { if (H[k] === 90 && n >= MIN_N) bestK = k; });
+    counts.forEach(function (n, k) { if (H[k] === 91 && n >= MIN_N) bestK = k; });
     if (bestK < 0) counts.forEach(function (n, k) { if (n >= MIN_N) bestK = k; });
     var pairs = [], tolB = TOL[H[bestK]];
     events.forEach(function (e) { var v = e.v[bestK]; if (v !== null) pairs.push([e.s, v]); });

@@ -533,6 +533,10 @@ def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
             dates.add(r["d"])
     order = sorted(dates)
     index = {d: i for i, d in enumerate(order)}
+    # The table's "move since first scored" starts at a name's first line OUTSIDE the
+    # extended 2021-2024 record ("x": 1), so the column keeps one meaning; the path (mvs)
+    # still runs from the earliest line, which is what the forward-test chart reads.
+    since_main = min((r["d"] for lines in history.values() for r in lines if not r.get("x")), default=None)
     for t, lines in history.items():
         priced = [r for r in lines if r.get("p")]
         if len(priced) < 2:
@@ -540,13 +544,16 @@ def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
         first, last = priced[0], priced[-1]
         if first["d"] == last["d"] or first.get("c") != last.get("c"):
             continue
+        main = [r for r in priced if not r.get("x")]
+        start = main[0] if main else first
         mvs: list = [None] * len(order)
         for r in priced:
             if r.get("c") == first.get("c"):
                 mvs[index[r["d"]]] = round((r["p"] / first["p"] - 1) * 100, 1)
         out[t] = {
-            "move": round((last["p"] / first["p"] - 1) * 100, 2),
-            "from": first["d"],
+            "move": (round((last["p"] / start["p"] - 1) * 100, 2)
+                     if start["d"] != last["d"] and start.get("c") == last.get("c") else None),
+            "from": start["d"],
             # Last element: 1 if the day was reconstructed ("b": 1). The page scores a
             # reconstructed day on its point-in-time legs only - see events_for.
             "h0": [first.get("s"), first.get("r"), first.get("e"), first.get("v"), first.get("m"),
@@ -554,7 +561,7 @@ def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
             "i0": index[first["d"]],
             "mvs": mvs,
         }
-    return out, (order[0] if order else None), len(order)
+    return out, since_main, len([d for d in order if since_main and d >= since_main])
 
 
 def event_dates(history: dict) -> list:
@@ -581,7 +588,9 @@ def events_for(lines: list, dates: list, ev_dates: list) -> list:
     out = []
     for d in ev_dates:
         r = by_date.get(d)
-        if r and r.get("p") and r.get("s") is not None:
+        # A line needs a price and at least one leg. The extended 2021-2024 cohorts
+        # ("x": 1) carry no strain reading, only drift and momentum, and still count.
+        if r and r.get("p") and (r.get("s") is not None or r.get("r") is not None):
             # b = 1 marks a reconstructed day. Its estimate revisions (Bloomberg BEST_EPS,
             # Consensus Drift's weekly commits) and its price are point-in-time; its
             # Shortfall strain comes from a later snapshot and its DCF leg divides TODAY's
