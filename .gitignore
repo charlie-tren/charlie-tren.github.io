@@ -2,3 +2,7 @@
 __pycache__/
 crosscheck/bbg/daily_closes.pkl
 crosscheck/strain_frames.pkl
+crosscheck/dcf_frames.pkl
+crosscheck/dcf_market.pkl
+crosscheck/_dcf_in.json
+crosscheck/_dcf_out.json
