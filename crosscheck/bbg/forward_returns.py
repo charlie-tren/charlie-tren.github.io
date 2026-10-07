@@ -1,4 +1,4 @@
-"""Add each reconstructed line's 1-month forward move ("f1") from daily prices.
+"""Add each reconstructed line's 1-month and 6-month forward moves ("f1", "f6") from daily prices.
 
     python crosscheck/bbg/forward_returns.py      # after ingest_history.py, every time
 
@@ -45,26 +45,33 @@ def main() -> int:
         px.to_pickle(CACHE)
     today = pd.Timestamp(date.today())
     added = cleared = 0
+    # f1: the last close on or before 30 calendar days later; f6: 183 days (half a year).
+    HORIZONS = (("f1", 30), ("f6", 183))
     for r in recon:
         d = pd.Timestamp(r["d"])
-        end = d + pd.Timedelta(days=30)
-        r.pop("f1", None)
-        if end > today or r["t"] not in px.columns:
+        for key, days in HORIZONS:
+            r.pop(key, None)
+        if r["t"] not in px.columns:
             cleared += 1
             continue
         s = px[r["t"]].dropna()
-        a, b = s[s.index <= d], s[s.index <= end]
-        if len(a) and len(b) and b.index[-1] > a.index[-1]:
-            r["f1"] = round(float(b.iloc[-1] / a.iloc[-1] - 1), 5)
-            added += 1
+        a = s[s.index <= d]
+        for key, days in HORIZONS:
+            end = d + pd.Timedelta(days=days)
+            if end > today:
+                continue
+            b = s[s.index <= end]
+            if len(a) and len(b) and b.index[-1] > a.index[-1]:
+                r[key] = round(float(b.iloc[-1] / a.iloc[-1] - 1), 5)
+                added += key == "f1"
     out = [json.dumps(r, separators=(",", ":")) for r in lines]
     kept = [l for l in raw if l.strip()]
     changed_obs = sum(1 for a, b, r in zip(kept, out, lines) if not r.get("b") and a != b)
     assert changed_obs == 0, f"{changed_obs} observed lines would change"
     HISTORY.write_text("\n".join(out) + "\n", encoding="utf-8")
-    dates = sorted({r["d"] for r in recon if "f1" in r})
-    print(f"f1 on {added} of {len(recon)} reconstructed lines ({cleared} month not finished or no price); "
-          f"{len(dates)} start dates, {dates[0]} .. {dates[-1]}")
+    d1 = sorted({r["d"] for r in recon if "f1" in r}); d6 = sorted({r["d"] for r in recon if "f6" in r})
+    print(f"f1 on {added} of {len(recon)} reconstructed lines; {len(d1)} 1-month start dates, "
+          f"{len(d6)} 6-month start dates ({d6[0]} .. {d6[-1]})")
     return 0
 
 

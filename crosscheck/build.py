@@ -581,7 +581,7 @@ def event_dates(history: dict) -> list:
 
 
 def events_for(lines: list, dates: list, ev_dates: list) -> list:
-    """[[date index, s, r, e, v, m, b, f1], ...] for each event date on which this name has
+    """[[date index, s, r, e, v, m, b, f1, f6], ...] for each event date on which this name has
     components and a price - what the chart scores it on that day."""
     index = {d: i for i, d in enumerate(dates)}
     by_date = {r["d"]: r for r in lines}
@@ -596,9 +596,10 @@ def events_for(lines: list, dates: list, ev_dates: list) -> list:
             # Shortfall strain comes from a later snapshot and its DCF leg divides TODAY's
             # model value by the old price. The page drops those two legs for b = 1, so
             # the long horizons of the forward test carry no hindsight (07/10/2026).
-            # Last: the 1-month forward move ("f1", bbg/forward_returns.py), or None.
+            # Then the 1-month and 6-month forward moves ("f1", "f6",
+            # bbg/forward_returns.py), or None.
             out.append([index[d], r.get("s"), r.get("r"), r.get("e"), r.get("v"), r.get("m"),
-                        1 if r.get("b") else 0, r.get("f1")])
+                        1 if r.get("b") else 0, r.get("f1"), r.get("f6")])
     return out
 
 
