@@ -30,7 +30,7 @@
    "r-pace", "r-review", "r-done", "h-topic", "h-pace", "p-answered", "p-acc",
    "p-pace", "p-weak", "wipe", "plan", "pl-days", "pl-done", "pl-donecap",
    "pl-need", "pl-today", "pl-exam", "pl-target", "pl-extra",
-   "pl-addbtn", "pl-resetbtn", "pl-key", "pl-keysave", "pl-keynew", "pl-sync"].forEach(function (id) { el[id] = document.getElementById(id); });
+   "pl-addbtn", "pl-resetbtn", "pl-key", "pl-keycopy", "pl-keysave", "pl-keynew", "pl-sync"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   /* ---------------------------------------------------------------- storage */
 
@@ -237,7 +237,11 @@
   function paintSync(state, detail) {
     var cls = "syncstate" + (state === "bad" ? " bad" : state === "busy" ? " busy" : "");
     var text;
-    if (!store.key) text = "not syncing";
+    // An explicit message wins over every derived one, including the no-key case.
+    // Without this the copy button was inert in exactly the states it has something
+    // to say: with no key set, the first branch printed "not syncing" over it.
+    if (detail && state !== "busy") text = detail;
+    else if (!store.key) text = "not syncing";
     else if (state === "busy") text = "syncing";
     else if (state === "bad") text = detail || "sync failed";
     else {
@@ -322,6 +326,26 @@
       if (store.key) syncNow();
     });
 
+    // The key lives only in localStorage, so clearing site data takes it with it and
+    // the D1 row becomes unreachable by anyone, including me - only its SHA-256 is
+    // stored. Until there is an export, copying it somewhere safe is the whole backup,
+    // and selecting it out of a text field by hand is how it does not get done.
+    el["pl-keycopy"].addEventListener("click", function () {
+      var v = el["pl-key"].value.trim();
+      if (!v) { paintSync("bad", "no key to copy yet"); return; }
+      function done() { paintSync("ok", "key copied"); }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(v).then(done, function () {
+            el["pl-key"].select(); paintSync("ok", "key selected - press Ctrl+C");
+          });
+          return;
+        }
+      } catch (e) { /* falls through to the select */ }
+      el["pl-key"].select();
+      paintSync("ok", "key selected - press Ctrl+C");
+    });
+
     el["pl-keynew"].addEventListener("click", function () {
       store.key = rand(12);
       el["pl-key"].value = store.key;
@@ -346,7 +370,12 @@
   /* ------------------------------------------------------- the study plan */
 
   var TICK = 5;                  // seconds counted per tick
-  var IDLE = 300000;             // stop counting after five minutes untouched
+  // Fifteen minutes, not five. Reading a long worked solution without touching
+  // anything is the normal way to use this page, and at five minutes the clock
+  // stopped mid-read and under-counted the session. The visibility check below
+  // already handles the real case this guards - a tab left open and walked away
+  // from - so this only has to catch a visible tab nobody is in front of.
+  var IDLE = 900000;             // stop counting after fifteen minutes untouched
   var lastTouch = Date.now();
   var unsaved = 0;
 
