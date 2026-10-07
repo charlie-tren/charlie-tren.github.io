@@ -547,7 +547,10 @@ def moves_since_first(history: dict) -> tuple[dict, str | None, int]:
         out[t] = {
             "move": round((last["p"] / first["p"] - 1) * 100, 2),
             "from": first["d"],
-            "h0": [first.get("s"), first.get("r"), first.get("e"), first.get("v"), first.get("m")],
+            # Last element: 1 if the day was reconstructed ("b": 1). The page scores a
+            # reconstructed day on its point-in-time legs only - see events_for.
+            "h0": [first.get("s"), first.get("r"), first.get("e"), first.get("v"), first.get("m"),
+                   1 if first.get("b") else 0],
             "i0": index[first["d"]],
             "mvs": mvs,
         }
@@ -571,7 +574,7 @@ def event_dates(history: dict) -> list:
 
 
 def events_for(lines: list, dates: list, ev_dates: list) -> list:
-    """[[date index, s, r, e, v, m], ...] for each event date on which this name has
+    """[[date index, s, r, e, v, m, b], ...] for each event date on which this name has
     components and a price - what the chart scores it on that day."""
     index = {d: i for i, d in enumerate(dates)}
     by_date = {r["d"]: r for r in lines}
@@ -579,7 +582,13 @@ def events_for(lines: list, dates: list, ev_dates: list) -> list:
     for d in ev_dates:
         r = by_date.get(d)
         if r and r.get("p") and r.get("s") is not None:
-            out.append([index[d], r.get("s"), r.get("r"), r.get("e"), r.get("v"), r.get("m")])
+            # b = 1 marks a reconstructed day. Its estimate revisions (Bloomberg BEST_EPS,
+            # Consensus Drift's weekly commits) and its price are point-in-time; its
+            # Shortfall strain comes from a later snapshot and its DCF leg divides TODAY's
+            # model value by the old price. The page drops those two legs for b = 1, so
+            # the long horizons of the forward test carry no hindsight (07/10/2026).
+            out.append([index[d], r.get("s"), r.get("r"), r.get("e"), r.get("v"), r.get("m"),
+                        1 if r.get("b") else 0])
     return out
 
 
