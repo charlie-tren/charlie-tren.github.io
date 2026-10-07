@@ -139,7 +139,9 @@
   }
   /* One chart, drawn large: most of the 1120px column. The plot area sits on its own
      tinted ground so it separates from the paper. */
-  .charts { position: relative; max-width: 920px; margin: 0 0 1.4rem; }
+  /* Full column width: at 920px pinned left it read as off centre under a header that
+     spans the whole column (07/10/2026). */
+  .charts { position: relative; margin: 0 0 1.4rem; }
   .ground { fill: var(--motif-bg); }
   .ch { margin: 0; padding: 0; min-width: 0; }
   .ch[hidden] { display: none; }
@@ -208,7 +210,7 @@
 
   /* The control sits closer to the table than to what precedes it, or the eye files it
      with the block above. Measured: 8px below, 31px above. */
-  .toolbar { display: flex; gap: .75rem; align-items: center; margin: 2.4rem 0 .5rem; flex-wrap: wrap; }
+  .toolbar { display: flex; gap: .75rem 1.2rem; align-items: center; margin: 2.4rem 0 .5rem; flex-wrap: wrap; }
   .search { flex: 1 1 14rem; max-width: 20rem; background: var(--raised); color: var(--ink);
             border: 1px solid var(--rule); border-radius: 6px; padding: .5rem .7rem;
             font: 400 14px/1.3 ui-sans-serif, system-ui, sans-serif; }
@@ -401,15 +403,12 @@
     </div>
   </div>
 
-  <div class="allbar">
+  <div class="toolbar">
+    <input class="search" id="q" type="search" placeholder="Ticker or company" aria-label="Find a company">
     <label class="chk"><input type="checkbox" id="onlyAll" checked>
       Only names scored on all four</label>
     <button class="clear" id="clear" type="button" hidden>Clear</button>
     <span class="count" id="count"></span>
-  </div>
-
-  <div class="toolbar">
-    <input class="search" id="q" type="search" placeholder="Ticker or company" aria-label="Find a company">
   </div>
 
   <div class="tablewrap">
@@ -515,11 +514,26 @@
     tip.style.left = Math.max(0, left) + "px";
     tip.style.top = Math.max(0, ev.clientY - wrap.top - box.height - 10) + "px";
   }
+  // Rebuilding the tip and reading its size on EVERY mousemove forced a layout of the
+  // whole page, 600-row table included, which is what made the pointer feel slow
+  // (07/10/2026). The content is only replaced when it changes, and moves are batched
+  // to one per frame by throttled() below.
+  var tipHtml = null;
   function showTip(html, ev) {
-    tip.innerHTML = html; tip.hidden = false;
-    place(ev, document.querySelector(".charts").getBoundingClientRect());
+    if (html !== tipHtml) { tip.innerHTML = html; tipHtml = html; }
+    tip.hidden = false;
+    place(ev, chartsEl.getBoundingClientRect());
   }
-  function hideTip() { tip.hidden = true; }
+  var chartsEl = document.querySelector(".charts");
+  function throttled(fn) {
+    var pending = null;
+    return function (ev) {
+      var first = pending === null;
+      pending = ev;
+      if (first) requestAnimationFrame(function () { var e = pending; pending = null; fn(e); });
+    };
+  }
+  function hideTip() { tip.hidden = true; tipHtml = null; }
 
   // ---- 1. histogram of the combined score, one name marked ----
   function drawHist() {
@@ -547,7 +561,7 @@
     [0, 25, 50, 75, 100].forEach(function (v) {
       parts.push('<text class="tk" x="' + X(v) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
     });
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Score</text>');
+    parts.push('<text class="ax" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (d.h - 2) + '" text-anchor="middle">Score</text>');
     // A y-axis title in its own column, rotated, rather than sharing the tick gutter.
     parts.push('<text class="ax" transform="rotate(-90)" x="' + (-(M.t + ph / 2)).toFixed(1) + '" y="12" text-anchor="middle">No. Companies</text>');
     var fk = f ? Math.min(BINS - 1, Math.floor(f.score * 100 / (100 / BINS))) : -1;
@@ -567,7 +581,7 @@
                  f.ticker + " " + Math.round(f.score * 100) + "</text>");
     }
     svg.innerHTML = parts.join("");
-    svg.onmousemove = function (ev) {
+    svg.onmousemove = throttled(function (ev) {
       var t = ev.target;
       if (!t.classList || !t.classList.contains("bar-h")) { hideTip(); return; }
       var k = +t.dataset.b, lo = Math.round(k * 100 / BINS), hi = Math.round((k + 1) * 100 / BINS);
@@ -575,7 +589,7 @@
       showTip("<b>" + counts[k] + "</b> companies score " + lo + " to " + hi +
               (m.length ? '<span class="tl">' + m.slice(0, 6).map(function (r) { return r.ticker; }).join(", ") +
               (m.length > 6 ? " +" + (m.length - 6) : "") + "</span>" : ""), ev);
-    };
+    });
     svg.onmouseleave = hideTip;
   }
 
@@ -607,7 +621,7 @@
       parts.push('<line class="guide" x1="' + X(v / 100) + '" x2="' + X(v / 100) + '" y1="' + M.t + '" y2="' + (M.t + S.length * rowH) + '"/>');
       parts.push('<text class="tk" x="' + X(v / 100) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
     });
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Score</text>');
+    parts.push('<text class="ax" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (d.h - 2) + '" text-anchor="middle">Score</text>');
     S.forEach(function (sec, i) {
       var cy = M.t + i * rowH + rowH / 2;
       if (i > 0) parts.push('<line class="rowrule" x1="' + M.l + '" x2="' + (d.w - M.r) + '" y1="' + (cy - rowH / 2) + '" y2="' + (cy - rowH / 2) + '"/>');
@@ -620,12 +634,11 @@
         // dots and a hovered dot stays under the pointer.
         // +-8 in a 30px row leaves a 14px gutter, so one sector's dots never read as
         // its neighbour's. At +-10 the bands merged into one cloud.
-        var amp = rowH * 0.3;
-        // The FRACTIONAL part, by subtracting the floor: JavaScript's % keeps the sign,
-        // so "% 1" on a negative sine ran -3x..+1x the amplitude and dropped dots into the
-        // next sector's row (07/10/2026). Clamped to the plot so an end score stays on it.
-        var raw = Math.sin(j * 12.9898 + i * 78.233) * 43758.5453;
-        var jit = (raw - Math.floor(raw)) * amp * 2 - amp;
+        // ON the line, no vertical jitter: the vertical axis is the sector, so a dot
+        // drawn higher or lower implies a second variable that does not exist. Charlie
+        // asked why the dots moved vertically (07/10/2026); overlap now shows as density,
+        // through the dots' own transparency.
+        var jit = 0;
         var rad = r === f ? 5 : 3, cx = Math.max(M.l + rad, Math.min(M.l + pw - rad, X(r.score)));
         parts.push('<circle class="sdot' + (r === f ? " hot" : "") + '" data-i="' + ROWS.indexOf(r) + '" fill="' + markColour(scorePct(r.score)) +
                    '" cx="' + cx.toFixed(1) + '" cy="' + (cy + jit).toFixed(1) + '" r="' + rad + '"/>');
@@ -633,13 +646,13 @@
       parts.push('<line class="smed" x1="' + X(sec.median) + '" x2="' + X(sec.median) + '" y1="' + (cy - rowH * 0.42) + '" y2="' + (cy + rowH * 0.42) + '"/>');
     });
     svg.innerHTML = parts.join("");
-    svg.onmousemove = function (ev) {
+    svg.onmousemove = throttled(function (ev) {
       var t = ev.target;
       if (!t.classList || !t.classList.contains("sdot")) { hideTip(); return; }
       var r = ROWS[+t.dataset.i];
       showTip("<b>" + r.ticker + "</b> " + r.name + '<span class="tl">score <b>' + Math.round(r.score * 100) +
               "</b>, rank " + r.rank + " of " + pool().length + "</span>", ev);
-    };
+    });
     svg.onmouseleave = hideTip;
     svg.onclick = function (ev) {
       var t = ev.target;
@@ -674,6 +687,9 @@
   function heatDepth(v) { return Math.min(1, Math.abs(v - 0.5) / 0.35); }
   function drawHeat() {
     var svg = document.getElementById("heat");
+    // Built here too: the heatmap is the default chart and colours its Total column off
+    // this list, so it cannot wait for another chart to have drawn first.
+    POOL_SORTED = pool().map(function (r) { return r.score; }).sort(function (a, b) { return a - b; });
     var S = sectorRows();
     var rowH = 38, M = { l: 150, r: 4, t: 26, b: 6 };
     var d = dims(svg, M.t + S.length * rowH + M.b, M.t + S.length * rowH + M.b);
@@ -683,9 +699,10 @@
     // of three collided at 390.
     // The middle column is the drift LEG the rank uses (estimates rising AND price
     // behind), not the gap alone, so the chart and the sliders describe one thing.
+    // Total is the median of the score at the current weights, so it moves with the sliders.
     var COLS = d.w < 520
-      ? [["pStrain", "Accounts"], ["leg", "Revisions"], ["pDcf", "Value"], ["pMom", "Momentum"]]
-      : [["pStrain", "Accounting Quality"], ["leg", "Estimate Revisions"], ["pDcf", "Valuation"], ["pMom", "Price Momentum"]];
+      ? [["pStrain", "Accounts"], ["leg", "Revisions"], ["pDcf", "Value"], ["pMom", "Momentum"], ["score", "Total"]]
+      : [["pStrain", "Accounting Quality"], ["leg", "Estimate Revisions"], ["pDcf", "Valuation"], ["pMom", "Price Momentum"], ["score", "Total"]];
     var cw = (d.w - M.l - M.r) / COLS.length;
     var parts = [];
     COLS.forEach(function (c, j) {
@@ -698,11 +715,15 @@
         var v = sec.rows.map(function (r) { return c[0] === "leg" ? driftLeg(r) : r[c[0]]; }).filter(function (x) { return x !== null; }).sort(function (a, b) { return a - b; });
         var med = v.length ? v[Math.floor(v.length / 2)] : null;
         var x = M.l + cw * j;
+        // Total is a raw score whose median sits near 40, not a 0-100 rank, so it is
+        // coloured by where that median falls among all companies (scorePct), like the
+        // rest of the page's score colours; coloured as a rank every sector read low.
+        var tone = med === null ? null : (c[0] === "score" ? scorePct(med) : med);
         parts.push('<rect class="hcell" rx="3" data-s="' + i + '" data-c="' + j + '" x="' + x + '" y="' + y + '" width="' + cw + '" height="' + rowH +
-                   '" fill="' + (med === null ? "var(--rule)" : heatColour(med)) + '"/>');
+                   '" fill="' + (med === null ? "var(--rule)" : heatColour(tone)) + '"/>');
         // A middling figure is set soft, a strong one in ink and bold: the four numbers
         // that matter are the ones that read first.
-        if (med !== null) parts.push('<text class="hval' + (heatDepth(med) > 0.5 ? " strong" : "") + '" x="' + (x + cw / 2) + '" y="' + (y + rowH / 2 + 4) +
+        if (med !== null) parts.push('<text class="hval' + (heatDepth(tone) > 0.5 ? " strong" : "") + '" x="' + (x + cw / 2) + '" y="' + (y + rowH / 2 + 4) +
                    '">' + fmtPct(med) + "</text>");
       });
     });
@@ -713,7 +734,7 @@
       '<span class="ki"><i class="sw" style="background:' + heatColour(0.85) + '"></i>High</span>' +
       '<span class="ki"><i class="sw" style="background:' + heatColour(0.5) + ';border:1px solid var(--rule)"></i>Middle</span>' +
       '<span class="ki"><i class="sw" style="background:' + heatColour(0.15) + '"></i>Low</span>';
-    svg.onmousemove = function (ev) {
+    svg.onmousemove = throttled(function (ev) {
       var t = ev.target;
       if (!t.classList || !t.classList.contains("hcell")) { hideTip(); return; }
       var sec = S[+t.dataset.s], c = COLS[+t.dataset.c];
@@ -721,7 +742,7 @@
       showTip("<b>" + sec.sector + "</b> on " + c[1].toLowerCase() +
               '<span class="tl">median percentile <b>' + (v.length ? fmtPct(v[Math.floor(v.length / 2)]) : "-") +
               "</b> across " + v.length + " companies</span>", ev);
-    };
+    });
     svg.onmouseleave = hideTip;
   }
 
@@ -734,7 +755,8 @@
   // a verdict. Spearman rho and n are printed for the same reason.
   function score0(r) {
     if (!r.h0) return null;
-    return scoreOf({ pStrain: r.h0[0], pDrift: r.h0[1], pRev: r.h0[2], pDcf: r.h0[3], pMom: r.h0[4] });
+    return r.h0[5] ? scoreOf({ pDrift: r.h0[1], pRev: r.h0[2] })
+                   : scoreOf({ pStrain: r.h0[0], pDrift: r.h0[1], pRev: r.h0[2], pDcf: r.h0[3], pMom: r.h0[4] });
   }
   function spearman(pairs) {
     function ranks(a) {
@@ -758,10 +780,14 @@
     var p = d.split("-"), M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     return (+p[2]) + " " + M[+p[1] - 1];
   }
-  var FIFTH = ["Lowest fifth", "Second", "Middle", "Fourth", "Highest fifth"];
+  var FIFTH = ["Bottom quintile", "Second", "Middle", "Fourth", "Top quintile"];
   function fifthColour(q) { return markColour([0.05, 0.3, 0.5, 0.7, 0.95][q]); }
   function scoreAt(ev) {   // the combined score from one event's components, at the current weights
-    return scoreOf({ pStrain: ev[1], pDrift: ev[2], pRev: ev[3], pDcf: ev[4], pMom: ev[5] });
+    // A reconstructed day (ev[6]) is scored on estimate revisions alone: its strain and
+    // DCF legs were filled in from later data, which is hindsight. With the revisions
+    // weight at zero (the 2-year preset) such a day has no score and drops out.
+    return ev[6] ? scoreOf({ pDrift: ev[2], pRev: ev[3] })
+                 : scoreOf({ pStrain: ev[1], pDrift: ev[2], pRev: ev[3], pDcf: ev[4], pMom: ev[5] });
   }
   function drawMove() {
     var svg = document.getElementById("move");
@@ -858,8 +884,8 @@
     var pairs = [], tolB = TOL[H[bestK]];
     events.forEach(function (e) { for (var i = 0; i < e.obs.length; i++) if (Math.abs(e.obs[i][0] - H[bestK]) <= tolB) { pairs.push([e.s, e.obs[i][1]]); break; } });
     var rho = spearman(pairs);
-    parts.push('<text class="ax ctitle" x="' + M.l + '" y="' + (M.t - 11) + '">Median Move by Score Fifth</text>');
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 3) + '">Days Since Scored</text>');
+    parts.push('<text class="ax ctitle" x="' + M.l + '" y="' + (M.t - 11) + '">Share Price Move by Score Quintile</text>');
+    parts.push('<text class="ax" x="' + (M.l + pw / 2).toFixed(1) + '" y="' + (d.h - 3) + '" text-anchor="middle">Days Since Scored</text>');
     parts.push('<line class="cursor" id="mcursor" x1="0" x2="0" y1="' + M.t + '" y2="' + (M.t + ph) + '" visibility="hidden"/>');
     svg.innerHTML = parts.join("");
     var nNames = {}; events.forEach(function (e) { nNames[e.r.ticker] = 1; });
@@ -868,12 +894,13 @@
       var v = series[bestK][q];
       return '<span class="ki"><i class="sw" style="background:' + fifthColour(q) + '"></i>' + FIFTH[q] +
              (v === null ? "" : " <b>" + (v > 0 ? "+" : "") + v.toFixed(1) + "%</b>") + "</span>";
-    }).join("") + '<span class="ki knote">' +
-      (rho === null ? "" : "Rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " at " + H[bestK] + " days &middot; ") +
+    }).join("") + '<span class="ki knote">Medians &middot; ' +
+      (rho === null ? "" : "rho " + (rho > 0 ? "+" : "") + rho.toFixed(2) + " at " + H[bestK] + " days &middot; ") +
       Object.keys(nNames).length + " names" +
-      (BACKFILLED_UNTIL ? " &middot; reconstructed before " + fmtDate(DATES[Math.min(DATES.length - 1, DATES.indexOf(BACKFILLED_UNTIL) + 1)]) : "") + "</span>";
+      (BACKFILLED_UNTIL ? " &middot; days before " + fmtDate(DATES[Math.min(DATES.length - 1, DATES.indexOf(BACKFILLED_UNTIL) + 1)]) +
+        " reconstructed and scored on estimate revisions only" : "") + "</span>";
     var cur = document.getElementById("mcursor");
-    svg.onmousemove = function (ev) {
+    svg.onmousemove = throttled(function (ev) {
       var box = svg.getBoundingClientRect(), mx = ev.clientX - box.left;
       if (mx < M.l || mx > M.l + pw) { hideTip(); cur.setAttribute("visibility", "hidden"); return; }
       var k = 0, best = 1e9;
@@ -883,7 +910,7 @@
               '<span class="tl">' + series[k].map(function (v, q) {
                 return FIFTH[q] + " " + (v === null ? "-" : (v > 0 ? "+" : "") + v.toFixed(1) + "%");
               }).join("<br>") + "</span>", ev);
-    };
+    });
     svg.onmouseleave = function () { hideTip(); cur.setAttribute("visibility", "hidden"); };
   }
 
