@@ -15,6 +15,10 @@ project's own repo, since most directories here are deploy targets.
     decision about which one the card is for.
 
 - [ ] **Point the Position Record trigger alert at an inbox that is read.**
+  **07/10/2026: nothing to alert on for now.** Brent/WTI and Mastercard/Visa came
+  off Watching after failing their re-tests, and the one row left (WTI/Diesel) is
+  event-triggered, which `alert.py` skips (line 58). This only matters again when
+  a priced watch goes back on the page.
   **Charlie-only.** `position-record/alert.py` opens a GitHub issue assigned to
   `charlie-tren` when a watched pair crosses its trigger, and GitHub emails the
   assignee. That account's notification address is charlie.rochfordgroup@gmail.com,
