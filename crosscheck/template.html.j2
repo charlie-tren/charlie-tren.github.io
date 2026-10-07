@@ -10,7 +10,7 @@
 <meta name="description" content="A multi-factor stock ranking for S&amp;P 500 and ASX 200 companies: accounting quality, analyst estimate revisions, 12-month price momentum and DCF value against price, combined at weights you set.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Crosscheck">
-<meta property="og:description" content="{{ n }} companies ranked on accounts, estimates, price trend and model value, at weights you set.">
+<meta property="og:description" content="{{ n }} companies ranked on accounting quality, estimate revisions, valuation and momentum, at weights you set.">
 <meta property="og:url" content="https://charlietrenorden.com/crosscheck/">
 <link rel="canonical" href="https://charlietrenorden.com/crosscheck/">
 <meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
@@ -73,8 +73,8 @@
   /* The three sites this page is built from are pills in mixed case; the way back
      to the hub stays the plain uppercase link. Charlie, 07/10/2026: the four read as
      one kind of thing when they all wore the same treatment. */
-  .sib { text-transform: none; letter-spacing: .02em; font-size: 13px; border: 1px solid var(--rule);
-         border-radius: 999px; padding: .38rem .8rem; }
+  .sib { text-transform: none; letter-spacing: .02em; font-size: 14px; border: 1px solid var(--rule);
+         border-radius: 999px; padding: .5rem .95rem; }
   .sib:hover { border-color: var(--accent); }
   .nav { gap: .55rem; align-items: center; }
   .nav .home:not(.sib) { margin-left: .9rem; }
@@ -106,8 +106,37 @@
   .segmented button:hover { color: var(--ink); }
   .segmented button[aria-pressed="true"] { background: var(--raised); color: var(--ink); }
   .segmented.hz { margin: 0; }
-  .weights.hzrow { gap: .6rem 1.05rem; }
-  .weights.hzrow + .weights { margin-top: .9rem; }
+  /* Controls as one grid: a label column, then the horizon pills, then the four weights
+     as equal columns with the label above each slider. The flex row wrapped the fourth
+     slider onto a line of its own and read as clunky (07/10/2026). */
+  .controls { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.1rem 1.5rem;
+              align-items: center; margin: 1.6rem 0 0; }
+  .controls > .wl.top { align-self: start; padding-top: .2rem; }
+  .hzline { display: flex; gap: .6rem; flex-wrap: wrap; }
+  .wgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .9rem 1.8rem; }
+  .wlab { display: flex; align-items: center; gap: .4rem; margin-bottom: .5rem;
+          font: 400 13.5px/1.2 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
+  .wrow { display: flex; align-items: center; gap: .6rem; }
+  .wrow input { flex: 1 1 auto; min-width: 0; accent-color: var(--accent); }
+  .wrow b { font: 500 13.5px/1 ui-sans-serif, system-ui, sans-serif; font-variant-numeric: tabular-nums;
+            color: var(--ink); min-width: 2.6em; text-align: right; }
+  .info { position: relative; display: inline-flex; align-items: center; justify-content: center;
+          width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--faint); color: var(--soft);
+          font: 600 10px/1 ui-sans-serif, system-ui, sans-serif; cursor: help; flex: none; }
+  .info:hover, .info:focus { border-color: var(--accent); color: var(--ink); outline: none; }
+  .itip { display: none; position: absolute; bottom: calc(100% + 8px); left: -6px; z-index: 5;
+          width: 250px; padding: .6rem .7rem; border-radius: 6px; background: var(--raised);
+          border: 1px solid var(--rule); color: var(--ink); text-align: left;
+          font: 400 12.5px/1.45 ui-sans-serif, system-ui, sans-serif; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+  .wc:nth-child(4) .itip, .wc:nth-child(3) .itip { left: auto; right: -6px; }
+  .info:hover .itip, .info:focus .itip { display: block; }
+  @media (max-width: 720px) {
+    .controls { grid-template-columns: minmax(0, 1fr); gap: .7rem; }
+    .controls > .wl.top { padding-top: .6rem; }
+    .wgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem 1.2rem; }
+    .wc:nth-child(3) .itip { left: -6px; right: auto; }
+    .wc:nth-child(2) .itip { left: auto; right: -6px; }
+  }
   /* One chart, drawn large: most of the 1120px column. The plot area sits on its own
      tinted ground so it separates from the paper. */
   .charts { position: relative; max-width: 920px; margin: 0 0 1.4rem; }
@@ -139,10 +168,10 @@
   .tk { fill: var(--faint); font: 400 11px/1 ui-sans-serif, system-ui, sans-serif;
         font-variant-numeric: tabular-nums; }
   .ctitle { font-size: 12.5px !important; fill: var(--ink); }
-  .knote { flex-basis: 100%; color: var(--faint); }
+  .knote { flex-basis: 100%; color: var(--faint); justify-content: center; }
   .ax { fill: var(--soft); font: 500 10px/1 ui-sans-serif, system-ui, sans-serif;
         letter-spacing: .08em; text-transform: uppercase; }
-  .key { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin-top: .5rem; }
+  .key { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin-top: .7rem; justify-content: center; }
   .ki { display: inline-flex; align-items: center; gap: .4rem; color: var(--soft);
         font: 400 11.5px/1.4 ui-sans-serif, system-ui, sans-serif; }
   .sw { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
@@ -156,17 +185,8 @@
   /* The weights are EXPOSED because the combined score is the page's own opinion, and
      an opinion with a hidden formula is not one a reader can argue with. The horizon
      presets are defaults, not findings. */
-  .weights { display: flex; align-items: center; gap: .5rem 1.05rem; flex-wrap: wrap;
-             margin: 1.4rem 0 0; }
   .wl { font: 500 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .09em;
         text-transform: uppercase; color: var(--faint); }
-  .w { display: inline-flex; align-items: center; gap: .55rem;
-       font: 400 13.5px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
-  /* 64px, not 82: four sliders on one row of the 1072px column needed the room back
-     (measured 06/10/2026, when the fourth leg arrived). */
-  .w input { width: 64px; accent-color: var(--accent); }
-  .w b { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500;
-         min-width: 2.6em; }
   .chk { display: inline-flex; align-items: center; gap: .5rem; cursor: pointer;
          font: 400 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--soft); }
   .chk input { width: 16px; height: 16px; }
@@ -318,7 +338,7 @@
   </div>
 
   <h1>Crosscheck</h1>
-  <p class="lede">{{ n }} companies ranked on accounts, estimates, price trend and model value, at weights you set.</p>
+  <p class="lede">{{ n }} companies ranked on accounting quality, estimate revisions, valuation and momentum, at weights you set.</p>
 
   <!-- Three charts, chosen from thirteen rendered on the live rows. All three are
        aria-hidden and the table below carries every value they draw: they are
@@ -329,9 +349,9 @@
        the figures carry none of their own. All three are aria-hidden; the table below
        holds every value they draw. -->
   <div class="segmented" id="chartpick" role="group" aria-label="Choose a chart">
-    <button type="button" data-chart="heat" aria-pressed="true"><span class="hfull">Sector Medians by Measure</span><span class="hshort">By Measure</span></button>
-    <button type="button" data-chart="sect" aria-pressed="false"><span class="hfull">Combined Score by Sector</span><span class="hshort">By Sector</span></button>
-    <button type="button" data-chart="hist" aria-pressed="false"><span class="hfull">Combined Score Distribution</span><span class="hshort">Distribution</span></button>
+    <button type="button" data-chart="heat" aria-pressed="true"><span class="hfull">Sector Heatmap</span><span class="hshort">Heatmap</span></button>
+    <button type="button" data-chart="sect" aria-pressed="false"><span class="hfull">Score by Sector</span><span class="hshort">By Sector</span></button>
+    <button type="button" data-chart="hist" aria-pressed="false"><span class="hfull">Score Distribution</span><span class="hshort">Distribution</span></button>
     {% if has_moves %}<button type="button" data-chart="move" aria-pressed="false"><span class="hfull">Move Since Scored</span><span class="hshort">Move</span></button>{% endif %}
   </div>
   <div class="charts">
@@ -352,37 +372,33 @@
     <div class="tip" id="tip" hidden></div>
   </div>
 
-  <div class="weights hzrow">
+  <div class="controls">
     <span class="wl">Horizon</span>
-    <div class="segmented hz" id="horizon" role="group" aria-label="Horizon">
-      <button type="button" data-h="short" aria-pressed="true"><span class="hfull">Short-term</span><span class="hshort">Short</span></button>
-      <button type="button" data-h="medium" aria-pressed="false"><span class="hfull">Medium-term</span><span class="hshort">Medium</span></button>
-      <button type="button" data-h="long" aria-pressed="false"><span class="hfull">Long-term</span><span class="hshort">Long</span></button>
+    <div class="hzline">
+      <div class="segmented hz" id="horizon" role="group" aria-label="Horizon">
+        <button type="button" data-h="short" aria-pressed="true"><span class="hfull">1 month</span><span class="hshort">1 mo</span></button>
+        <button type="button" data-h="medium" aria-pressed="false"><span class="hfull">6 months</span><span class="hshort">6 mo</span></button>
+        <button type="button" data-h="long" aria-pressed="false"><span class="hfull">2 years</span><span class="hshort">2 yr</span></button>
+      </div>
+      <!-- Even is a preset like the horizons, so it wears the same pill at the same size. -->
+      <div class="segmented hz" role="group" aria-label="Equal weights">
+        <button type="button" id="wReset" aria-pressed="false">Even</button>
+      </div>
     </div>
-    <!-- Even is a preset like the horizons, so it wears the same pill at the same size. -->
-    <div class="segmented hz" role="group" aria-label="Equal weights">
-      <button type="button" id="wReset" aria-pressed="false">Even</button>
+    <span class="wl top">Weights</span>
+    <!-- Each measure is oriented so MORE WEIGHT favours the better reading: a slider on
+         Accounting Quality pulls toward clean accounts, never toward Shortfall's raw
+         strain score, which runs the other way. -->
+    <div class="wgrid">
+      <div class="wc"><div class="wlab"><label for="wStrain">Accounting Quality</label><span class="info" tabindex="0" role="button" aria-label="About Accounting Quality">i<span class="itip" role="tooltip">Shortfall's six accounting tests, ranked within sector. Cleaner accounts score higher.</span></span></div>
+        <div class="wrow"><input type="range" id="wStrain" min="0" max="100" step="5" value="20"><b id="wStrainV">20%</b></div></div>
+      <div class="wc"><div class="wlab"><label for="wDrift">Estimate Revisions</label><span class="info" tabindex="0" role="button" aria-label="About Estimate Revisions">i<span class="itip" role="tooltip">From Consensus Drift: analysts raising earnings estimates while the share price has not caught up. Both have to hold to score high.</span></span></div>
+        <div class="wrow"><input type="range" id="wDrift" min="0" max="100" step="5" value="40"><b id="wDriftV">40%</b></div></div>
+      <div class="wc"><div class="wlab"><label for="wDcf">Valuation</label><span class="info" tabindex="0" role="button" aria-label="About Valuation">i<span class="itip" role="tooltip">DCF Studio's value per share against the price, ranked within sector. Cheaper scores higher.</span></span></div>
+        <div class="wrow"><input type="range" id="wDcf" min="0" max="100" step="5" value="0"><b id="wDcfV">0%</b></div></div>
+      <div class="wc"><div class="wlab"><label for="wMom">Price Momentum</label><span class="info" tabindex="0" role="button" aria-label="About Price Momentum">i<span class="itip" role="tooltip">The share price over the past year, ranked within each exchange. A stronger year scores higher.</span></span></div>
+        <div class="wrow"><input type="range" id="wMom" min="0" max="100" step="5" value="40"><b id="wMomV">40%</b></div></div>
     </div>
-  </div>
-  <div class="weights">
-    <!-- Each label says what MORE WEIGHT FAVOURS, not which column it comes from.
-         Labelled "Shortfall", turning the slider to 100% surfaces the companies scoring
-         ZERO on Shortfall - correct, because a high score is worse and the measure is
-         inverted before it is weighted, but it reads as a bug. A weight control has one
-         job: to say which way it pulls. -->
-    <span class="wl">Weights</span>
-    <label class="w"><span>Clean accounts</span>
-      <input type="range" id="wStrain" min="0" max="100" step="5" value="20">
-      <b id="wStrainV">20%</b></label>
-    <label class="w"><span>Estimates rising, price behind</span>
-      <input type="range" id="wDrift" min="0" max="100" step="5" value="40">
-      <b id="wDriftV">40%</b></label>
-    <label class="w"><span>Value above price</span>
-      <input type="range" id="wDcf" min="0" max="100" step="5" value="0">
-      <b id="wDcfV">0%</b></label>
-    <label class="w"><span>Rising price, past year</span>
-      <input type="range" id="wMom" min="0" max="100" step="5" value="40">
-      <b id="wMomV">40%</b></label>
   </div>
 
   <div class="allbar">
@@ -508,7 +524,7 @@
   // ---- 1. histogram of the combined score, one name marked ----
   function drawHist() {
     var svg = document.getElementById("hist");
-    var d = dims(svg, 380, 230), M = { l: 36, r: 12, t: 22, b: 32 };
+    var d = dims(svg, 380, 230), M = { l: 56, r: 12, t: 12, b: 32 };
     var pw = d.w - M.l - M.r, ph = d.h - M.t - M.b;
     var rows = pool(), f = focus();
     POOL_SORTED = rows.map(function (r) { return r.score; }).sort(function (a, b) { return a - b; });
@@ -531,8 +547,9 @@
     [0, 25, 50, 75, 100].forEach(function (v) {
       parts.push('<text class="tk" x="' + X(v) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
     });
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined Score</text>');
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (M.t - 6) + '">Companies</text>');
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Score</text>');
+    // A y-axis title in its own column, rotated, rather than sharing the tick gutter.
+    parts.push('<text class="ax" transform="rotate(-90)" x="' + (-(M.t + ph / 2)).toFixed(1) + '" y="12" text-anchor="middle">No. Companies</text>');
     var fk = f ? Math.min(BINS - 1, Math.floor(f.score * 100 / (100 / BINS))) : -1;
     for (i = 0; i < BINS; i++) {
       var x0 = X(i * (100 / BINS)), x1 = X((i + 1) * (100 / BINS));
@@ -590,7 +607,7 @@
       parts.push('<line class="guide" x1="' + X(v / 100) + '" x2="' + X(v / 100) + '" y1="' + M.t + '" y2="' + (M.t + S.length * rowH) + '"/>');
       parts.push('<text class="tk" x="' + X(v / 100) + '" y="' + (d.h - 14) + '" text-anchor="middle">' + v + "</text>");
     });
-    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Combined Score</text>');
+    parts.push('<text class="ax" x="' + M.l + '" y="' + (d.h - 2) + '">Score</text>');
     S.forEach(function (sec, i) {
       var cy = M.t + i * rowH + rowH / 2;
       if (i > 0) parts.push('<line class="rowrule" x1="' + M.l + '" x2="' + (d.w - M.r) + '" y1="' + (cy - rowH / 2) + '" y2="' + (cy - rowH / 2) + '"/>');
@@ -604,9 +621,14 @@
         // +-8 in a 30px row leaves a 14px gutter, so one sector's dots never read as
         // its neighbour's. At +-10 the bands merged into one cloud.
         var amp = rowH * 0.3;
-        var jit = ((Math.sin(j * 12.9898 + i * 78.233) * 43758.5453) % 1) * amp * 2 - amp;
+        // The FRACTIONAL part, by subtracting the floor: JavaScript's % keeps the sign,
+        // so "% 1" on a negative sine ran -3x..+1x the amplitude and dropped dots into the
+        // next sector's row (07/10/2026). Clamped to the plot so an end score stays on it.
+        var raw = Math.sin(j * 12.9898 + i * 78.233) * 43758.5453;
+        var jit = (raw - Math.floor(raw)) * amp * 2 - amp;
+        var rad = r === f ? 5 : 3, cx = Math.max(M.l + rad, Math.min(M.l + pw - rad, X(r.score)));
         parts.push('<circle class="sdot' + (r === f ? " hot" : "") + '" data-i="' + ROWS.indexOf(r) + '" fill="' + markColour(scorePct(r.score)) +
-                   '" cx="' + X(r.score).toFixed(1) + '" cy="' + (cy + jit).toFixed(1) + '" r="' + (r === f ? 5 : 3) + '"/>');
+                   '" cx="' + cx.toFixed(1) + '" cy="' + (cy + jit).toFixed(1) + '" r="' + rad + '"/>');
       });
       parts.push('<line class="smed" x1="' + X(sec.median) + '" x2="' + X(sec.median) + '" y1="' + (cy - rowH * 0.42) + '" y2="' + (cy + rowH * 0.42) + '"/>');
     });
@@ -662,8 +684,8 @@
     // The middle column is the drift LEG the rank uses (estimates rising AND price
     // behind), not the gap alone, so the chart and the sliders describe one thing.
     var COLS = d.w < 520
-      ? [["pStrain", "Clean"], ["leg", "Behind"], ["pDcf", "Value"], ["pMom", "Trend"]]
-      : [["pStrain", "Clean accounts"], ["leg", "Estimates rising, price behind"], ["pDcf", "Value above price"], ["pMom", "Rising price, past year"]];
+      ? [["pStrain", "Accounts"], ["leg", "Revisions"], ["pDcf", "Value"], ["pMom", "Momentum"]]
+      : [["pStrain", "Accounting Quality"], ["leg", "Estimate Revisions"], ["pDcf", "Valuation"], ["pMom", "Price Momentum"]];
     var cw = (d.w - M.l - M.r) / COLS.length;
     var parts = [];
     COLS.forEach(function (c, j) {
@@ -685,6 +707,8 @@
       });
     });
     svg.innerHTML = parts.join("");
+    // Centred under the grid, not under the figure: the grid starts after the sector labels.
+    document.getElementById("heatkey").style.paddingLeft = M.l + "px";
     document.getElementById("heatkey").innerHTML =
       '<span class="ki"><i class="sw" style="background:' + heatColour(0.85) + '"></i>High</span>' +
       '<span class="ki"><i class="sw" style="background:' + heatColour(0.5) + ';border:1px solid var(--rule)"></i>Middle</span>' +
@@ -799,7 +823,10 @@
     if (!all.length) { svg.innerHTML = ""; return; }
     var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max(0, Math.max.apply(null, all));
     var pad = Math.max(0.5, (hi - lo) * 0.15); lo -= pad; hi += pad;
-    var X = function (h) { return M.l + h / Math.max(1, hmax) * pw; };
+    // The axis ends on a round number at or past the last observation, so the final tick
+    // is the end of the axis rather than wherever the 60-day steps happened to stop.
+    var xmax = hmax > 60 ? Math.ceil(hmax / 30) * 30 : Math.max(7, Math.ceil(hmax / 7) * 7);
+    var X = function (h) { return M.l + h / xmax * pw; };
     var Y = function (v) { return M.t + (hi - v) / (hi - lo) * ph; };
     var parts = ['<rect class="ground" x="' + M.l + '" y="' + M.t + '" width="' + pw + '" height="' + ph + '"/>'];
     var gstep = (hi - lo) > 40 ? 10 : (hi - lo) > 16 ? 5 : (hi - lo) > 6 ? 2 : 1;
@@ -807,8 +834,8 @@
       parts.push('<line class="' + (g === 0 ? "rowrule" : "guide") + '" x1="' + M.l + '" x2="' + (M.l + pw) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '"/>');
       parts.push('<text class="tk" x="' + (M.l - 6) + '" y="' + (Y(g) + 4).toFixed(1) + '" text-anchor="end">' + (g > 0 ? "+" : "") + g + "%</text>");
     }
-    var tstep = [7, 14, 30, 60, 90, 180].filter(function (t) { return X(t) - X(0) >= 72; })[0] || 180;
-    for (var t = 0; t <= hmax; t += tstep) {
+    var tstep = [7, 14, 30, 60, 90, 120, 180, 240].filter(function (t) { return xmax % t === 0 && X(t) - X(0) >= 72; })[0] || xmax;
+    for (var t = 0; t <= xmax; t += tstep) {
       parts.push('<text class="tk" x="' + X(t).toFixed(1) + '" y="' + (d.h - 22) + '" text-anchor="' + (t === 0 ? "start" : "middle") + '">' + t + "d</text>");
     }
     // Lines join the drawn horizons; dots mark each one, because between a 90-day
@@ -836,6 +863,7 @@
     parts.push('<line class="cursor" id="mcursor" x1="0" x2="0" y1="' + M.t + '" y2="' + (M.t + ph) + '" visibility="hidden"/>');
     svg.innerHTML = parts.join("");
     var nNames = {}; events.forEach(function (e) { nNames[e.r.ticker] = 1; });
+    document.getElementById("movekey").style.paddingLeft = M.l + "px";
     document.getElementById("movekey").innerHTML = [0, 1, 2, 3, 4].map(function (q) {
       var v = series[bestK][q];
       return '<span class="ki"><i class="sw" style="background:' + fifthColour(q) + '"></i>' + FIFTH[q] +
@@ -971,9 +999,10 @@
   // a 2021-2026 holdout), where drift has three weeks. Over 12 months the same signal
   // is noise (IC +0.018, t 0.39), so Years leaves it out.
   //
-  // Medium-term (07/10/2026) is a prior, not a finding: halfway between the two,
-  // leaning on accounts, the leg the literature puts at 6-12 months. The 06/01/2027
-  // re-test grades it on 3-6 month returns.
+  // Labelled by holding period (1 month / 6 months / 2 years) since 07/10/2026, and graded
+  // at those horizons by the 06/01/2027 re-test (2 years at 12 months until the record is
+  // long enough). The 6-month preset is a prior, not a finding: halfway, leaning on
+  // accounts, the leg the literature puts at 6-12 months.
   var HORIZON = {
     short:  { strain: 20, drift: 40, dcf: 0,  mom: 40 },
     medium: { strain: 35, drift: 20, dcf: 25, mom: 20 },
