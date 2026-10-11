@@ -95,7 +95,7 @@ DISMISS = {
 # seconds, so waiting on real content rides it out instead of racing it.
 READY = {
     # The rounds are drawn by script from puzzle.json; before that the card is a bare header.
-    "fakle": "#round .headline, #end:not([hidden])",   # before PREPARE, and after it
+    "fakle": "#home:not([hidden]), #round .headline, #end:not([hidden])",   # start screen, round, end
     # The table rows are drawn by script from the baked JSON; before that the card is
     # a header and an empty table.
     "crosscheck": "#tbl tbody tr",
@@ -202,6 +202,8 @@ PREPARE = {
         x.open('GET', 'puzzle.json', false);
         x.send();
         const rounds = JSON.parse(x.responseText).rounds;
+        const play = document.getElementById('play');
+        if (play && !document.getElementById('home').hidden) play.click();
         rounds.forEach((r, i) => {
             const pick = i === 2 ? (r.fake + 1) % 4 : r.fake;
             document.querySelectorAll('#round .headline')[pick].click();
