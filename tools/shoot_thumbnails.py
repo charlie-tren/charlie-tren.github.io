@@ -197,10 +197,16 @@ PREPARE = {
     # it is picked. A card is a still that sits on the homepage for days, so it must not
     # carry one: play all five rounds and shoot the end screen, which has no headlines.
     "fakle": """() => {
-        for (let i = 0; i < 5; i++) {
-            document.querySelector('#round .headline').click();
+        // Score 4 of 5 rather than 0: a row of red squares advertises nothing.
+        const x = new XMLHttpRequest();
+        x.open('GET', 'puzzle.json', false);
+        x.send();
+        const rounds = JSON.parse(x.responseText).normal;
+        rounds.forEach((r, i) => {
+            const pick = i === 2 ? (r.fake + 1) % 4 : r.fake;
+            document.querySelectorAll('#round .headline')[pick].click();
             document.getElementById('next').click();
-        }
+        });
     }""",
     # The 16:10 frame ends inside the weights row, which put a strip of half-cut slider
     # labels along the bottom of the card. Hide the controls so the frame ends on the
