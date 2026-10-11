@@ -95,7 +95,7 @@ DISMISS = {
 # seconds, so waiting on real content rides it out instead of racing it.
 READY = {
     # The rounds are drawn by script from puzzle.json; before that the card is a bare header.
-    "fakle": ".headline",
+    "fakle": "#round .headline, #end:not([hidden])",   # before PREPARE, and after it
     # The table rows are drawn by script from the baked JSON; before that the card is
     # a header and an empty table.
     "crosscheck": "#tbl tbody tr",
