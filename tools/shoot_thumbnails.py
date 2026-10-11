@@ -193,6 +193,15 @@ MAX_WIDEN = 1.22        # how much side margin the frame may spend before the ty
 # not leave its card to chance - Beyond Small Talk drew "What's the highest you've
 # ever been?", which is not the line to lead a public site with.
 PREPARE = {
+    # Every round on screen holds one made-up headline about real news, unlabelled until
+    # it is picked. A card is a still that sits on the homepage for days, so it must not
+    # carry one: play all five rounds and shoot the end screen, which has no headlines.
+    "fakle": """() => {
+        for (let i = 0; i < 5; i++) {
+            document.querySelector('#round .headline').click();
+            document.getElementById('next').click();
+        }
+    }""",
     # The 16:10 frame ends inside the weights row, which put a strip of half-cut slider
     # labels along the bottom of the card. Hide the controls so the frame ends on the
     # chart key and the start of the table instead (07/10/2026).
