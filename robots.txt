@@ -5,6 +5,7 @@
 User-agent: *
 Allow: /
 Disallow: /stats/
+Disallow: /fakle/puzzle.json
 
 # ---------------------------------------------------------------------------
 # AI crawlers, split deliberately (added 18/08/2026).
@@ -56,6 +57,7 @@ User-agent: Perplexity-User
 User-agent: DuckAssistBot
 Allow: /
 Disallow: /stats/
+Disallow: /fakle/puzzle.json
 # ---------------------------------------------------------------------------
 
 # Projects served at a path under this domain ship their OWN sitemap, and a

@@ -65,6 +65,7 @@ EXTERNAL_PATHS = (
     "lindy-effect/",
     "woop-woop/",
     "photocopy/",
+    "fakle/",
 )
 
 HEADER = """<?xml version="1.0" encoding="UTF-8"?>

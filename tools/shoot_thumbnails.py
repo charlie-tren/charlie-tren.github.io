@@ -63,6 +63,7 @@ SITES = {
     "lexicon": "https://charlietrenorden.com/lexicon/",
     "beyond-small-talk": "https://charlietrenorden.com/beyond-small-talk/",
     "woop-woop": "https://charlietrenorden.com/woop-woop/",
+    "fakle": "https://charlietrenorden.com/fakle/",
     "shortfall": "https://charlietrenorden.com/shortfall/",
     "pendulum": "https://charlietrenorden.com/pendulum/",
     "cfa-companion": "https://charlietrenorden.com/cfa-companion/",
@@ -93,6 +94,8 @@ DISMISS = {
 # "Performing security verification". A managed challenge clears itself in a few
 # seconds, so waiting on real content rides it out instead of racing it.
 READY = {
+    # The rounds are drawn by script from puzzle.json; before that the card is a bare header.
+    "fakle": ".headline",
     # The table rows are drawn by script from the baked JSON; before that the card is
     # a header and an empty table.
     "crosscheck": "#tbl tbody tr",
