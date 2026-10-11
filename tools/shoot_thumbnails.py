@@ -201,7 +201,7 @@ PREPARE = {
         const x = new XMLHttpRequest();
         x.open('GET', 'puzzle.json', false);
         x.send();
-        const rounds = JSON.parse(x.responseText).normal;
+        const rounds = JSON.parse(x.responseText).rounds;
         rounds.forEach((r, i) => {
             const pick = i === 2 ? (r.fake + 1) % 4 : r.fake;
             document.querySelectorAll('#round .headline')[pick].click();
