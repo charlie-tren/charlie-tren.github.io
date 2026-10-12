@@ -32,23 +32,21 @@ a { color: inherit; }
 .page { min-height: 100vh; min-height: 100dvh; max-width: 860px; margin: 0 auto;
         padding: 2.2rem 1.5rem 2rem; display: flex; flex-direction: column; }
 
-.bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.bar { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
 /* navigation, not a title - kept lighter than the tabs */
 .home { font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
         text-transform: uppercase; color: var(--soft); text-decoration: none;
         display: inline-flex; align-items: center; gap: 0; transition: color .2s; }
 .home:hover { color: var(--accent); }
-/* House standard: the back-link sits top RIGHT on every property. These pages have no
-   wordmark in the bar, so the theme toggle takes the left slot. Ordered in CSS rather than
-   in the markup so the link stays first in the DOM, where a keyboard lands on it early. */
-.home { order: 2; }
-.home .back { color: var(--accent); font-size: 14px; }
-.toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
-          border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem;
-          font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em;
-          display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
-.toggle:hover { color: var(--ink); border-color: var(--accent); }
-.toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.home .back { font-size: 14px; }
+/* The estate's one theme toggle: immediately left of Other projects on every site. */
+.theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
+                border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem;
+                font: 500 12.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .02em;
+                text-transform: none; display: inline-flex; align-items: center; gap: .45rem;
+                transition: border-color .2s, color .2s; }
+.theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
+.theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 
 /* Mode tabs. These are real links to real pages, so each mode has its own URL and
    the browser back button works. They also serve as the page's name, which is why

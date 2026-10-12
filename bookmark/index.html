@@ -10,7 +10,10 @@
 <meta property="og:description" content="Eight questions about what you want from a book, and one recommendation a month.">
 <meta property="og:url" content="https://charlietrenorden.com/bookmark/">
 <link rel="canonical" href="https://charlietrenorden.com/bookmark/">
-<meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
+<meta property="og:image" content="https://charlietrenorden.com/bookmark/og-card.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt" content="A bookmark ribbon beside the word Bookmark">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/bookmark/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/bookmark/favicon-192.png" type="image/png" sizes="192x192">
@@ -136,19 +139,19 @@ a{color:inherit}
    here first - a right-pointing arrow after the words, and a bare text button for
    the theme - and neither matched anything else on the site. The house pattern is
    in assets/room.css and shipped on Worst Case Scenario: a muted uppercase
-   back-link with an accent left arrow, and a pill toggle carrying an accent dot. */
-.barright{display:flex;align-items:center;gap:1.1rem}
+   back-link, arrow muted with it, and a pill toggle carrying an accent dot. */
+.barright{display:flex;align-items:center;gap:1rem}
 .home{font:500 13px/1 var(--font-sans);letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink-soft);text-decoration:none;white-space:nowrap;
   display:inline-flex;align-items:center;transition:color .2s}
 .home:hover{color:var(--accent)}
-.home .back{color:var(--accent);font-size:14px}
-.toggle{appearance:none;-webkit-appearance:none;cursor:pointer;background:transparent;
+.home .back{font-size:14px}
+.theme-toggle{appearance:none;-webkit-appearance:none;cursor:pointer;background:transparent;
   color:var(--ink-soft);border:1px solid var(--line2);border-radius:999px;
-  padding:.45rem .85rem;font:500 12px/1 var(--font-sans);letter-spacing:.04em;
-  display:inline-flex;align-items:center;gap:.5rem;transition:border-color .2s,color .2s}
-.toggle:hover{color:var(--ink);border-color:var(--accent)}
-.toggle .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  padding:.42rem .82rem;font:500 12.5px/1 var(--font-sans);letter-spacing:.02em;text-transform:none;
+  display:inline-flex;align-items:center;gap:.45rem;transition:border-color .2s,color .2s}
+.theme-toggle:hover{color:var(--ink);border-color:var(--accent)}
+.theme-toggle .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
 .lede{font-family:var(--font-serif);font-size:17px;color:var(--ink-soft);
       margin:24px 0 26px;max-width:46ch;line-height:1.5}
 
@@ -385,8 +388,7 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
         <path class="gut" d="M12 6.5v13.2"/>
       </svg><span class="wm">Bookmark<span class="dot">.</span></span></span>
     <div class="barright">
-      <button class="toggle" id="themeBtn" type="button"
-              aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl"></span></button>
+      <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl">Dark</span></button>
       <a class="home" href="/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
     </div>
   </div>
@@ -1073,7 +1075,7 @@ function labelTheme(){
   document.getElementById("themeLbl").textContent =
     next.charAt(0).toUpperCase() + next.slice(1);
   document.getElementById("themeBtn")
-    .setAttribute("aria-label", "Switch to the " + next + " theme");
+    .setAttribute("aria-label", "Switch to " + next + " theme");
 }
 document.getElementById("themeBtn").addEventListener("click", function(){
   var next = showingDark() ? "light" : "dark";

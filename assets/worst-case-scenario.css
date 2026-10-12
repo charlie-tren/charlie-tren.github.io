@@ -11,8 +11,8 @@
 .page { max-width: 1180px; }
 @media (min-width: 900px) { .page { padding-left: 2.4rem; padding-right: 2.4rem; } }
 
-.bar { gap: 1.2rem; }
-.barright { display: flex; align-items: center; gap: 1.1rem; }
+.bar { gap: 1.2rem; justify-content: space-between; }
+.barright { display: flex; align-items: center; gap: 1rem; }
 
 /* The picture on a card. Sized to be recognisable at a glance without pushing
    the text off the bottom, and greyscaled on a card you cannot pick so the

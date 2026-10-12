@@ -82,6 +82,15 @@ for (const [name, url] of Object.entries(SITES)) {
   check(`${name}: has a <title>`, !!title);
   // House convention: the project name alone, or "page - project". Never a tagline.
   if (title) check(`${name}: title is not a tagline`, title.split(/\s+-\s+/).length <= 2, title);
+  /* Hyphen is the only separator, and a project page carries no owner suffix. The
+     two Pendulum pages are built in charlie-tren/pendulum; delete each as it ships. */
+  const TITLE_SEPARATOR_YET = new Set(["Pendulum: Inequality", "Pendulum: Polarisation"]);
+  if (title && name !== "Hub" && !TITLE_SEPARATOR_YET.has(name)) {
+    check(`${name}: title uses "page - project", no owner suffix`,
+      !/[:|·]|- Charlie Trenorden$/.test(title), title);
+  } else if (title && TITLE_SEPARATOR_YET.has(name) && !/[:|·]/.test(title)) {
+    check(`${name}: fixed - remove it from TITLE_SEPARATOR_YET`, false, title);
+  }
 
   check(`${name}: has a meta description`,
     /<meta\s+name="description"\s+content="[^"]{20,}"/i.test(head));
@@ -180,12 +189,8 @@ for (const [name, url] of Object.entries(SITES)) {
      in a report nobody re-reads. Delete a name as you fix it; the list only
      shrinks. */
   const NO_APPLE_YET = new Set([
-    // Lexicon came off 18/09/2026: it was the only one of the eight with its own
-    // favicon.svg, so it was the only one a run of make_icons.py could fix. The other
-    // five in the hub repo have NO source mark at all, which is the "give every
-    // project a real mark" item and a design decision, not a script run.
-    "Beyond Small Talk", "Crowdwise", "DCF Studio",
-    "Shortfall", "Spectrum", "Split the Room", "Worst Case Scenario",
+    // The hub-repo four came off 12/10/2026 with their own marks (make_icons.py <dir>).
+    "Crowdwise", "DCF Studio",
   ]);
   const hasApple = icons.some((m) => m[1].toLowerCase() === "apple-touch-icon");
   if (!NO_APPLE_YET.has(name)) {

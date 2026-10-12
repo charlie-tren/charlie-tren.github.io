@@ -59,6 +59,8 @@ function applyTheme(theme) {
   const label = document.getElementById('themeLbl');
   // The label names where the button takes you, not where you are.
   if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
 }
 
 function setUpTheme() {
@@ -68,6 +70,8 @@ function setUpTheme() {
   } else {
     const label = document.getElementById('themeLbl');
     if (label) label.textContent = systemIsDark() ? 'Light' : 'Dark';
+    const b = document.getElementById('themeBtn');
+    if (b) b.setAttribute('aria-label', systemIsDark() ? 'Switch to light theme' : 'Switch to dark theme');
   }
   const btn = document.getElementById('themeBtn');
   if (btn) {

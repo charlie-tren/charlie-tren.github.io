@@ -64,9 +64,9 @@
 
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 4.5rem; }
   .wordmark { font: 600 23px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
-  .toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem; font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
-  .toggle:hover { color: var(--ink); border-color: var(--accent); }
-  .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem; font: 500 12.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .02em; text-transform: none; display: inline-flex; align-items: center; gap: .45rem; transition: border-color .2s, color .2s; }
+  .theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 
   .eyebrow { font: 600 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin: 0 0 1.3rem; }
   h1 { font-weight: 400; font-size: clamp(2.5rem, 6.6vw, 4rem); line-height: 1.04; letter-spacing: -.015em; margin: 0 0 1.4rem; max-width: 16ch; text-wrap: balance; }
@@ -229,7 +229,7 @@
 <div class="wrap">
   <div class="bar">
     <span class="wordmark">Charlie Trenorden</span>
-    <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
+    <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl">Dark</span></button>
   </div>
 
   <p class="eyebrow">Sydney · Financial markets</p>
@@ -585,7 +585,12 @@
 
   var root = document.documentElement;
   var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
-  function sync() { lbl.textContent = root.getAttribute("data-theme") === "dark" ? "Dark" : "Light"; }
+  /* The label names the theme you GET, not the one on screen. */
+  function sync() {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    lbl.textContent = next === "dark" ? "Dark" : "Light";
+    btn.setAttribute("aria-label", "Switch to " + next + " theme");
+  }
   sync();
   btn.addEventListener("click", function () {
     var dark = root.getAttribute("data-theme") !== "dark";

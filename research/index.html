@@ -7,7 +7,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Front-loads the distinguishing word: a tab shows about 20 characters. -->
-<title>Equity Research - Charlie Trenorden</title>
+<title>Equity Research</title>
 <meta name="description" content="Equity research by Charlie Trenorden: company reports on Simplex Holdings (TSE: 4373), Vita Coco (COCO), Stride (LRN) and Baby Bunting (ASX: BBN), and a thesis review of Uber, each a PDF with its valuation.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Equity Research">
@@ -15,6 +15,9 @@
 <meta property="og:url" content="https://charlietrenorden.com/research/">
 <link rel="canonical" href="https://charlietrenorden.com/research/">
 <meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt" content="Charlie Trenorden - Sydney, financial markets.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192">
@@ -47,20 +50,19 @@
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
   .wrap { max-width: 860px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 
-  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 4rem; }
-  /* order:2 puts the back-link top RIGHT, which is where it sits on all seven other
-     project pages. This page had it left; checked all eight rather than assuming. */
-  .home { order: 2; font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
+  .bar { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-bottom: 4rem; }
+  .home { font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em;
           text-transform: uppercase; color: var(--soft); text-decoration: none;
-          display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; }
+          display: inline-flex; align-items: center; gap: 0; transition: color .2s; }
   .home:hover { color: var(--accent); }
   .home .back { font-size: 14px; position: relative; top: 1px; }
-  .toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
-            border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem;
-            font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em;
-            display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
-  .toggle:hover { color: var(--ink); border-color: var(--accent); }
-  .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
+                  border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem;
+                  font: 500 12.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .02em;
+                  text-transform: none; display: inline-flex; align-items: center; gap: .45rem;
+                  transition: border-color .2s, color .2s; }
+  .theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 
   h1 { font-weight: 400; font-size: clamp(2.3rem, 6vw, 3.4rem); line-height: 1.05;
        letter-spacing: -.015em; margin: 0 0 1.1rem; }
@@ -160,8 +162,8 @@
 <body>
 <div class="wrap">
   <div class="bar">
-    <a class="home" href="https://charlietrenorden.com/"><span class="back">&larr;</span>Other projects</a>
-    <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
+    <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl">Dark</span></button>
+    <a class="home" href="https://charlietrenorden.com/"><span class="back">&larr;</span>&nbsp;Other projects</a>
   </div>
 
   <nav class="tabs" aria-label="Sections">
@@ -230,7 +232,12 @@
 <script>
   var root = document.documentElement;
   var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
-  function sync() { lbl.textContent = root.getAttribute("data-theme") === "dark" ? "Dark" : "Light"; }
+  /* The label names the theme you GET, not the one on screen. */
+  function sync() {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    lbl.textContent = next === "dark" ? "Dark" : "Light";
+    btn.setAttribute("aria-label", "Switch to " + next + " theme");
+  }
   sync();
   btn.addEventListener("click", function () {
     var dark = root.getAttribute("data-theme") !== "dark";

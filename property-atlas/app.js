@@ -675,7 +675,7 @@ Promise.all([
       const dark = root.getAttribute("data-theme") === "dark";
       $("theme-label").textContent = dark ? "Light" : "Dark";
       btn.setAttribute("aria-pressed", dark ? "true" : "false");
-      btn.setAttribute("aria-label", dark ? "Switch to the light theme" : "Switch to the dark theme");
+      btn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
     };
     btn.addEventListener("click", () => {
       const dark = root.getAttribute("data-theme") === "dark";
