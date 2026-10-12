@@ -40,33 +40,28 @@ const check = (ok, msg) => { if (!ok) fails.push(msg); };
 
 /* -------------------------------------------------------------- the cards */
 
-const MARKER = "<!-- In progress from here down. -->";
-check(index.includes(MARKER), `the in-progress marker is gone from index.html`);
-const [above, below] = index.split(MARKER);
-
+/* Since the 12/10/2026 redesign the cards sit in hand-ordered groups and an
+   "In progress" card stays where Charlie put it, so there is no marker splitting live
+   from in progress any more. A live card carries no badge; an in-progress one carries
+   the s-wip pill, and that pill must say so. */
 const CARD = /<a class="proj" href="([^"]+)">([\s\S]*?)<\/a>/g;
 const cards = [];
-for (const half of [["live", above], ["wip", below ?? ""]]) {
-  for (const m of half[1].matchAll(CARD)) {
-    cards.push({
-      side: half[0],
-      href: m[1],
-      name: (m[2].match(/class="name[^"]*">([^<]+)</) ?? [, "?"])[1],
-      badge: (m[2].match(/class="status s-(live|wip)"/) ?? [, "?"])[1],
-      img: (m[2].match(/<img src="([^"]+)"/) ?? [, null])[1],
-    });
-  }
+for (const m of index.matchAll(CARD)) {
+  cards.push({
+    href: m[1],
+    name: (m[2].match(/class="name[^"]*">(?:<svg[\s\S]*?<\/svg>)?([^<]+)</) ?? [, "?"])[1],
+    wip: m[2].match(/<span class="status s-wip">([^<]*)<\/span>/),
+    stray: /class="status s-(?!wip)/.test(m[2]),
+    img: (m[2].match(/<img src="([^"]+)"/) ?? [, null])[1],
+  });
 }
 check(Object.keys(SITES).length > 15,
       `only ${Object.keys(SITES).length} sites parsed out of test_estate_head.mjs - the SITES literal has moved`);
 check(cards.length > 8, `only ${cards.length} cards parsed out of index.html - the markup shape has changed`);
 
 for (const c of cards) {
-  /* A "Live" badge below the marker, or an "In progress" one above it, is half a
-     move. Both halves are edits a person makes by hand and the second is the one
-     that gets dropped. */
-  check(c.badge === (c.side === "live" ? "live" : "wip"),
-        `${c.name}: badge is "${c.badge}" but the card sits in the ${c.side} block`);
+  check(!c.stray, `${c.name}: carries a status pill other than "In progress" - live cards have none`);
+  check(!c.wip || c.wip[1] === "In progress", `${c.name}: in-progress pill reads "${c.wip && c.wip[1]}"`);
 
   /* A card with no picture, or a picture that is not there, is a broken card. */
   check(c.img && existsSync(path.join(ROOT, c.img)),
