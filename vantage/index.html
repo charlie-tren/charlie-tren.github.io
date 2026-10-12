@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vantage</title>
+<meta name="description" content="Vantage, a desktop app for Bloomberg Terminal users: eighteen modules across rates, FX, macro and equities.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Vantage">
+<meta property="og:description" content="A desktop app for Bloomberg Terminal users.">
+<meta property="og:url" content="https://charlietrenorden.com/vantage/">
+<link rel="canonical" href="https://charlietrenorden.com/vantage/">
+<meta property="og:image" content="https://charlietrenorden.com/vantage/g20.webp">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>
+  /* set theme before paint to avoid a flash */
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      /* Dark unless this browser chose light (12/10/2026: dark is the default). */
+      var dark = saved ? saved === "dark" : true;
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  @font-face { font-family: "Fredoka"; src: url("../assets/fonts/fredoka-latin.woff2") format("woff2");
+    font-weight: 300 700; font-display: swap; }
+  :root, :root[data-theme="dark"] {
+    --bg: #0b0c10; --raised: #14161d; --ink: #eef0f6; --soft: #a2a7b6; --faint: #737888;
+    --rule: #22252f; --motif-bg: #14161d; --accent: #a78bfa; --on-accent: #0b0c10;
+    --edge: color-mix(in srgb, var(--ink) 9%, transparent);
+  }
+  :root[data-theme="light"] {
+    --bg: #fbf8f1; --raised: #ffffff; --ink: #1d1b18; --soft: #5d5850; --faint: #8e877c;
+    --rule: #e6e0d4; --motif-bg: #ffffff; --accent: #6d4fd8; --on-accent: #ffffff;
+    --edge: color-mix(in srgb, var(--ink) 16%, transparent);
+  }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 400 17px/1.6 "Fredoka", ui-rounded, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 2.6rem 1.5rem 3rem; }
+  .bar { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-bottom: 2.8rem; }
+  .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem; font: 500 12.5px/1 "Fredoka", ui-rounded, sans-serif; letter-spacing: .02em; text-transform: none; display: inline-flex; align-items: center; gap: .45rem; transition: border-color .2s, color .2s; }
+  .theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .back { color: var(--soft); text-decoration: none; font-size: 15px; white-space: nowrap; }
+  .back:hover { color: var(--ink); }
+  .split { display: grid; grid-template-columns: 360px 1fr; gap: 2.2rem; align-items: start; }
+  .panel { position: sticky; top: 1.5rem; background: var(--raised); border: 1px solid var(--edge);
+    border-top: 3px solid var(--accent); border-radius: 6px 6px 18px 18px; padding: 1.7rem 1.6rem 1.4rem; }
+  h1 { font-weight: 600; font-size: 2.7rem; line-height: 1; margin: 0 0 .7rem; letter-spacing: -.01em; }
+  .lede { color: var(--soft); margin: 0 0 1.4rem; }
+  h2 { font-weight: 500; font-size: 1.25rem; margin: 1.8rem 0 .2rem; }
+  .spec { border-top: 1px solid var(--rule); }
+  .row { display: grid; grid-template-columns: 84px 1fr; gap: .8rem; padding: .6rem 0;
+    border-bottom: 1px solid var(--rule); font-size: .86rem; line-height: 1.45; }
+  .k { color: var(--faint); }
+  .stack { display: grid; gap: 1.5rem; }
+  .shot { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--edge); }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .panel { position: static; } }
+  @media (max-width: 560px) { .wrap { padding: 1.4rem 1rem 2.2rem; } .bar { margin-bottom: 1.6rem; } h1 { font-size: 2.3rem; } }
+</style>
+<script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */
+(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl">Dark</span></button>
+    <a class="back" href="https://charlietrenorden.com/">&#8592; Other projects</a>
+  </div>
+  <div class="split">
+    <aside class="panel">
+      <h1>Vantage</h1>
+      <p class="lede">A desktop app for Bloomberg Terminal users.</p>
+      <!-- Download hidden until a release carries the remote off switch (Vantage TODO). -->
+      <div class="spec">
+        <div class="row"><span class="k">Requires</span><span class="v">Windows 10 or 11, Bloomberg Terminal</span></div>
+        <div class="row"><span class="k">Modules</span><span class="v">18</span></div>
+      </div>
+      <h2>Modules</h2>
+      <div class="spec">
+        <div class="row"><span class="k">Rates</span><span class="v">Rate Analyser, Rate Futures, Yield Curve Shock, Global Rates Monitor</span></div>
+        <div class="row"><span class="k">FX</span><span class="v">FX Forecasts, FX Volatility</span></div>
+        <div class="row"><span class="k">Macro</span><span class="v">G20 Macro Dashboard, Macro Signals, Week Ahead</span></div>
+        <div class="row"><span class="k">Equities</span><span class="v">Analyst Upside, Drawdown Analyser, Historical Valuation, Implied Volatility, Value &amp; Momentum Scanner</span></div>
+        <div class="row"><span class="k">Trading</span><span class="v">Chart Analysis, Pairs Trading Backtest, Price Simulator</span></div>
+        <div class="row"><span class="k">Credit</span><span class="v">Maturing Listed Debt</span></div>
+      </div>
+    </aside>
+    <main class="stack">
+    <img class="shot" src="g20.webp" alt="Vantage's G20 Macro Dashboard: trimmed-mean and median CPI across the G20" width="1600" height="1000" loading="lazy">
+    <img class="shot" src="macro-signals.webp" alt="Vantage's Macro Signals market map: Kalshi prediction markets sized by volume and coloured by probability" width="1600" height="1000" loading="lazy">
+    <img class="shot" src="rate-analyser.webp" alt="Vantage's Rate Analyser on RBA data: today's 3-month BBSW against its implied five-year range" width="1600" height="1000" loading="lazy">
+    </main>
+  </div>
+</div>
+<script>
+  var root = document.documentElement;
+  var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
+  function sync() {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    lbl.textContent = next === "dark" ? "Dark" : "Light";
+    btn.setAttribute("aria-label", "Switch to " + next + " theme");
+  }
+  sync();
+  btn.addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") !== "dark";
+    root.setAttribute("data-theme", dark ? "dark" : "light");
+    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
+    sync();
+  });
+</script>
+</body>
+</html>

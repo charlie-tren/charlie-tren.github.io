@@ -174,6 +174,7 @@
     border-top: 3px solid var(--accent); border-radius: 6px 6px 18px 18px; padding: 1.25rem 1.35rem 1.15rem;
     transition: transform .5s cubic-bezier(.22,.61,.36,1), box-shadow .5s cubic-bezier(.22,.61,.36,1), border-color .35s ease; }
   .also-item.is-int { border-top-color: var(--soft); }
+  a.also-item { text-decoration: none; color: inherit; }
   .also-item:hover { border-color: var(--accent); transform: translateY(-3px);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent), 0 12px 40px -12px color-mix(in srgb, var(--accent) 40%, transparent); }
   .also-head { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; margin: 0 0 .45rem; }
@@ -440,7 +441,7 @@
       </ul>
       <p class="also-tech"><span class="chip">Bloomberg</span><span class="chip">Python</span><span class="chip">Streamlit</span><span class="chip">SQLite</span></p>
     </div>
-    <div class="also-item is-own">
+    <a class="also-item is-own" href="vantage/">
       <div class="also-head"><span class="also-name">Vantage</span><span class="tag t-own">Personal project</span></div>
       <p class="also-lead">A Bloomberg-powered markets desktop app, shipped as an installable Windows program.</p>
       <ul class="also-points">
@@ -449,11 +450,7 @@
         <li>Live Bloomberg terminal data behind every screen.</li>
       </ul>
       <p class="also-tech"><span class="chip">Python</span><span class="chip">Streamlit</span></p>
-      <!-- Download hidden 12/10/2026 until the installer can be switched off remotely and is
-           harder to reverse engineer (hub-notes TODO). Restore by uncommenting:
-      <a class="also-go" href="https://github.com/charlie-tren/vantage-releases/releases/latest/download/VantageSetup.exe">Download <span class="arw" aria-hidden="true">&#8594;</span></a>
-      -->
-    </div>
+    </a>
     <div class="also-item is-own">
       <div class="also-head"><span class="also-name">All-Weather Allocator</span><span class="tag t-own">Personal project</span></div>
       <p class="also-lead">A regime-aware multi-asset portfolio allocator.</p>
