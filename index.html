@@ -35,8 +35,8 @@
   (function () {
     try {
       var saved = localStorage.getItem("theme");
-      var dark = saved ? saved === "dark"
-        : !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+      /* Dark unless this browser chose light (12/10/2026: dark is the default). */
+      var dark = saved ? saved === "dark" : true;
       document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
     } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
   })();
@@ -44,57 +44,65 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; }
 
-  :root {
-    --bg: #0f1319; --raised: #171c24; --ink: #e6e9ee; --soft: #8a94a3;
-    --faint: #5d6675; --rule: #262d38; --motif-bg: #141a22;
-    --accent: #82a8ca; --on-accent: #0f1319;
+  /* Fredoka, self-hosted (SIL OFL): one variable file, latin only, ~30KB. */
+  @font-face { font-family: "Fredoka"; src: url("assets/fonts/fredoka-latin.woff2") format("woff2");
+    font-weight: 300 700; font-display: swap; }
+
+  :root, :root[data-theme="dark"] {
+    --bg: #0b0c10; --raised: #14161d; --ink: #eef0f6; --soft: #a2a7b6; --faint: #737888;
+    --rule: #22252f; --motif-bg: #14161d; --accent: #a78bfa; --on-accent: #0b0c10;
+    --edge: color-mix(in srgb, var(--ink) 9%, transparent);
   }
-  :root[data-theme="dark"]  { --bg:#0f1319; --raised:#171c24; --ink:#e6e9ee; --soft:#8a94a3; --faint:#5d6675; --rule:#262d38; --motif-bg:#141a22; --accent:#82a8ca; --on-accent:#0f1319; }
-  :root[data-theme="light"] { --bg:#eef0f3; --raised:#fbfcfd; --ink:#14171c; --soft:#565d68; --faint:#868d99; --rule:#d7dbe2; --motif-bg:#e7eaef; --accent:#3a5f80; --on-accent:#ffffff; }
+  :root[data-theme="light"] {
+    --bg: #fbf8f1; --raised: #ffffff; --ink: #1d1b18; --soft: #5d5850; --faint: #8e877c;
+    --rule: #e6e0d4; --motif-bg: #ffffff; --accent: #6d4fd8; --on-accent: #ffffff;
+    --edge: color-mix(in srgb, var(--ink) 16%, transparent);
+  }
 
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
-    font: 400 18px/1.65 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    font: 400 18px/1.65 "Fredoka", ui-rounded, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased; transition: background .3s, color .3s;
   }
   a { color: inherit; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
+  .wrap { max-width: 1380px; margin: 0 auto; padding: 2.6rem 1.5rem 2.2rem; }
 
-  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 4.5rem; }
-  .wordmark { font: 600 23px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
-  .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem; font: 500 12.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .02em; text-transform: none; display: inline-flex; align-items: center; gap: .45rem; transition: border-color .2s, color .2s; }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 5rem; }
+  .wordmark { font: 600 clamp(24px, 4.2vw, 38px)/1 "Fredoka", ui-rounded, sans-serif; color: var(--ink); }
+  .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem; font: 500 12.5px/1 "Fredoka", ui-rounded, sans-serif; letter-spacing: .02em; text-transform: none; display: inline-flex; align-items: center; gap: .45rem; transition: border-color .2s, color .2s; }
   .theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
   .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 
-  .eyebrow { font: 600 13px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin: 0 0 1.3rem; }
-  h1 { font-weight: 400; font-size: clamp(2.5rem, 6.6vw, 4rem); line-height: 1.04; letter-spacing: -.015em; margin: 0 0 1.4rem; max-width: 16ch; text-wrap: balance; }
-  h1 em { font-style: italic; color: var(--accent); }
-  .lede { font-size: 1.2rem; color: var(--soft); max-width: 46ch; margin: 0; }
+  .eyebrow { font: 600 13px/1 "Fredoka", ui-rounded, sans-serif; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin: 0 0 1.1rem; }
+  h1 { font-weight: 500; font-size: clamp(2.6rem, 6.4vw, 4.4rem); line-height: 1.04; letter-spacing: -.015em; margin: 0 0 1.2rem; max-width: 16ch; text-wrap: balance; }
+  .lede { font-size: 1.18rem; color: var(--soft); max-width: 44ch; margin: 0; }
 
-  .links { display: flex; gap: 1.6rem; flex-wrap: wrap; font: 500 15px/1 ui-sans-serif, system-ui, sans-serif; padding: 2rem 0 0; border-top: 1px solid var(--rule); margin-top: 2.5rem; }
+  .links { display: flex; gap: 1.1rem 1.9rem; flex-wrap: wrap; font: 500 15px/1 "Fredoka", ui-rounded, sans-serif; padding: 2.2rem 0 0; border-top: 1px solid var(--rule); margin-top: 2.6rem; }
   .links a { text-decoration: none; display: inline-flex; align-items: center; gap: .5rem; }
-  .links a span { border-bottom: 1.5px solid var(--accent); padding-bottom: 2px; transition: color .2s; }
+  .links a span { border-bottom: 1.5px solid color-mix(in srgb, var(--accent) 70%, transparent); padding-bottom: 2px; transition: color .2s; }
   .links a:hover span { color: var(--accent); }
   .links svg { width: 16px; height: 16px; color: var(--accent); }
 
-  .section-label { font: 600 15px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 3rem 0 1.8rem; }
+  .section-label { font: 600 24px/1 "Fredoka", ui-rounded, sans-serif; letter-spacing: .05em; text-transform: uppercase; color: var(--ink); margin: 4.6rem 0 1.4rem; }
 
-  .proj { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: center; text-decoration: none; color: inherit; padding: 1.8rem 0; border-top: 1px solid var(--rule); }
-  .proj:last-of-type { border-bottom: 1px solid var(--rule); }
-  .proj:nth-child(even of .proj) { grid-template-columns: 1fr 320px; }
-  .proj:nth-child(even of .proj) .thumb { order: 2; }
-  .thumb { background: var(--motif-bg); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; aspect-ratio: 16 / 10; transition: border-color .25s, transform .25s; }
-  .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+  /* Four across, every group sized so no card sits alone on a row at full width. */
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.7rem 1.25rem; }
+  .proj { display: block; text-decoration: none; color: inherit; }
+  .thumb { background: var(--motif-bg); border: 1px solid var(--edge); border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 10; margin-bottom: .65rem;
+    transition: transform .5s cubic-bezier(.22,.61,.36,1), box-shadow .5s cubic-bezier(.22,.61,.36,1), border-color .35s ease; }
+  .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform .7s cubic-bezier(.22,.61,.36,1); }
   .thumb svg { display: block; width: 100%; height: 100%; }
-  .proj:hover .thumb { border-color: var(--accent); transform: translateY(-2px); }
+  .proj:hover .thumb, .proj:focus-visible .thumb { border-color: var(--accent); transform: translateY(-3px);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), 0 12px 40px -10px color-mix(in srgb, var(--accent) 40%, transparent); }
+  .proj:hover .thumb img { transform: scale(1.015); }
 
   /* CENTRE, not baseline. The status pill is a padded box, so baseline-aligning it
      to 1.7rem type drops the whole pill below the name and it reads as misaligned.
      Baseline is right for two runs of text; centre is right for text beside a box. */
-  .meta .head { display: flex; align-items: center; gap: .9rem; margin-bottom: .5rem; flex-wrap: wrap; }
-  .meta .name { font-size: 1.7rem; letter-spacing: -.01em; }
+  .meta .head { display: flex; align-items: center; gap: .6rem; margin-bottom: .12rem; flex-wrap: wrap; }
+  .meta .name { font-size: 1.08rem; line-height: 1.25; font-weight: 500; letter-spacing: -.005em; }
   /* Pendulum's mark is a Newton's cradle, left blue, centre purple, right red. The card
      wears it so the name reads the same here as on the site. The rods take currentColor
      so it follows the theme; the bobs are the site's own left-centre-right palette. */
@@ -144,76 +152,60 @@
      logo.svg: that file is outlined Overpass at a fixed 358x74, which does not resize to a
      card heading cleanly. Two inset shadows make the white keyline: the green ring sits on
      top of the white one and clips it to a stroke. */
-  .meta .signmark { background: #0b6b3a; color: #fff; border-radius: 10px; padding: .3rem .75rem .34rem;
-    font: 700 1.32rem/1.3 Overpass, ui-sans-serif, system-ui, sans-serif; letter-spacing: .005em;
+  .meta .signmark { background: #0b6b3a; color: #fff; border-radius: 8px; padding: .2rem .55rem .24rem;
+    font: 700 .95rem/1.3 Overpass, ui-sans-serif, system-ui, sans-serif; letter-spacing: .005em;
     box-shadow: inset 0 0 0 4px #0b6b3a, inset 0 0 0 5.5px #fff; }
-  .meta .desc { color: var(--soft); font-size: 1.04rem; max-width: 46ch; margin: 0 0 .8rem; }
-  .meta .go { font: 500 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--accent); display: inline-flex; align-items: center; gap: .4rem; }
-  .meta .go .arw { transition: transform .2s ease; }
-  .proj:hover .go .arw { transform: translateX(3px); }
-  @media (prefers-reduced-motion: reduce) { .meta .go .arw { transition: none; } }
+  .meta .desc { color: var(--soft); font-size: .84rem; line-height: 1.4; margin: 0; }
 
-  .status { font: 600 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; padding: .35rem .6rem; border-radius: 4px; white-space: nowrap; }
-  .s-live { background: var(--accent); color: var(--on-accent); }
+  .status { font: 600 9.5px/1 "Fredoka", ui-rounded, sans-serif; letter-spacing: .1em; text-transform: uppercase; padding: .25rem .45rem; border-radius: 4px; white-space: nowrap; }
   .s-wip { color: var(--faint); border: 1px solid var(--rule); }
 
-  .foot { margin-top: 2.6rem; color: var(--faint); font: 400 14px/1.6 ui-sans-serif, system-ui, sans-serif; }
+  .foot { margin-top: 1.4rem; color: var(--faint); font: 400 14px/1.6 "Fredoka", ui-rounded, sans-serif; }
   .foot .sep { margin: 0 .5rem; opacity: .5; }
   .foot .quiet { color: var(--faint); text-decoration: none; }
   .foot .quiet:hover { color: var(--accent); }
 
-  /* also-built: compact, non-clickable overview entries */
-  .also-item { padding: 1.25rem 0; border-top: 1px solid var(--rule); }
-  .also-item:first-of-type { border-top: none; }
-  .also-item:last-of-type { border-bottom: 1px solid var(--rule); }
-  .also-head { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; margin: 0 0 .4rem; }
-  .also-name { font-size: 1.28rem; letter-spacing: -.01em; }
-  .also-desc { color: var(--soft); font-size: .99rem; max-width: 62ch; margin: 0; }
-  /* "Personal project" is a CATEGORY, not a stage, so it must not look like a status
-     pill. It was previously faint text in a thin border - visually the same object as
-     .s-wip "In progress" - which read as though these were simply unfinished.
-     Three distinct treatments now: .s-live is filled, .s-wip is outlined, .tag is a
-     flat wash with no border, so it reads as a descriptor. Uppercased since
-     25/08/2026 at Charlie's ask - the wash still separates it from the two status
-     pills, which are sentence case. */
-  .tag { font: 500 10.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .07em;
-         text-transform: uppercase;
-         padding: .32rem .55rem; border-radius: 3px; white-space: nowrap;
-         color: var(--soft); background: var(--motif-bg); border: none; }
-
-
-  /* also-built: scannable lead + bullet list */
-  .also-lead { color: var(--ink); font-size: 1rem; margin: 0 0 .7rem; max-width: 64ch; }
-  .also-points { list-style: none; margin: 0 0 .75rem; padding: 0; display: grid; gap: .42rem; max-width: 64ch; }
-  .also-points li { color: var(--soft); font-size: .93rem; line-height: 1.45; padding-left: 1.15rem; position: relative; }
-  /* A small open ring rather than a dash - it echoes the aperture favicon, so the one
-     repeated shape on the page belongs to the site. */
-  .also-points li::before { content: ""; position: absolute; left: 0; top: .5em; width: 7px; height: 7px;
+  /* Tools I've Built: equal panels, an accent rule on top (soft for internal tools),
+     the same hover glow as the cards, the stack as chips. */
+  .tools { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; gap: 1.25rem; }
+  .also-item { display: flex; flex-direction: column; background: var(--raised); border: 1px solid var(--edge);
+    border-top: 3px solid var(--accent); border-radius: 6px 6px 18px 18px; padding: 1.25rem 1.35rem 1.15rem;
+    transition: transform .5s cubic-bezier(.22,.61,.36,1), box-shadow .5s cubic-bezier(.22,.61,.36,1), border-color .35s ease; }
+  .also-item.is-int { border-top-color: var(--soft); }
+  .also-item:hover { border-color: var(--accent); transform: translateY(-3px);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent), 0 12px 40px -12px color-mix(in srgb, var(--accent) 40%, transparent); }
+  .also-head { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; margin: 0 0 .45rem; }
+  .also-name { font-size: 1.15rem; font-weight: 500; letter-spacing: -.01em; }
+  /* A category, not a stage: a wash, never the outlined "In progress" pill. */
+  .tag { font: 500 10px/1 "Fredoka", ui-rounded, sans-serif; letter-spacing: .07em; text-transform: uppercase;
+    padding: .3rem .5rem; border-radius: 3px; white-space: nowrap; }
+  .t-own { color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); }
+  .t-int { color: var(--soft); background: transparent; box-shadow: inset 0 0 0 1px var(--rule); }
+  .also-lead { color: var(--ink); font-size: .9rem; line-height: 1.45; margin: 0 0 .6rem; }
+  .also-points { list-style: none; margin: 0; padding: 0; display: grid; gap: .38rem; }
+  .also-points li { color: var(--soft); font-size: .82rem; line-height: 1.4; padding-left: 1.05rem; position: relative; }
+  .also-points li::before { content: ""; position: absolute; left: 0; top: .48em; width: 6px; height: 6px;
     border: 1.5px solid var(--accent); border-radius: 50%; }
-  .also-tech { color: var(--faint); font: 500 11.5px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: .01em; margin: 0; }
-  .also-go { font: 500 14px/1 ui-sans-serif, system-ui, sans-serif; color: var(--accent); text-decoration: none;
-    display: inline-flex; align-items: center; gap: .4rem; margin-top: .8rem; }
-  .also-go .arw { transition: transform .2s ease; }
-  .also-go:hover .arw { transform: translateX(3px); }
-  @media (prefers-reduced-motion: reduce) { .also-go .arw { transition: none; } }
+  .also-tech { display: flex; flex-wrap: wrap; gap: .35rem; margin: auto 0 0; padding-top: .8rem; }
+  .chip { font: 500 10.5px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--soft);
+    border: 1px solid var(--rule); border-radius: 999px; padding: .28rem .55rem; }
+  @media (prefers-reduced-motion: reduce) { .thumb, .thumb img, .also-item { transition: none; } }
 
-  @media (max-width: 680px) {
-    .wrap { padding-top: 1.6rem; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, 1fr); } .tools { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 820px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 700px) { .tools { grid-template-columns: 1fr; grid-auto-rows: auto; } }
+  @media (max-width: 560px) {
+    .wrap { padding: 1.4rem 1rem 2.2rem; }
     .bar { margin-bottom: 3rem; }
-    /* CHARLIE TRENORDEN wraps to two lines on a phone at the desktop size. It did so
-       at the old 20px too, so this is a pre-existing break rather than one the bump
-       introduced, but a name split across two lines is not the look.
-       Measured, not guessed - the largest that stays on ONE line at .06em tracking is
-       20px at 375, 19px at 360 and 16px at 320. A clamp at 5vw sits under all three
-       (16.0 / 18.0 / 18.8) and scales smoothly instead of stacking breakpoints. */
-    .wordmark { font-size: clamp(15px, 5vw, 20px); letter-spacing: .06em; }
-    .proj, .proj:nth-child(even of .proj) { grid-template-columns: 1fr; gap: 1.1rem; }
-    .proj:nth-child(even of .proj) .thumb { order: 0; }
+    .grid { grid-template-columns: 1fr; gap: 1.8rem; }
+    .meta .name { font-size: 1.15rem; }
+    .meta .desc { font-size: .9rem; }
+    .section-label { font-size: 20px; margin: 3.2rem 0 1.1rem; }
+    .links { gap: .9rem 1.3rem; }
+    h1 { font-size: 2.5rem; }
   }
   @media (prefers-reduced-motion: no-preference) {
     .section-label, .proj { animation: rise .7s cubic-bezier(.2,.7,.3,1) both; }
-    .proj:nth-of-type(2) { animation-delay: .05s; }
-    .proj:nth-of-type(3) { animation-delay: .1s; }
     @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   }
 </style>
@@ -242,316 +234,274 @@
   <p class="lede">A collection of small web projects, mostly about markets, history and language.</p>
 
   <nav class="links" aria-label="Elsewhere">
-    <a href="/research/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg><span>Research and Positions</span></a>
+    <!-- Ordered for a professional reader (12/10/2026). -->
     <a href="https://www.linkedin.com/in/charlietrenorden/"><svg viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"/></svg><span>LinkedIn</span></a>
-    <a href="https://github.com/charlie-tren"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg><span>GitHub</span></a>
-    <!-- links a single public playlist, not a profile. The ?si= share token is a
-         tracking identifier and is deliberately stripped. -->
-    <a href="https://open.spotify.com/playlist/7h4WfWsQspkJsEsSHD47ya"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0m5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02m1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2m.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3"/></svg><span>Spotify</span></a>
     <!-- The published CV is built by build_cv.py --web, which is the same document
          as the one sent to people minus the mobile number: this page is public and
          a phone number on it is a number for scrapers. -->
     <a href="assets/charlie-trenorden-cv.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h4"/></svg><span>CV</span></a>
+    <a href="/research/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg><span>Research and Positions</span></a>
+    <a href="https://github.com/charlie-tren"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg><span>GitHub</span></a>
+    <!-- Thinkerings, the podcast. The ?si= share token is stripped, as on Spotify below. -->
+    <a href="https://open.spotify.com/show/033O5HKFglpBbHCwCxgiUa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v5"/></svg><span>Podcast</span></a>
+    <a href="https://thinkerings.substack.com/"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 3h16v2.4H4zm0 4.5h16v2.4H4zM4 12h16v9l-8-4.5L4 21z"/></svg><span>Substack</span></a>
     <a href="mailto:charlie.tren@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Email</span></a>
+    <!-- links a single public playlist, not a profile. The ?si= share token is a
+         tracking identifier and is deliberately stripped. -->
+    <a href="https://open.spotify.com/playlist/7h4WfWsQspkJsEsSHD47ya"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0m5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02m1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2m.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3"/></svg><span>Spotify</span></a>
   </nav>
 
-  <p class="section-label">Projects</p>
+  <!-- Groups, their names and the order inside each are Charlie's, set by hand on
+       12/10/2026. Ask before moving a card. "In progress" cards sit where he put them,
+       not forced to the end. Thinkerings is the Substack link in the row above. -->
+  <h2 class="section-label">Markets</h2>
+  <div class="grid">
+    <a class="proj" href="https://crowdwise.charlietrenorden.com">
+      <div class="thumb"><img src="assets/crowdwise.webp" alt="Screenshot of the Crowdwise dashboard" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Crowdwise</span></div>
+        <p class="desc">Live odds on macro events - Fed decisions, inflation, recessions - from Kalshi and Polymarket.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/crosscheck/">
+      <div class="thumb"><img src="assets/crosscheck.webp" alt="Screenshot of Crosscheck's sector chart" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Crosscheck</span></div>
+        <p class="desc">Shortfall, Consensus Drift and DCF Studio in one ranking of the S&amp;P 500 and ASX 200, at weights you set.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/consensus-drift/">
+      <div class="thumb"><img src="assets/consensus-drift.webp" alt="Screenshot of the Consensus Drift quadrant chart" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Consensus Drift</span></div>
+        <p class="desc">Analyst earnings estimates plotted against what the share price actually did, across 17 equity markets.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://dcf.charlietrenorden.com/">
+      <div class="thumb"><img src="assets/dcf-studio.webp" alt="Screenshot of a DCF Studio valuation page" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">DCF Studio</span></div>
+        <p class="desc">Type a company. Get a discounted cashflow valuation built from its reported financials, with every assumption shown.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/shortfall/">
+      <div class="thumb"><img src="assets/shortfall.webp" alt="Screenshot of Shortfall, showing company cards with per-flag scores" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Shortfall</span></div>
+        <p class="desc">Six accounting tests over the S&amp;P 500 and ASX 200. Every company scored against its sector peers.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/cfa-companion/">
+      <div class="thumb"><img src="assets/cfa-companion.webp" alt="Screenshot of CFA Companion, showing a practice question with three answer choices" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">CFA Companion</span></div>
+        <p class="desc">Practice questions for CFA Level I.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/property-atlas/">
+      <div class="thumb"><img src="assets/property-atlas.webp" alt="Screenshot of Property Atlas, a world map with thirty-four markets shaded by how easy they are for a foreign buyer, above a table of entry prices and yields" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Property Atlas</span></div>
+        <p class="desc">Property abroad: the price, the yield, and the paperwork.</p>
+      </div>
+    </a>
+  </div>
 
-  <!-- Card order is set by hand, by Charlie - not alphabetical, not by status. Ask before
-       resequencing. The one standing rule: In progress cards sort LAST. Move a card up into
-       the Live run only when it flips to Live. -->
+  <h2 class="section-label">Updated Daily</h2>
+  <div class="grid">
+    <a class="proj" href="https://one-story.charlietrenorden.com/">
+      <div class="thumb"><img src="assets/one-story.webp" alt="Screenshot of the One Story homepage" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">One Story</span></div>
+        <p class="desc">One story a day: the most important thing that happened in the last 24 hours.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/fakle/">
+      <div class="thumb"><img src="assets/fakle.webp" alt="Screenshot of Fakle, showing a day's result as the letters of its name in green and red" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Fakle</span></div>
+        <p class="desc">Four headlines from the last 24 hours. One is made up.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/photocopy/">
+      <div class="thumb"><img src="assets/photocopy.webp" alt="Screenshot of the Photocopy homepage" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Photocopy</span></div>
+        <p class="desc">One image a day, each drawn from a description of the last.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://aftertimes.charlietrenorden.com/">
+      <div class="thumb"><img src="assets/the-aftertimes.webp" alt="Screenshot of The Aftertimes homepage" loading="lazy" width="1400" height="874"></div>
+      <div class="meta">
+        <div class="head"><span class="name">The Aftertimes</span></div>
+        <p class="desc">A wire service reporting from the future.</p>
+      </div>
+    </a>
+  </div>
 
-  <a class="proj" href="https://crowdwise.charlietrenorden.com">
-    <div class="thumb"><img src="assets/crowdwise.webp" alt="Screenshot of the Crowdwise dashboard" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Crowdwise</span><span class="status s-live">Live</span></div>
-      <p class="desc">Live odds on macro events - Fed decisions, inflation, recessions - from Kalshi and Polymarket.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/crosscheck/">
-    <div class="thumb"><img src="assets/crosscheck.webp" alt="Screenshot of Crosscheck's sector chart" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Crosscheck</span><span class="status s-live">Live</span></div>
-      <p class="desc">Shortfall, Consensus Drift and DCF Studio in one ranking of the S&amp;P 500 and ASX 200, at weights you set.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/consensus-drift/">
-    <div class="thumb"><img src="assets/consensus-drift.webp" alt="Screenshot of the Consensus Drift quadrant chart" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Consensus Drift</span><span class="status s-live">Live</span></div>
-      <p class="desc">Analyst earnings estimates plotted against what the share price actually did, across 17 equity markets.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://dcf.charlietrenorden.com/">
-    <div class="thumb"><img src="assets/dcf-studio.webp" alt="Screenshot of a DCF Studio valuation page" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">DCF Studio</span><span class="status s-live">Live</span></div>
-      <p class="desc">Type a company. Get a discounted cashflow valuation built from its reported financials, with every assumption shown.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/shortfall/">
-    <div class="thumb"><img src="assets/shortfall.webp" alt="Screenshot of Shortfall, showing company cards with per-flag scores" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Shortfall</span><span class="status s-live">Live</span></div>
-      <p class="desc">Six accounting tests over the S&amp;P 500 and ASX 200. Every company scored against its sector peers.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <!-- Split the Room has no card of its own - it shares the Beyond Small Talk card and
-       is reached from the tabs on that page. -->
-
-  <a class="proj" href="beyond-small-talk/">
-    <div class="thumb"><img src="assets/beyond-small-talk.webp" alt="Screenshot of Beyond Small Talk showing a single question" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Beyond Small Talk</span><span class="status s-live">Live</span></div>
-      <p class="desc">Questions for getting to know someone properly, and statements that split a room down the middle. One at a time, drawn at random.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/fakle/">
-    <div class="thumb"><img src="assets/fakle.webp" alt="Screenshot of Fakle, showing a day's result as the letters of its name in green and red" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Fakle</span><span class="status s-live">Live</span></div>
-      <p class="desc">Four headlines from the last 24 hours. One is made up.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://one-story.charlietrenorden.com/">
-    <div class="thumb"><img src="assets/one-story.webp" alt="Screenshot of the One Story homepage" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">One Story</span><span class="status s-live">Live</span></div>
-      <p class="desc">One story a day: the most important thing that happened in the last 24 hours.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/ghostwriters/">
-    <div class="thumb"><img src="assets/ghostwriters.webp" alt="Screenshot of Ghostwriters, showing an essay in the style of a long-dead writer" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name ghostmark"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 78V46a20 20 0 0 1 40 0v32l-6.7-5.5-6.6 5.5-6.7-5.5-6.6 5.5-6.7-5.5z" fill="currentColor"/><ellipse cx="42" cy="47" rx="4" ry="5" fill="var(--bg)"/><ellipse cx="58" cy="47" rx="4" ry="5" fill="var(--bg)"/><ellipse cx="50" cy="61" rx="3.4" ry="4.4" fill="var(--bg)"/></svg>Ghostwriters</span><span class="status s-live">Live</span></div>
-      <p class="desc">We asked dead writers what they make of the modern world. They were not kind.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/photocopy/">
-    <div class="thumb"><img src="assets/photocopy.webp" alt="Screenshot of the Photocopy homepage" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Photocopy</span><span class="status s-live">Live</span></div>
-      <p class="desc">One image a day, each drawn from a description of the last.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://thinkerings.substack.com/">
-    <div class="thumb"><img src="assets/thinkerings.webp" alt="Screenshot of the Thinkerings blog" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Thinkerings</span><span class="status s-live">Live</span></div>
-      <p class="desc">My Substack - essays on travel, tech, and whatever tangent I'm on.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="/pendulum/">
-    <div class="thumb"><img src="assets/pendulum.webp" alt="Screenshot of Pendulum showing the share of world population by government orientation" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name cradlemark"><svg viewBox="0 8 58 48" aria-hidden="true" focusable="false"><line x1="9" y1="12" x2="55" y2="12" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><g class="bob-l"><line x1="20" y1="12" x2="20" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="20" cy="47" r="6" fill="#2f6fb2"/></g><g class="bob-m"><line x1="32" y1="12" x2="32" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="32" cy="47" r="6" fill="#9042d4"/></g><g class="bob-r"><line x1="44" y1="12" x2="44" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="44" cy="47" r="6" fill="#c33c3c"/></g></svg>Pendulum</span><span class="status s-live">Live</span></div>
-      <p class="desc">How the world's governments have moved along the political spectrum since 1975, and how unequal those countries are.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/statecraft/">
-    <div class="thumb"><img src="assets/statecraft.webp" alt="Screenshot of Statecraft, showing a radar chart of thirteen policy areas beside sliders for tax and healthcare, each with what it costs" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Statecraft</span><span class="status s-live">Live</span></div>
-      <p class="desc">Design a state from scratch and find its real-world twin.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="lexicon/">
-    <div class="thumb"><img src="assets/lexicon.webp" alt="Screenshot of the Lexicon vocabulary review app" loading="lazy" width="1400" height="874"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Lexicon</span><span class="status s-live">Live</span></div>
-      <p class="desc">A quiet place for words - a spaced-repetition vocabulary tool.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/lindy-effect/">
-    <div class="thumb"><img src="assets/lindy-effect.webp" alt="Screenshot of The Lindy Effect, showing the classic decay curve with real books placed along it" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">The Lindy Effect</span><span class="status s-live">Live</span></div>
-      <p class="desc">Every book on Project Gutenberg by age against how many people are reading it this month. Move one threshold and the answer changes sign.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <!-- /chronoscape/ is the live site, served by the chronoscape repo's own Pages,
-       which SHADOWS the chronoscape/ folder in this one. The old
-       chronoscape.charlietrenorden.com subdomain does NOT 301 here, whatever this
-       comment used to say: checked 27/08/2026, it answers 200 with a complete frozen
-       copy of the site as it stood on 20/08. That belief is exactly why nobody
-       looked. The
-       Cloudflare project behind it holds nothing but a _redirects file. -->
-
-  <a class="proj" href="/chronoscape/">
-    <div class="thumb"><img src="assets/chronoscape.webp" alt="Screenshot of the Chronoscape interactive timeline" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Chronoscape</span><span class="status s-live">Live</span></div>
-      <p class="desc">Pick a country, get its history as a timeline you can walk through on a map.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/property-atlas/">
-    <div class="thumb"><img src="assets/property-atlas.webp" alt="Screenshot of Property Atlas, a world map with thirty-four markets shaded by how easy they are for a foreign buyer, above a table of entry prices and yields" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Property Atlas</span><span class="status s-live">Live</span></div>
-      <p class="desc">Property abroad: the price, the yield, and the paperwork.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-<a class="proj" href="https://charlietrenorden.com/cfa-companion/">
-    <div class="thumb"><img src="assets/cfa-companion.webp" alt="Screenshot of CFA Companion, showing a practice question with three answer choices" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">CFA Companion</span><span class="status s-live">Live</span></div>
-      <p class="desc">Practice questions for CFA Level I.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-<a class="proj" href="https://aftertimes.charlietrenorden.com/">
-    <div class="thumb"><img src="assets/the-aftertimes.webp" alt="Screenshot of The Aftertimes homepage" loading="lazy" width="1400" height="874"></div>
-    <div class="meta">
-      <div class="head"><span class="name">The Aftertimes</span><span class="status s-live">Live</span></div>
-      <p class="desc">A wire service reporting from the future.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
-  <!-- In progress from here down. -->
-
-    <a class="proj" href="https://charlietrenorden.com/woop-woop/">
-    <div class="thumb"><img src="assets/woop-woop.webp" alt="Screenshot of Woop Woop, a map showing the emptiest reachable point near Brisbane" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name signmark">Woop Woop</span><span class="status s-wip">In progress</span></div>
-      <p class="desc">The emptiest place within reach.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
-    </div>
-  </a>
-
+  <h2 class="section-label">Games</h2>
+  <div class="grid">
+    <!-- Split the Room has no card of its own - it shares the Beyond Small Talk card and
+         is reached from the tabs on that page. -->
+    <a class="proj" href="beyond-small-talk/">
+      <div class="thumb"><img src="assets/beyond-small-talk.webp" alt="Screenshot of Beyond Small Talk showing a single question" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Beyond Small Talk</span></div>
+        <p class="desc">Questions for getting to know someone properly, and statements that split a room down the middle. One at a time, drawn at random.</p>
+      </div>
+    </a>
     <a class="proj" href="https://charlietrenorden.com/worst-case-scenario/">
-    <div class="thumb"><img src="assets/worst-case-scenario.webp" alt="Screenshot of Worst Case Scenario, showing four anonymous cards played against a situation with the vote counts revealed" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Worst Case Scenario</span><span class="status s-wip">In progress</span></div>
-      <p class="desc">A card game about choosing between bad options.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
+      <div class="thumb"><img src="assets/worst-case-scenario.webp" alt="Screenshot of Worst Case Scenario, showing four anonymous cards played against a situation with the vote counts revealed" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Worst Case Scenario</span><span class="status s-wip">In progress</span></div>
+        <p class="desc">A card game about choosing between bad options.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/statecraft/">
+      <div class="thumb"><img src="assets/statecraft.webp" alt="Screenshot of Statecraft, showing a radar chart of thirteen policy areas beside sliders for tax and healthcare, each with what it costs" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Statecraft</span></div>
+        <p class="desc">Design a state from scratch and find its real-world twin.</p>
+      </div>
+    </a>
+  </div>
+
+  <h2 class="section-label">Curiosities</h2>
+  <div class="grid">
+    <a class="proj" href="/pendulum/">
+      <div class="thumb"><img src="assets/pendulum.webp" alt="Screenshot of Pendulum showing the share of world population by government orientation" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name cradlemark"><svg viewBox="0 8 58 48" aria-hidden="true" focusable="false"><line x1="9" y1="12" x2="55" y2="12" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><g class="bob-l"><line x1="20" y1="12" x2="20" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="20" cy="47" r="6" fill="#2f6fb2"/></g><g class="bob-m"><line x1="32" y1="12" x2="32" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="32" cy="47" r="6" fill="#9042d4"/></g><g class="bob-r"><line x1="44" y1="12" x2="44" y2="41" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="44" cy="47" r="6" fill="#c33c3c"/></g></svg>Pendulum</span></div>
+        <p class="desc">How the world's governments have moved along the political spectrum since 1975, and how unequal those countries are.</p>
+      </div>
+    </a>
+    <!-- /chronoscape/ is the live site, served by the chronoscape repo's own Pages,
+         which SHADOWS the chronoscape/ folder in this one. The old
+         chronoscape.charlietrenorden.com subdomain does NOT 301 here, whatever this
+         comment used to say: checked 27/08/2026, it answers 200 with a complete frozen
+         copy of the site as it stood on 20/08. That belief is exactly why nobody
+         looked. The
+         Cloudflare project behind it holds nothing but a _redirects file. -->
+    <a class="proj" href="/chronoscape/">
+      <div class="thumb"><img src="assets/chronoscape.webp" alt="Screenshot of the Chronoscape interactive timeline" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Chronoscape</span></div>
+        <p class="desc">Pick a country, get its history as a timeline you can walk through on a map.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/ghostwriters/">
+      <div class="thumb"><img src="assets/ghostwriters.webp" alt="Screenshot of Ghostwriters, showing an essay in the style of a long-dead writer" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name ghostmark"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 78V46a20 20 0 0 1 40 0v32l-6.7-5.5-6.6 5.5-6.7-5.5-6.6 5.5-6.7-5.5z" fill="currentColor"/><ellipse cx="42" cy="47" rx="4" ry="5" fill="var(--bg)"/><ellipse cx="58" cy="47" rx="4" ry="5" fill="var(--bg)"/><ellipse cx="50" cy="61" rx="3.4" ry="4.4" fill="var(--bg)"/></svg>Ghostwriters</span></div>
+        <p class="desc">We asked dead writers what they make of the modern world. They were not kind.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/lindy-effect/">
+      <div class="thumb"><img src="assets/lindy-effect.webp" alt="Screenshot of The Lindy Effect, showing the classic decay curve with real books placed along it" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">The Lindy Effect</span></div>
+        <p class="desc">Every book on Project Gutenberg by age against how many people are reading it this month. Move one threshold and the answer changes sign.</p>
+      </div>
+    </a>
+    <a class="proj" href="lexicon/">
+      <div class="thumb"><img src="assets/lexicon.webp" alt="Screenshot of the Lexicon vocabulary review app" loading="lazy" width="1400" height="874"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Lexicon</span></div>
+        <p class="desc">A quiet place for words - a spaced-repetition vocabulary tool.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/woop-woop/">
+      <div class="thumb"><img src="assets/woop-woop.webp" alt="Screenshot of Woop Woop, a map showing the emptiest reachable point near Brisbane" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name signmark">Woop Woop</span><span class="status s-wip">In progress</span></div>
+        <p class="desc">The emptiest place within reach.</p>
+      </div>
+    </a>
+    <a class="proj" href="https://charlietrenorden.com/bookmark/">
+      <div class="thumb"><img src="assets/bookmark.webp" alt="Screenshot of Bookmark, showing the book of the month with the reason it was picked" loading="lazy" width="1400" height="875"></div>
+      <div class="meta">
+        <div class="head"><span class="name">Bookmark</span><span class="status s-wip">In progress</span></div>
+        <p class="desc">Eight questions, one book a month.</p>
+      </div>
+    </a>
+  </div>
+
+  <h2 class="section-label">Tools I've Built</h2>
+  <div class="tools">
+    <div class="also-item is-own">
+      <div class="also-head"><span class="also-name">Lighthouse</span><span class="tag t-own">Personal project</span></div>
+      <p class="also-lead">A personal investment decision system - part analytical workbench, part decision journal.</p>
+      <ul class="also-points">
+        <li>Screening, DCF, reverse DCF and moat scoring across six asset classes.</li>
+        <li>Runs locally against a Bloomberg terminal, with every pull cached.</li>
+        <li>A decision journal holding the thesis, the trade, the outcome and the review.</li>
+      </ul>
+      <p class="also-tech"><span class="chip">Bloomberg</span><span class="chip">Python</span><span class="chip">Streamlit</span><span class="chip">SQLite</span></p>
     </div>
-  </a>
-
-  <a class="proj" href="https://charlietrenorden.com/bookmark/">
-    <div class="thumb"><img src="assets/bookmark.webp" alt="Screenshot of Bookmark, showing the book of the month with the reason it was picked" loading="lazy" width="1400" height="875"></div>
-    <div class="meta">
-      <div class="head"><span class="name">Bookmark</span><span class="status s-wip">In progress</span></div>
-      <p class="desc">Eight questions, one book a month.</p>
-      <span class="go">Visit site <span class="arw" aria-hidden="true">&#8594;</span></span>
+    <div class="also-item is-own">
+      <div class="also-head"><span class="also-name">Vantage</span><span class="tag t-own">Personal project</span></div>
+      <p class="also-lead">A Bloomberg-powered markets desktop app, shipped as an installable Windows program.</p>
+      <ul class="also-points">
+        <li>Eighteen modules across rates, FX, vol, macro and equities.</li>
+        <li>Curve shocks, vol surfaces, Monte-Carlo pricing, pairs backtesting, maturing debt.</li>
+        <li>Live Bloomberg terminal data behind every screen.</li>
+      </ul>
+      <p class="also-tech"><span class="chip">Python</span><span class="chip">Streamlit</span></p>
+      <!-- Download hidden 12/10/2026 until the installer can be switched off remotely and is
+           harder to reverse engineer (hub-notes TODO). Restore by uncommenting:
+      <a class="also-go" href="https://github.com/charlie-tren/vantage-releases/releases/latest/download/VantageSetup.exe">Download <span class="arw" aria-hidden="true">&#8594;</span></a>
+      -->
     </div>
-  </a>
-
-
-  <div class="also-item">
-    <div class="also-head"><span class="also-name">Lighthouse</span><span class="tag">Personal project</span></div>
-    <p class="also-lead">A personal investment decision system - part analytical workbench, part decision journal.</p>
-    <ul class="also-points">
-      <li>Screening, DCF, reverse DCF and moat scoring across six asset classes.</li>
-      <li>Runs locally against a Bloomberg terminal, with every pull cached.</li>
-      <li>A decision journal holding the thesis, the trade, the outcome and the review.</li>
-    </ul>
-    <p class="also-tech">Bloomberg · Python · Streamlit · SQLite</p>
-  </div>
-
-  <div class="also-item">
-    <div class="also-head"><span class="also-name">Parallax</span><span class="tag">Personal project</span></div>
-    <p class="also-lead">A systematic momentum/trend system for equity CFDs.</p>
-    <ul class="also-points">
-      <li>Five scanners produce candidates; twenty-two kill-chain gates decide which get sized.</li>
-      <li>Valuation p-value from P/FCF, P/E, P/S and P/B, each ranked against a decade of the company&rsquo;s own history.</li>
-      <li>1,027 tests, most of them over the gates and position health.</li>
-    </ul>
-    <p class="also-tech">Bloomberg · TradingView · Yahoo · Python · Streamlit · SQLite</p>
-  </div>
-
-  <div class="also-item">
-    <div class="also-head"><span class="also-name">All-Weather Allocator</span><span class="tag">Personal project</span></div>
-    <p class="also-lead">A regime-aware multi-asset portfolio allocator.</p>
-    <ul class="also-points">
-      <li>An inflation-and-rates regime model splitting history into four states, with a different allocation in each.</li>
-      <li>Twenty-six assets across five groups.</li>
-      <li>Ten objectives, from max Sharpe to hierarchical risk parity to minimising the worst drawdown.</li>
-    </ul>
-    <p class="also-tech">Python · Streamlit</p>
-  </div>
-
-  <div class="also-item">
-    <div class="also-head"><span class="also-name">BTC Analyser</span><span class="tag">Personal project</span></div>
-    <p class="also-lead">A Bitcoin accumulation model: how much to buy, and when not to.</p>
-    <ul class="also-points">
-      <li>Seven on-chain measures: MVRV-Z, Mayer multiple, drawdown, fear and greed, realised-price ratio, two-year moving average, Puell.</li>
-      <li>Backtested 2013 to 2026 against a straight dollar-cost average.</li>
-      <li>Leverage capped by liquidation distance.</li>
-    </ul>
-    <p class="also-tech">Binance · CoinMetrics · On-chain Data · Python</p>
-  </div>
-
-  <div class="also-item">
-    <div class="also-head"><span class="also-name">Vantage</span><span class="tag">Personal project</span></div>
-    <p class="also-lead">A Bloomberg-powered markets desktop app, shipped as an installable Windows program.</p>
-    <ul class="also-points">
-      <li>Eighteen modules across rates, FX, vol, macro and equities.</li>
-      <li>Curve shocks, vol surfaces, Monte-Carlo pricing, pairs backtesting, maturing debt.</li>
-      <li>Live Bloomberg terminal data behind every screen.</li>
-    </ul>
-    <p class="also-tech">Python · Streamlit</p>
-    <!-- Download hidden 12/10/2026 until the installer can be switched off remotely and is
-         harder to reverse engineer (hub-notes TODO). Restore by uncommenting:
-    <a class="also-go" href="https://github.com/charlie-tren/vantage-releases/releases/latest/download/VantageSetup.exe">Download <span class="arw" aria-hidden="true">&#8594;</span></a>
-    -->
-  </div>
-
-  <div class="also-item">
-    <div class="also-head"><span class="also-name">Overlay &amp; Hedging Ops</span><span class="tag">Internal tool</span></div>
-    <p class="also-lead">An operations platform for running hedges across institutional mandates.</p>
-    <ul class="also-points">
-      <li>Custodian files, administrator feeds and monitored inboxes into one position store.</li>
-      <li>Daily revaluation of FX forwards and swaps, marked by counterparty.</li>
-      <li>Hedge ratios checked against each mandate's tolerance band, with the trade that corrects a breach.</li>
-    </ul>
-    <p class="also-tech">Python · Streamlit</p>
-  </div>
-
-  <div class="also-item">
-    <div class="also-head"><span class="also-name">Signal Pipelines</span><span class="tag">Internal tool</span></div>
-    <p class="also-lead">Scheduled pipelines that turn public sources into a ranked daily digest.</p>
-    <ul class="also-points">
-      <li>Public filings and news, deduped against a persistent store.</li>
-      <li>Scored on relevance to Rochford&rsquo;s advisory mandates, into hot, warm and cool bands above hard exclusion gates.</li>
-      <li>Sector and market capitalisation added to every entity.</li>
-    </ul>
-    <p class="also-tech">Python</p>
+    <div class="also-item is-own">
+      <div class="also-head"><span class="also-name">All-Weather Allocator</span><span class="tag t-own">Personal project</span></div>
+      <p class="also-lead">A regime-aware multi-asset portfolio allocator.</p>
+      <ul class="also-points">
+        <li>An inflation-and-rates regime model splitting history into four states, with a different allocation in each.</li>
+        <li>Twenty-six assets across five groups.</li>
+        <li>Ten objectives, from max Sharpe to hierarchical risk parity to minimising the worst drawdown.</li>
+      </ul>
+      <p class="also-tech"><span class="chip">Python</span><span class="chip">Streamlit</span></p>
+    </div>
+    <div class="also-item is-own">
+      <div class="also-head"><span class="also-name">Parallax</span><span class="tag t-own">Personal project</span></div>
+      <p class="also-lead">A systematic momentum/trend system for equity CFDs.</p>
+      <ul class="also-points">
+        <li>Five scanners produce candidates; twenty-two kill-chain gates decide which get sized.</li>
+        <li>Valuation p-value from P/FCF, P/E, P/S and P/B, each ranked against a decade of the company&rsquo;s own history.</li>
+        <li>1,027 tests, most of them over the gates and position health.</li>
+      </ul>
+      <p class="also-tech"><span class="chip">Bloomberg</span><span class="chip">TradingView</span><span class="chip">Yahoo</span><span class="chip">Python</span><span class="chip">Streamlit</span><span class="chip">SQLite</span></p>
+    </div>
+    <div class="also-item is-own">
+      <div class="also-head"><span class="also-name">BTC Analyser</span><span class="tag t-own">Personal project</span></div>
+      <p class="also-lead">A Bitcoin accumulation model: how much to buy, and when not to.</p>
+      <ul class="also-points">
+        <li>Seven on-chain measures: MVRV-Z, Mayer multiple, drawdown, fear and greed, realised-price ratio, two-year moving average, Puell.</li>
+        <li>Backtested 2013 to 2026 against a straight dollar-cost average.</li>
+        <li>Leverage capped by liquidation distance.</li>
+      </ul>
+      <p class="also-tech"><span class="chip">Binance</span><span class="chip">CoinMetrics</span><span class="chip">On-chain Data</span><span class="chip">Python</span></p>
+    </div>
+    <div class="also-item is-int">
+      <div class="also-head"><span class="also-name">Overlay &amp; Hedging Ops</span><span class="tag t-int">Internal tool</span></div>
+      <p class="also-lead">An operations platform for running hedges across institutional mandates.</p>
+      <ul class="also-points">
+        <li>Custodian files, administrator feeds and monitored inboxes into one position store.</li>
+        <li>Daily revaluation of FX forwards and swaps, marked by counterparty.</li>
+        <li>Hedge ratios checked against each mandate's tolerance band, with the trade that corrects a breach.</li>
+      </ul>
+      <p class="also-tech"><span class="chip">Python</span><span class="chip">Streamlit</span></p>
+    </div>
+    <div class="also-item is-int">
+      <div class="also-head"><span class="also-name">Signal Pipelines</span><span class="tag t-int">Internal tool</span></div>
+      <p class="also-lead">Scheduled pipelines that turn public sources into a ranked daily digest.</p>
+      <ul class="also-points">
+        <li>Public filings and news, deduped against a persistent store.</li>
+        <li>Scored on relevance to Rochford&rsquo;s advisory mandates, into hot, warm and cool bands above hard exclusion gates.</li>
+        <li>Sector and market capitalisation added to every entity.</li>
+      </ul>
+      <p class="also-tech"><span class="chip">Python</span></p>
+    </div>
   </div>
 
   <p class="foot">Sydney, Australia
