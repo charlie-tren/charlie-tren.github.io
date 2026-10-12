@@ -82,14 +82,10 @@ for (const [name, url] of Object.entries(SITES)) {
   check(`${name}: has a <title>`, !!title);
   // House convention: the project name alone, or "page - project". Never a tagline.
   if (title) check(`${name}: title is not a tagline`, title.split(/\s+-\s+/).length <= 2, title);
-  /* Hyphen is the only separator, and a project page carries no owner suffix. The
-     two Pendulum pages are built in charlie-tren/pendulum; delete each as it ships. */
-  const TITLE_SEPARATOR_YET = new Set(["Pendulum: Inequality", "Pendulum: Polarisation"]);
-  if (title && name !== "Hub" && !TITLE_SEPARATOR_YET.has(name)) {
+  // Hyphen is the only separator, and a project page carries no owner suffix.
+  if (title && name !== "Hub") {
     check(`${name}: title uses "page - project", no owner suffix`,
       !/[:|·]|- Charlie Trenorden$/.test(title), title);
-  } else if (title && TITLE_SEPARATOR_YET.has(name) && !/[:|·]/.test(title)) {
-    check(`${name}: fixed - remove it from TITLE_SEPARATOR_YET`, false, title);
   }
 
   check(`${name}: has a meta description`,
