@@ -3,8 +3,10 @@
        search results, so the glyph runs to an outer radius of 45 (ring 36 + half the
        18 stroke), just inside the 50 that crop leaves. The previous version stopped at
        32.5 and read as a small mark floating in a dark disc. Proportions of the original
-       are preserved exactly: stroke = R/2, centre dot = R/4, 60 degree gap on the right. -->
-  <rect width="100" height="100" rx="24" fill="#1a212b"/>
-  <path d="M81.18 32 A36 36 0 1 0 81.18 68" fill="none" stroke="#82a8ca" stroke-width="18" stroke-linecap="round"/>
-  <circle cx="50" cy="50" r="9" fill="#82a8ca"/>
+       are preserved exactly: stroke = R/2, centre dot = R/4, 60 degree gap on the right.
+       Violet on near-black since the 12/10/2026 homepage redesign (Charlie picked it
+       from twelve; the page's own --bg and --accent). -->
+  <rect width="100" height="100" rx="24" fill="#0b0c10"/>
+  <path d="M81.18 32 A36 36 0 1 0 81.18 68" fill="none" stroke="#a78bfa" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="50" cy="50" r="9" fill="#a78bfa"/>
 </svg>
