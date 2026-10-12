@@ -185,35 +185,38 @@ header.wrap { padding-top: 1rem; }
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  /* The toggle and the back-link are two separate controls and read as one
-     cluster at 0.7rem. The wordmark absorbs the slack through margin-left:auto
-     on the toggle, so this gap only ever sits between those two. */
-  gap: 1.5rem;
+  /* The wordmark absorbs the slack through margin-left:auto on the toggle, so
+     this gap only ever sits between the toggle and the back-link. */
+  gap: 1rem;
   margin: 0.2rem 0 0.5rem;
 }
 
-.toggle {
+.theme-toggle {
   flex: 0 0 auto;
   margin-left: auto;
+  appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.3rem 0.7rem;
+  padding: 0.42rem 0.82rem;
   border: 1px solid var(--rule);
   border-radius: 999px;
-  background: var(--panel);
+  background: transparent;
   color: var(--soft);
-  font: 400 0.85rem/1 var(--font-body);
+  font: 500 12.5px/1 var(--font-body);
+  letter-spacing: 0.02em;
+  text-transform: none;
   cursor: pointer;
+  transition: border-color .2s, color .2s;
 }
 
-.toggle:hover { color: var(--ink); border-color: var(--faint); }
+.theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
 
-.toggle .dot {
-  width: 0.6rem;
-  height: 0.6rem;
+.theme-toggle .dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--soft);
+  background: var(--accent);
 }
 
 /* Hard right at every width. space-between is not enough: a right-aligned
@@ -1394,9 +1397,6 @@ h1:hover .fd-c, h1:focus-within .fd-c { animation: fd-down-c 2.2s ease-in-out in
      at 390, and hands the rest back to the fact. */
   .d-rows > div { grid-template-columns: 5.2rem 1fr; gap: 0.7rem; }
   .d-cap { font-size: 0.62rem; letter-spacing: 0.07em; }
-
-  /* Once the header wraps, the back-link needs telling again. */
-  .home { align-self: flex-end; }
 
   /* On a phone the label and the button pair up and the select takes the
      whole width, rather than the button sitting alone on a row of its own. */
