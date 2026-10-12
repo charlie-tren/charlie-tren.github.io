@@ -763,7 +763,12 @@
   /* theme toggle - shares localStorage with the hub */
   var root = document.documentElement;
   var btn = el("themeBtn"), lbl = el("themeLbl");
-  function sync() { lbl.textContent = root.getAttribute("data-theme") === "dark" ? "Dark" : "Light"; }
+  /* The label names the theme you GET, not the one on screen. */
+  function sync() {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    lbl.textContent = next === "dark" ? "Dark" : "Light";
+    btn.setAttribute("aria-label", "Switch to " + next + " theme");
+  }
   sync();
   btn.addEventListener("click", function () {
     var dark = root.getAttribute("data-theme") !== "dark";

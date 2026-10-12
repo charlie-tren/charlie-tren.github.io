@@ -1,4 +1,6 @@
-"""Renders the 1200x630 share cards for the hub projects that had none.
+"""Renders the share cards for the hub projects: a 1200x630 layout drawn natively
+at 2x (2400x1260, never supersampled), content inside an 880px centred safe column
+because every client centre-crops the card. The HTML source is kept beside the PNG.
 
     python tools/make_cards.py                # all of them
     python tools/make_cards.py lexicon        # one
@@ -87,7 +89,62 @@ SITES = {
         "eyebrow": "Thirty-four markets",
         "assert_face": '400 16px Gloock',
     },
+    # From here down: a mark instead of an eyebrow, and no webfont where the
+    # site sets itself in a system stack.
+    "crosscheck": {
+        "name": "Crosscheck",
+        "css": "crosscheck/template.html.j2",
+        "copy": ("crosscheck/template.html.j2", "og:description"),
+        "tokens": {"bg": "bg", "panel": "raised", "ink": "ink", "dim": "soft",
+                   "faint": "faint", "rule": "rule", "accent": "accent"},
+        "title_font": '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif',
+        "body_font": "ui-sans-serif, system-ui, sans-serif",
+        "mark": "crosscheck/favicon.svg",
+    },
+    "beyond-small-talk": {
+        "name": "Beyond Small Talk",
+        "css": "assets/room.css",
+        "copy": ("beyond-small-talk/index.html", "og:description"),
+        "tokens": {"bg": "bg", "panel": "raised", "ink": "ink", "dim": "soft",
+                   "faint": "faint", "rule": "rule", "accent": "accent"},
+        "title_font": '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif',
+        "body_font": "ui-sans-serif, system-ui, sans-serif",
+        "mark": "assets/room/favicon.svg",
+    },
+    "split-the-room": {
+        "name": "Split the Room",
+        "css": "assets/room.css",
+        "copy": ("split-the-room/index.html", "og:description"),
+        "tokens": {"bg": "bg", "panel": "raised", "ink": "ink", "dim": "soft",
+                   "faint": "faint", "rule": "rule", "accent": "accent"},
+        "title_font": '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif',
+        "body_font": "ui-sans-serif, system-ui, sans-serif",
+        "mark": "assets/room/favicon.svg",
+    },
+    "spectrum": {
+        "name": "Spectrum",
+        "css": "assets/room.css",
+        "copy": ("spectrum/index.html", "og:description"),
+        "tokens": {"bg": "bg", "panel": "raised", "ink": "ink", "dim": "soft",
+                   "faint": "faint", "rule": "rule", "accent": "accent"},
+        "title_font": '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif',
+        "body_font": "ui-sans-serif, system-ui, sans-serif",
+        "mark": "assets/room/favicon.svg",
+    },
+    "bookmark": {
+        "name": "Bookmark",
+        "css": "bookmark/index.html",
+        "copy": ("bookmark/index.html", "og:description"),
+        "tokens": {"bg": "paper", "panel": "paper2", "ink": "ink", "dim": "ink-soft",
+                   "faint": "ink-soft", "rule": "line", "accent": "accent"},
+        "fonts": "Young+Serif&family=Hanken+Grotesk:wght@400;500",
+        "title_font": "'Young Serif', Georgia, serif",
+        "body_font": "'Hanken Grotesk', system-ui, sans-serif",
+        "mark": "bookmark/favicon.svg",
+        "assert_face": "400 16px 'Young Serif'",
+    },
 }
+SAFE = 160   # side margin: 1200 - 2 * 160 = 880, which survives a 1.4:1 centre crop
 
 PROP = re.compile(r"--([a-z0-9-]+):\s*([^;]+);")
 
@@ -126,11 +183,19 @@ def lede(spec):
 
 
 def page_html(spec, t, text):
+    fonts = (f"""<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family={spec['fonts']}&display=swap">"""
+             if spec.get("fonts") else "")
+    if spec.get("mark"):
+        svg = (ROOT / spec["mark"]).read_text(encoding="utf-8").strip()
+        top = f'<div class="mark">{svg}</div>'
+    else:
+        top = f'<p class="eyebrow">{spec["eyebrow"]}</p>'
     return f"""<!doctype html>
 <html><head><meta charset="utf-8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family={spec['fonts']}&display=swap">
+<meta name="robots" content="noindex">
+{fonts}
 <style>
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   html, body {{ width: {WIDTH}px; height: {HEIGHT}px; }}
@@ -138,7 +203,7 @@ def page_html(spec, t, text):
     background: {t['bg']};
     color: {t['ink']};
     font-family: {spec['body_font']};
-    padding: 76px 84px 68px;
+    padding: 76px {SAFE}px 68px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -162,15 +227,15 @@ def page_html(spec, t, text):
   .lede {{
     margin-top: 28px;
     margin-bottom: 92px;
-    max-width: 900px;
+    max-width: {WIDTH - 2 * SAFE}px;
     color: {t['dim']};
     font-size: 30px;
     line-height: 1.38;
   }}
   .foot {{
     position: absolute;
-    left: 84px;
-    right: 84px;
+    left: {SAFE}px;
+    right: {SAFE}px;
     bottom: 68px;
     padding-top: 28px;
     border-top: 1px solid {t['rule']};
@@ -181,9 +246,10 @@ def page_html(spec, t, text):
     color: {t['faint']};
   }}
   .foot .dom {{ color: {t['dim']}; }}
+  .mark svg {{ display: block; width: 84px; height: 84px; }}
 </style></head>
 <body>
-  <p class="eyebrow">{spec['eyebrow']}</p>
+  {top}
   <h1>{spec['name']}</h1>
   <p class="lede">{text}</p>
   <div class="foot"><span class="dom">charlietrenorden.com/{spec['slug']}</span><span>Charlie Trenorden</span></div>
@@ -194,11 +260,11 @@ def build(slug, page):
     spec = dict(SITES[slug], slug=slug)
     t = tokens(spec)
     text = lede(spec)
-    scratch = HERE / f"_card_{slug}.html"
+    source = ROOT / slug / "og-card-source.html"
     out = ROOT / slug / "og-card.png"
-    scratch.write_text(page_html(spec, t, text), encoding="utf-8")
-    try:
-        page.goto(scratch.as_uri())
+    source.write_text(page_html(spec, t, text), encoding="utf-8")
+    page.goto(source.as_uri())
+    if spec.get("assert_face"):
         # ASK FOR THE FACE, do not just wait on the status: document.fonts.status
         # reads "loaded" while a face nothing has demanded yet is unfetched, so
         # waiting on it alone passes instantly and the card ships in the fallback.
@@ -207,11 +273,11 @@ def build(slug, page):
         if not page.evaluate("(f) => document.fonts.check(f)", spec["assert_face"]):
             raise SystemExit(f"{slug}: {spec['assert_face']} did not load; refusing "
                              f"to write a card in the fallback face")
-        page.screenshot(path=str(out))
-    finally:
-        scratch.unlink(missing_ok=True)
+    page.screenshot(path=str(out))
     size = out.stat().st_size
-    print(f"  {slug}/og-card.png  {WIDTH}x{HEIGHT}, {size / 1024:.1f} KiB, "
+    # WhatsApp drops a thumbnail over about 300KB.
+    assert size < 300 * 1024, f"{out}: {size / 1024:.0f} KiB, over the 300 KiB WhatsApp limit"
+    print(f"  {slug}/og-card.png  {2 * WIDTH}x{2 * HEIGHT}, {size / 1024:.1f} KiB, "
           f"bg {t['bg']}, accent {t['accent']}")
     return out
 
@@ -231,7 +297,7 @@ def main(argv):
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": WIDTH, "height": HEIGHT},
-                                device_scale_factor=1)
+                                device_scale_factor=2)
         for slug in wanted:
             build(slug, page)
         browser.close()

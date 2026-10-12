@@ -6,18 +6,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crosscheck - Charlie Trenorden</title>
+<title>Crosscheck</title>
 <meta name="description" content="A multi-factor stock ranking for S&amp;P 500 and ASX 200 companies: accounting quality, analyst estimate revisions, 12-month price momentum and DCF value against price, combined at weights you set.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Crosscheck">
-<meta property="og:description" content="{{ n }} companies ranked on accounting quality, estimate revisions, valuation and momentum, at weights you set.">
+<meta property="og:description" content="S&amp;P 500 and ASX 200 companies ranked on quality, revisions, valuation and momentum, at weights you set.">
 <meta property="og:url" content="https://charlietrenorden.com/crosscheck/">
 <link rel="canonical" href="https://charlietrenorden.com/crosscheck/">
-<meta property="og:image" content="https://charlietrenorden.com/assets/og-card.png">
+<meta property="og:image" content="https://charlietrenorden.com/crosscheck/og-card.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt" content="A tick mark beside the word Crosscheck">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/crosscheck/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/crosscheck/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/crosscheck/apple-touch-icon.png">
 <script>
   /* set theme before paint to avoid a flash - same key as the hub */
   (function () {
@@ -56,20 +59,14 @@
      would leave the table wrapping inside a third of the window. */
   .wrap { max-width: 1120px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 
-  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 3rem; }
-  /* Theme toggle first, back-link last, and order:2 puts the link top RIGHT where it
-     sits on every other project page. align-self holds it there when the bar wraps. */
+  .bar { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-bottom: 3rem; }
   .home { font: 500 13px/1 ui-sans-serif, system-ui, sans-serif;
           letter-spacing: .1em; text-transform: uppercase; color: var(--soft); text-decoration: none;
-          display: inline-flex; align-items: center; gap: .5rem; transition: color .2s; white-space: nowrap; }
+          display: inline-flex; align-items: center; gap: 0; transition: color .2s; white-space: nowrap; }
   .home:hover { color: var(--accent); }
-  /* One flex unit so the four links wrap together and Other projects stays last.
-     order:2 is on .nav now, not on .home - inside a nav every link would carry it and
-     they would cancel out, which is how the nav ended up left of the toggle on
-     Shortfall when the same change was made there. */
-  .nav { order: 2; display: flex; align-items: baseline; gap: 1.3rem; flex-wrap: wrap;
+  /* One flex unit so the links and the toggle wrap together and Other projects stays last. */
+  .nav { display: flex; align-items: baseline; gap: 1.3rem; flex-wrap: wrap;
          justify-content: flex-end; }
-  .home { order: 0; }
   /* The three sites this page is built from are pills in mixed case; the way back
      to the hub stays the plain uppercase link. Charlie, 07/10/2026: the four read as
      one kind of thing when they all wore the same treatment. */
@@ -77,16 +74,18 @@
          border-radius: 999px; padding: .5rem .95rem; }
   .sib:hover { border-color: var(--accent); }
   .nav { gap: .55rem; align-items: center; }
-  .nav .home:not(.sib) { margin-left: .9rem; }
+  .nav .theme-toggle { margin-left: .9rem; }
+  .nav .home:not(.sib) { margin-left: .45rem; }
   /* Muted, not accent. A single bright glyph in a grey line is the loudest thing in
      the header and it points away from the page. */
   .home .back { font-size: 14px; position: relative; top: 1px; }
-  .toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
-            border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .85rem;
-            font: 500 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em;
-            display: inline-flex; align-items: center; gap: .5rem; transition: border-color .2s, color .2s; }
-  .toggle:hover { border-color: var(--accent); color: var(--ink); }
-  .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
+                  border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem;
+                  font: 500 12.5px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .02em;
+                  text-transform: none; display: inline-flex; align-items: center; gap: .45rem;
+                  transition: border-color .2s, color .2s; }
+  .theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 
   h1 { font: 400 2.4rem/1.15 inherit; margin: 0 0 .5rem; letter-spacing: -.01em; }
   .lede { margin: 0 0 2.6rem; color: var(--soft); font-size: 1.05rem; max-width: 40rem; }
@@ -344,9 +343,9 @@
       <a class="home sib" href="https://charlietrenorden.com/shortfall/">Shortfall</a>
       <a class="home sib" href="https://charlietrenorden.com/consensus-drift/">Consensus Drift</a>
       <a class="home sib" href="https://dcf.charlietrenorden.com/">DCF Studio</a>
-      <a class="home" href="https://charlietrenorden.com/"><span class="back">&larr;</span>Other projects</a>
+      <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl">Dark</span></button>
+      <a class="home" href="https://charlietrenorden.com/"><span class="back">&larr;</span>&nbsp;Other projects</a>
     </nav>
-    <button class="toggle" id="themeBtn" type="button" aria-label="Toggle light and dark theme"><span class="dot"></span><span id="themeLbl">Dark</span></button>
   </div>
 
   <h1>Crosscheck</h1>
@@ -1378,7 +1377,9 @@
 
   var btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
   function label() {
-    lbl.textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "Light" : "Dark";
+    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    lbl.textContent = next === "dark" ? "Dark" : "Light";
+    btn.setAttribute("aria-label", "Switch to " + next + " theme");
   }
   label();
   btn.addEventListener("click", function () {
