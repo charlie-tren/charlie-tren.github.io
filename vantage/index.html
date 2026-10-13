@@ -58,16 +58,33 @@
   h1 { font-weight: 600; font-size: 2.7rem; line-height: 1; margin: 0 0 .7rem; letter-spacing: -.01em; }
   .lede { color: var(--soft); margin: 0 0 1.4rem; }
   h2 { font-weight: 500; font-size: 1.25rem; margin: 1.8rem 0 .2rem; }
-  .dl { display: block; text-align: center; text-decoration: none; background: var(--accent); color: var(--on-accent);
-    border-radius: 999px; padding: .78rem 1rem; font-weight: 500; transition: filter .2s; }
+  .dl { display: flex; flex-direction: column; align-items: center; gap: .15rem; text-decoration: none;
+    background: var(--accent); color: var(--on-accent); border-radius: 999px; padding: .7rem 1rem .65rem;
+    font-weight: 500; transition: filter .2s; }
+  .dl span { display: inline-flex; align-items: center; gap: .5rem; }
+  .dl small { font-size: .72rem; font-weight: 400; opacity: .75; }
   .dl:hover { filter: brightness(1.1); }
   .note { color: var(--faint); font-size: .78rem; text-align: center; margin: .55rem 0 1.4rem; }
   .spec { border-top: 1px solid var(--rule); }
   .row { display: grid; grid-template-columns: 84px 1fr; gap: .8rem; padding: .6rem 0;
     border-bottom: 1px solid var(--rule); font-size: .86rem; line-height: 1.45; }
   .k { color: var(--faint); }
-  .stack { display: grid; gap: 1.5rem; }
+  .gbar { display: flex; align-items: center; justify-content: space-between; margin: 0 0 .9rem; }
+  .dots { display: flex; gap: .5rem; }
+  .dots button { appearance: none; width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%;
+    background: var(--rule); cursor: pointer; transition: background .2s, transform .2s; }
+  .dots button[aria-current="true"] { background: var(--accent); transform: scale(1.25); }
+  .arrows { display: flex; gap: .5rem; }
+  .arr { appearance: none; cursor: pointer; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+    background: transparent; color: var(--soft); border: 1px solid var(--rule); transition: border-color .2s, color .2s; }
+  .arr:hover { color: var(--ink); border-color: var(--accent); }
+  .arr svg { width: 16px; height: 16px; }
+  .frame { touch-action: pan-y; }
   .shot { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--edge); }
+  .shot[hidden] { display: none; }
+  .shot.in { animation: fade .22s ease-out; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .shot.in { animation: none; } .dots button { transition: none; } }
   @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .panel { position: static; } }
   @media (max-width: 560px) { .wrap { padding: 1.4rem 1rem 2.2rem; } .bar { margin-bottom: 1.6rem; } h1 { font-size: 2.3rem; } }
 </style>
@@ -84,8 +101,8 @@
     <aside class="panel">
       <h1>Vantage</h1>
       <p class="lede">A desktop app for Bloomberg Terminal users.</p>
-      <a class="dl" href="https://github.com/charlie-tren/vantage-releases/releases/latest/download/VantageSetup.exe">Download for Windows</a>
-      <p class="note">Unsigned installer: choose More info, then Run anyway.</p>
+      <a class="dl" href="https://github.com/charlie-tren/vantage-releases/releases/latest/download/VantageSetup.exe"><span><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Download for Windows</span><small>1.0.0 &middot; 140 MB</small></a>
+      <p class="note">Unsigned: Windows will ask you to confirm.</p>
       <div class="spec">
         <div class="row"><span class="k">Requires</span><span class="v">Windows 10 or 11, Bloomberg Terminal</span></div>
         <div class="row"><span class="k">Modules</span><span class="v">18</span></div>
@@ -100,12 +117,17 @@
         <div class="row"><span class="k">Credit</span><span class="v">Maturing Listed Debt</span></div>
       </div>
     </aside>
-    <main class="stack">
-    <img class="shot" src="g20.webp" alt="Vantage's G20 Macro Dashboard: trimmed-mean and median CPI across the G20" width="1600" height="753">
-    <img class="shot" src="global-rates-monitor.webp" alt="Vantage's Global Rates Monitor: Australian growth, inflation, BBSW and swap rates" width="1600" height="810" loading="lazy">
-    <img class="shot" src="fx-volatility.webp" alt="Vantage's FX Volatility: AUDUSD 20-day realised volatility over ten years" width="1600" height="1117" loading="lazy">
-    <img class="shot" src="pairs.webp" alt="Vantage's Pairs Trading Backtest: long silver, short gold since 2021" width="1600" height="1451" loading="lazy">
-    <img class="shot" src="implied-volatility.webp" alt="Vantage's Implied Volatility: the AAPL option vol surface by delta and tenor" width="1600" height="898" loading="lazy">
+    <main class="gallery" aria-roledescription="carousel" aria-label="Screenshots">
+      <div class="gbar">
+        <div class="dots"><button type="button" aria-label="G20 Macro Dashboard" aria-current="true"></button><button type="button" aria-label="Global Rates Monitor"></button><button type="button" aria-label="FX Volatility"></button><button type="button" aria-label="Implied Volatility"></button></div>
+        <div class="arrows"><button class="arr" id="prev" type="button" aria-label="Previous screenshot"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="arr" id="next" type="button" aria-label="Next screenshot"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      </div>
+      <div class="frame">
+      <img class="shot" src="g20.webp" alt="Vantage's G20 Macro Dashboard: trimmed-mean and median CPI across the G20" width="2200" height="1412">
+      <img class="shot" src="global-rates-monitor.webp" alt="Vantage's Global Rates Monitor: Australian growth, inflation, BBSW and swap rates" width="2200" height="1518" hidden>
+      <img class="shot" src="fx-volatility.webp" alt="Vantage's FX Volatility: AUDUSD 20-day realised volatility over ten years" width="2200" height="2094" hidden>
+      <img class="shot" src="implied-volatility.webp" alt="Vantage's Implied Volatility: the AAPL option vol surface by delta and tenor" width="2200" height="1684" hidden>
+      </div>
     </main>
   </div>
 </div>
@@ -124,6 +146,31 @@
     try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
     sync();
   });
+</script>
+<script>
+(function () {
+  var shots = document.querySelectorAll(".frame .shot"), dots = document.querySelectorAll(".dots button"), i = 0;
+  function show(n) {
+    shots[i].hidden = true; dots[i].removeAttribute("aria-current");
+    i = (n + shots.length) % shots.length;
+    shots[i].hidden = false; shots[i].classList.remove("in"); void shots[i].offsetWidth; shots[i].classList.add("in");
+    dots[i].setAttribute("aria-current", "true");
+  }
+  document.getElementById("prev").addEventListener("click", function () { show(i - 1); });
+  document.getElementById("next").addEventListener("click", function () { show(i + 1); });
+  dots.forEach(function (d, n) { d.addEventListener("click", function () { show(n); }); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft") show(i - 1);
+    if (e.key === "ArrowRight") show(i + 1);
+  });
+  var x0 = null, frame = document.querySelector(".frame");
+  frame.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  frame.addEventListener("touchend", function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) show(dx < 0 ? i + 1 : i - 1);
+  });
+})();
 </script>
 </body>
 </html>
