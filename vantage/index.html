@@ -65,15 +65,13 @@
   .dl small { font-size: .72rem; font-weight: 400; opacity: .75; }
   .dl:hover { filter: brightness(1.1); }
   .note { color: var(--faint); font-size: .78rem; text-align: center; margin: .55rem 0 1.4rem; }
-  .spec { border-top: 1px solid var(--rule); }
-  .mods { margin-top: 2.6rem; max-width: 52rem; }
-  .mods h2 { margin: 0 0 1rem; }
-  .groups { border-top: 1px solid var(--rule); }
-  .group { display: grid; grid-template-columns: 120px 1fr; gap: 1rem; padding: .7rem 0;
-    border-bottom: 1px solid var(--rule); font-size: .9rem; line-height: 1.5; }
-  .row { display: grid; grid-template-columns: 84px 1fr; gap: .8rem; padding: .6rem 0;
-    border-bottom: 1px solid var(--rule); font-size: .86rem; line-height: 1.45; }
   .k { color: var(--faint); }
+  .info { border-top: 1px solid var(--rule); padding-top: 1.1rem; display: grid; gap: 1.15rem; }
+  .info .k { display: block; font-size: .74rem; margin-bottom: .15rem; }
+  .info > div > .k { color: var(--soft); font-size: .8rem; font-weight: 500; margin-bottom: .5rem; }
+  .req { font-size: .86rem; line-height: 1.45; }
+  .mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem 1rem; }
+  .mgrid div { display: flex; flex-direction: column; font-size: .8rem; line-height: 1.4; }
   .gallery { position: relative; }
   .frame { position: relative; aspect-ratio: 10 / 7; background: #0e1117; border: 1px solid var(--edge);
     border-radius: 14px; overflow: hidden; touch-action: pan-y; }
@@ -89,7 +87,6 @@
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .shot.in { animation: none; } }
   @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
-  @media (max-width: 560px) { .group { grid-template-columns: 84px 1fr; gap: .8rem; } }
   @media (max-width: 560px) { .wrap { padding: 1.4rem 1rem 2.2rem; } .bar { margin-bottom: 1.6rem; } h1 { font-size: 2.3rem; } }
 </style>
 <script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */
@@ -107,9 +104,19 @@
       <p class="lede">A desktop app for Bloomberg Terminal users.</p>
       <a class="dl" href="https://github.com/charlie-tren/vantage-releases/releases/latest/download/VantageSetup.exe"><span><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Download for Windows</span><small>1.0.0 &middot; 140 MB</small></a>
       <p class="note">Unsigned: Windows will ask you to confirm.</p>
-      <div class="spec">
-        <div class="row"><span class="k">Requires</span><span class="v">Windows 10 or 11, Bloomberg Terminal</span></div>
-        <div class="row"><span class="k">Modules</span><span class="v">18</span></div>
+      <div class="info">
+        <div class="req"><span class="k">Requires</span>Windows 10 or 11, Bloomberg Terminal</div>
+        <div>
+          <span class="k">18 modules</span>
+          <div class="mgrid">
+          <div><span class="k">Rates</span><span>Rate Analyser</span><span>Rate Futures</span><span>Yield Curve Shock</span><span>Global Rates Monitor</span></div>
+          <div><span class="k">FX</span><span>FX Forecasts</span><span>FX Volatility</span></div>
+          <div><span class="k">Macro</span><span>G20 Macro Dashboard</span><span>Macro Signals</span><span>Week Ahead</span></div>
+          <div><span class="k">Equities</span><span>Analyst Upside</span><span>Drawdown Analyser</span><span>Historical Valuation</span><span>Implied Volatility</span><span>Value &amp; Momentum Scanner</span></div>
+          <div><span class="k">Trading</span><span>Chart Analysis</span><span>Pairs Trading Backtest</span><span>Price Simulator</span></div>
+          <div><span class="k">Credit</span><span>Maturing Listed Debt</span></div>
+          </div>
+        </div>
       </div>
     </aside>
     <main class="gallery" aria-roledescription="carousel" aria-label="Screenshots">
@@ -122,17 +129,6 @@
       </div>
     </main>
   </div>
-  <section class="mods">
-    <h2>Modules</h2>
-    <div class="groups">
-      <div class="group"><span class="k">Rates</span>Rate Analyser, Rate Futures, Yield Curve Shock, Global Rates Monitor</div>
-      <div class="group"><span class="k">FX</span>FX Forecasts, FX Volatility</div>
-      <div class="group"><span class="k">Macro</span>G20 Macro Dashboard, Macro Signals, Week Ahead</div>
-      <div class="group"><span class="k">Equities</span>Analyst Upside, Drawdown Analyser, Historical Valuation, Implied Volatility, Value &amp; Momentum Scanner</div>
-      <div class="group"><span class="k">Trading</span>Chart Analysis, Pairs Trading Backtest, Price Simulator</div>
-      <div class="group"><span class="k">Credit</span>Maturing Listed Debt</div>
-    </div>
-  </section>
 </div>
 <script>
   var root = document.documentElement;
