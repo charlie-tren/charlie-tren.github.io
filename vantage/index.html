@@ -58,6 +58,10 @@
   h1 { font-weight: 600; font-size: 2.7rem; line-height: 1; margin: 0 0 .7rem; letter-spacing: -.01em; }
   .lede { color: var(--soft); margin: 0 0 1.4rem; }
   h2 { font-weight: 500; font-size: 1.25rem; margin: 1.8rem 0 .2rem; }
+  .dl { display: block; text-align: center; text-decoration: none; background: var(--accent); color: var(--on-accent);
+    border-radius: 999px; padding: .78rem 1rem; font-weight: 500; transition: filter .2s; }
+  .dl:hover { filter: brightness(1.1); }
+  .note { color: var(--faint); font-size: .78rem; text-align: center; margin: .55rem 0 1.4rem; }
   .spec { border-top: 1px solid var(--rule); }
   .row { display: grid; grid-template-columns: 84px 1fr; gap: .8rem; padding: .6rem 0;
     border-bottom: 1px solid var(--rule); font-size: .86rem; line-height: 1.45; }
@@ -80,7 +84,8 @@
     <aside class="panel">
       <h1>Vantage</h1>
       <p class="lede">A desktop app for Bloomberg Terminal users.</p>
-      <!-- Download hidden until a release carries the remote off switch (Vantage TODO). -->
+      <a class="dl" href="https://github.com/charlie-tren/vantage-releases/releases/latest/download/VantageSetup.exe">Download for Windows</a>
+      <p class="note">Unsigned installer: choose More info, then Run anyway.</p>
       <div class="spec">
         <div class="row"><span class="k">Requires</span><span class="v">Windows 10 or 11, Bloomberg Terminal</span></div>
         <div class="row"><span class="k">Modules</span><span class="v">18</span></div>
