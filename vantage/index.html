@@ -52,7 +52,7 @@
   .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
   .back { color: var(--soft); text-decoration: none; font-size: 15px; white-space: nowrap; }
   .back:hover { color: var(--ink); }
-  .split { display: grid; grid-template-columns: 360px 1fr; gap: 2.2rem; align-items: stretch; }
+  .split { display: grid; grid-template-columns: 360px 1fr; gap: 2.2rem; align-items: start; }
   .panel { display: flex; flex-direction: column; background: var(--raised); border: 1px solid var(--edge);
     border-top: 3px solid var(--accent); border-radius: 6px 6px 18px 18px; padding: 1.7rem 1.6rem 1.4rem; }
   h1 { font-weight: 600; font-size: 2.7rem; line-height: 1; margin: 0 0 .7rem; letter-spacing: -.01em; }
@@ -66,17 +66,16 @@
   .dl:hover { filter: brightness(1.1); }
   .note { color: var(--faint); font-size: .78rem; text-align: center; margin: .55rem 0 1.4rem; }
   .spec { border-top: 1px solid var(--rule); }
-  .panel .spec { margin-top: auto; }
   .mods { margin-top: 2.6rem; }
   .mods h2 { margin: 0 0 1rem; }
-  .groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem 2.2rem; }
-  .group { border-top: 1px solid var(--rule); padding-top: .7rem; font-size: .9rem; line-height: 1.5; }
-  .group .k { display: block; font-size: .8rem; margin-bottom: .25rem; }
+  .groups { border-top: 1px solid var(--rule); }
+  .group { display: grid; grid-template-columns: 120px 1fr; gap: 1rem; padding: .7rem 0;
+    border-bottom: 1px solid var(--rule); font-size: .9rem; line-height: 1.5; }
   .row { display: grid; grid-template-columns: 84px 1fr; gap: .8rem; padding: .6rem 0;
     border-bottom: 1px solid var(--rule); font-size: .86rem; line-height: 1.45; }
   .k { color: var(--faint); }
   .gallery { position: relative; }
-  .frame { position: relative; aspect-ratio: 16 / 11; background: #0e1117; border: 1px solid var(--edge);
+  .frame { position: relative; aspect-ratio: 10 / 7; background: #0e1117; border: 1px solid var(--edge);
     border-radius: 14px; overflow: hidden; touch-action: pan-y; }
   .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .arr { position: absolute; top: 50%; transform: translateY(-50%); z-index: 1; appearance: none; cursor: pointer;
@@ -89,9 +88,8 @@
   .shot.in { animation: fade .22s ease-out; }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .shot.in { animation: none; } }
-  @media (max-width: 900px) { .split { grid-template-columns: 1fr; }
-    .groups { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 560px) { .groups { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .group { grid-template-columns: 84px 1fr; gap: .8rem; } }
   @media (max-width: 560px) { .wrap { padding: 1.4rem 1rem 2.2rem; } .bar { margin-bottom: 1.6rem; } h1 { font-size: 2.3rem; } }
 </style>
 <script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */
@@ -117,10 +115,10 @@
     <main class="gallery" aria-roledescription="carousel" aria-label="Screenshots">
       <div class="frame">
         <button class="arr" id="prev" type="button" aria-label="Previous screenshot"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="arr" id="next" type="button" aria-label="Next screenshot"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <img class="shot" src="g20.webp" alt="Vantage's G20 Macro Dashboard: trimmed-mean and median CPI across the G20" width="2200" height="1412">
-      <img class="shot" src="global-rates-monitor.webp" alt="Vantage's Global Rates Monitor: Australian growth, inflation, BBSW and swap rates" width="2200" height="1518" hidden>
-      <img class="shot" src="fx-volatility.webp" alt="Vantage's FX Volatility: AUDUSD 20-day realised volatility over ten years" width="2200" height="2094" hidden>
-      <img class="shot" src="implied-volatility.webp" alt="Vantage's Implied Volatility: the AAPL option vol surface by delta and tenor" width="2200" height="1684" hidden>
+      <img class="shot" src="g20.webp" alt="Vantage's G20 Macro Dashboard: trimmed-mean and median CPI across the G20" width="1960" height="1372">
+      <img class="shot" src="global-rates-monitor.webp" alt="Vantage's Global Rates Monitor: Australian growth, inflation, BBSW and swap rates" width="2120" height="1484" hidden>
+      <img class="shot" src="fx-volatility.webp" alt="Vantage's FX Volatility: AUDUSD 20-day realised volatility over ten years" width="2960" height="2072" hidden>
+      <img class="shot" src="implied-volatility.webp" alt="Vantage's Implied Volatility: the AAPL option vol surface by delta and tenor" width="2360" height="1652" hidden>
       </div>
     </main>
   </div>
