@@ -52,8 +52,8 @@
   .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
   .back { color: var(--soft); text-decoration: none; font-size: 15px; white-space: nowrap; }
   .back:hover { color: var(--ink); }
-  .split { display: grid; grid-template-columns: 360px 1fr; gap: 2.2rem; align-items: start; }
-  .panel { position: sticky; top: 1.5rem; background: var(--raised); border: 1px solid var(--edge);
+  .split { display: grid; grid-template-columns: 360px 1fr; gap: 2.2rem; align-items: stretch; }
+  .panel { display: flex; flex-direction: column; background: var(--raised); border: 1px solid var(--edge);
     border-top: 3px solid var(--accent); border-radius: 6px 6px 18px 18px; padding: 1.7rem 1.6rem 1.4rem; }
   h1 { font-weight: 600; font-size: 2.7rem; line-height: 1; margin: 0 0 .7rem; letter-spacing: -.01em; }
   .lede { color: var(--soft); margin: 0 0 1.4rem; }
@@ -66,26 +66,32 @@
   .dl:hover { filter: brightness(1.1); }
   .note { color: var(--faint); font-size: .78rem; text-align: center; margin: .55rem 0 1.4rem; }
   .spec { border-top: 1px solid var(--rule); }
+  .panel .spec { margin-top: auto; }
+  .mods { margin-top: 2.6rem; }
+  .mods h2 { margin: 0 0 1rem; }
+  .groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem 2.2rem; }
+  .group { border-top: 1px solid var(--rule); padding-top: .7rem; font-size: .9rem; line-height: 1.5; }
+  .group .k { display: block; font-size: .8rem; margin-bottom: .25rem; }
   .row { display: grid; grid-template-columns: 84px 1fr; gap: .8rem; padding: .6rem 0;
     border-bottom: 1px solid var(--rule); font-size: .86rem; line-height: 1.45; }
   .k { color: var(--faint); }
-  .gbar { display: flex; align-items: center; justify-content: space-between; margin: 0 0 .9rem; }
-  .dots { display: flex; gap: .5rem; }
-  .dots button { appearance: none; width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%;
-    background: var(--rule); cursor: pointer; transition: background .2s, transform .2s; }
-  .dots button[aria-current="true"] { background: var(--accent); transform: scale(1.25); }
-  .arrows { display: flex; gap: .5rem; }
-  .arr { appearance: none; cursor: pointer; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
-    background: transparent; color: var(--soft); border: 1px solid var(--rule); transition: border-color .2s, color .2s; }
-  .arr:hover { color: var(--ink); border-color: var(--accent); }
+  .gallery { position: relative; }
+  .frame { position: relative; aspect-ratio: 16 / 11; background: #0e1117; border: 1px solid var(--edge);
+    border-radius: 14px; overflow: hidden; touch-action: pan-y; }
+  .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .arr { position: absolute; top: 50%; transform: translateY(-50%); z-index: 1; appearance: none; cursor: pointer;
+    width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: #e8e9ee;
+    background: rgba(14, 17, 23, .78); border: 1px solid rgba(255, 255, 255, .2); transition: border-color .2s, background .2s; }
+  .arr:hover { border-color: var(--accent); background: rgba(14, 17, 23, .95); }
   .arr svg { width: 16px; height: 16px; }
-  .frame { touch-action: pan-y; }
-  .shot { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--edge); }
+  #prev { left: .8rem; } #next { right: .8rem; }
   .shot[hidden] { display: none; }
   .shot.in { animation: fade .22s ease-out; }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-  @media (prefers-reduced-motion: reduce) { .shot.in { animation: none; } .dots button { transition: none; } }
-  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .panel { position: static; } }
+  @media (prefers-reduced-motion: reduce) { .shot.in { animation: none; } }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; }
+    .groups { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .groups { grid-template-columns: 1fr; } }
   @media (max-width: 560px) { .wrap { padding: 1.4rem 1rem 2.2rem; } .bar { margin-bottom: 1.6rem; } h1 { font-size: 2.3rem; } }
 </style>
 <script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */
@@ -107,22 +113,10 @@
         <div class="row"><span class="k">Requires</span><span class="v">Windows 10 or 11, Bloomberg Terminal</span></div>
         <div class="row"><span class="k">Modules</span><span class="v">18</span></div>
       </div>
-      <h2>Modules</h2>
-      <div class="spec">
-        <div class="row"><span class="k">Rates</span><span class="v">Rate Analyser, Rate Futures, Yield Curve Shock, Global Rates Monitor</span></div>
-        <div class="row"><span class="k">FX</span><span class="v">FX Forecasts, FX Volatility</span></div>
-        <div class="row"><span class="k">Macro</span><span class="v">G20 Macro Dashboard, Macro Signals, Week Ahead</span></div>
-        <div class="row"><span class="k">Equities</span><span class="v">Analyst Upside, Drawdown Analyser, Historical Valuation, Implied Volatility, Value &amp; Momentum Scanner</span></div>
-        <div class="row"><span class="k">Trading</span><span class="v">Chart Analysis, Pairs Trading Backtest, Price Simulator</span></div>
-        <div class="row"><span class="k">Credit</span><span class="v">Maturing Listed Debt</span></div>
-      </div>
     </aside>
     <main class="gallery" aria-roledescription="carousel" aria-label="Screenshots">
-      <div class="gbar">
-        <div class="dots"><button type="button" aria-label="G20 Macro Dashboard" aria-current="true"></button><button type="button" aria-label="Global Rates Monitor"></button><button type="button" aria-label="FX Volatility"></button><button type="button" aria-label="Implied Volatility"></button></div>
-        <div class="arrows"><button class="arr" id="prev" type="button" aria-label="Previous screenshot"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="arr" id="next" type="button" aria-label="Next screenshot"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-      </div>
       <div class="frame">
+        <button class="arr" id="prev" type="button" aria-label="Previous screenshot"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="arr" id="next" type="button" aria-label="Next screenshot"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <img class="shot" src="g20.webp" alt="Vantage's G20 Macro Dashboard: trimmed-mean and median CPI across the G20" width="2200" height="1412">
       <img class="shot" src="global-rates-monitor.webp" alt="Vantage's Global Rates Monitor: Australian growth, inflation, BBSW and swap rates" width="2200" height="1518" hidden>
       <img class="shot" src="fx-volatility.webp" alt="Vantage's FX Volatility: AUDUSD 20-day realised volatility over ten years" width="2200" height="2094" hidden>
@@ -130,6 +124,17 @@
       </div>
     </main>
   </div>
+  <section class="mods">
+    <h2>Modules</h2>
+    <div class="groups">
+      <div class="group"><span class="k">Rates</span>Rate Analyser, Rate Futures, Yield Curve Shock, Global Rates Monitor</div>
+      <div class="group"><span class="k">FX</span>FX Forecasts, FX Volatility</div>
+      <div class="group"><span class="k">Macro</span>G20 Macro Dashboard, Macro Signals, Week Ahead</div>
+      <div class="group"><span class="k">Equities</span>Analyst Upside, Drawdown Analyser, Historical Valuation, Implied Volatility, Value &amp; Momentum Scanner</div>
+      <div class="group"><span class="k">Trading</span>Chart Analysis, Pairs Trading Backtest, Price Simulator</div>
+      <div class="group"><span class="k">Credit</span>Maturing Listed Debt</div>
+    </div>
+  </section>
 </div>
 <script>
   var root = document.documentElement;
@@ -149,16 +154,14 @@
 </script>
 <script>
 (function () {
-  var shots = document.querySelectorAll(".frame .shot"), dots = document.querySelectorAll(".dots button"), i = 0;
+  var shots = document.querySelectorAll(".frame .shot"), i = 0;
   function show(n) {
-    shots[i].hidden = true; dots[i].removeAttribute("aria-current");
+    shots[i].hidden = true;
     i = (n + shots.length) % shots.length;
     shots[i].hidden = false; shots[i].classList.remove("in"); void shots[i].offsetWidth; shots[i].classList.add("in");
-    dots[i].setAttribute("aria-current", "true");
   }
   document.getElementById("prev").addEventListener("click", function () { show(i - 1); });
   document.getElementById("next").addEventListener("click", function () { show(i + 1); });
-  dots.forEach(function (d, n) { d.addEventListener("click", function () { show(n); }); });
   document.addEventListener("keydown", function (e) {
     if (e.key === "ArrowLeft") show(i - 1);
     if (e.key === "ArrowRight") show(i + 1);
