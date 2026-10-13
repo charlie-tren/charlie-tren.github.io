@@ -70,8 +70,10 @@
   .info .k { display: block; font-size: .74rem; margin-bottom: .15rem; }
   .info > div > .k { color: var(--soft); font-size: .8rem; font-weight: 500; margin-bottom: .5rem; }
   .req { font-size: .86rem; line-height: 1.45; }
-  .mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem 1rem; }
-  .mgrid div { display: flex; flex-direction: column; font-size: .8rem; line-height: 1.4; }
+  .mrows { border-top: 1px solid var(--rule); }
+  .mrow { display: grid; grid-template-columns: 70px 1fr; gap: .8rem; padding: .45rem 0;
+    border-bottom: 1px solid var(--rule); font-size: .8rem; line-height: 1.45; }
+  .mrow .k { margin: 0; font-size: .8rem; }
   .gallery { position: relative; }
   .frame { position: relative; aspect-ratio: 10 / 7; background: #0e1117; border: 1px solid var(--edge);
     border-radius: 14px; overflow: hidden; touch-action: pan-y; }
@@ -108,13 +110,13 @@
         <div class="req"><span class="k">Requires</span>Windows 10 or 11, Bloomberg Terminal</div>
         <div>
           <span class="k">18 modules</span>
-          <div class="mgrid">
-          <div><span class="k">Rates</span><span>Rate Analyser</span><span>Rate Futures</span><span>Yield Curve Shock</span><span>Global Rates Monitor</span></div>
-          <div><span class="k">FX</span><span>FX Forecasts</span><span>FX Volatility</span></div>
-          <div><span class="k">Macro</span><span>G20 Macro Dashboard</span><span>Macro Signals</span><span>Week Ahead</span></div>
-          <div><span class="k">Equities</span><span>Analyst Upside</span><span>Drawdown Analyser</span><span>Historical Valuation</span><span>Implied Volatility</span><span>Value &amp; Momentum Scanner</span></div>
-          <div><span class="k">Trading</span><span>Chart Analysis</span><span>Pairs Trading Backtest</span><span>Price Simulator</span></div>
-          <div><span class="k">Credit</span><span>Maturing Listed Debt</span></div>
+          <div class="mrows">
+            <div class="mrow"><span class="k">Rates</span><span>Rate Analyser, Rate Futures, Yield Curve Shock, Global Rates Monitor</span></div>
+            <div class="mrow"><span class="k">FX</span><span>FX Forecasts, FX Volatility</span></div>
+            <div class="mrow"><span class="k">Macro</span><span>G20 Macro Dashboard, Macro Signals, Week Ahead</span></div>
+            <div class="mrow"><span class="k">Equities</span><span>Analyst Upside, Drawdown Analyser, Historical Valuation, Implied Volatility, Value &amp; Momentum Scanner</span></div>
+            <div class="mrow"><span class="k">Trading</span><span>Chart Analysis, Pairs Trading Backtest, Price Simulator</span></div>
+            <div class="mrow"><span class="k">Credit</span><span>Maturing Listed Debt</span></div>
           </div>
         </div>
       </div>
