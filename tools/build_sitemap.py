@@ -138,6 +138,14 @@ def render(rows: list[tuple[str, str]]) -> str:
 
 
 def main() -> int:
+    # A shallow clone has one commit, so every page's lastmod becomes today: the
+    # ghostwriters job did exactly that daily until 14/10/2026.
+    shallow = subprocess.run(["git", "rev-parse", "--is-shallow-repository"], cwd=ROOT,
+                             capture_output=True, text=True).stdout.strip()
+    if shallow == "true":
+        print("sitemap: shallow clone, lastmods would all be today; check out with fetch-depth: 0",
+              file=sys.stderr)
+        return 1
     rows = indexable_pages()
     doc = render(rows)
     if "--check" in sys.argv:
