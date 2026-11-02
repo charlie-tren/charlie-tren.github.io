@@ -1,7 +1,7 @@
 {
  "site": "Crosscheck",
  "url": "https://charlietrenorden.com/crosscheck/",
- "as_of": "2026-11-01",
+ "as_of": "2026-11-02",
  "tickers": [
   "A",
   "A2M.AX",
@@ -69,7 +69,6 @@
   "AXP",
   "AZJ.AX",
   "AZO",
-  "BA",
   "BAC",
   "BALL",
   "BAX",
@@ -314,7 +313,6 @@
   "ITW",
   "IVZ",
   "J",
-  "JBH.AX",
   "JBHT",
   "JBL",
   "JCI",
