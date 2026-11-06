@@ -74,7 +74,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 
 /* ---- pins ---- */
 .pin { position: relative; border-radius: 50%; border: 2.5px solid #16191d; box-shadow: 0 1px 4px rgba(0,0,0,.35);
-  background-size: cover; background-position: center; background-color: #fff; cursor: pointer; transition: transform .12s; }
+  background-size: calc(100% + 2px); background-position: center; background-color: #16191d; cursor: pointer; transition: transform .12s; }
 .pin:hover { transform: scale(1.15); }
 .pin.is-been::after { content: "\2713"; position: absolute; right: -6px; top: -7px; width: 15px; height: 15px; border-radius: 50%;
   background: #2f6f4f; color: #fff; font: 700 9px/15px var(--sans); text-align: center; box-shadow: 0 0 0 1.5px #fff; }
@@ -114,7 +114,12 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 .legend { position: absolute; left: 12px; bottom: 22px; z-index: 900; padding: 8px 12px; border-radius: 8px; background: var(--bg);
   color: var(--ink); box-shadow: 0 1px 8px rgba(0,0,0,.15); font: 600 13px var(--sans); }
 .legend i { display: inline-block; width: 11px; height: 11px; margin-right: 7px; border-radius: 2px; background: #2f6f4f; vertical-align: -1px; }
-.leaflet-bar a { background: var(--bg); color: var(--ink); border-color: var(--rule); }
+/* zoom: two round buttons that match the World pill */
+.leaflet-control-zoom.leaflet-bar { border: 0; box-shadow: none; background: none; display: flex; flex-direction: column; gap: 6px; }
+.leaflet-control-zoom.leaflet-bar a { width: 34px; height: 34px; border: 1px solid var(--rule); border-radius: 50%; background: var(--bg); color: var(--ink);
+  font: 500 19px/32px var(--sans); box-shadow: 0 1px 5px rgba(0,0,0,.15); }
+.leaflet-control-zoom.leaflet-bar a:hover { background: var(--hover); border-color: var(--ink); }
+.leaflet-control-zoom.leaflet-bar a.leaflet-disabled { color: var(--ink-faint); background: var(--bg); border-color: var(--rule); opacity: .6; }
 
 /* ---- the search page: nothing but the search ---- */
 body.searching .app { visibility: hidden; }
@@ -148,8 +153,6 @@ body.searching .app { visibility: hidden; }
 .card-btn .via { font-weight: 500; opacity: .75; }
 .card-src ul { max-height: none; overflow: visible; }
 .filter[hidden], .legend[hidden], .you[hidden] { display: none; }
-.tally { position: absolute; right: 22px; bottom: 26px; z-index: 900; font: 900 42px/1 var(--serif); color: var(--ink); text-shadow: 0 0 10px var(--bg), 0 0 4px var(--bg); pointer-events: none; }
-.tally[hidden] { display: none; }
 #map.world { background: #cfe0e8; }
 .card-actions { display: flex; flex-wrap: wrap; }
 .card-actions .card-btn { flex: 1 1 40%; }
@@ -172,3 +175,6 @@ body.searching .app { visibility: hidden; }
 .grip::after { content: ""; position: absolute; left: 3px; top: 50%; width: 4px; height: 36px; margin-top: -18px; border-radius: 2px; background: var(--ink-faint); opacity: .45; transition: opacity .15s; }
 .grip:hover::after, .grip:focus-visible::after, .grip.drag::after { opacity: 1; }
 @media (max-width: 760px) { .grip { display: none; } }
+/* pins fade in when the intro lands */
+.leaflet-marker-pane { transition: opacity .6s; }
+#map.pins-hidden .leaflet-marker-pane { opacity: 0; }
