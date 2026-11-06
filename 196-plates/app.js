@@ -25,6 +25,11 @@
   const BASE = window.__BASE || { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' };
   const tiles = L.tileLayer(BASE.url, { maxZoom: 19, maxNativeZoom: BASE.max || 19, subdomains: BASE.sub || "abc", attribution: BASE.attribution }).addTo(map);
 
+  // the map cannot be dragged or zoomed while the intro plays or the world view is up, and its controls hide
+  const HANDLERS = ["dragging", "touchZoom", "doubleClickZoom", "scrollWheelZoom", "boxZoom", "keyboard"];
+  const lock = on => { HANDLERS.forEach(h => map[h] && (on ? map[h].disable() : map[h].enable()));
+    document.getElementById("map").classList.toggle("locked", on); };
+
   // ---- the list is resizable: drag or arrow keys on the edge, width kept on this device ----
   const grip = document.getElementById("grip");
   const setPanel = w => { w = Math.round(Math.min(Math.max(w, 240), Math.min(760, innerWidth - 320)));
@@ -120,17 +125,25 @@
     groups.appendChild(sec);
   });
 
-  // ---- filter the list: all / eaten / not yet ----
+  // ---- filter the list: all / eaten / to try, and a search on country, cuisine or restaurant ----
   let filterMode = "all";
+  const fold = s => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
   function applyFilter() {
+    const q = fold(document.getElementById("find").value.trim());
     document.querySelectorAll("#groups .rows li").forEach(li => {
-      const cc = li.firstElementChild.dataset.cc;
-      li.hidden = filterMode === "eaten" ? !isEaten(cc) : filterMode === "not" ? isEaten(cc) : false;
+      const cc = li.firstElementChild.dataset.cc, p = byCC[cc];
+      const hit = !q || [p.country, p.adj, p.name].some(s => fold(s).includes(q));
+      li.hidden = !hit || (filterMode === "eaten" ? !isEaten(cc) : filterMode === "not" ? isEaten(cc) : false);
     });
     document.querySelectorAll("#groups .group").forEach(sec => { sec.hidden = ![...sec.querySelectorAll("li")].some(li => !li.hidden); });
     document.querySelectorAll("#filter button").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === filterMode));
   }
   document.querySelectorAll("#filter button").forEach(b => b.addEventListener("click", () => { filterMode = b.dataset.f; applyFilter(); }));
+  const find = document.getElementById("find");
+  find.addEventListener("input", applyFilter);
+  find.addEventListener("keydown", e => { if (e.key !== "Enter") return;
+    const li = [...document.querySelectorAll("#groups .rows li")].find(l => !l.hidden); if (li) li.firstElementChild.click(); });
+  document.querySelector(".lede").textContent = `How many of the ${D.pins.length} cuisines in ${D.city} can you eat?`;
 
   // ---- world views: which of 196 the city has, and your own map ----
   let worldData = null, worldLayer = null;
@@ -178,6 +191,7 @@
     map.setMinZoom(wz);
     map.setMaxBounds([[-85, -25], [85, 335]]); map.options.maxBoundsViscosity = 1;
     map.setView([0, 155], wz, { animate: false });
+    lock(true);
     document.getElementById("worldbtn").textContent = `Back to ${D.city}`;
     document.getElementById("worldbtn").onclick = hideWorld;
     const n = mode === "mine" ? Object.keys(eaten).length : D.pins.length;
@@ -187,7 +201,7 @@
   function hideWorld() {
     if (!worldLayer) return;
     map.removeLayer(worldLayer); worldLayer = null; legend.hidden = true; tiles.addTo(map); document.getElementById("map").classList.remove("world");
-    map.setMaxBounds(L.latLngBounds([])); map.setMinZoom(0);
+    map.setMaxBounds(L.latLngBounds([])); map.setMinZoom(0); lock(false);
     map.addLayer(pinLayer); map.fitBounds(cityBounds, { padding: [30, 30] });
     document.getElementById("worldbtn").textContent = "World";
     document.getElementById("worldbtn").onclick = () => showWorld("city");
@@ -217,7 +231,7 @@
       const q = input.value.trim().toLowerCase();
       const hits = cities.filter(c => !q || c.name.toLowerCase().startsWith(q));
       list.hidden = !q;
-      list.innerHTML = hits.map(c => `<li><button type="button"><span><b>${esc(c.name)}</b>, ${esc(c.country)}</span><span class="n">${c.n} plates</span></button></li>`).join("")
+      list.innerHTML = hits.map(c => `<li><button type="button"><span><b>${esc(c.name)}</b>, ${esc(c.country)}</span><span class="n">${c.n} cuisines</span></button></li>`).join("")
         + `<li class="soon">More cities coming</li>`;
       list.querySelectorAll("button").forEach(b => b.addEventListener("click", go));
     };
@@ -232,6 +246,7 @@
       map.invalidateSize();
       map.setView([10, 150], small ? 1 : 2, { animate: false });
       document.getElementById("map").classList.add("pins-hidden");
+      lock(true);
       intro.classList.add("gone");
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       // the flight is Leaflet's own van Wijk path, eased in and out; every tile it will pass over is fetched while the
@@ -289,19 +304,26 @@
           return pts; };
         const arcs = live.map(f => { const c = L.geoJSON(f).getBounds().getCenter(); const all = gc(c, to, 48);
           return L.polyline(all.slice(0, 2), { renderer: canvas, color: "#e4572e", weight: .9, opacity: .55, interactive: false, all }).addTo(fx); });
-        if (!reduce) await new Promise(res => { const t0 = performance.now(), T = 3200, N = arcs.length;
+        if (!reduce) await new Promise(res => { const t0 = performance.now(), T = 3200, N = arcs.length, FADE = 320;
           const step = now => { const k = Math.min(1, (now - t0) / T);
+            let busy = k < 1;
             arcs.forEach((a, i) => {
-              // one country at a time: each arc starts as the previous is half drawn, its country lights when it lands
+              // one country at a time: each arc starts as the previous is half drawn, its country fades in as it lands
               const ki = Math.max(0, Math.min(1, (k * (N * .35 + 1) - i * .35)));
-              const all = a.options.all; a.setLatLngs(all.slice(0, Math.max(2, Math.round(all.length * ki))));
-              if (ki >= 1 && !fills[i]._lit) { fills[i]._lit = true; fills[i].setStyle({ fillOpacity: .85, opacity: .85 }); }
+              const all = a.options.all, n = Math.max(2, Math.round(all.length * ki));
+              if (n !== a._n) { a._n = n; a.setLatLngs(all.slice(0, n)); }
+              if (ki >= 1) {
+                fills[i]._t0 = fills[i]._t0 || now;
+                const o = Math.min(1, (now - fills[i]._t0) / FADE) * .85;
+                if (o !== fills[i]._o) { fills[i]._o = o; fills[i].setStyle({ fillOpacity: o, opacity: o }); }
+                if (o < .85) busy = true;
+              }
             });
-            k < 1 ? requestAnimationFrame(step) : res(); };
+            busy ? requestAnimationFrame(step) : res(); };
           requestAnimationFrame(step); });
         else fills.forEach(f => f.setStyle({ fillOpacity: .85, opacity: .85 }));
       } catch (e) { fx = null; }
-      const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(pinLayer); intro.remove(); paint();
+      const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(pinLayer); intro.remove(); paint(); lock(false);
         requestAnimationFrame(() => document.getElementById("map").classList.remove("pins-hidden")); };
       if (reduce) { map.fitBounds(cityBounds, { padding: [30, 30] }); done(); return; }
       // the arcs and fills fade out as the camera passes the continent, before they can pile into a fan

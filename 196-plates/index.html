@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-AU" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>196 Plates</title>
-<meta name="description" content="One restaurant for every country's food in Sydney.">
+<meta name="description" content="How many of Sydney's cuisines can you eat? One restaurant for every country's food.">
 <link rel="canonical" href="https://charlietrenorden.com/196-plates/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Charlie Trenorden">
 <meta property="og:title" content="196 Plates">
-<meta property="og:description" content="One restaurant for every country's food in Sydney.">
+<meta property="og:description" content="How many of Sydney's cuisines can you eat? One restaurant for every country's food.">
 <meta property="og:url" content="https://charlietrenorden.com/196-plates/">
 <meta property="og:image" content="https://charlietrenorden.com/196-plates/og-card.png">
 <meta property="og:image:secure_url" content="https://charlietrenorden.com/196-plates/og-card.png">
@@ -19,6 +19,7 @@
 <meta property="og:image:alt" content="196 Plates - a map of Sydney with a flag on one restaurant for each country's food">
 <meta name="twitter:card" content="summary_large_image">
 <script>(function(){try{var t=JSON.parse(localStorage.getItem("196plates.theme"));if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>html[data-theme="dark"]{background:#121417}html[data-theme="light"]{background:#fff}</style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="/196-plates/favicon.svg" type="image/svg+xml">
@@ -35,10 +36,11 @@
 </header>
 <div class="app">
   <aside class="panel" aria-label="Countries">
-    <p class="lede">One restaurant for every country's food in Sydney.</p>
+    <p class="lede">How many of Sydney's cuisines can you eat?</p>
     <p class="count"><span id="n"></span><span class="of"> of 196</span></p>
     <p class="you" id="been" hidden></p>
     <div class="filter" id="filter" role="group" aria-label="Show" hidden><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="eaten" aria-pressed="false">Eaten</button><button type="button" data-f="not" aria-pressed="false">To try</button></div>
+    <input id="find" class="find" type="search" placeholder="Search a country" aria-label="Search a country" autocomplete="off" spellcheck="false">
     <div id="groups"></div>
   </aside>
   <div class="grip" id="grip" role="separator" aria-orientation="vertical" aria-label="Resize the list" tabindex="0"></div>
