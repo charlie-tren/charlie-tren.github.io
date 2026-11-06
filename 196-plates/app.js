@@ -182,7 +182,7 @@
     document.getElementById("worldbtn").onclick = hideWorld;
     const n = mode === "mine" ? Object.keys(eaten).length : D.pins.length;
     legend.hidden = false;
-    legend.innerHTML = `<i></i>${mode === "mine" ? `You've eaten ${n} of 196` : `In ${esc(D.city)}: ${n} of 196`}`;
+    legend.innerHTML = `<i></i>${mode === "mine" ? `${n} of 196 countries` : `In ${esc(D.city)}: ${n} of 196`}`;
   }
   function hideWorld() {
     if (!worldLayer) return;
