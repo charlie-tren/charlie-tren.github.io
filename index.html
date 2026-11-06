@@ -50,16 +50,25 @@
   /* Overpass Bold (SIL OFL), subset to the letters of "Woop Woop": 1.5KB. */
   @font-face { font-family: "Overpass"; src: url("assets/fonts/overpass-700-woop.woff") format("woff");
     font-weight: 700; font-display: swap; }
+  /* Card wordmarks in each site's own face (all SIL OFL), subset to the letters drawn. */
+  @font-face { font-family: "WM Gloock"; src: url("assets/fonts/gloock-pa.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "WM Silkscreen"; src: url("assets/fonts/silkscreen-700-pc.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "WM Fraktur"; src: url("assets/fonts/unifrakturcook-700-at.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "WM Archivo"; src: url("assets/fonts/archivo-700-sc.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "WM Spectral"; src: url("assets/fonts/spectral-700-lx.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "WM Young Serif"; src: url("assets/fonts/youngserif-bm.woff2") format("woff2"); font-display: swap; }
 
   :root, :root[data-theme="dark"] {
     --bg: #0b0c10; --raised: #14161d; --ink: #eef0f6; --soft: #a2a7b6; --faint: #737888;
     --rule: #22252f; --motif-bg: #14161d; --accent: #a78bfa; --on-accent: #0b0c10;
     --edge: color-mix(in srgb, var(--ink) 9%, transparent);
+    --wm-blue: #82a8ca; --wm-teal: #3fb0b8; --wm-green: #7fb685; --wm-amber: #d9a441;
   }
   :root[data-theme="light"] {
     --bg: #fbf8f1; --raised: #ffffff; --ink: #1d1b18; --soft: #5d5850; --faint: #8e877c;
     --rule: #e6e0d4; --motif-bg: #ffffff; --accent: #6d4fd8; --on-accent: #ffffff;
     --edge: color-mix(in srgb, var(--ink) 16%, transparent);
+    --wm-blue: #3a5f80; --wm-teal: #0d7680; --wm-green: #1a5537; --wm-amber: #8a5d0e;
   }
 
   html { -webkit-text-size-adjust: 100%; }
@@ -157,6 +166,19 @@
   .meta .signmark { background: #0b6b3a; color: #fff; border-radius: 7px; padding: .3em .7em .26em;
     font: 700 .95rem/1 Overpass, ui-sans-serif, system-ui, sans-serif; letter-spacing: .01em;
     outline: 1.5px solid #fff; outline-offset: -4px; }
+  /* The other wordmarks: each site's own type, case and colour, sized off the card name. */
+  .wm { display: inline-flex; align-items: center; gap: .32em; white-space: nowrap; }
+  .wm svg { height: .95em; width: .95em; flex: none; }
+  .wm-cd { font: 300 .8em/1.25 ui-sans-serif, system-ui, sans-serif; letter-spacing: .3em; text-transform: uppercase; }
+  .wm-cd b { font-weight: 400; color: var(--wm-blue); }
+  .wm-pa { font: 400 1.04em/1.2 "WM Gloock", Georgia, serif; }
+  .wm-pa svg { color: var(--wm-teal); }
+  .wm-pc { font: 700 .97em/1.2 "WM Silkscreen", monospace; letter-spacing: .01em; }
+  .wm-at { font: 700 1.3em/1 "WM Fraktur", serif; }
+  .wm-sc { font: 700 1.02em/1.2 "WM Archivo", sans-serif; letter-spacing: -.028em; }
+  .wm-lx { font: 700 1.04em/1.2 "WM Spectral", Georgia, serif; }
+  .wm-bm { font: 400 1.04em/1.2 "WM Young Serif", Georgia, serif; letter-spacing: -.015em; gap: .28em; }
+  .wm-bm i { font-style: normal; color: var(--wm-amber); }
   .meta .desc { color: var(--soft); font-size: .84rem; line-height: 1.4; margin: 0; }
   /* Inset to clear the card's rounded corner, so the caption does not start outside the curve. */
   .meta { padding: 0 .5rem; }
@@ -280,7 +302,7 @@
     <a class="proj" href="https://charlietrenorden.com/consensus-drift/">
       <div class="thumb"><img src="assets/consensus-drift.webp" alt="Screenshot of the Consensus Drift quadrant chart" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Consensus Drift</span></div>
+        <div class="head"><span class="name"><span class="wm wm-cd">Consensus&nbsp;<b>Drift</b></span></span></div>
         <p class="desc">Analyst earnings estimates plotted against what the share price actually did, across 17 equity markets.</p>
       </div>
     </a>
@@ -308,7 +330,7 @@
     <a class="proj" href="https://charlietrenorden.com/property-atlas/">
       <div class="thumb"><img src="assets/property-atlas.webp" alt="Screenshot of Property Atlas, a world map with thirty-four markets shaded by how easy they are for a foreign buyer, above a table of entry prices and yields" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Property Atlas</span></div>
+        <div class="head"><span class="name"><span class="wm wm-pa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-7.2 7-12.5a7 7 0 0 0-14 0C5 14.8 12 22 12 22z" fill="currentColor"/><circle cx="12" cy="9.5" r="2.7" fill="var(--raised)"/></svg>Property Atlas</span></span></div>
         <p class="desc">Property abroad: the price, the yield, and the paperwork.</p>
       </div>
     </a>
@@ -333,14 +355,14 @@
     <a class="proj" href="https://charlietrenorden.com/photocopy/">
       <div class="thumb"><img src="assets/photocopy.webp" alt="Screenshot of the Photocopy homepage" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Photocopy</span></div>
+        <div class="head"><span class="name"><span class="wm wm-pc">Photocopy</span></span></div>
         <p class="desc">One image a day, each drawn from a description of the last.</p>
       </div>
     </a>
     <a class="proj" href="https://aftertimes.charlietrenorden.com/">
       <div class="thumb"><img src="assets/the-aftertimes.webp" alt="Screenshot of The Aftertimes homepage" loading="lazy" width="1400" height="874"></div>
       <div class="meta">
-        <div class="head"><span class="name">The Aftertimes</span></div>
+        <div class="head"><span class="name"><span class="wm wm-at">The Aftertimes</span></span></div>
         <p class="desc">A wire service reporting from the future.</p>
       </div>
     </a>
@@ -367,7 +389,7 @@
     <a class="proj" href="https://charlietrenorden.com/statecraft/">
       <div class="thumb"><img src="assets/statecraft.webp" alt="Screenshot of Statecraft, showing a radar chart of thirteen policy areas beside sliders for tax and healthcare, each with what it costs" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Statecraft</span></div>
+        <div class="head"><span class="name"><span class="wm wm-sc"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 1v14M8 1v14M12.5 1v14" stroke="currentColor" stroke-width="1" opacity=".45"/><rect x="1.5" y="9" width="4" height="2.5" rx=".6" fill="currentColor"/><rect x="6" y="3.5" width="4" height="2.5" rx=".6" fill="var(--wm-green)"/><rect x="10.5" y="6.5" width="4" height="2.5" rx=".6" fill="currentColor"/></svg>Statecraft</span></span></div>
         <p class="desc">Design a state from scratch and find its real-world twin.</p>
       </div>
     </a>
@@ -420,7 +442,7 @@
     <a class="proj" href="lexicon/">
       <div class="thumb"><img src="assets/lexicon.webp" alt="Screenshot of the Lexicon vocabulary review app" loading="lazy" width="1400" height="874"></div>
       <div class="meta">
-        <div class="head"><span class="name">Lexicon</span></div>
+        <div class="head"><span class="name"><span class="wm wm-lx" aria-label="Lexicon">lex&middot;i&middot;con</span></span></div>
         <p class="desc">A quiet place for words - a spaced-repetition vocabulary tool.</p>
       </div>
     </a>
@@ -434,7 +456,7 @@
     <a class="proj" href="https://charlietrenorden.com/bookmark/">
       <div class="thumb"><img src="assets/bookmark.webp" alt="Screenshot of Bookmark, showing the book of the month with the reason it was picked" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Bookmark</span><span class="status s-wip">In progress</span></div>
+        <div class="head"><span class="name"><span class="wm wm-bm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2.5-2-6-2.5-9.5-2v14c3.5-.5 7 0 9.5 2zM12 6c2.5-2 6-2.5 9.5-2v14c-3.5-.5-7 0-9.5 2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span>Bookmark<i>.</i></span></span></span><span class="status s-wip">In progress</span></div>
         <p class="desc">Eight questions, one book a month.</p>
       </div>
     </a>
