@@ -153,13 +153,11 @@
     const F = await loadWorld();
     if (worldLayer) map.removeLayer(worldLayer);
     const on = mode === "mine" ? (cc => isEaten(cc)) : (cc => !!byCC[cc]);
-    // the world view is drawn, not tiled: no street tiles (they invert badly in dark), no Antarctica
-    const dark = document.documentElement.dataset.theme === "dark";
+    // the world view is drawn, not tiled, and stays in daylight colours in both themes; no Antarctica
     map.removeLayer(tiles);
     document.getElementById("map").classList.add("world");
     worldLayer = L.geoJSON({ type: "FeatureCollection", features: F.features.filter(f => f.id !== "010") }, {
-      style: f => ({ weight: .6, color: dark ? "#121417" : "#ffffff", fillOpacity: 1,
-        fillColor: on(f.cc) ? (dark ? "#3f9a6c" : "#2f6f4f") : (dark ? "#2a2e33" : "#e9e4d8") }),
+      style: f => ({ weight: .6, color: "#ffffff", fillOpacity: 1, fillColor: on(f.cc) ? "#2f6f4f" : "#e9e4d8" }),
       onEachFeature: (f, l) => { const p = byCC[f.cc]; if (!p || !on(f.cc)) return;
         l.bindPopup(`<div class="card-body"><div class="card-kicker">${esc(p.adj)}${mode === "mine" ? " &middot; eaten " + fmtDate(eaten[p.cc]) : ""}</div><div class="card-name">${esc(p.name)}</div><div class="card-meta">${esc(p.suburb || "")}</div><button type="button" class="card-btn wide" data-go="${esc(p.cc)}">Show in ${esc(D.city)}</button></div>`, { className: "card" }); } }).addTo(map);
     map.removeLayer(pinLayer);
@@ -214,6 +212,39 @@
       map.removeLayer(pinLayer);
       intro.classList.add("gone");
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // the flight is Leaflet's own van Wijk path, eased in and out; every tile it will pass over is fetched while the
+      // arcs draw, and tiles are refreshed every frame, so no zoom level arrives blank
+      const size = map.getSize(), z0 = map.getZoom(), from = map.project(map.getCenter(), z0);
+      const tgt = map._getBoundsCenterZoom(cityBounds, { padding: [30, 30] });
+      const toPx = map.project(tgt.center, z0), w0 = Math.max(size.x, size.y), w1 = w0 * map.getZoomScale(z0, tgt.zoom);
+      const u1 = toPx.distanceTo(from) || 1, rho = 1.42, rho2 = rho * rho;
+      const rr = i => { const b = (w1 * w1 - w0 * w0 + (i ? -1 : 1) * rho2 * rho2 * u1 * u1) / (2 * (i ? w1 : w0) * rho2 * u1), sq = Math.sqrt(b * b + 1) - b; return sq < 1e-9 ? -18 : Math.log(sq); };
+      const r0 = rr(0), S = (rr(1) - r0) / rho;
+      const at = t => { if (t >= 1) return tgt; const s = t * S, w = w0 * Math.cosh(r0) / Math.cosh(r0 + rho * s), u = w0 * (Math.cosh(r0) * Math.tanh(r0 + rho * s) - Math.sinh(r0)) / rho2;
+        return { center: map.unproject(from.add(toPx.subtract(from).multiplyBy(u / u1)), z0), zoom: map.getScaleZoom(w0 / w, z0) }; };
+      if (!reduce) {
+        const subs = tiles.options.subdomains, seen = new Set(), maxZ = tiles.options.maxNativeZoom;
+        for (let i = 0; i <= 120; i++) {
+          const v = at(i / 120), tz = Math.min(maxZ, Math.round(v.zoom)), n = 2 ** tz, c = map.project(v.center, tz), h = size.divideBy(2 * 2 ** (v.zoom - tz));
+          for (let x = Math.floor((c.x - h.x) / 256); x <= Math.floor((c.x + h.x) / 256); x++)
+            for (let y = Math.max(0, Math.floor((c.y - h.y) / 256)); y <= Math.min(n - 1, Math.floor((c.y + h.y) / 256)); y++) {
+              const xx = ((x % n) + n) % n, url = L.Util.template(tiles._url, { s: subs[Math.abs(xx + y) % subs.length], x: xx, y, z: tz, r: "" });
+              if (!seen.has(url)) { seen.add(url); new Image().src = url; }
+            }
+        }
+      }
+      const fly = T => new Promise(res => {
+        map._stop(); map._moveStart(true, false);
+        const t0 = performance.now();
+        let last = null;
+        const frame = now => { const t = Math.min(1, (now - t0) / T), e = t < .5 ? 4 * t * t * t : 1 - (2 - 2 * t) ** 3 / 2, v = at(e);
+          map._move(v.center, v.zoom, { flyTo: true });
+          // new tiles only when the view has moved a quarter tile at the current tile zoom
+          const c = map.project(v.center, Math.round(v.zoom));
+          if (!last || last.z !== Math.round(v.zoom) || c.distanceTo(last.c) > 64) { tiles._update(); tiles._pruneTiles(); last = { z: Math.round(v.zoom), c }; }
+          if (t < 1) requestAnimationFrame(frame); else { map._moveEnd(true); res(); } };
+        requestAnimationFrame(frame);
+      });
       let fx = null;
       try {
         const F = await loadWorld();
@@ -255,14 +286,14 @@
       const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(pinLayer); intro.remove(); document.getElementById("tally").hidden = true; paint(); };
       if (reduce) { map.fitBounds(cityBounds, { padding: [30, 30] }); done(); return; }
       // the arcs and fills fade out as the camera passes the continent, before they can pile into a fan
-      const z0 = map.getZoom(), fxPane = map.getPanes().overlayPane;
+      const fxPane = map.getPanes().overlayPane;
       map.on("zoom", function fade() {
         const k = Math.max(0, 1 - (map.getZoom() - z0 - .6) / 1.2);
         fxPane.style.opacity = k;
         if (k === 0 && fx) { map.removeLayer(fx); fx = null; fxPane.style.opacity = ""; map.off("zoom", fade); }
       });
-      map.flyToBounds(cityBounds, { padding: [30, 30], duration: 4, easeLinearity: .2 });
-      map.once("moveend", done);
+      await fly(4200);
+      done();
     }
   }
   paint();

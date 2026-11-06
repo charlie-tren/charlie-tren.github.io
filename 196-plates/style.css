@@ -105,7 +105,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 .card-btn.wide { grid-column: 1 / -1; }
 .card-btn.alt { background: var(--bg); color: var(--ink) !important; }
 .card-btn:hover { filter: brightness(1.12); }
-.card-check { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin-top: 2px; font: 600 13px var(--sans); cursor: pointer; }
+.card-check { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin-top: 2px; padding-left: 4px; font: 600 13px var(--sans); cursor: pointer; }
 .card-check input { width: 17px; height: 17px; accent-color: var(--green); margin: 0; }
 
 /* ---- map controls ---- */
@@ -151,7 +151,6 @@ body.searching .app { visibility: hidden; }
 .tally { position: absolute; right: 22px; bottom: 26px; z-index: 900; font: 900 42px/1 var(--serif); color: var(--ink); text-shadow: 0 0 10px var(--bg), 0 0 4px var(--bg); pointer-events: none; }
 .tally[hidden] { display: none; }
 #map.world { background: #cfe0e8; }
-:root[data-theme="dark"] #map.world { background: #0d1013; }
 .card-actions { display: flex; flex-wrap: wrap; }
 .card-actions .card-btn { flex: 1 1 40%; }
 .card-actions .card-btn.wide, .card-actions .card-check { flex-basis: 100%; }
