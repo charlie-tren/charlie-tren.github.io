@@ -35,7 +35,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; }
   :root { --bg:#0f1319; --raised:#171c24; --ink:#e6e9ee; --soft:#8a94a3;
-          --faint:#5d6675; --rule:#262d38; --motif-bg:#141a22; --accent:#82a8ca;
+          --faint:#5d6675; --rule:#262d38; --motif-bg:#141a22; --accent:#82a8ca; --gold:#d9a441;
           /* Direction, not merit. Behind and ahead are opposite readings of one axis
              so they take opposite hues, and inline is neutral because "no
              disagreement" is not a finding. Deliberately NOT green and red: in a
@@ -44,9 +44,9 @@
              amber carry the direction without the verdict, and neither is the accent,
              which has to keep meaning "interactive". */
           --behind:#6f9fa8; --ahead:#c19a5b; --inline:#7d8798; }
-  :root[data-theme="dark"]  { --bg:#0f1319; --raised:#171c24; --ink:#e6e9ee; --soft:#8a94a3; --faint:#5d6675; --rule:#262d38; --motif-bg:#141a22; --accent:#82a8ca;
+  :root[data-theme="dark"]  { --bg:#0f1319; --raised:#171c24; --ink:#e6e9ee; --soft:#8a94a3; --faint:#5d6675; --rule:#262d38; --motif-bg:#141a22; --accent:#82a8ca; --gold:#d9a441;
                               --behind:#6f9fa8; --ahead:#c19a5b; --inline:#7d8798; }
-  :root[data-theme="light"] { --bg:#eef0f3; --raised:#fbfcfd; --ink:#14171c; --soft:#565d68; --faint:#868d99; --rule:#d7dbe2; --motif-bg:#e7eaef; --accent:#3a5f80;
+  :root[data-theme="light"] { --bg:#eef0f3; --raised:#fbfcfd; --ink:#14171c; --soft:#565d68; --faint:#868d99; --rule:#d7dbe2; --motif-bg:#e7eaef; --accent:#3a5f80; --gold:#8a5d0e;
                               --behind:#3f6d76; --ahead:#8a6524; --inline:#5c6675; }
 
   html { -webkit-text-size-adjust: 100%; }
@@ -88,6 +88,10 @@
   .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 
   h1 { font: 400 2.4rem/1.15 inherit; margin: 0 0 .5rem; letter-spacing: -.01em; }
+  h1.wm { display: flex; align-items: center; gap: .3em; font-weight: 700; }
+  h1.wm svg { height: .95em; width: .95em; flex: none; transform: translateY(.03em); }
+  h1.wm .c1 { color: var(--accent); }
+  h1.wm i { color: var(--gold); }
   .lede { margin: 0 0 2.6rem; color: var(--soft); font-size: 1.05rem; max-width: 40rem; }
   h2 { font: 600 1.15rem/1.3 inherit; margin: 3rem 0 1rem; }
 
@@ -348,7 +352,7 @@
     </nav>
   </div>
 
-  <h1>Crosscheck</h1>
+  <h1 class="wm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12.8 9.5 17.8" stroke="var(--accent)" stroke-width="3.8" stroke-linecap="round" fill="none"/><path d="M9.5 17.8 20 5.8" stroke="var(--gold)" stroke-width="3.8" stroke-linecap="round" fill="none"/></svg><span><span class="c1">Cross</span><i>check</i></span></h1>
   <p class="lede">613 companies ranked on accounting quality, estimate revisions, valuation and momentum, at weights you set.</p>
 
   <!-- Three charts, chosen from thirteen rendered on the live rows. All three are

@@ -73,6 +73,7 @@ h1 {
 }
 .mark { width: 1.5em; height: 1.5em; flex: none; }
 .wordmark { min-width: 0; }
+.wordmark b { font-weight: 800; }
 .m-on { fill: var(--accent); }
 .m-off { fill: var(--rule-2); }
 
