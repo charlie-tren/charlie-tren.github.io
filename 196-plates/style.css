@@ -150,3 +150,23 @@ body.searching .app { visibility: hidden; }
 .card-btn .via { font-weight: 500; opacity: .75; }
 .card-src ul { max-height: none; overflow: visible; }
 .filter[hidden], .legend[hidden], .you[hidden] { display: none; }
+.tally { position: absolute; right: 22px; bottom: 26px; z-index: 900; font: 900 42px/1 var(--serif); color: var(--ink); text-shadow: 0 0 10px var(--bg), 0 0 4px var(--bg); pointer-events: none; }
+.tally[hidden] { display: none; }
+#map.world { background: #cfe0e8; }
+:root[data-theme="dark"] #map.world { background: #0d1013; }
+.card-actions { display: flex; flex-wrap: wrap; }
+.card-actions .card-btn { flex: 1 1 40%; }
+.card-actions .card-btn.wide, .card-actions .card-check { flex-basis: 100%; }
+/* the map keeps its daylight colours in dark mode; only the interface goes dark */
+:root[data-theme="dark"] { --tiles: none; }
+/* sources: a pill that opens to a set of publication chips */
+.card-src summary { padding: 4px 10px; border: 1px solid var(--rule); border-radius: 999px; font-weight: 600; color: var(--ink-soft); }
+.card-src summary:hover { border-color: var(--ink-faint); }
+.card-src ul { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 0; }
+.card-src li { border: 0; padding: 0; }
+.card-src a { display: inline-block; padding: 3px 9px; border-radius: 999px; background: var(--hover); color: var(--ink); font-size: 12px; text-decoration: none; }
+.card-src a::after { content: " \2197"; opacity: .45; }
+.card-src a:hover { text-decoration: none; filter: brightness(.95); }
+/* no scrollbar on the list (it also stopped the panel edge shifting when the filter changed the list length) */
+.panel { scrollbar-width: none; scrollbar-gutter: stable; }
+.panel::-webkit-scrollbar { display: none; }
