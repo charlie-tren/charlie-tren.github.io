@@ -59,6 +59,7 @@
   @font-face { font-family: "WM Young Serif"; src: url("assets/fonts/youngserif-bm.woff2") format("woff2"); font-display: swap; }
   @font-face { font-family: "WM Geist"; src: url("assets/fonts/geist-600-dcf.woff2") format("woff2"); font-weight: 600; font-display: swap; }
   @font-face { font-family: "WM Manrope"; src: url("assets/fonts/manrope-cfa.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "WM Bricolage"; src: url("assets/fonts/bricolage-800-wcs.woff2") format("woff2"); font-weight: 800; font-display: swap; }
   @font-face { font-family: "WM Baloo"; src: url("assets/fonts/baloo2-700-fk.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 
   :root, :root[data-theme="dark"] {
@@ -199,6 +200,8 @@
   .wm-os svg { height: 1.05em; width: 1.05em; transform: translateY(-.025em); }
   .wm-bst { font: 400 1.04em/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; gap: .36em; }
   .wm-bst svg { height: 1.18em; width: 1.18em; color: var(--wm-blue); transform: translateY(-.02em); }
+  .wm-wcs { font: 800 .98em/1.2 "WM Bricolage", ui-sans-serif, system-ui, sans-serif; letter-spacing: -.025em; gap: .3em; }
+  .wm-wcs svg { height: .95em; width: .95em; transform: translateY(-.07em); }
   .wm-fk { gap: .1em; }
   .wm-fk span { display: inline-flex; width: 1.12em; height: 1.22em; align-items: center; justify-content: center;
     background: #6b4cf6; color: #fff; border-radius: .2em; box-shadow: 0 .1em 0 #3a22b5;
@@ -407,7 +410,7 @@
     <a class="proj" href="https://charlietrenorden.com/worst-case-scenario/">
       <div class="thumb"><img src="assets/worst-case-scenario.webp" alt="Screenshot of Worst Case Scenario, showing four anonymous cards played against a situation with the vote counts revealed" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Worst Case Scenario</span><span class="status s-wip">In progress</span></div>
+        <div class="head"><span class="name"><span class="wm wm-wcs"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2.8" fill="#f2c230"/><path d="M12 6.5V14" stroke="#14161d" stroke-width="2.8" stroke-linecap="round"/><circle cx="12" cy="17.8" r="1.6" fill="#14161d"/></svg>Worst Case Scenario</span></span><span class="status s-wip">In progress</span></div>
         <p class="desc">A card game about choosing between bad options.</p>
       </div>
     </a>
