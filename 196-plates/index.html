@@ -11,7 +11,16 @@
 <meta property="og:title" content="196 Plates">
 <meta property="og:description" content="One restaurant for every country's food in Sydney.">
 <meta property="og:url" content="https://charlietrenorden.com/196-plates/">
+<meta property="og:image" content="https://charlietrenorden.com/196-plates/og-card.png">
+<meta property="og:image:secure_url" content="https://charlietrenorden.com/196-plates/og-card.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="196 Plates - a map of Sydney with a flag on one restaurant for each country's food">
+<meta name="twitter:card" content="summary_large_image">
+<script>(function(){try{var t=JSON.parse(localStorage.getItem("196plates.theme"));if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" integrity="sha512-mQ77VzAakzdpWdgfL/lM1ksNy89uFgibRQANsNneSTMD/bj0Y/8+94XMwYhnbzx8eki2hrbPpDm0vD0CiT2lcg==" crossorigin="anonymous" referrerpolicy="no-referrer">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="/196-plates/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/196-plates/favicon-192.png" type="image/png" sizes="192x192">
@@ -19,19 +28,21 @@
 <link rel="apple-touch-icon" href="/196-plates/apple-touch-icon.png">
 <script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
 </head>
-<body>
+<body class="searching">
 <header class="top">
-  <h1 class="masthead"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28"/><circle class="rim" cx="32" cy="32" r="18"/></svg>196 Plates</h1>
-  <a class="home" href="https://charlietrenorden.com/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
+  <h1 class="masthead"><a href="/196-plates/"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28"/><circle class="rim" cx="32" cy="32" r="18"/></svg>196 Plates</a></h1>
+  <button id="theme" type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch theme"><span class="dot" aria-hidden="true"></span><span class="lbl">Dark</span></button>
+  <a class="home" href="https://charlietrenorden.com/"><svg class="back" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Other projects</a>
 </header>
 <div class="app">
   <aside class="panel" aria-label="Countries">
     <p class="lede">One restaurant for every country's food in Sydney.</p>
     <p class="count"><span id="n"></span><span class="of"> of 196</span></p>
     <p class="you" id="been" hidden></p>
+    <div class="filter" id="filter" role="group" aria-label="Show" hidden><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="eaten" aria-pressed="false">Eaten</button><button type="button" data-f="not" aria-pressed="false">Not yet</button></div>
     <div id="groups"></div>
   </aside>
-  <div id="map" role="application" aria-label="Map of Sydney"></div>
+  <div class="mapwrap"><div id="map" role="application" aria-label="Map of Sydney"></div><div class="legend" id="legend" hidden></div></div>
 </div>
 <div class="intro" id="intro">
   <div class="search">
@@ -41,6 +52,7 @@
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js" integrity="sha512-OFs3W4DIZ5ZkrDhBFtsCP6JXtMEDGmhl0QPlmWYBJay40TT1n3gt2Xuw8Pf/iezgW9CdabjkNChRqozl/YADmg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js" integrity="sha512-4UKI/XKm3xrvJ6pZS5oTRvIQGIzZFoXR71rRBb1y2N+PbwAsKa5tPl2J6WvbEvwN3TxQCm8hMzsl/pO+82iRlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="app.js"></script>
 </body>
