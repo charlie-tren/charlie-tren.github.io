@@ -105,7 +105,7 @@ one-story / aftertimes -> GitHub Pages via CNAME. Vercel needed
 Compact, non-clickable entries - internal tools and personal projects that aren't public.
 Copy is deliberately capability-only: no client names, exposures, numbers, or internal
 methodology. The three internal ones (Vantage, Overlay & hedging ops, Signal pipelines)
-have Rochford sign-off for this wording; keep any future edits to that same generic level.
+were signed off at this wording; keep any future edits to that same generic level.
 
 | Entry | Tag |
 |---|---|
