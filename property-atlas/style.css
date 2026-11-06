@@ -558,16 +558,13 @@ table#grid th.soft { text-decoration: underline dotted var(--ink-faint); text-un
 .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 
 /* ---- the mark ----
-   Option 8, the scan: a line sweeps down and the pin turns accent under it. It
-   runs once on load and again on hover. It does NOT loop - a mark that never
-   stops moving is a loading spinner, and this page is not loading. */
+   A line sweeps down through the pin once on load and again on hover. It does NOT
+   loop - a mark that never stops moving is a loading spinner. */
 .masthead { display: flex; align-items: center; gap: 14px; }
-.mark { width: .78em; height: .9em; flex: none; overflow: visible; }
-.pin-base { fill: var(--ink); }
-.pin-lit  { fill: var(--accent); }
+.mark { width: .78em; height: .9em; flex: none; overflow: visible; transform: translateY(.045em); }
+.pin-base { fill: var(--accent); }
 .pin-hole { fill: var(--bg); }
-.scanline { stroke: var(--accent); stroke-width: 2.4; opacity: 0; }
-.mark #scanclip rect, .mark .scanline { transform: translateY(0); }
+.scanline { stroke: var(--bg); stroke-width: 2.4; opacity: 0; }
 @keyframes pa-scan {
   0%   { transform: translateY(0); }
   100% { transform: translateY(76px); }
@@ -576,24 +573,16 @@ table#grid th.soft { text-decoration: underline dotted var(--ink-faint); text-un
   0%, 100% { opacity: 0; }
   8%, 88%  { opacity: .95; }
 }
-.masthead .mark clipPath rect { animation: pa-scan 1.15s cubic-bezier(.4,0,.2,1) .35s 1 both; }
 .masthead .mark .scanline {
   animation: pa-scan 1.15s cubic-bezier(.4,0,.2,1) .35s 1 both,
              pa-scanline 1.15s linear .35s 1 both;
 }
-.masthead:hover .mark clipPath rect { animation: pa-scan 1.15s cubic-bezier(.4,0,.2,1) 1 both; }
 .masthead:hover .mark .scanline {
   animation: pa-scan 1.15s cubic-bezier(.4,0,.2,1) 1 both,
              pa-scanline 1.15s linear 1 both;
 }
-/* Someone who has asked their machine to stop moving things means it. */
 @media (prefers-reduced-motion: reduce) {
-  .masthead .mark clipPath rect, .masthead .mark .scanline,
-  .masthead:hover .mark clipPath rect, .masthead:hover .mark .scanline {
-    animation: none;
-  }
-  .mark clipPath rect { transform: translateY(76px); }
-  .scanline { opacity: 0; }
+  .masthead .mark .scanline, .masthead:hover .mark .scanline { animation: none; }
 }
 
 

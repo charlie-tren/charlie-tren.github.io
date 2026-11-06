@@ -32,7 +32,7 @@
    Leans on hover, which is worth the six lines - a mark that responds is the
    difference between a logo and a picture. Reduced motion gets none of it. */
 .wordmark { display: flex; align-items: center; gap: .5rem; min-width: 0; }
-.wordmark .mk { color: var(--accent); flex: none;
+.wordmark .mk { flex: none;
                 transition: transform .35s cubic-bezier(.34,1.56,.64,1); transform-origin: 50% 88%; }
 .wordmark:hover .mk { transform: rotate(-9deg); }
 /* Bricolage Grotesque: a grotesque with enough width variation to have a face,

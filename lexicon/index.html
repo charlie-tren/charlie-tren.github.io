@@ -26,7 +26,7 @@
 <link rel="apple-touch-icon" href="/lexicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
 :root{
   --paper:#f4f0e6; --paper2:#efe9db; --card:#fbf8f1;
@@ -43,8 +43,7 @@ body{
 }
 .serif{font-family:'Spectral',Georgia,'Times New Roman',serif;}
 .head{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid var(--line);max-width:760px;margin:0 auto;}
-.brand{font-family:'Spectral',serif;font-size:21px;font-weight:600;cursor:pointer;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
-.mark{color:var(--oxblood);font-size:22px;}
+.brand{font-family:'Spectral',serif;font-size:21px;font-weight:700;cursor:pointer;letter-spacing:-.01em;}
 .nav{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;align-items:center;}
 .navlink{text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
 .navlink .arw{color:var(--accent);}
@@ -539,7 +538,7 @@ function importJSON(file){
 /* ============================ views ============================ */
 function header(){
   const n=v=>'<button class="navbtn'+(ses.view===v?' on':'')+'" data-act="nav" data-view="'+v+'">';
-  return '<div class="head"><div class="brand" data-act="nav" data-view="home"><span class="mark">\u00B6</span> Lexicon</div>'
+  return '<div class="head"><div class="brand" data-act="nav" data-view="home" aria-label="Lexicon">lex\u00B7i\u00B7con</div>'
     +'<div class="nav">'+n("home")+'Today</button>'+n("add")+'Add</button>'+n("manage")+'Words</button>'+n("settings")+'Settings</button>'
     +'<a class="navbtn navlink" href="https://charlietrenorden.com/"><span class="arw">←</span> Other projects</a></div></div>';
 }
