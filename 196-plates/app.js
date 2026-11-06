@@ -16,14 +16,14 @@
   const themeBtn = document.getElementById("theme");
   const setTheme = t => { document.documentElement.dataset.theme = t; themeBtn.setAttribute("aria-pressed", t === "dark");
     themeBtn.querySelector(".lbl").textContent = t === "dark" ? "Light" : "Dark"; store.set("196plates.theme", t); };
-  setTheme(document.documentElement.dataset.theme || "light");
+  setTheme(document.documentElement.dataset.theme || "dark");
   themeBtn.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 
   // ---- map ----
   const map = L.map("map", { zoomControl: true, attributionControl: true, zoomSnap: 0.25, worldCopyJump: false });
   map.attributionControl.setPrefix(false);
   const BASE = window.__BASE || { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' };
-  L.tileLayer(BASE.url, { maxZoom: 19, maxNativeZoom: BASE.max || 19, subdomains: BASE.sub || "abc", attribution: BASE.attribution }).addTo(map);
+  const tiles = L.tileLayer(BASE.url, { maxZoom: 19, maxNativeZoom: BASE.max || 19, subdomains: BASE.sub || "abc", attribution: BASE.attribution }).addTo(map);
 
   // ---- places you have eaten at, kept on this device (cc -> date) ----
   const KEY = "196plates.eaten." + CITY;
@@ -33,7 +33,7 @@
   const paint = () => {
     const n = Object.keys(eaten).length;
     eatenCount.hidden = n === 0;
-    eatenCount.innerHTML = `${n} of ${D.pins.length} eaten &middot; <button type="button" class="linkish" id="mine">Your map</button>`;
+    eatenCount.innerHTML = `${n} of ${D.pins.length} tasted &middot; <button type="button" class="linkish" id="mine">Your map</button>`;
     document.getElementById("filter").hidden = n === 0;
     applyFilter();
     const mine = document.getElementById("mine"); if (mine) mine.onclick = () => showWorld("mine");
@@ -59,7 +59,7 @@
         ${rev ? `<a class="card-btn wide" href="${esc(rev.url)}" target="_blank" rel="noopener">Read the review <span class="via">&middot; ${esc(rev.name)}</span></a>` : ""}
         ${web ? `<a class="card-btn alt" href="${esc(web)}" target="_blank" rel="noopener">Website</a>` : ""}
         <a class="card-btn alt" href="${dirUrl(p)}" target="_blank" rel="noopener">Directions</a>
-        <label class="card-check"><input type="checkbox" data-eat="${esc(p.cc)}" ${isEaten(p.cc) ? "checked" : ""}> Eaten here</label>
+        <label class="card-check"><input type="checkbox" data-eat="${esc(p.cc)}" ${isEaten(p.cc) ? "checked" : ""}> Tasted</label>
       </div>
     </div>`;
   };
@@ -139,11 +139,19 @@
     const F = await loadWorld();
     if (worldLayer) map.removeLayer(worldLayer);
     const on = mode === "mine" ? (cc => isEaten(cc)) : (cc => !!byCC[cc]);
-    worldLayer = L.geoJSON(F, { style: f => ({ weight: .6, color: "#fff", fillColor: on(f.cc) ? "#2f6f4f" : "#e9e4d8", fillOpacity: .92 }),
+    // the world view is drawn, not tiled: no street tiles (they invert badly in dark), no Antarctica
+    const dark = document.documentElement.dataset.theme === "dark";
+    map.removeLayer(tiles);
+    document.getElementById("map").classList.add("world");
+    worldLayer = L.geoJSON({ type: "FeatureCollection", features: F.features.filter(f => f.id !== "010") }, {
+      style: f => ({ weight: .6, color: dark ? "#121417" : "#ffffff", fillOpacity: 1,
+        fillColor: on(f.cc) ? (dark ? "#3f9a6c" : "#2f6f4f") : (dark ? "#2a2e33" : "#e9e4d8") }),
       onEachFeature: (f, l) => { const p = byCC[f.cc]; if (!p || !on(f.cc)) return;
         l.bindPopup(`<div class="card-body"><div class="card-kicker">${esc(p.adj)}${mode === "mine" ? " &middot; eaten " + fmtDate(eaten[p.cc]) : ""}</div><div class="card-name">${esc(p.name)}</div><div class="card-meta">${esc(p.suburb || "")}</div><button type="button" class="card-btn wide" data-go="${esc(p.cc)}">Show in ${esc(D.city)}</button></div>`, { className: "card" }); } }).addTo(map);
     map.removeLayer(cluster);
-    map.setView([15, 150], small ? 1 : 2);
+    // one world exactly: zoom so 360 degrees of longitude fill the map width once, no copies either side
+    const mw = document.getElementById("map").clientWidth;
+    map.setView([20, 150], Math.max(0, Math.log2(mw / 256)), { animate: false });
     document.getElementById("worldbtn").textContent = `Back to ${D.city}`;
     document.getElementById("worldbtn").onclick = hideWorld;
     const n = mode === "mine" ? Object.keys(eaten).length : D.pins.length;
@@ -152,7 +160,7 @@
   }
   function hideWorld() {
     if (!worldLayer) return;
-    map.removeLayer(worldLayer); worldLayer = null; legend.hidden = true;
+    map.removeLayer(worldLayer); worldLayer = null; legend.hidden = true; tiles.addTo(map); document.getElementById("map").classList.remove("world");
     map.addLayer(cluster); map.fitBounds(cityBounds, { padding: [30, 30] });
     document.getElementById("worldbtn").textContent = "World";
     document.getElementById("worldbtn").onclick = () => showWorld("city");
@@ -197,9 +205,12 @@
         const F = await loadWorld();
         fx = L.featureGroup().addTo(map);
         const canvas = L.canvas({ padding: .5 });
-        const live = F.features.filter(f => byCC[f.cc]);
-        L.geoJSON({ type: "FeatureCollection", features: live }, { renderer: canvas, interactive: false, style: { weight: 0, fillColor: "#2f6f4f", fillOpacity: .7 } }).addTo(fx);
         const to = cityBounds.getCenter(), rad = Math.PI / 180;
+        // farthest first, so the world lights up from the edges in towards the city
+        const dist = f => { const c = L.geoJSON(f).getBounds().getCenter(); return map.distance(c, to); };
+        const live = F.features.filter(f => byCC[f.cc]).sort((a, b) => dist(b) - dist(a));
+        const fills = live.map(f => L.geoJSON(f, { renderer: canvas, interactive: false, style: { weight: 0, fillColor: "#e4572e", fillOpacity: 0 } }).addTo(fx));
+        const counter = document.getElementById("tally");
         const gc = (a, b, n) => { // great-circle points between two lat/lngs, longitudes unwrapped
           const [f1, l1, f2, l2] = [a.lat * rad, a.lng * rad, b.lat * rad, b.lng * rad];
           const d = 2 * Math.asin(Math.sqrt(Math.sin((f2 - f1) / 2) ** 2 + Math.cos(f1) * Math.cos(f2) * Math.sin((l2 - l1) / 2) ** 2));
@@ -212,13 +223,22 @@
           return pts; };
         const arcs = live.map(f => { const c = L.geoJSON(f).getBounds().getCenter(); const all = gc(c, to, 48);
           return L.polyline(all.slice(0, 2), { renderer: canvas, color: "#e4572e", weight: .9, opacity: .55, interactive: false, all }).addTo(fx); });
-        if (!reduce) await new Promise(res => { const t0 = performance.now(), T = 1700;
+        counter.hidden = false;
+        if (!reduce) await new Promise(res => { const t0 = performance.now(), T = 3200, N = arcs.length;
+          let lit = 0;
           const step = now => { const k = Math.min(1, (now - t0) / T);
-            arcs.forEach((a, i) => { const ki = Math.max(0, Math.min(1, k * 1.6 - i / arcs.length * .6)); const all = a.options.all; a.setLatLngs(all.slice(0, Math.max(2, Math.round(all.length * ki)))); });
+            arcs.forEach((a, i) => {
+              // one country at a time: each arc starts as the previous is half drawn, its country lights when it lands
+              const ki = Math.max(0, Math.min(1, (k * (N * .35 + 1) - i * .35)));
+              const all = a.options.all; a.setLatLngs(all.slice(0, Math.max(2, Math.round(all.length * ki))));
+              if (ki >= 1 && !fills[i]._lit) { fills[i]._lit = true; fills[i].setStyle({ fillOpacity: .85 }); lit++; }
+            });
+            counter.textContent = `${Math.round(lit / N * D.pins.length)} of 196`;
             k < 1 ? requestAnimationFrame(step) : res(); };
           requestAnimationFrame(step); });
+        else { fills.forEach(f => f.setStyle({ fillOpacity: .85 })); counter.textContent = `${D.pins.length} of 196`; }
       } catch (e) { fx = null; }
-      const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(cluster); intro.remove(); paint(); };
+      const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(cluster); intro.remove(); document.getElementById("tally").hidden = true; paint(); };
       if (reduce) { map.fitBounds(cityBounds, { padding: [30, 30] }); done(); return; }
       // the arcs and fills fade out as the camera passes the continent, before they can pile into a fan
       const z0 = map.getZoom(), fxPane = map.getPanes().overlayPane;
