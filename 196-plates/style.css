@@ -177,3 +177,11 @@ body.searching .app { visibility: hidden; }
 .leaflet-marker-pane { transition: opacity .6s; }
 #map.pins-hidden .leaflet-marker-pane { opacity: 0; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* search the list by country, cuisine or restaurant */
+.find { display: block; width: 100%; margin: 16px 0 0; padding: 9px 13px; border: 1px solid var(--rule); border-radius: 999px;
+  background: var(--bg); color: var(--ink); font: 500 14px var(--sans); outline: none; }
+.find:focus { border-color: var(--ink-faint); }
+.find::placeholder { color: var(--ink-faint); }
+/* nothing to drag or zoom while the intro plays or the world view is up */
+#map.locked .leaflet-control-zoom { display: none; }
+#map.pins-hidden .leaflet-top { display: none; }
