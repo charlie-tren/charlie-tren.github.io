@@ -52,6 +52,7 @@ SITES = {
     "crosscheck": "https://charlietrenorden.com/crosscheck/",
     "lindy-effect": "https://charlietrenorden.com/lindy-effect/",
     "property-atlas": "https://charlietrenorden.com/property-atlas/",
+    "196-plates": "https://charlietrenorden.com/196-plates/",
     "crowdwise": "https://crowdwise.charlietrenorden.com/",
     "dcf-studio": "https://dcf.charlietrenorden.com/GOOGL",
     # a country page, not the picker - the landing page is three pills and a
@@ -129,6 +130,7 @@ READY = {
     # with it. A READY selector is coupled to the page's markup; when a page is
     # redesigned, this is the second place to look.
     "property-atlas": "table tbody tr",
+    "196-plates": ".leaflet-marker-icon .pin",
 }
 READY_TIMEOUT = 30000
 
