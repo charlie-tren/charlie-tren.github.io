@@ -62,6 +62,10 @@
   @font-face { font-family: "WM Bricolage"; src: url("assets/fonts/bricolage-800-wcs.woff2") format("woff2"); font-weight: 800; font-display: swap; }
   @font-face { font-family: "WM DM Serif"; src: url("assets/fonts/dmserif-sf.woff2") format("woff2"); font-display: swap; }
   @font-face { font-family: "WM DM Serif"; src: url("assets/fonts/dmserif-italic-sf.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "WM Cormorant"; src: url("assets/fonts/cormorant-600-ch.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "WM Cormorant"; src: url("assets/fonts/cormorant-600i-ch.woff2") format("woff2"); font-weight: 600; font-style: italic; font-display: swap; }
+  @font-face { font-family: "WM EB Garamond"; src: url("assets/fonts/ebgaramond-500-le.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "WM EB Garamond"; src: url("assets/fonts/ebgaramond-500i-le.woff2") format("woff2"); font-weight: 500; font-style: italic; font-display: swap; }
   @font-face { font-family: "WM Baloo"; src: url("assets/fonts/baloo2-700-fk.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 
   :root, :root[data-theme="dark"] {
@@ -69,14 +73,14 @@
     --rule: #22252f; --motif-bg: #14161d; --accent: #a78bfa; --on-accent: #0b0c10;
     --edge: color-mix(in srgb, var(--ink) 9%, transparent);
     --wm-blue: #82a8ca; --wm-teal: #3fb0b8; --wm-green: #7fb685; --wm-amber: #d9a441; --wm-dcf: #5fc39d;
-    --wm-cw: #4c9be8; --wm-cfa: #30d158; --wm-orange: #d98a4e; --wm-coral: #ff8a70;
+    --wm-cw: #4c9be8; --wm-cfa: #30d158; --wm-orange: #d98a4e; --wm-coral: #ff8a70; --wm-cyan: #4fc3f7; --wm-gold: #c9a961;
   }
   :root[data-theme="light"] {
     --bg: #fbf8f1; --raised: #ffffff; --ink: #1d1b18; --soft: #5d5850; --faint: #8e877c;
     --rule: #e6e0d4; --motif-bg: #ffffff; --accent: #6d4fd8; --on-accent: #ffffff;
     --edge: color-mix(in srgb, var(--ink) 16%, transparent);
     --wm-blue: #3a5f80; --wm-teal: #0d7680; --wm-green: #1a5537; --wm-amber: #8a5d0e; --wm-dcf: #2f7d61;
-    --wm-cw: #2b6cb0; --wm-cfa: #1f8a43; --wm-orange: #b5652a; --wm-coral: #c8462e;
+    --wm-cw: #2b6cb0; --wm-cfa: #1f8a43; --wm-orange: #b5652a; --wm-coral: #c8462e; --wm-cyan: #0b7fae; --wm-gold: #8a6a1e;
   }
 
   html { -webkit-text-size-adjust: 100%; }
@@ -209,6 +213,11 @@
   .wm-sf { font: 400 1.16em/1.2 "WM DM Serif", Georgia, serif; gap: .3em; }
   .wm-sf svg { height: .9em; width: .9em; }
   .wm-sf i { color: var(--wm-coral); }
+  .wm-ch { font: 600 1.18em/1.2 "WM Cormorant", Georgia, serif; gap: .32em; }
+  .wm-ch svg { height: .85em; width: .85em; transform: translateY(-.06em); }
+  .wm-ch i { color: var(--wm-cyan); }
+  .wm-le { font: 500 1.14em/1.2 "WM EB Garamond", Georgia, serif; }
+  .wm-le i { color: var(--wm-gold); }
   .wm-wcs { font: 800 .98em/1.2 "WM Bricolage", ui-sans-serif, system-ui, sans-serif; letter-spacing: -.025em; gap: .3em; }
   .wm-wcs svg { height: .95em; width: .95em; transform: translateY(-.07em); }
   .wm-fk { gap: .1em; }
@@ -458,7 +467,7 @@
     <a class="proj" href="/chronoscape/">
       <div class="thumb"><img src="assets/chronoscape.webp" alt="Screenshot of the Chronoscape interactive timeline" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Chronoscape</span></div>
+        <div class="head"><span class="name"><span class="wm wm-ch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 5.5 14.4 12 12 18.5 9.6 12z" fill="var(--wm-cyan)"/><path d="M12 12 14.4 12 12 18.5z" fill="currentColor" opacity=".5"/></svg><span><i>Chrono</i>scape</span></span></span></div>
         <p class="desc">Pick a country, get its history as a timeline you can walk through on a map.</p>
       </div>
     </a>
@@ -472,7 +481,7 @@
     <a class="proj" href="https://charlietrenorden.com/lindy-effect/">
       <div class="thumb"><img src="assets/lindy-effect.webp" alt="Screenshot of The Lindy Effect, showing the classic decay curve with real books placed along it" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">The Lindy Effect</span></div>
+        <div class="head"><span class="name"><span class="wm wm-le"><span>The <i>Lindy</i> Effect</span></span></span></div>
         <p class="desc">Every book on Project Gutenberg by age against how many people are reading it this month. Move one threshold and the answer changes sign.</p>
       </div>
     </a>
