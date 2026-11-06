@@ -3,17 +3,6 @@
 Site-level work on the hub itself. Anything about a project belongs in that
 project's own repo, since most directories here are deploy targets.
 
-- [ ] **Link the podcast from the homepage.** Thinkerings went live on Spotify
-  on 23/09/2026 and nothing here points at the show. Two places it could go and
-  they are not the same decision:
-  - The **Elsewhere** row already has a Spotify link, at
-    `https://open.spotify.com/playlist/7h4WfWsQspkJsEsSHD47ya`, which is a
-    playlist rather than the podcast. Either repoint it at the show or add a
-    second entry, and note that the row is already six items wide.
-  - The **Thinkerings card** links to `https://thinkerings.substack.com/`. The
-    blog and the podcast share a name, so a card with two destinations needs a
-    decision about which one the card is for.
-
 - [ ] **Point the Position Record trigger alert at an inbox that is read.**
   **07/10/2026: nothing to alert on for now.** Brent/WTI and Mastercard/Visa came
   off Watching after failing their re-tests, and the one row left (WTI/Diesel) is
@@ -30,3 +19,9 @@ project's own repo, since most directories here are deploy targets.
   as the default under Settings, Notifications. A session can then re-fire the
   test with `gh workflow run "Refresh position record" -f alert_test=true` and
   confirm the mail lands. Left mid-flow 23/09/2026; nothing has fired since.
+
+## Shipped
+
+- ~~Link the podcast from the homepage~~ - the Elsewhere row links the Thinkerings
+  show on Spotify and the Substack beside it (`index.html`, "Thinkerings, the
+  podcast"). Row closed 06/11/2026.
