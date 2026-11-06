@@ -57,18 +57,20 @@
   @font-face { font-family: "WM Archivo"; src: url("assets/fonts/archivo-700-sc.woff2") format("woff2"); font-weight: 700; font-display: swap; }
   @font-face { font-family: "WM Spectral"; src: url("assets/fonts/spectral-700-lx.woff2") format("woff2"); font-weight: 700; font-display: swap; }
   @font-face { font-family: "WM Young Serif"; src: url("assets/fonts/youngserif-bm.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "WM Geist"; src: url("assets/fonts/geist-600-dcf.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "WM Baloo"; src: url("assets/fonts/baloo2-700-fk.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 
   :root, :root[data-theme="dark"] {
     --bg: #0b0c10; --raised: #14161d; --ink: #eef0f6; --soft: #a2a7b6; --faint: #737888;
     --rule: #22252f; --motif-bg: #14161d; --accent: #a78bfa; --on-accent: #0b0c10;
     --edge: color-mix(in srgb, var(--ink) 9%, transparent);
-    --wm-blue: #82a8ca; --wm-teal: #3fb0b8; --wm-green: #7fb685; --wm-amber: #d9a441;
+    --wm-blue: #82a8ca; --wm-teal: #3fb0b8; --wm-green: #7fb685; --wm-amber: #d9a441; --wm-dcf: #5fc39d;
   }
   :root[data-theme="light"] {
     --bg: #fbf8f1; --raised: #ffffff; --ink: #1d1b18; --soft: #5d5850; --faint: #8e877c;
     --rule: #e6e0d4; --motif-bg: #ffffff; --accent: #6d4fd8; --on-accent: #ffffff;
     --edge: color-mix(in srgb, var(--ink) 16%, transparent);
-    --wm-blue: #3a5f80; --wm-teal: #0d7680; --wm-green: #1a5537; --wm-amber: #8a5d0e;
+    --wm-blue: #3a5f80; --wm-teal: #0d7680; --wm-green: #1a5537; --wm-amber: #8a5d0e; --wm-dcf: #2f7d61;
   }
 
   html { -webkit-text-size-adjust: 100%; }
@@ -179,6 +181,13 @@
   .wm-lx { font: 700 1.04em/1.2 "WM Spectral", Georgia, serif; }
   .wm-bm { font: 400 1.04em/1.2 "WM Young Serif", Georgia, serif; letter-spacing: -.015em; gap: .28em; }
   .wm-bm i { font-style: normal; color: var(--wm-amber); }
+  .wm-dcf { font: 600 1.02em/1.2 "WM Geist", ui-sans-serif, system-ui, sans-serif; letter-spacing: -.025em; gap: .35em; }
+  .wm-dcf svg { color: var(--wm-dcf); }
+  .wm-fk { gap: .1em; }
+  .wm-fk span { display: inline-flex; width: 1.12em; height: 1.22em; align-items: center; justify-content: center;
+    background: #6b4cf6; color: #fff; border-radius: .2em; box-shadow: 0 .1em 0 #3a22b5;
+    font: 700 .86em/1 "WM Baloo", ui-rounded, sans-serif; }
+  .wm-fk span.odd { background: #ff4f6d; box-shadow: 0 .1em 0 #b3243c; }
   .meta .desc { color: var(--soft); font-size: .84rem; line-height: 1.4; margin: 0; }
   /* Inset to clear the card's rounded corner, so the caption does not start outside the curve. */
   .meta { padding: 0 .5rem; }
@@ -309,7 +318,7 @@
     <a class="proj" href="https://dcf.charlietrenorden.com/">
       <div class="thumb"><img src="assets/dcf-studio.webp" alt="Screenshot of a DCF Studio valuation page" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">DCF Studio</span></div>
+        <div class="head"><span class="name"><span class="wm wm-dcf"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="12" width="3.8" height="8" rx="1" fill="currentColor"/><rect x="7.2" y="9" width="3.8" height="11" rx="1" fill="currentColor" opacity=".8"/><rect x="12.4" y="6.5" width="3.8" height="13.5" rx="1" fill="currentColor" opacity=".6"/><rect x="17.6" y="4" width="3.8" height="16" rx="1" fill="currentColor" opacity=".4"/></svg>DCF Studio</span></span></div>
         <p class="desc">Type a company. Get a discounted cashflow valuation built from its reported financials, with every assumption shown.</p>
       </div>
     </a>
@@ -348,7 +357,7 @@
     <a class="proj" href="https://charlietrenorden.com/fakle/">
       <div class="thumb"><img src="assets/fakle.webp" alt="Screenshot of Fakle, showing a day's result as the letters of its name in green and red" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Fakle</span></div>
+        <div class="head"><span class="name"><span class="wm wm-fk" aria-label="Fakle"><span>F</span><span>A</span><span class="odd">K</span><span>L</span><span>E</span></span></span></div>
         <p class="desc">Four headlines from the last 24 hours. One is made up.</p>
       </div>
     </a>
