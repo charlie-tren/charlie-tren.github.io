@@ -1,5 +1,5 @@
 (async function () {
-  const ORDER = ["Europe", "Middle East", "Africa", "South Asia", "Central Asia", "Southeast Asia", "East Asia", "Americas", "Oceania"];
+  const ORDER = ["Europe", "Africa", "Middle East", "Central Asia", "South Asia", "Southeast Asia", "East Asia", "Oceania", "Americas"]; // left to right across the world view
   const D = await (await fetch("data.json")).json();
   const CITY = (D.city || "Sydney").toLowerCase();
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -51,7 +51,7 @@
   const paint = () => {
     const n = Object.keys(eaten).length;
     eatenCount.hidden = n === 0;
-    eatenCount.innerHTML = `${n} of ${D.pins.length} tasted &middot; <button type="button" class="linkish" id="mine">Your map</button>`;
+    eatenCount.innerHTML = `${n} of ${D.pins.length} eaten &middot; <button type="button" class="linkish" id="mine">Your map</button>`;
     document.getElementById("filter").hidden = n === 0;
     applyFilter();
     const mine = document.getElementById("mine"); if (mine) mine.onclick = () => showWorld("mine");
@@ -77,7 +77,7 @@
         ${rev ? `<a class="card-btn wide" href="${esc(rev.url)}" target="_blank" rel="noopener">Read the review <span class="via">&middot; ${esc(rev.name)}</span></a>` : ""}
         ${web ? `<a class="card-btn alt" href="${esc(web)}" target="_blank" rel="noopener">Website</a>` : ""}
         <a class="card-btn alt" href="${dirUrl(p)}" target="_blank" rel="noopener">Directions</a>
-        <label class="card-check"><input type="checkbox" data-eat="${esc(p.cc)}" ${isEaten(p.cc) ? "checked" : ""}> Tasted</label>
+        <label class="card-check"><input type="checkbox" data-eat="${esc(p.cc)}" ${isEaten(p.cc) ? "checked" : ""}> Eaten here</label>
       </div>
     </div>`;
   };
