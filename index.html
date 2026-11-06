@@ -58,6 +58,7 @@
   @font-face { font-family: "WM Spectral"; src: url("assets/fonts/spectral-700-lx.woff2") format("woff2"); font-weight: 700; font-display: swap; }
   @font-face { font-family: "WM Young Serif"; src: url("assets/fonts/youngserif-bm.woff2") format("woff2"); font-display: swap; }
   @font-face { font-family: "WM Geist"; src: url("assets/fonts/geist-600-dcf.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "WM Manrope"; src: url("assets/fonts/manrope-cfa.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
   @font-face { font-family: "WM Baloo"; src: url("assets/fonts/baloo2-700-fk.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 
   :root, :root[data-theme="dark"] {
@@ -65,12 +66,14 @@
     --rule: #22252f; --motif-bg: #14161d; --accent: #a78bfa; --on-accent: #0b0c10;
     --edge: color-mix(in srgb, var(--ink) 9%, transparent);
     --wm-blue: #82a8ca; --wm-teal: #3fb0b8; --wm-green: #7fb685; --wm-amber: #d9a441; --wm-dcf: #5fc39d;
+    --wm-cw: #4c9be8; --wm-cfa: #30d158; --wm-orange: #d98a4e;
   }
   :root[data-theme="light"] {
     --bg: #fbf8f1; --raised: #ffffff; --ink: #1d1b18; --soft: #5d5850; --faint: #8e877c;
     --rule: #e6e0d4; --motif-bg: #ffffff; --accent: #6d4fd8; --on-accent: #ffffff;
     --edge: color-mix(in srgb, var(--ink) 16%, transparent);
     --wm-blue: #3a5f80; --wm-teal: #0d7680; --wm-green: #1a5537; --wm-amber: #8a5d0e; --wm-dcf: #2f7d61;
+    --wm-cw: #2b6cb0; --wm-cfa: #1f8a43; --wm-orange: #b5652a;
   }
 
   html { -webkit-text-size-adjust: 100%; }
@@ -183,6 +186,17 @@
   .wm-bm i { font-style: normal; color: var(--wm-amber); }
   .wm-dcf { font: 600 1.02em/1.2 "WM Geist", ui-sans-serif, system-ui, sans-serif; letter-spacing: -.025em; gap: .35em; }
   .wm-dcf svg { color: var(--wm-dcf); }
+  /* Icons sit on the cap height, not the line box: nudged up by the gap between the two. */
+  .wm-cw { font: 700 1em/1.2 ui-sans-serif, system-ui, sans-serif; letter-spacing: -.03em; gap: .24em; }
+  .wm-cw svg { height: 1.02em; width: 1.02em; transform: translateY(.035em); }
+  .wm-cw b { font-weight: inherit; color: var(--wm-cw); }
+  .wm-cfa { font: 400 1em/1.2 "WM Manrope", ui-sans-serif, system-ui, sans-serif; letter-spacing: -.01em; }
+  .wm-cfa b { font-weight: 800; }
+  .wm-cfa svg { transform: translateY(-.03em); }
+  .wm-os { font: 700 1.06em/1.2 Georgia, "Times New Roman", serif; letter-spacing: -.015em; }
+  .wm-os svg { height: 1.05em; width: 1.05em; transform: translateY(-.025em); }
+  .wm-bst { font: 400 1.04em/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; gap: .36em; }
+  .wm-bst svg { height: 1.18em; width: 1.18em; color: var(--wm-blue); transform: translateY(-.02em); }
   .wm-fk { gap: .1em; }
   .wm-fk span { display: inline-flex; width: 1.12em; height: 1.22em; align-items: center; justify-content: center;
     background: #6b4cf6; color: #fff; border-radius: .2em; box-shadow: 0 .1em 0 #3a22b5;
@@ -297,7 +311,7 @@
     <a class="proj" href="https://crowdwise.charlietrenorden.com">
       <div class="thumb"><img src="assets/crowdwise.webp" alt="Screenshot of the Crowdwise dashboard" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Crowdwise</span></div>
+        <div class="head"><span class="name"><span class="wm wm-cw"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10.5" fill="none" stroke="#2f5a86" stroke-width="1.6"/><path d="M16 16 L23.4 8.6 A10.5 10.5 0 0 1 26.5 14 Z" fill="#4c9be8" fill-opacity=".3"/><line x1="16" y1="16" x2="23.4" y2="8.6" stroke="#4c9be8" stroke-width="2" stroke-linecap="round"/><circle cx="20.5" cy="9.5" r="2.2" fill="#fbbf24"/><circle cx="16" cy="16" r="2" fill="#4c9be8"/></svg><span>Crowd<b>wise</b></span></span></span></div>
         <p class="desc">Live odds on macro events - Fed decisions, inflation, recessions - from Kalshi and Polymarket.</p>
       </div>
     </a>
@@ -332,7 +346,7 @@
     <a class="proj" href="https://charlietrenorden.com/cfa-companion/">
       <div class="thumb"><img src="assets/cfa-companion.webp" alt="Screenshot of CFA Companion, showing a practice question with three answer choices" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">CFA Companion</span></div>
+        <div class="head"><span class="name"><span class="wm wm-cfa"><svg viewBox="0 0 96 96" aria-hidden="true"><rect x="10" y="20" width="46" height="12" rx="6" fill="#9db1b8"/><rect x="10" y="42" width="72" height="12" rx="6" fill="var(--wm-cfa)"/><rect x="10" y="64" width="46" height="12" rx="6" fill="#9db1b8"/></svg><span><b>CFA</b> Companion</span></span></span></div>
         <p class="desc">Practice questions for CFA Level I.</p>
       </div>
     </a>
@@ -350,7 +364,7 @@
     <a class="proj" href="https://one-story.charlietrenorden.com/">
       <div class="thumb"><img src="assets/one-story.webp" alt="Screenshot of the One Story homepage" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">One Story</span></div>
+        <div class="head"><span class="name"><span class="wm wm-os"><svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="var(--wm-orange)" stroke-width="1.7" stroke-linecap="round"><path d="M5.5 14.3 2.5 12.9M8.1 11 6.1 8.4M11.9 9.3 11.3 6.1M16.1 9.5 17 6.3M19.7 11.5 22 9.1"/></g><path d="M6 18.5a6 6 0 0 1 12 0z" fill="var(--wm-orange)"/><path d="M2.5 19h19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>One Story</span></span></div>
         <p class="desc">One story a day: the most important thing that happened in the last 24 hours.</p>
       </div>
     </a>
@@ -384,7 +398,7 @@
     <a class="proj" href="beyond-small-talk/">
       <div class="thumb"><img src="assets/beyond-small-talk.webp" alt="Screenshot of Beyond Small Talk showing a single question" loading="lazy" width="1400" height="875"></div>
       <div class="meta">
-        <div class="head"><span class="name">Beyond Small Talk</span></div>
+        <div class="head"><span class="name"><span class="wm wm-bst"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12a3.5 3.5 0 0 1 3.5 3.5v7a3.5 3.5 0 0 1-3.5 3.5h-6.5l-5 4v-4H6A3.5 3.5 0 0 1 2.5 14V7A3.5 3.5 0 0 1 6 3.5z" fill="currentColor"/><path d="M9.8 8.4a2.3 2.3 0 1 1 3.1 2.2c-.6.3-.9.7-.9 1.3v.4" fill="none" stroke="var(--raised)" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="14.6" r="1.1" fill="var(--raised)"/></svg>Beyond Small Talk</span></span></div>
         <p class="desc">Questions for getting to know someone properly, and statements that split a room down the middle. One at a time, drawn at random.</p>
       </div>
     </a>
