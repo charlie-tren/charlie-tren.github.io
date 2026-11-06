@@ -20,7 +20,6 @@
 <meta name="twitter:card" content="summary_large_image">
 <script>(function(){try{var t=JSON.parse(localStorage.getItem("196plates.theme"));if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" integrity="sha512-mQ77VzAakzdpWdgfL/lM1ksNy89uFgibRQANsNneSTMD/bj0Y/8+94XMwYhnbzx8eki2hrbPpDm0vD0CiT2lcg==" crossorigin="anonymous" referrerpolicy="no-referrer">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="/196-plates/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/196-plates/favicon-192.png" type="image/png" sizes="192x192">
@@ -42,6 +41,7 @@
     <div class="filter" id="filter" role="group" aria-label="Show" hidden><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="eaten" aria-pressed="false">Tasted</button><button type="button" data-f="not" aria-pressed="false">Not yet</button></div>
     <div id="groups"></div>
   </aside>
+  <div class="grip" id="grip" role="separator" aria-orientation="vertical" aria-label="Resize the list" tabindex="0"></div>
   <div class="mapwrap"><div id="map" role="application" aria-label="Map of Sydney"></div><div class="legend" id="legend" hidden></div><div class="tally" id="tally" hidden></div></div>
 </div>
 <div class="intro" id="intro">
@@ -52,7 +52,6 @@
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js" integrity="sha512-OFs3W4DIZ5ZkrDhBFtsCP6JXtMEDGmhl0QPlmWYBJay40TT1n3gt2Xuw8Pf/iezgW9CdabjkNChRqozl/YADmg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js" integrity="sha512-4UKI/XKm3xrvJ6pZS5oTRvIQGIzZFoXR71rRBb1y2N+PbwAsKa5tPl2J6WvbEvwN3TxQCm8hMzsl/pO+82iRlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="app.js"></script>
 </body>

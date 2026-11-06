@@ -7,7 +7,7 @@
   --rule: #e6e3dc;
   --hover: #f4f2ec;
   --green: #2f6f4f;
-  --panel: 320px;
+  --panel: 520px;
   --top: 64px;
   --tiles: none;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -61,8 +61,8 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 .linkish { all: unset; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 
 /* ---- panel rows ---- */
-.group h2 { margin: 20px 0 6px; font: 600 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
-.rows { list-style: none; margin: 0; padding: 0; }
+.group h2 { margin: 26px 0 8px; padding-bottom: 7px; border-bottom: 1px solid var(--rule); font: 700 20px/1.15 var(--serif); letter-spacing: -.01em; color: var(--ink); }
+.rows { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); column-gap: 8px; }
 .row { all: unset; box-sizing: border-box; position: relative; display: grid; grid-template-columns: 28px 1fr; column-gap: 10px;
   width: 100%; padding: 6px 6px; border-radius: 6px; cursor: pointer; }
 .row:hover, .row:focus-visible { background: var(--hover); }
@@ -72,14 +72,12 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 .row .rn { font-size: 12.5px; line-height: 1.3; color: var(--ink-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .row.is-been .rc::after { content: " \2713"; color: var(--green); }
 
-/* ---- pins and clusters ---- */
+/* ---- pins ---- */
 .pin { position: relative; border-radius: 50%; border: 2.5px solid #16191d; box-shadow: 0 1px 4px rgba(0,0,0,.35);
   background-size: cover; background-position: center; background-color: #fff; cursor: pointer; transition: transform .12s; }
 .pin:hover { transform: scale(1.15); }
 .pin.is-been::after { content: "\2713"; position: absolute; right: -6px; top: -7px; width: 15px; height: 15px; border-radius: 50%;
   background: #2f6f4f; color: #fff; font: 700 9px/15px var(--sans); text-align: center; box-shadow: 0 0 0 1.5px #fff; }
-.cluster { display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #16191d; color: #fff;
-  border: 2.5px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.4); font: 700 13px/1 var(--sans); }
 
 /* ---- the card ---- */
 .leaflet-popup.card .leaflet-popup-content-wrapper { padding: 0; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 26px rgba(0,0,0,.25); background: var(--bg); color: var(--ink); }
@@ -170,3 +168,8 @@ body.searching .app { visibility: hidden; }
 /* no scrollbar on the list (it also stopped the panel edge shifting when the filter changed the list length) */
 .panel { scrollbar-width: none; scrollbar-gutter: stable; }
 .panel::-webkit-scrollbar { display: none; }
+/* the edge between list and map drags to resize the list */
+.grip { flex: 0 0 10px; margin: 0 -5px; position: relative; z-index: 1000; cursor: col-resize; touch-action: none; outline: none; }
+.grip::after { content: ""; position: absolute; left: 3px; top: 50%; width: 4px; height: 36px; margin-top: -18px; border-radius: 2px; background: var(--ink-faint); opacity: .45; transition: opacity .15s; }
+.grip:hover::after, .grip:focus-visible::after, .grip.drag::after { opacity: 1; }
+@media (max-width: 760px) { .grip { display: none; } }

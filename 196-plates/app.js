@@ -25,6 +25,24 @@
   const BASE = window.__BASE || { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' };
   const tiles = L.tileLayer(BASE.url, { maxZoom: 19, maxNativeZoom: BASE.max || 19, subdomains: BASE.sub || "abc", attribution: BASE.attribution }).addTo(map);
 
+  // ---- the list is resizable: drag or arrow keys on the edge, width kept on this device ----
+  const grip = document.getElementById("grip");
+  const setPanel = w => { w = Math.round(Math.min(Math.max(w, 240), Math.min(760, innerWidth - 320)));
+    document.documentElement.style.setProperty("--panel", w + "px"); map.invalidateSize(); return w; };
+  const saved = store.get("196plates.panel", null);
+  if (saved && !small) setPanel(saved);
+  grip.addEventListener("pointerdown", e => {
+    e.preventDefault(); grip.setPointerCapture(e.pointerId); grip.classList.add("drag");
+    const move = ev => setPanel(ev.clientX);
+    const up = ev => { grip.classList.remove("drag"); store.set("196plates.panel", setPanel(ev.clientX));
+      grip.removeEventListener("pointermove", move); grip.removeEventListener("pointerup", up); };
+    grip.addEventListener("pointermove", move); grip.addEventListener("pointerup", up);
+  });
+  grip.addEventListener("keydown", e => {
+    const d = e.key === "ArrowLeft" ? -24 : e.key === "ArrowRight" ? 24 : 0;
+    if (d) { e.preventDefault(); store.set("196plates.panel", setPanel(document.querySelector(".panel").offsetWidth + d)); }
+  });
+
   // ---- places you have eaten at, kept on this device (cc -> date) ----
   const KEY = "196plates.eaten." + CITY;
   let eaten = store.get(KEY, {});
@@ -64,10 +82,7 @@
     </div>`;
   };
 
-  const cluster = L.markerClusterGroup({ maxClusterRadius: 34, showCoverageOnHover: false, spiderfyDistanceMultiplier: 1.4,
-    disableClusteringAtZoom: 15,
-    iconCreateFunction: c => L.divIcon({ className: "", iconSize: [W + 6, W + 6],
-      html: `<div class="cluster" style="width:${W + 6}px;height:${W + 6}px">${c.getChildCount()}</div>` }) });
+  const pinLayer = L.featureGroup();
   const markers = {};
   D.pins.forEach(p => {
     const m = L.marker([p.lat, p.lon], {
@@ -76,18 +91,17 @@
         html: `<div class="pin" data-cc="${esc(p.cc)}" style="width:${W}px;height:${W}px;background-image:url(flags/circle/${p.c2}.svg)"></div>` })
     });
     m.bindPopup(() => card(p), { className: "card", closeButton: true, offset: [0, -W / 2 + 4], autoPanPadding: [24, 24], maxWidth: 270, minWidth: 250 });
-    cluster.addLayer(m);
+    pinLayer.addLayer(m);
     markers[p.cc] = m;
   });
-  map.addLayer(cluster);
-  cluster.on("animationend", paint);
+  map.addLayer(pinLayer);
   map.on("zoomend moveend", () => setTimeout(paint, 50));
   map.on("popupopen", e => {
     const b = e.popup.getElement().querySelector("[data-eat]");
     if (b) b.addEventListener("change", () => toggleEaten(b.dataset.eat));
   });
   const cityBounds = L.latLngBounds(D.pins.map(p => [p.lat, p.lon]));
-  const openPin = cc => cluster.zoomToShowLayer(markers[cc], () => markers[cc].openPopup());
+  const openPin = cc => { map.once("moveend", () => markers[cc].openPopup()); map.flyTo(markers[cc].getLatLng(), Math.max(map.getZoom(), 15), { duration: .8 }); };
 
   // ---- side panel: rows, alphabetical within each region ----
   const groups = document.getElementById("groups");
@@ -148,7 +162,7 @@
         fillColor: on(f.cc) ? (dark ? "#3f9a6c" : "#2f6f4f") : (dark ? "#2a2e33" : "#e9e4d8") }),
       onEachFeature: (f, l) => { const p = byCC[f.cc]; if (!p || !on(f.cc)) return;
         l.bindPopup(`<div class="card-body"><div class="card-kicker">${esc(p.adj)}${mode === "mine" ? " &middot; eaten " + fmtDate(eaten[p.cc]) : ""}</div><div class="card-name">${esc(p.name)}</div><div class="card-meta">${esc(p.suburb || "")}</div><button type="button" class="card-btn wide" data-go="${esc(p.cc)}">Show in ${esc(D.city)}</button></div>`, { className: "card" }); } }).addTo(map);
-    map.removeLayer(cluster);
+    map.removeLayer(pinLayer);
     // one world exactly: zoom so 360 degrees of longitude fill the map width once, no copies either side
     const mw = document.getElementById("map").clientWidth;
     map.setView([20, 150], Math.max(0, Math.log2(mw / 256)), { animate: false });
@@ -161,7 +175,7 @@
   function hideWorld() {
     if (!worldLayer) return;
     map.removeLayer(worldLayer); worldLayer = null; legend.hidden = true; tiles.addTo(map); document.getElementById("map").classList.remove("world");
-    map.addLayer(cluster); map.fitBounds(cityBounds, { padding: [30, 30] });
+    map.addLayer(pinLayer); map.fitBounds(cityBounds, { padding: [30, 30] });
     document.getElementById("worldbtn").textContent = "World";
     document.getElementById("worldbtn").onclick = () => showWorld("city");
   }
@@ -197,7 +211,7 @@
       document.body.classList.remove("searching");
       map.invalidateSize();
       map.setView([10, 150], small ? 1 : 2, { animate: false });
-      map.removeLayer(cluster);
+      map.removeLayer(pinLayer);
       intro.classList.add("gone");
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       let fx = null;
@@ -238,7 +252,7 @@
           requestAnimationFrame(step); });
         else { fills.forEach(f => f.setStyle({ fillOpacity: .85 })); counter.textContent = `${D.pins.length} of 196`; }
       } catch (e) { fx = null; }
-      const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(cluster); intro.remove(); document.getElementById("tally").hidden = true; paint(); };
+      const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(pinLayer); intro.remove(); document.getElementById("tally").hidden = true; paint(); };
       if (reduce) { map.fitBounds(cityBounds, { padding: [30, 30] }); done(); return; }
       // the arcs and fills fade out as the camera passes the continent, before they can pile into a fan
       const z0 = map.getZoom(), fxPane = map.getPanes().overlayPane;
