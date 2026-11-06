@@ -47,6 +47,9 @@
   /* Fredoka, self-hosted (SIL OFL): one variable file, latin only, ~30KB. */
   @font-face { font-family: "Fredoka"; src: url("assets/fonts/fredoka-latin.woff2") format("woff2");
     font-weight: 300 700; font-display: swap; }
+  /* Overpass Bold (SIL OFL), subset to the letters of "Woop Woop": 1.5KB. */
+  @font-face { font-family: "Overpass"; src: url("assets/fonts/overpass-700-woop.woff") format("woff");
+    font-weight: 700; font-display: swap; }
 
   :root, :root[data-theme="dark"] {
     --bg: #0b0c10; --raised: #14161d; --ink: #eef0f6; --soft: #a2a7b6; --faint: #737888;
@@ -150,11 +153,10 @@
   }  /* Woop Woop's mark is an Australian green distance sign - the card wears it too, so the
      name reads the same here as on the site. Rendered in CSS rather than as the site's
      logo.svg: that file is outlined Overpass at a fixed 358x74, which does not resize to a
-     card heading cleanly. Two inset shadows make the white keyline: the green ring sits on
-     top of the white one and clips it to a stroke. */
-  .meta .signmark { background: #0b6b3a; color: #fff; border-radius: 8px; padding: .2rem .55rem .24rem;
-    font: 700 .95rem/1.3 Overpass, ui-sans-serif, system-ui, sans-serif; letter-spacing: .005em;
-    box-shadow: inset 0 0 0 4px #0b6b3a, inset 0 0 0 5.5px #fff; }
+     card heading cleanly. */
+  .meta .signmark { background: #0b6b3a; color: #fff; border-radius: 7px; padding: .3em .7em .26em;
+    font: 700 .95rem/1 Overpass, ui-sans-serif, system-ui, sans-serif; letter-spacing: .01em;
+    outline: 1.5px solid #fff; outline-offset: -4px; }
   .meta .desc { color: var(--soft); font-size: .84rem; line-height: 1.4; margin: 0; }
   /* Inset to clear the card's rounded corner, so the caption does not start outside the curve. */
   .meta { padding: 0 .5rem; }
