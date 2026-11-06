@@ -178,3 +178,4 @@ body.searching .app { visibility: hidden; }
 /* pins fade in when the intro lands */
 .leaflet-marker-pane { transition: opacity .6s; }
 #map.pins-hidden .leaflet-marker-pane { opacity: 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
