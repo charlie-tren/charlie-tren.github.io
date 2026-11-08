@@ -185,3 +185,9 @@ body.searching .app { visibility: hidden; }
 /* nothing to drag or zoom while the intro plays or the world view is up */
 #map.locked .leaflet-control-zoom { display: none; }
 #map.pins-hidden .leaflet-top { display: none; }
+/* how a pick is made: a disclosure under the count */
+.how { margin: 8px 0 0; font-size: 13px; color: var(--ink-soft); }
+.how summary { display: inline; cursor: pointer; color: var(--ink-faint); text-decoration: underline; text-underline-offset: 2px; list-style: none; }
+.how summary::-webkit-details-marker { display: none; }
+.how ol { margin: 8px 0 0; padding-left: 18px; line-height: 1.45; }
+.how li + li { margin-top: 4px; }

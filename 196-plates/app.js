@@ -144,6 +144,7 @@
   find.addEventListener("keydown", e => { if (e.key !== "Enter") return;
     const li = [...document.querySelectorAll("#groups .rows li")].find(l => !l.hidden); if (li) li.firstElementChild.click(); });
   document.querySelector(".lede").textContent = `How many of the ${D.pins.length} cuisines in ${D.city} can you eat?`;
+  document.querySelectorAll(".how .city").forEach(s => { s.textContent = D.city; });
 
   // ---- world views: which of 196 the city has, and your own map ----
   let worldData = null, worldLayer = null;
