@@ -20,6 +20,18 @@ project's own repo, since most directories here are deploy targets.
   test with `gh workflow run "Refresh position record" -f alert_test=true` and
   confirm the mail lands. Left mid-flow 23/09/2026; nothing has fired since.
 
+- [ ] **Finish removing the old email addresses from GitHub.** **Charlie-only**, about
+  ten minutes. On 06/11/2026 history was rewritten on 9 public repos (this one,
+  chronoscape, consensus-drift, photocopy, woop-woop, vantage-releases, the profile
+  repo, and the One Story and Aftertimes sites) so no commit carries the work address
+  or the second Gmail account, and no file carries three subscribers' emails. Two
+  steps only the account owner can take:
+  1. GitHub Support, "Remove cached views": ask them to purge the dereferenced commits
+     in those 9 repos. Until they do, an old commit is still served by its exact ID
+     (checked: `commits/49949ae` in this repo still returned the work address).
+  2. Settings, Emails: tick "Block command line pushes that expose my email", so a
+     machine set to a real address is refused rather than published.
+
 ## Shipped
 
 - ~~Link the podcast from the homepage~~ - the Elsewhere row links the Thinkerings
