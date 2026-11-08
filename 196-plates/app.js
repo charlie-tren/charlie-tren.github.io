@@ -20,7 +20,7 @@
   themeBtn.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 
   // ---- map ----
-  const map = L.map("map", { zoomControl: true, attributionControl: true, zoomSnap: small ? 1 : 0.25, worldCopyJump: false });
+  const map = L.map("map", { zoomControl: true, attributionControl: true, zoomSnap: 1, worldCopyJump: false });
   map.attributionControl.setPrefix(false);
   const BASE = window.__BASE || { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' };
   const tiles = L.tileLayer(BASE.url, { maxZoom: 19, maxNativeZoom: BASE.max || 19, subdomains: BASE.sub || "abc", attribution: BASE.attribution }).addTo(map);
