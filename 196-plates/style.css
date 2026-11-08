@@ -189,8 +189,7 @@ body.searching .app { visibility: hidden; }
 .how { margin: 8px 0 0; font-size: 13px; color: var(--ink-soft); }
 .how summary { display: inline; cursor: pointer; color: var(--ink-faint); text-decoration: underline; text-underline-offset: 2px; list-style: none; }
 .how summary::-webkit-details-marker { display: none; }
-.how ol { margin: 8px 0 0; padding-left: 18px; line-height: 1.45; }
-.how li + li { margin-top: 4px; }
+.how p { margin: 8px 0 0; line-height: 1.5; }
 /* touch screens: no shadows or hover transitions on the pins, which repaint on every zoom frame */
 @media (hover: none) {
   .pin { box-shadow: none; transition: none; }
