@@ -191,3 +191,8 @@ body.searching .app { visibility: hidden; }
 .how summary::-webkit-details-marker { display: none; }
 .how ol { margin: 8px 0 0; padding-left: 18px; line-height: 1.45; }
 .how li + li { margin-top: 4px; }
+/* touch screens: no shadows or hover transitions on the pins, which repaint on every zoom frame */
+@media (hover: none) {
+  .pin { box-shadow: none; transition: none; }
+  .pin:hover { transform: none; }
+}

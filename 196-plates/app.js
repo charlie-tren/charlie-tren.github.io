@@ -20,7 +20,7 @@
   themeBtn.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 
   // ---- map ----
-  const map = L.map("map", { zoomControl: true, attributionControl: true, zoomSnap: 0.25, worldCopyJump: false });
+  const map = L.map("map", { zoomControl: true, attributionControl: true, zoomSnap: small ? 1 : 0.25, worldCopyJump: false });
   map.attributionControl.setPrefix(false);
   const BASE = window.__BASE || { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' };
   const tiles = L.tileLayer(BASE.url, { maxZoom: 19, maxNativeZoom: BASE.max || 19, subdomains: BASE.sub || "abc", attribution: BASE.attribution }).addTo(map);
@@ -100,7 +100,6 @@
     markers[p.cc] = m;
   });
   map.addLayer(pinLayer);
-  map.on("zoomend moveend", () => setTimeout(paint, 50));
   map.on("popupopen", e => {
     const b = e.popup.getElement().querySelector("[data-eat]");
     if (b) b.addEventListener("change", () => toggleEaten(b.dataset.eat));
@@ -203,7 +202,7 @@
     if (!worldLayer) return;
     map.removeLayer(worldLayer); worldLayer = null; legend.hidden = true; tiles.addTo(map); document.getElementById("map").classList.remove("world");
     map.setMaxBounds(L.latLngBounds([])); map.setMinZoom(0); lock(false);
-    map.addLayer(pinLayer); map.fitBounds(cityBounds, { padding: [30, 30] });
+    map.addLayer(pinLayer); paint(); map.fitBounds(cityBounds, { padding: [30, 30] });
     document.getElementById("worldbtn").textContent = "World";
     document.getElementById("worldbtn").onclick = () => showWorld("city");
   }
