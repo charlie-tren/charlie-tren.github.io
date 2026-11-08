@@ -52,7 +52,7 @@ SITES = {
     "crosscheck": "https://charlietrenorden.com/crosscheck/",
     "lindy-effect": "https://charlietrenorden.com/lindy-effect/",
     "property-atlas": "https://charlietrenorden.com/property-atlas/",
-    "196-plates": "https://charlietrenorden.com/196-plates/",
+    "196-plates": "https://charlietrenorden.com/196-plates/#sydney",  # the hash skips the search intro
     "crowdwise": "https://crowdwise.charlietrenorden.com/",
     "dcf-studio": "https://dcf.charlietrenorden.com/GOOGL",
     # a country page, not the picker - the landing page is three pills and a
