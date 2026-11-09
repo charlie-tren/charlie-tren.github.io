@@ -171,7 +171,14 @@
       const pt = map.mouseEventToContainerPoint(oe), d = q => map.latLngToContainerPoint([q.lat, q.lon]).distanceTo(pt);
       near = D.pins.filter(q => { const el = markers[q.cc].getElement(); return q === p || (el && !el.classList.contains("dim") && d(q) <= 21); }).sort((a, b) => d(a) - d(b));
     }
-    const at = near.length > 1 ? L.latLngBounds(near.map(q => [q.lat, q.lon])).getCenter() : L.latLng(p.lat, p.lon);
+    const b = L.latLngBounds(near.map(q => [q.lat, q.lon])), at = near.length > 1 ? b.getCenter() : L.latLng(p.lat, p.lon);
+    // more than 6 under the finger: zoom into the pile, leaving room at the bottom for the card that comes next
+    if (near.length > 6) {
+      const r = mapEl.getBoundingClientRect(), under = Math.min(r.height / 2, Math.max(0, r.bottom - innerHeight * .55));
+      const tl = [40, 40], br = [40, 40 + under];
+      if (map.getBoundsZoom(b, false, L.point(tl).add(br)) > map.getZoom()) {
+        closeSheet(); map.flyToBounds(b, { paddingTopLeft: tl, paddingBottomRight: br, duration: reduce ? 0 : .8, animate: !reduce }); return; }
+    }
     openSheet(near, { opener: markers[p.cc].getElement(), at, zoom: map.getZoom() });
   };
   // centre the map so a point sits midway between the top of the visible map and the top of the sheet
