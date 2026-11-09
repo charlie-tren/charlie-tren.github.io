@@ -143,6 +143,21 @@ SITES = {
         "mark": "bookmark/favicon.svg",
         "assert_face": "400 16px 'Young Serif'",
     },
+    "196-plates": {
+        "name": "196 Plates",
+        "css": "196-plates/style.css",
+        "css_block": ':root[data-theme="dark"]',  # the page pins data-theme="dark" on <html> (rule 2)
+        "copy": ("196-plates/index.html", "og:description"),
+        "tokens": {"bg": "bg", "panel": "hover", "ink": "ink", "dim": "ink-soft",
+                   "faint": "ink-faint", "rule": "rule", "accent": "green"},
+        "fonts": "Playfair+Display:ital,wght@1,800",
+        "title_font": "'Playfair Display', Georgia, serif",
+        "title_style": "italic",
+        "title_weight": 800,
+        "body_font": "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        "mark": "196-plates/favicon.svg",
+        "assert_face": "italic 800 16px 'Playfair Display'",
+    },
 }
 SAFE = 160   # side margin: 1200 - 2 * 160 = 880, which survives a 1.4:1 centre crop
 
@@ -157,7 +172,7 @@ def tokens(spec):
     override a visitor has to ask for. See rule 2.
     """
     css = (ROOT / spec["css"]).read_text(encoding="utf-8")
-    start = css.index(":root")
+    start = css.index(spec.get("css_block", ":root"))
     block = css[start:css.index("}", start)]
     found = {k: v.strip() for k, v in PROP.findall(block)}
     out = {}
@@ -220,7 +235,8 @@ def page_html(spec, t, text):
     margin-top: 20px;
     font-family: {spec['title_font']};
     font-size: 96px;
-    font-weight: 400;
+    font-weight: {spec.get('title_weight', 400)};
+    font-style: {spec.get('title_style', 'normal')};
     letter-spacing: -0.02em;
     line-height: 1.02;
   }}
