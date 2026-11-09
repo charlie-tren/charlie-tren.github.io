@@ -40,7 +40,7 @@
   const map = L.map("map", { zoomControl: true, attributionControl: true, zoomSnap: 1, worldCopyJump: false });
   map.attributionControl.setPrefix(false);
   const BASE = window.__BASE || { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' };
-  const tiles = L.tileLayer(BASE.url, { maxZoom: 19, maxNativeZoom: BASE.max || 19, subdomains: BASE.sub || "abc", attribution: BASE.attribution }).addTo(map);
+  const tiles = L.tileLayer(BASE.url, { maxZoom: 19, maxNativeZoom: BASE.max || 19, subdomains: BASE.sub || "abc", attribution: BASE.attribution, keepBuffer: 6, updateWhenIdle: false, updateWhenZooming: true }).addTo(map);
 
   // the map cannot be dragged or zoomed while the intro plays or the world view is up, and its controls hide
   const HANDLERS = ["dragging", "touchZoom", "doubleClickZoom", "scrollWheelZoom", "boxZoom", "keyboard"];
@@ -73,6 +73,7 @@
   const paint = () => {
     const n = Object.keys(eaten).length;
     eatenCount.hidden = n === 0;
+    if (n === 0 && filterMode !== "all") { filterMode = "all"; }  // the filter hides at zero, so it must not leave the list filtered
     eatenCount.innerHTML = `${n} of ${D.pins.length} eaten &middot; <button type="button" class="linkish" id="mine">Your map</button>`;
     document.getElementById("filter").hidden = n === 0;
     applyFilter();
@@ -192,14 +193,18 @@
   // ---- the search intro: a plain page; pick a city, great-circle arcs draw in, the camera flies to it ----
   const intro = document.getElementById("intro");
   const skip = location.hash === "#" + CITY || !intro;
+  // the world never shows twice: at the widest the map shows it once, and the city map cannot pan past the edges
+  const worldZoom = () => Math.max(1, Math.ceil(Math.log2(map.getSize().x / 256)));
+  const limitWorld = () => { map.setMinZoom(worldZoom()); map.setMaxBounds([[-85, -180], [85, 180]]); map.options.maxBoundsViscosity = 1; };
+  map.on("resize", () => { if (!intro || !document.body.contains(intro)) limitWorld(); });
   if (skip) {
     if (intro) intro.remove();
     document.body.classList.remove("searching");
-    map.fitBounds(cityBounds, { padding: [30, 30] });
+    map.fitBounds(cityBounds, { padding: [30, 30] }); limitWorld();
   } else {
     document.body.classList.add("searching");
     // the world view and every pin's flag load behind the search, so the intro starts on a finished map
-    map.setView([10, 150], small ? 1 : 2, { animate: false });
+    map.setView([10, 150], worldZoom(), { animate: false });
     map.removeLayer(pinLayer);
     // the orange fills use 50m outlines, close enough to the tile coastlines at the zooms they are seen at
     let introGeo = null;
@@ -209,7 +214,7 @@
     startGlobe().then(g => {
       // what only the flight needs waits until the globe is up, so it does not queue behind the globe's textures
       loadIntro(); D.pins.forEach(p => { new Image().src = `flags/circle/${p.c2}.svg`; });
-      if (!g) { document.body.classList.add("flat"); map.invalidateSize(); map.setView([10, 150], 2, { animate: false }); lock(true); return; }
+      if (!g) { document.body.classList.add("flat"); map.invalidateSize(); map.setView([10, 150], worldZoom(), { animate: false }); lock(true); return; }
       if (started) g.destroy(); else globe = g;
     });
     const input = intro.querySelector("input"), list = intro.querySelector("ul");
@@ -230,7 +235,7 @@
       history.replaceState(null, "", "#" + CITY);
       document.body.classList.remove("searching", "flat");
       map.invalidateSize();
-      map.setView([10, 150], small ? 1 : 2, { animate: false });
+      map.setView([10, 150], worldZoom(), { animate: false });
       document.getElementById("map").classList.add("pins-hidden");
       lock(true);
       intro.classList.add("gone");
@@ -310,7 +315,7 @@
           requestAnimationFrame(step); });
         else fills.forEach(f => f.setStyle({ fillOpacity: .85, opacity: .85 }));
       } catch (e) { fx = null; }
-      const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(pinLayer); intro.remove(); paint(); lock(false);
+      const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(pinLayer); intro.remove(); paint(); lock(false); limitWorld();
         requestAnimationFrame(() => document.getElementById("map").classList.remove("pins-hidden")); };
       if (reduce) { map.fitBounds(cityBounds, { padding: [30, 30] }); done(); return; }
       // the arcs and fills fade out as the camera passes the continent, before they can pile into a fan
