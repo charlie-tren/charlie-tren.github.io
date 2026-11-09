@@ -2,7 +2,7 @@
    maths are inline. WorldMap.render(el, { mode, eaten, pins, city, onPick }) -> { destroy() }. */
 (function () {
   const RAD = Math.PI / 180, C = 150, CUT = C - 180, TOP = 75, BOT = -70.5, TOTAL = 196;
-  const COL = { eaten: "#17283a", city: "#a7b8c9", none: "#f7f6f2", sea: "#e4ebef", coast: "#bfcbd4" };
+  const COL = { eaten: "#17283a", city: "#a9bccd", none: "#f6f5f0", sea: "#dfe8ee", coast: "#7d93a8", coastW: .7, border: "#ffffff", borderW: .8 };
   // UN members (plus the site's three) with no outline at 110m: a point to hover or tap
   const SMALL = { AND: [1.5, 42.5, "Andorra"], ATG: [-61.8, 17.1, "Antigua and Barbuda"], BHR: [50.5, 26, "Bahrain"], BRB: [-59.5, 13.2, "Barbados"],
     COM: [44.2, -12.2, "Comoros"], CPV: [-24, 16, "Cape Verde"], DMA: [-61.3, 15.4, "Dominica"], FSM: [158.2, 6.9, "Micronesia"], GRD: [-61.7, 12.1, "Grenada"],
@@ -56,12 +56,15 @@
   }
 
   function render(el, o) {
-    o = { mode: "mine", eaten: {}, pins: [], city: "Sydney", onPick: () => {}, ...o };
+    o = { eaten: {}, pins: [], city: "Sydney", onPick: () => {}, ...o };
+    const PAL = { ...COL, ...(o.palette || {}) }, flagBase = o.flagBase || (o.base || "") + "flags/";
     let dead = false, W = 0, H = 0, raf = 0, P = null;
     const root = document.createElement("div"); root.className = "wm"; el.appendChild(root);
     const byCC = Object.fromEntries(o.pins.map(p => [p.cc, p]));
     const eaten = new Set(Object.keys(o.eaten || {}));
-    const state = a3 => o.mode === "mine" ? (eaten.has(a3) ? "eaten" : byCC[a3] ? "city" : "none") : (byCC[a3] ? "eaten" : "none");
+    // one view: eaten, then in the city, then the rest; with nothing eaten yet it is the city's two states
+    const three = o.mode === "mine" || (o.mode !== "city" && eaten.size > 0);
+    const state = a3 => three ? (eaten.has(a3) ? "eaten" : byCC[a3] ? "city" : "none") : (byCC[a3] ? "eaten" : "none");
     const pickable = a3 => !!byCC[a3] || eaten.has(a3);
     const nameOf = (a3, fallback) => (byCC[a3] && byCC[a3].country) || (SMALL[a3] && SMALL[a3][2]) || NAME[fallback] || fallback || a3;
 
@@ -79,16 +82,17 @@
       root.style.setProperty("--wm-s", s.toFixed(3));
 
       // the band: count and the three-state bar
-      const nE = o.mode === "mine" ? eaten.size : o.pins.length;
-      const parts = o.mode === "mine"
-        ? [[eaten.size, COL.eaten, "Eaten"], [o.pins.filter(p => !eaten.has(p.cc)).length, COL.city, "In " + o.city], [0, COL.none, "Not in " + o.city]]
-        : [[o.pins.length, COL.eaten, "In " + o.city], [0, COL.none, "Not in " + o.city]];
-      parts[parts.length - 1][0] = Math.max(0, TOTAL - parts.slice(0, -1).reduce((a, p) => a + p[0], 0));
+      // every figure is out of 196 and says what it counts; the headline's own figure is not repeated on the bar
       const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-      root.innerHTML = `<div class="wm-band" style="top:${top0}px;height:${band}px"><div class="wm-count"><b>${nE}</b><span>of ${TOTAL}${o.mode === "mine" ? " countries" : ""}</span></div>
-        <div class="wm-bar"><div class="wm-track">${parts.map(([n, c]) => `<i style="flex:${n};background:${c}"></i>`).join("")}</div>
-        <div class="wm-names">${parts.map(([n, , t]) => `<span style="flex:${n} 1 0">${esc(t)}</span>`).join("")}</div></div></div>
-        <div class="wm-tab" hidden></div>`;
+      const nC = o.pins.length, nNone = Math.max(0, TOTAL - nC - [...eaten].filter(a => !byCC[a]).length);
+      const nE = three ? eaten.size : nC, inC = "In " + esc(o.city), notC = "Not in " + esc(o.city);
+      const parts = three
+        ? [[eaten.size, PAL.eaten, "Eaten"], [nC - [...eaten].filter(a => byCC[a]).length, PAL.city, `${inC} <b>${nC}</b>`], [nNone, PAL.none, `${notC} <b>${nNone}</b>`]]
+        : [[nC, PAL.eaten, inC], [nNone, PAL.none, `${notC} <b>${nNone}</b>`]];
+      root.innerHTML = `<div class="wm-band" style="top:${top0}px;height:${band}px"><div class="wm-count"><b>${nE}</b><span>of ${TOTAL} ${three ? "eaten" : "in " + esc(o.city)}</span></div>
+        <div class="wm-bar"><div class="wm-track">${parts.map(([n, c], i) => `<i style="flex:${n};background:${c}"${i === parts.length - 1 ? ' class="gap"' : ""}></i>`).join("")}</div>
+        <div class="wm-names">${parts.map(([n, , t]) => `<span style="flex:${n} 1 0">${t}</span>`).join("")}</div></div></div>
+        <div class="wm-card" hidden></div><div class="wm-keys"></div>`;
       const svg = document.createElementNS(NS, "svg");
       svg.setAttribute("class", "wm-map"); svg.setAttribute("viewBox", `0 0 ${W} ${mh}`); svg.setAttribute("width", W); svg.setAttribute("height", mh);
       svg.setAttribute("role", "img"); svg.setAttribute("aria-label", `World map: ${nE} of ${TOTAL}`);
@@ -96,7 +100,7 @@
 
       const items = [], out = [];
       const ringD = r => "M" + r.map(([x, y]) => pj(x, y).map(v => v.toFixed(1)).join(",")).join("L") + "Z";
-      out.push(`<rect width="${W}" height="${mh}" fill="${COL.sea}"/>`);
+      out.push(`<rect width="${W}" height="${mh}" fill="${PAL.sea}"/>`);
       P.feats.forEach(f => {
         let best = null, area = 0;
         const d = f.polys.map(p => p.map((r, ri) => { const pts = r.map(([x, y]) => pj(x, y));
@@ -105,30 +109,37 @@
           return ringD(r); }).join("")).join("");
         const st = f.id === "010" ? "none" : state(f.a3), ix = items.length;
         items.push({ a3: f.a3, name: nameOf(f.a3, f.name), xy: best ? best.xy : [0, 0], d, st, ant: f.id === "010" });
-        out.push(`<path d="${d}" fill="${COL[st]}" stroke="${COL.coast}" stroke-width=".5"${f.id === "010" ? "" : ` data-k="${ix}"${pickable(f.a3) ? " data-pick" : ""}`}/>`);
+        out.push(`<path d="${d}" fill="${PAL[st]}" stroke="${PAL.coast}" stroke-width="${PAL.coastW}" stroke-linejoin="round"${f.id === "010" ? "" : ` data-k="${ix}" data-cc="${f.a3}"${pickable(f.a3) ? " data-pick" : ""}`}/>`);
         f.area = area;
       });
-      out.push(`<path d="${P.borders.map(l => "M" + l.map(([x, y]) => pj(x, y).map(v => v.toFixed(1)).join(",")).join("L")).join("")}" fill="none" stroke="#fff" stroke-width=".5"/>`);
+      out.push(`<path d="${P.borders.map(l => "M" + l.map(([x, y]) => pj(x, y).map(v => v.toFixed(1)).join(",")).join("L")).join("")}" fill="none" stroke="${PAL.border}" stroke-width="${PAL.borderW}" stroke-linejoin="round"/>`);
       // points for the countries too small to see: drawn when they are eaten or in the city, a hit area either way
       const dots = Object.entries(SMALL).map(([a3, [x, y]]) => ({ a3, xy: pj(x < CUT ? x + 360 : x, y), name: nameOf(a3) }))
         .concat(P.feats.filter(f => f.area < 30 && f.id !== "010").map(f => ({ a3: f.a3, xy: items.find(i => i.a3 === f.a3).xy, name: nameOf(f.a3, f.name), tiny: true })));
       dots.forEach(dt => { const st = state(dt.a3), ix = items.length;
         items.push({ ...dt, st, dot: true });
-        const vis = st !== "none" && (!dt.tiny || st === "eaten") ? `<circle cx="${dt.xy[0].toFixed(1)}" cy="${dt.xy[1].toFixed(1)}" r="3.6" fill="${COL[st]}" stroke="#fff" stroke-width="1.2"/>` : "";
+        const vis = st !== "none" && (!dt.tiny || st === "eaten") ? `<circle cx="${dt.xy[0].toFixed(1)}" cy="${dt.xy[1].toFixed(1)}" r="3.6" fill="${PAL[st]}" stroke="#fff" stroke-width="1.2"/>` : "";
         out.push(`${vis}<circle cx="${dt.xy[0].toFixed(1)}" cy="${dt.xy[1].toFixed(1)}" r="8" fill="transparent" data-k="${ix}"${pickable(dt.a3) ? " data-pick" : ""}/>`); });
       out.push(`<g class="wm-hl" pointer-events="none"></g>`);
       svg.innerHTML = out.join("");
 
       // hover (mouse) or first tap (touch) shows the name; click, or a second tap, opens the pin
-      const tab = root.querySelector(".wm-tab"), hl = svg.querySelector(".wm-hl");
+      const tab = root.querySelector(".wm-card"), hl = svg.querySelector(".wm-hl");
       let cur = -1;
-      const show = ix => {
-        if (ix === cur) return; cur = ix;
+      const show = (ix, key) => {
+        if (ix === cur && !key) return; cur = ix;
         if (ix < 0) { tab.hidden = true; hl.innerHTML = ""; return; }
         const it = items[ix], dark = it.st === "eaten";
-        hl.innerHTML = it.dot ? `<circle cx="${it.xy[0]}" cy="${it.xy[1]}" r="6" fill="none" stroke="#0b1622" stroke-width="1.4"/>`
-          : `<path d="${it.d}" fill="${dark ? "rgba(255,255,255,.16)" : "rgba(23,40,58,.10)"}" stroke="#0b1622" stroke-width="1.2" stroke-linejoin="round"/>`;
-        tab.textContent = it.name; tab.hidden = false;
+        // a keyboard focus gets a ring that reads on any fill: white under, ink over
+        const ring = key ? (it.dot ? `<circle cx="${it.xy[0]}" cy="${it.xy[1]}" r="7" fill="none" stroke="#fff" stroke-width="4"/>`
+          : `<path d="${it.d}" fill="none" stroke="#fff" stroke-width="4.5" stroke-linejoin="round"/>`) : "";
+        hl.innerHTML = ring + (it.dot ? `<circle cx="${it.xy[0]}" cy="${it.xy[1]}" r="7" fill="none" stroke="#0b1622" stroke-width="${key ? 2 : 1.4}"/>`
+          : `<path d="${it.d}" fill="${dark ? "rgba(255,255,255,.16)" : "rgba(23,40,58,.10)"}" stroke="#0b1622" stroke-width="${key ? 2 : 1.2}" stroke-linejoin="round"/>`);
+        const p = byCC[it.a3], day = o.eaten && o.eaten[it.a3], fmt = d => d.split("-").reverse().join("/");
+        tab.innerHTML = p ? `<img src="${flagBase}${p.c2}-80.png" width="33" height="22" alt=""${p.fit === "contain" ? ' class="c"' : ""}><div><b>${esc(p.country)}</b><span>${esc(p.name)}</span>`
+            + `<small>${esc([p.suburb, day && "Eaten " + fmt(day)].filter(Boolean).join(" \u00b7 "))}</small></div>`
+          : `<div><b>${esc(it.name)}</b><small>Not in ${esc(o.city)} yet</small></div>`;
+        tab.hidden = false;
         const tw = tab.offsetWidth, th = tab.offsetHeight, ax = it.xy[0], ay = top0 + band + it.xy[1];
         tab.style.left = Math.max(4, Math.min(W - tw - 4, ax - tw / 2)) + "px";
         tab.style.top = (ay - th - 9 < top0 + band + 4 ? ay + 10 : ay - th - 9) + "px";
@@ -142,6 +153,18 @@
         if (touch && ix !== cur) { show(ix); return; }
         if (pickable(items[ix].a3)) o.onPick(items[ix].a3);
       });
+      // keyboard: one button per country with a pick, in left-to-right order; focus shows the card, Enter opens the pin
+      const keys = root.querySelector(".wm-keys"), seen = new Set();
+      keys.style.top = (top0 + band) + "px";
+      items.map((it, ix) => ({ it, ix })).filter(({ it }) => !it.ant && pickable(it.a3) && !seen.has(it.a3) && seen.add(it.a3))
+        .sort((a, b) => a.it.xy[0] - b.it.xy[0]).forEach(({ it, ix }) => {
+          const p = byCC[it.a3], b = document.createElement("button");
+          b.type = "button"; b.className = "wm-key"; b.style.left = it.xy[0] + "px"; b.style.top = it.xy[1] + "px";
+          b.setAttribute("aria-label", p ? `${p.country}: ${p.name}` : it.name);
+          b.addEventListener("focus", () => show(ix, true)); b.addEventListener("blur", () => show(-1));
+          b.addEventListener("click", () => o.onPick(it.a3));
+          keys.appendChild(b);
+        });
       if (o.onReady) o.onReady();
     };
 

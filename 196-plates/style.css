@@ -5,7 +5,7 @@
   --paper: #f4f1ea;
   --ink: #16191d;
   --ink-soft: #4a5058;
-  --ink-faint: #7b828b;
+  --ink-faint: #646b74;
   --rule: #e6e3dc;
   --hover: #f4f2ec;
   --green: #2f6f4f;
@@ -84,7 +84,10 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 .leaflet-popup.card .leaflet-popup-content-wrapper { padding: 0; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 26px rgba(0,0,0,.25); background: var(--bg); color: var(--ink); }
 .leaflet-popup.card .leaflet-popup-tip { background: var(--bg); }
 .leaflet-popup.card .leaflet-popup-content { margin: 0; width: 260px !important; }
-.leaflet-popup.card a.leaflet-popup-close-button { color: #fff; text-shadow: 0 0 4px rgba(0,0,0,.7); top: 4px; right: 4px; }
+.leaflet-popup.card a.leaflet-popup-close-button { top: 8px; right: 8px; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%;
+  background: rgba(18,20,23,.72); color: #fff; font: 400 20px/1 var(--sans); }
+.leaflet-popup.card a.leaflet-popup-close-button:hover, .leaflet-popup.card a.leaflet-popup-close-button:focus { background: rgba(18,20,23,.92); color: #fff; }
+.leaflet-popup.card .leaflet-popup-content:focus { outline: none; }
 .card-flag { line-height: 0; background: var(--hover); }
 .card-flag img { width: 100%; height: auto; display: block; max-height: 180px; object-fit: contain; }
 .card-body { padding: 11px 14px 13px; }
@@ -116,6 +119,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 .leaflet-control-zoom.leaflet-bar { border: 0; box-shadow: none; background: none; display: flex; flex-direction: column; gap: 6px; }
 .leaflet-control-zoom.leaflet-bar a { width: 34px; height: 34px; border: 1px solid var(--rule); border-radius: 50%; background: var(--bg); color: var(--ink);
   font: 500 19px/32px var(--sans); box-shadow: 0 1px 5px rgba(0,0,0,.15); }
+.leaflet-control-zoom.leaflet-bar a:first-child, .leaflet-control-zoom.leaflet-bar a:last-child { border-radius: 50%; }
 .leaflet-control-zoom.leaflet-bar a:hover { background: var(--hover); border-color: var(--ink); }
 .leaflet-control-zoom.leaflet-bar a.leaflet-disabled { color: var(--ink-faint); background: var(--bg); border-color: var(--rule); opacity: .6; }
 
@@ -213,4 +217,30 @@ body.searching .leaflet-control-attribution, body.flat .credit .gl { display: no
 @media (hover: none) {
   .pin { box-shadow: none; transition: none; }
   .pin:hover { transform: none; }
+}
+@media (pointer: coarse) { .pin::before { content: ""; position: absolute; inset: -12px; border-radius: 50%; } }
+#map .leaflet-marker-icon.dim { opacity: .25; pointer-events: none; }
+.empty { margin: 18px 0 0; color: var(--ink-soft); font-size: 13.5px; }
+.empty[hidden] { display: none; }
+.filter button:focus-visible { box-shadow: inset 0 0 0 2px var(--ink), inset 0 0 0 4px var(--bg); }
+.grip:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; border-radius: 4px; }
+.linkish:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; border-radius: 2px; }
+.credit summary::before { content: ""; position: absolute; inset: -8px; }
+/* phones: every tap target at least 40px */
+@media (max-width: 760px) {
+  .home, .theme-toggle, .map-toggle button, .masthead a { height: 40px; }
+  .leaflet-control-zoom.leaflet-bar a { width: 40px; height: 40px; line-height: 38px; }
+  .filter button { box-sizing: border-box; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; }
+  .linkish, .how summary { display: inline-flex; align-items: center; min-height: 40px; }
+  .find { padding: 11px 14px; }
+  .card-flag img { max-height: 80px; }
+  .card-src summary { min-height: 40px; padding: 0 14px; }
+  .card-src a { display: inline-flex; align-items: center; gap: .3em; min-height: 40px; padding: 0 12px; }
+  .card-btn { min-height: 40px; padding: 11px 8px; }
+  .card-check { min-height: 40px; }
+  .leaflet-popup.card a.leaflet-popup-close-button { top: 4px; right: 4px; width: 40px; height: 40px; }
+}
+@media (max-width: 374px) {
+  .theme-toggle .lbl, .home .lbl { display: none; }
+  .home, .theme-toggle { width: 40px; padding: 0; justify-content: center; }
 }

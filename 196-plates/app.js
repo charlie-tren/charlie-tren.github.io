@@ -28,6 +28,9 @@
   document.getElementById("n").textContent = D.pins.length;
   const small = window.matchMedia("(max-width: 760px)").matches;
   const W = small ? 22 : 32;
+  const mapEl = document.getElementById("map");
+  const toMap = () => { if (small) mapEl.scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); };
+  let introBusy = false, pendingRow = null;
 
   // ---- theme ----
   const themeBtn = document.getElementById("theme");
@@ -74,10 +77,10 @@
     const n = Object.keys(eaten).length;
     eatenCount.hidden = n === 0;
     if (n === 0 && filterMode !== "all") { filterMode = "all"; }  // the filter hides at zero, so it must not leave the list filtered
-    eatenCount.innerHTML = `${n} of ${D.pins.length} eaten &middot; <button type="button" class="linkish" id="mine">Your map</button>`;
+    eatenCount.innerHTML = `${n} eaten &middot; <button type="button" class="linkish" id="mine">Your map</button>`;
     document.getElementById("filter").hidden = n === 0;
     applyFilter();
-    const mine = document.getElementById("mine"); if (mine) mine.onclick = () => showWorld("mine");
+    const mine = document.getElementById("mine"); if (mine) mine.onclick = () => { toMap(); showWorld("mine"); };
     document.querySelectorAll("[data-cc]").forEach(el => el.classList.toggle("is-been", isEaten(el.dataset.cc)));
   };
   const toggleEaten = cc => { if (eaten[cc]) delete eaten[cc]; else eaten[cc] = new Date().toISOString().slice(0, 10); store.set(KEY, eaten); paint(); };
@@ -118,12 +121,31 @@
     markers[p.cc] = m;
   });
   map.addLayer(pinLayer);
+  // the card clears the map controls, refits as it grows, and holds focus until it closes
+  let cardPopup = null, opener = null, nextOpener = null;
+  const refit = pp => { if (!pp._map) return; pp._updateLayout(); pp._updatePosition(); pp._adjustPan(); };
   map.on("popupopen", e => {
-    const b = e.popup.getElement().querySelector("[data-eat]");
-    if (b) b.addEventListener("change", () => toggleEaten(b.dataset.eat));
+    const pp = e.popup, el = pp.getElement(), m = mapEl.getBoundingClientRect();
+    const z = document.querySelector(".leaflet-control-zoom"), w = document.querySelector(".map-toggle");
+    const left = z && z.offsetWidth ? z.getBoundingClientRect().right - m.left + 8 : 24;
+    pp.options.autoPanPaddingTopLeft = [el.offsetWidth + left + 24 <= m.width ? left : 8, w && w.offsetWidth ? w.getBoundingClientRect().bottom - m.top + 8 : 24];
+    refit(pp);
+    const img = el.querySelector(".card-flag img"); if (img && !img.complete) img.addEventListener("load", () => refit(pp), { once: true });
+    const src = el.querySelector(".card-src"); if (src) src.addEventListener("toggle", () => refit(pp));
+    const b = el.querySelector("[data-eat]"); if (b) b.addEventListener("change", () => toggleEaten(b.dataset.eat));
+    cardPopup = pp; opener = nextOpener || (pp._source && pp._source.getElement && pp._source.getElement()) || null; nextOpener = null;
+    const c = el.querySelector(".leaflet-popup-content"), nm = el.querySelector(".card-name");
+    c.tabIndex = -1; c.setAttribute("role", "dialog"); if (nm) c.setAttribute("aria-label", nm.textContent);
+    c.focus({ preventScroll: true });
+  });
+  map.on("popupclose", e => {
+    if (e.popup !== cardPopup) return;
+    const a = document.activeElement, o = opener; cardPopup = null; opener = null;
+    if (o && document.contains(o) && (!a || a === document.body || e.popup.getElement().contains(a))) o.focus({ preventScroll: true });
   });
   const cityBounds = L.latLngBounds(D.pins.map(p => [p.lat, p.lon]));
   const openPin = cc => { map.once("moveend", () => markers[cc].openPopup()); map.flyTo(markers[cc].getLatLng(), Math.max(map.getZoom(), 15), { duration: .8 }); };
+  const openRow = (cc, b) => { nextOpener = b; hideWorld(); openPin(cc); toMap(); };
 
   // ---- side panel: rows, alphabetical within each region ----
   const groups = document.getElementById("groups");
@@ -136,7 +158,8 @@
     ps.forEach(p => {
       const li = document.createElement("li");
       li.innerHTML = `<button type="button" class="row" data-cc="${esc(p.cc)}"><img class="fit-${p.fit}" src="flags/${p.c2}-80.png" alt="" loading="lazy"><span class="rc">${esc(p.country)}</span><span class="rn">${esc(p.name)}</span></button>`;
-      li.querySelector("button").addEventListener("click", () => { hideWorld(); openPin(p.cc); if (small) document.getElementById("map").scrollIntoView({ behavior: "smooth" }); });
+      li.querySelector("button").addEventListener("click", e => { const b = e.currentTarget;
+        if (introBusy) { pendingRow = [p.cc, b]; toMap(); } else openRow(p.cc, b); });
       sec.querySelector(".rows").appendChild(li);
     });
     groups.appendChild(sec);
@@ -145,15 +168,25 @@
   // ---- filter the list: all / eaten / to try, and a search on country, cuisine or restaurant ----
   let filterMode = "all";
   const fold = s => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+  const inFilter = cc => filterMode === "eaten" ? isEaten(cc) : filterMode === "not" ? !isEaten(cc) : true;
+  const empty = document.getElementById("empty");
   function applyFilter() {
     const q = fold(document.getElementById("find").value.trim());
+    let shown = 0, hits = 0;
     document.querySelectorAll("#groups .rows li").forEach(li => {
       const cc = li.firstElementChild.dataset.cc, p = byCC[cc];
       const hit = !q || [p.country, p.adj, p.name].some(s => fold(s).includes(q));
-      li.hidden = !hit || (filterMode === "eaten" ? !isEaten(cc) : filterMode === "not" ? isEaten(cc) : false);
+      li.hidden = !hit || !inFilter(cc); hits += hit; shown += !li.hidden;
     });
     document.querySelectorAll("#groups .group").forEach(sec => { sec.hidden = ![...sec.querySelectorAll("li")].some(li => !li.hidden); });
     document.querySelectorAll("#filter button").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === filterMode));
+    empty.hidden = shown > 0;
+    empty.innerHTML = shown ? "" : filterMode !== "all" && hits
+      ? `No match in ${filterMode === "eaten" ? "Eaten" : "To try"}. <button type="button" class="linkish" id="showall">Show all</button>` : "No countries match.";
+    const all = document.getElementById("showall");
+    if (all) all.onclick = () => { filterMode = "all"; applyFilter(); document.getElementById("find").focus({ preventScroll: true }); };
+    D.pins.forEach(p => { const el = markers[p.cc].getElement(); if (!el) return;
+      const off = !inFilter(p.cc); el.classList.toggle("dim", off); el.tabIndex = off ? -1 : 0; });
   }
   document.querySelectorAll("#filter button").forEach(b => b.addEventListener("click", () => { filterMode = b.dataset.f; applyFilter(); }));
   const find = document.getElementById("find");
@@ -172,13 +205,13 @@
     d.innerHTML = `<button type="button" id="worldbtn">World</button>`; L.DomEvent.disableClickPropagation(d); return d; };
   worldBtn.addTo(map);
   // the world views (city and your own) are one drawn map over the tiles (worldmap.js, design 348/352)
-  let wm = null;
+  let wm = null, worldOpener = null;
   function showWorld(mode) {
-    hideWorld();
+    hideWorld(); worldOpener = document.activeElement;
     const box = document.createElement("div"); box.id = "worldmap"; box.style.cssText = "position:absolute;inset:0;z-index:800";
     document.querySelector(".mapwrap").appendChild(box);
     map.closePopup(); lock(true);
-    wm = WorldMap.render(box, { mode, eaten, pins: D.pins, city: D.city, onPick: cc => { hideWorld(); openPin(cc); } });
+    wm = WorldMap.render(box, { eaten, pins: D.pins, city: D.city, onPick: cc => { hideWorld(); openPin(cc); } });
     document.getElementById("worldbtn").textContent = `Back to ${D.city}`;
     document.getElementById("worldbtn").onclick = hideWorld;
   }
@@ -189,10 +222,16 @@
     document.getElementById("worldbtn").onclick = () => showWorld("city");
   }
   document.getElementById("worldbtn").onclick = () => showWorld("city");
+  addEventListener("keydown", e => {
+    if (e.key !== "Escape" || introBusy) return;
+    if (cardPopup) { map.closePopup(); return; }
+    if (wm) { const o = worldOpener && document.contains(worldOpener) && worldOpener !== document.body ? worldOpener : document.getElementById("worldbtn");
+      hideWorld(); o.focus({ preventScroll: true }); }
+  });
 
   // ---- the search intro: a plain page; pick a city, great-circle arcs draw in, the camera flies to it ----
   const intro = document.getElementById("intro");
-  const skip = location.hash === "#" + CITY || !intro;
+  const skip = location.hash.toLowerCase() === "#" + CITY || !intro;
   // the world never shows twice: at the widest the map shows it once, and the city map cannot pan past the edges
   const worldZoom = () => Math.max(1, Math.ceil(Math.log2(map.getSize().x / 256)));
   const limitWorld = () => { map.setMinZoom(worldZoom()); map.setMaxBounds([[-85, -180], [85, 180]]); map.options.maxBoundsViscosity = 1; };
@@ -219,28 +258,63 @@
     });
     const input = intro.querySelector("input"), list = intro.querySelector("ul");
     const cities = [{ name: D.city, country: "Australia", n: D.pins.length }];
+    const box = intro.querySelector(".search");
+    let open = false;
     const render = () => {
       const q = input.value.trim().toLowerCase();
-      const hits = cities.filter(c => !q || c.name.toLowerCase().startsWith(q));
-      list.hidden = !q;
+      const m = cities.filter(c => c.name.toLowerCase().startsWith(q)), hits = m.length ? m : cities;
+      list.hidden = !open;
       list.innerHTML = hits.map(c => `<li><button type="button"><span><b>${esc(c.name)}</b>, ${esc(c.country)}</span><span class="n">${c.n} cuisines</span></button></li>`).join("")
         + `<li class="soon">More cities coming</li>`;
       list.querySelectorAll("button").forEach(b => b.addEventListener("click", go));
     };
-    input.addEventListener("input", render);
-    input.addEventListener("keydown", e => { if (e.key === "Enter") { const b = list.querySelector("button"); if (b) b.click(); } });
+    const show = on => { open = on; render(); };
+    ["focus", "input", "click"].forEach(t => input.addEventListener(t, () => show(true)));
+    box.addEventListener("focusout", e => { if (e.relatedTarget && !box.contains(e.relatedTarget)) show(false); });
+    document.addEventListener("pointerdown", e => { if (open && !box.contains(e.target)) show(false); });
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") { const b = list.querySelector("button"); if (b) b.click(); }
+      else if (e.key === "Escape") { e.preventDefault(); show(false); } });
     input.focus();
     async function go() {
-      if (started) return; started = true;
+      if (started) return; started = true; introBusy = true;
       history.replaceState(null, "", "#" + CITY);
       document.body.classList.remove("searching", "flat");
       map.invalidateSize();
       map.setView([10, 150], worldZoom(), { animate: false });
-      document.getElementById("map").classList.add("pins-hidden");
+      mapEl.classList.add("pins-hidden");
       lock(true);
       intro.classList.add("gone");
+      // any click, tap, key or wheel from here on jumps to the end; armed after the event that started it
+      let skipped = false, skipNow, fx = null;
+      const skipP = new Promise(r => { skipNow = r; }), race = p => Promise.race([p, skipP]);
+      const swallow = e => { e.stopPropagation(); e.preventDefault(); };
+      const SKIP = ["pointerdown", "keydown", "wheel"], onSkip = e => { if (skipped) return; skipped = true; skipNow();
+        if (e.type === "pointerdown" && mapEl.contains(e.target)) { mapEl.addEventListener("click", swallow, { capture: true, once: true }); setTimeout(() => mapEl.removeEventListener("click", swallow, { capture: true }), 800); } };
+      setTimeout(() => { if (introBusy) SKIP.forEach(t => addEventListener(t, onSkip, { capture: true, passive: true })); }, 0);
+      const fxPane = map.getPanes().overlayPane;
+      // the arcs and fills fade out as the camera passes the continent, before they can pile into a fan
+      const fade = () => {
+        const k = Math.max(0, 1 - (map.getZoom() - z0 - .6) / 1.2);
+        fxPane.style.opacity = k;
+        if (k === 0 && fx) { map.removeLayer(fx); fx = null; fxPane.style.opacity = ""; map.off("zoom", fade); }
+      };
+      const done = () => {
+        SKIP.forEach(t => removeEventListener(t, onSkip, { capture: true }));
+        map.off("zoom", fade); fxPane.style.opacity = "";
+        if (fx) { map.removeLayer(fx); fx = null; }
+        if (skipped) map.fitBounds(cityBounds, { padding: [30, 30], animate: false });
+        const a = document.activeElement, lost = !a || a === document.body || intro.contains(a);
+        map.addLayer(pinLayer); intro.remove(); introBusy = false; paint(); lock(false); limitWorld();
+        const mp = map.getPanes().markerPane;
+        if (skipped) { mp.style.transition = "none"; mapEl.classList.remove("pins-hidden"); void mp.offsetWidth; mp.style.transition = ""; }
+        else requestAnimationFrame(() => mapEl.classList.remove("pins-hidden"));
+        if (pendingRow) { const [cc, b] = pendingRow; pendingRow = null; openRow(cc, b); }
+        else if (lost) find.focus({ preventScroll: true });
+      };
       // the globe turns to the city as it fades, then the map's own intro runs from the world view beneath it
-      if (globe) { const g = globe, c = cityBounds.getCenter(); globe = null; await g.turnTo(c.lng, c.lat, 1000); setTimeout(() => g.destroy(), reduce ? 1000 : 0); }
+      if (globe) { const g = globe, c = cityBounds.getCenter(); globe = null; await race(g.turnTo(c.lng, c.lat, 1000)); if (skipped) g.destroy(); else setTimeout(() => g.destroy(), reduce ? 1000 : 0); }
+      if (skipped) return done();
       // the flight is Leaflet's own van Wijk path, eased in and out; every tile it will pass over is fetched while the
       // arcs draw, and tiles are refreshed every frame, so no zoom level arrives blank
       const size = map.getSize(), z0 = map.getZoom(), from = map.project(map.getCenter(), z0);
@@ -266,7 +340,8 @@
         map._stop(); map._moveStart(true, false);
         const t0 = performance.now();
         let last = null;
-        const frame = now => { const t = Math.min(1, (now - t0) / T), e = t < .5 ? 4 * t * t * t : 1 - (2 - 2 * t) ** 3 / 2, v = at(e);
+        const frame = now => { if (skipped) { map._moveEnd(true); return res(); }
+          const t = Math.min(1, (now - t0) / T), e = t < .5 ? 4 * t * t * t : 1 - (2 - 2 * t) ** 3 / 2, v = at(e);
           map._move(v.center, v.zoom, { flyTo: true });
           // new tiles only when the view has moved a quarter tile at the current tile zoom
           const c = map.project(v.center, Math.round(v.zoom));
@@ -274,9 +349,9 @@
           if (t < 1) requestAnimationFrame(frame); else { map._moveEnd(true); res(); } };
         requestAnimationFrame(frame);
       });
-      let fx = null;
       try {
-        const F = await loadIntro();
+        const F = await race(loadIntro());
+        if (skipped) return done();
         fx = L.featureGroup().addTo(map);
         const canvas = L.canvas({ padding: .5 });
         const to = cityBounds.getCenter(), rad = Math.PI / 180;
@@ -297,7 +372,8 @@
         const arcs = live.map(f => { const c = L.geoJSON(f).getBounds().getCenter(); const all = gc(c, to, 48);
           return L.polyline(all.slice(0, 2), { renderer: canvas, color: "#e4572e", weight: .9, opacity: .55, interactive: false, all }).addTo(fx); });
         if (!reduce) await new Promise(res => { const t0 = performance.now(), T = 3200, N = arcs.length, FADE = 320;
-          const step = now => { const k = Math.min(1, (now - t0) / T);
+          const step = now => { if (skipped) return res();
+            const k = Math.min(1, (now - t0) / T);
             let busy = k < 1;
             arcs.forEach((a, i) => {
               // one country at a time: each arc starts as the previous is half drawn, its country fades in as it lands
@@ -314,17 +390,10 @@
             busy ? requestAnimationFrame(step) : res(); };
           requestAnimationFrame(step); });
         else fills.forEach(f => f.setStyle({ fillOpacity: .85, opacity: .85 }));
-      } catch (e) { fx = null; }
-      const done = () => { if (fx) { map.removeLayer(fx); fx = null; } map.addLayer(pinLayer); intro.remove(); paint(); lock(false); limitWorld();
-        requestAnimationFrame(() => document.getElementById("map").classList.remove("pins-hidden")); };
-      if (reduce) { map.fitBounds(cityBounds, { padding: [30, 30] }); done(); return; }
-      // the arcs and fills fade out as the camera passes the continent, before they can pile into a fan
-      const fxPane = map.getPanes().overlayPane;
-      map.on("zoom", function fade() {
-        const k = Math.max(0, 1 - (map.getZoom() - z0 - .6) / 1.2);
-        fxPane.style.opacity = k;
-        if (k === 0 && fx) { map.removeLayer(fx); fx = null; fxPane.style.opacity = ""; map.off("zoom", fade); }
-      });
+      } catch (e) { if (fx) map.removeLayer(fx); fx = null; }
+      if (skipped) return done();
+      if (reduce) { map.fitBounds(cityBounds, { padding: [30, 30] }); return done(); }
+      map.on("zoom", fade);
       await fly(3800);
       done();
     }
