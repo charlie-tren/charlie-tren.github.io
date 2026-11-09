@@ -18,6 +18,9 @@
 .wm-names { display: flex; margin-top: calc(12px * var(--s)); font-size: max(13px, calc(17px * var(--s))); font-weight: 600; letter-spacing: .08em;
   text-transform: uppercase; color: var(--ink-soft, #a9adb4); }
 .wm-names span { min-width: max-content; padding-right: 14px; white-space: nowrap; }
+.wm-narrow .wm-names { letter-spacing: .03em; }
+.wm-narrow .wm-names span { padding-right: 10px; }
+.wm-narrow .wm-names b { display: block; margin: 2px 0 0; }
 .wm-map { position: absolute; left: 0; display: block; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .wm-map [data-pick] { cursor: pointer; }
 .wm-card { position: absolute; z-index: 2; pointer-events: none; display: flex; align-items: center; gap: 10px; max-width: 260px; padding: 8px 12px 8px 9px;

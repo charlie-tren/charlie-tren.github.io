@@ -26,10 +26,12 @@
   D.pins = D.pins.filter(p => /^[a-z]{2}$/.test(p.c2));
   const byCC = Object.fromEntries(D.pins.map(p => [p.cc, p]));
   document.getElementById("n").textContent = D.pins.length;
-  const small = window.matchMedia("(max-width: 760px)").matches;
+  const mq = window.matchMedia("(max-width: 760px)"), phone = () => mq.matches;
+  const small = mq.matches;
   const W = small ? 22 : 32;
   const mapEl = document.getElementById("map");
-  const toMap = () => { if (small) mapEl.scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); };
+  // returns where the map's top will be once the scroll lands
+  const toMap = () => { if (!phone()) return null; mapEl.scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); return 0; };
   let introBusy = false, pendingRow = null;
 
   // ---- theme ----
@@ -94,25 +96,26 @@
 
   const dirUrl = p => "https://www.google.com/maps/dir/?api=1&destination=" +
     encodeURIComponent(p.address ? `${p.name}, ${p.address}` : `${p.name}, ${p.suburb || ""} NSW`);
-  const card = p => {
+  const cardParts = p => {
     const links = (p.src || []).filter(s => safeUrl(s.url));
     const rev = p.review && safeUrl(p.review.url) ? p.review : null;
     const web = safeUrl(p.web);
     const n = links.length;
-    return `<div class="card-flag"><img src="flags/${p.c2}-320.png" alt="Flag of ${esc(p.country)}"></div>
-    <div class="card-body">
-      <div class="card-kicker">${esc(p.adj)}${p.suburb ? " &middot; " + esc(p.suburb) : ""}</div>
-      <div class="card-name">${esc(p.name)}</div>
-      ${n ? `<details class="card-src"><summary>${n} ${n === 1 ? "source" : "sources"}</summary><ul>${links.map(s =>
-        `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></li>`).join("")}</ul></details>` : ""}
-      <div class="card-actions">
+    return {
+      head: `<div class="card-kicker">${esc(p.adj)}${p.suburb ? " &middot; " + esc(p.suburb) : ""}</div>
+      <div class="card-name">${esc(p.name)}</div>`,
+      src: n ? `<details class="card-src"><summary>${n} ${n === 1 ? "source" : "sources"}</summary><ul>${links.map(s =>
+        `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></li>`).join("")}</ul></details>` : "",
+      actions: `<div class="card-actions">
         ${rev ? `<a class="card-btn wide" href="${esc(rev.url)}" target="_blank" rel="noopener">Read the review <span class="via">&middot; ${esc(rev.name)}</span></a>` : ""}
         ${web ? `<a class="card-btn alt" href="${esc(web)}" target="_blank" rel="noopener">Website</a>` : ""}
         <a class="card-btn alt" href="${dirUrl(p)}" target="_blank" rel="noopener">Directions</a>
         <label class="card-check"><input type="checkbox" data-eat="${esc(p.cc)}" ${isEaten(p.cc) ? "checked" : ""}> Eaten here</label>
-      </div>
-    </div>`;
+      </div>`
+    };
   };
+  const card = p => { const c = cardParts(p);
+    return `<div class="card-flag"><img src="flags/${p.c2}-320.png" alt="Flag of ${esc(p.country)}"></div><div class="card-body">${c.head}${c.src}${c.actions}</div>`; };
 
   const pinLayer = L.featureGroup();
   const markers = {};
@@ -122,6 +125,8 @@
       icon: L.divIcon({ className: "", iconSize: [W, W], iconAnchor: [W / 2, W / 2],
         html: `<div class="pin" data-cc="${esc(p.cc)}" style="width:${W}px;height:${W}px;background-image:url(flags/circle/${p.c2}.svg)"></div>` })
     });
+    // phones get the bottom sheet instead of the popup
+    m._openPopup = function (e) { if (!phone()) return L.Layer.prototype._openPopup.call(this, e); L.DomEvent.stop(e); tapPin(p, e); };
     m.bindPopup(() => card(p), { className: "card", closeButton: true, offset: [0, -W / 2 + 4], autoPanPadding: [24, 24], maxWidth: 270, minWidth: 250 });
     pinLayer.addLayer(m);
     markers[p.cc] = m;
@@ -150,8 +155,73 @@
     if (o && document.contains(o) && (!a || a === document.body || e.popup.getElement().contains(a))) o.focus({ preventScroll: true });
   });
   const cityBounds = L.latLngBounds(D.pins.map(p => [p.lat, p.lon]));
-  const openPin = cc => { map.once("moveend", () => markers[cc].openPopup()); map.flyTo(markers[cc].getLatLng(), Math.max(map.getZoom(), 15), { duration: .8 }); };
-  const openRow = (cc, b) => { nextOpener = b; hideWorld(); openPin(cc); toMap(); };
+  const openPin = (cc, mapTop) => {
+    const m = markers[cc], z = Math.max(map.getZoom(), 15);
+    if (phone()) { openSheet([byCC[cc]], { opener: nextOpener || m.getElement(), at: m.getLatLng(), zoom: z, mapTop }); nextOpener = null; return; }
+    map.once("moveend", () => m.openPopup()); map.flyTo(m.getLatLng(), z, { duration: .8 });
+  };
+  const openRow = (cc, b) => { nextOpener = b; hideWorld(); openPin(cc, toMap()); };
+
+  // ---- the phone card: a bottom sheet; a tap where several pins overlap lists them first ----
+  const sheet = document.getElementById("sheet");
+  let sheetOn = false, sheetOpener = null, sheetAt = null;
+  const tapPin = (p, e) => {
+    const oe = e && e.originalEvent; let near = [p];
+    if (oe && oe.type === "click" && typeof oe.clientX === "number") {
+      const pt = map.mouseEventToContainerPoint(oe), d = q => map.latLngToContainerPoint([q.lat, q.lon]).distanceTo(pt);
+      near = D.pins.filter(q => { const el = markers[q.cc].getElement(); return q === p || (el && !el.classList.contains("dim") && d(q) <= 21); }).sort((a, b) => d(a) - d(b));
+    }
+    const at = near.length > 1 ? L.latLngBounds(near.map(q => [q.lat, q.lon])).getCenter() : L.latLng(p.lat, p.lon);
+    openSheet(near, { opener: markers[p.cc].getElement(), at, zoom: map.getZoom() });
+  };
+  // centre the map so a point sits midway between the top of the visible map and the top of the sheet
+  const placeAbove = (at, z, mapTop) => {
+    const H = mapEl.clientHeight, t = mapTop == null ? mapEl.getBoundingClientRect().top : mapTop;
+    const visTop = Math.max(0, t), visBot = Math.max(visTop + 80, Math.min(t + H, innerHeight - (sheetOn ? sheet.offsetHeight : 0)));
+    const c = map.unproject(map.project(at, z).add([0, H / 2 - ((visTop + visBot) / 2 - t)]), z);
+    if (reduce) map.setView(c, z, { animate: false });
+    else if (z !== map.getZoom()) map.flyTo(c, z, { duration: .8 });
+    else map.panTo(c);
+  };
+  function openSheet(list, o) {
+    const one = list.length === 1, p = list[0];
+    let body, foot = "";
+    if (one) { const c = cardParts(p);
+      body = `<div class="sheet-head"><img class="sheet-flag fit-${p.fit}" src="flags/${p.c2}-320.png" alt="Flag of ${esc(p.country)}"><div>${c.head}</div></div>${c.src}`;
+      foot = `<div class="sheet-foot">${c.actions}</div>`;
+    } else body = `<ul class="sheet-list">${list.map(q => `<li><button type="button" class="row${isEaten(q.cc) ? " is-been" : ""}" data-cc="${esc(q.cc)}"><img class="fit-${q.fit}" src="flags/${q.c2}-80.png" alt=""><span class="rc">${esc(q.country)}</span><span class="rn">${esc(q.name)}</span></button></li>`).join("")}</ul>`;
+    sheet.innerHTML = `<div class="sheet-grab" aria-hidden="true"><span></span></div><button type="button" class="sheet-x" aria-label="Close">&times;</button><div class="sheet-body">${body}</div>${foot}`;
+    sheet.setAttribute("aria-label", one ? p.name : `${list.length} restaurants`);
+    sheet.style.transform = ""; sheet.hidden = false; sheetOn = true; document.body.classList.add("sheet-open");
+    requestAnimationFrame(() => { if (sheetOn) sheet.classList.add("open"); });
+    if (o.opener !== undefined) sheetOpener = o.opener;
+    sheetAt = o.at;
+    sheet.querySelector(".sheet-x").onclick = closeSheet;
+    const b = sheet.querySelector("[data-eat]"); if (b) b.addEventListener("change", () => toggleEaten(b.dataset.eat));
+    const src = sheet.querySelector(".card-src"); if (src) src.addEventListener("toggle", () => placeAbove(sheetAt, map.getZoom()));
+    sheet.querySelectorAll(".sheet-list .row").forEach(r => r.addEventListener("click", () => {
+      const q = byCC[r.dataset.cc]; openSheet([q], { at: L.latLng(q.lat, q.lon), zoom: map.getZoom() }); }));
+    sheet.focus({ preventScroll: true });
+    placeAbove(o.at, o.zoom, o.mapTop);
+  }
+  function closeSheet() {
+    if (!sheetOn) return;
+    const a = document.activeElement, o = sheetOpener; sheetOn = false; sheetOpener = null;
+    sheet.classList.remove("open"); sheet.style.transform = ""; document.body.classList.remove("sheet-open");
+    setTimeout(() => { if (!sheetOn) { sheet.hidden = true; sheet.innerHTML = ""; sheet.style.transform = ""; } }, reduce ? 0 : 260);
+    if (o && document.contains(o) && (!a || a === document.body || sheet.contains(a))) o.focus({ preventScroll: true });
+  }
+  // the handle drags the sheet down; past 70px it closes
+  sheet.addEventListener("pointerdown", e => {
+    const g = e.target.closest(".sheet-grab"); if (!g) return;
+    const y0 = e.clientY; let dy = 0; g.setPointerCapture(e.pointerId); sheet.style.transition = "none";
+    const move = ev => { dy = Math.max(0, ev.clientY - y0); sheet.style.transform = `translateY(${dy}px)`; };
+    const up = () => { g.removeEventListener("pointermove", move); g.removeEventListener("pointerup", up); g.removeEventListener("pointercancel", up);
+      sheet.style.transition = ""; if (dy > 70) closeSheet(); else sheet.style.transform = ""; };
+    g.addEventListener("pointermove", move); g.addEventListener("pointerup", up); g.addEventListener("pointercancel", up);
+  });
+  map.on("click", closeSheet);
+  mq.addEventListener("change", () => { closeSheet(); map.closePopup(); });
 
   // ---- side panel: rows, alphabetical within each region ----
   const groups = document.getElementById("groups");
@@ -214,9 +284,11 @@
   let wm = null, worldOpener = null;
   function showWorld(mode) {
     hideWorld(); worldOpener = document.activeElement;
+    // inside the map's controls, after World and before the credit, so that is the tab order
     const box = document.createElement("div"); box.id = "worldmap"; box.style.cssText = "position:absolute;inset:0;z-index:800";
-    document.querySelector(".mapwrap").appendChild(box);
-    map.closePopup(); lock(true);
+    L.DomEvent.disableClickPropagation(box); L.DomEvent.disableScrollPropagation(box); box.addEventListener("click", e => e.stopPropagation());
+    map._controlContainer.insertBefore(box, map._controlCorners.bottomleft);
+    map.closePopup(); closeSheet(); lock(true);
     wm = WorldMap.render(box, { eaten, pins: D.pins, city: D.city, onPick: cc => { hideWorld(); openPin(cc); } });
     document.getElementById("worldbtn").textContent = `Back to ${D.city}`;
     document.getElementById("worldbtn").onclick = hideWorld;
@@ -230,6 +302,7 @@
   document.getElementById("worldbtn").onclick = () => showWorld("city");
   addEventListener("keydown", e => {
     if (e.key !== "Escape" || introBusy) return;
+    if (sheetOn) { closeSheet(); return; }
     if (cardPopup) { map.closePopup(); return; }
     if (wm) { const o = worldOpener && document.contains(worldOpener) && worldOpener !== document.body ? worldOpener : document.getElementById("worldbtn");
       hideWorld(); o.focus({ preventScroll: true }); }
@@ -248,18 +321,32 @@
     map.fitBounds(cityBounds, { padding: [30, 30] }); limitWorld();
   } else {
     document.body.classList.add("searching");
+    // the intro's world: the exact zoom that shows it once, unsnapped, centred on the lit countries' span (-25 to 335); zoomSnap returns on landing
+    const introView = () => { map.options.zoomSnap = 0; const sz = map.getSize(), z = Math.log2(sz.x / 256), a = map.project([72, 155], z), b = map.project([-56, 155], z);
+      const y = sz.x >= sz.y ? Math.min(Math.max((a.y + b.y) / 2, sz.y / 2), sz.x - sz.y / 2) : sz.x / 2;
+      map.setView(map.unproject(L.point(a.x, y), z), z, { animate: false }); };
+    const fitCity = () => { const s = map.options.zoomSnap; map.options.zoomSnap = 1; const r = map._getBoundsCenterZoom(cityBounds, { padding: [30, 30] }); map.options.zoomSnap = s; return r; };
     // the world view and every pin's flag load behind the search, so the intro starts on a finished map
-    map.setView([10, 150], worldZoom(), { animate: false });
+    introView();
     map.removeLayer(pinLayer);
     // the orange fills use 50m outlines, close enough to the tile coastlines at the zooms they are seen at
     let introGeo = null;
     const loadIntro = () => introGeo || (introGeo = fetch("intro-50m.json").then(r => r.json()).then(G => {
       G.features.forEach(f => { f.cc = f.properties.cc; f.geometry.coordinates = f.geometry.coordinates.map(pl => pl.map(fix)); }); return G; }));
+    const fetchTiles = (center, zoom, size, seen = new Set()) => {
+      const subs = tiles.options.subdomains, tz = Math.min(tiles.options.maxNativeZoom, Math.round(zoom)), n = 2 ** tz, c = map.project(center, tz), h = size.divideBy(2 * 2 ** (zoom - tz));
+      for (let x = Math.floor((c.x - h.x) / 256); x <= Math.floor((c.x + h.x) / 256); x++)
+        for (let y = Math.max(0, Math.floor((c.y - h.y) / 256)); y <= Math.min(n - 1, Math.floor((c.y + h.y) / 256)); y++) {
+          const xx = ((x % n) + n) % n, url = L.Util.template(tiles._url, { s: subs[Math.abs(xx + y) % subs.length], x: xx, y, z: tz, r: "" });
+          if (!seen.has(url)) { seen.add(url); new Image().src = url; }
+        }
+      return seen;
+    };
     let globe = null, started = false;
     startGlobe().then(g => {
       // what only the flight needs waits until the globe is up, so it does not queue behind the globe's textures
       loadIntro(); D.pins.forEach(p => { new Image().src = `flags/circle/${p.c2}.svg`; });
-      if (!g) { document.body.classList.add("flat"); map.invalidateSize(); map.setView([10, 150], worldZoom(), { animate: false }); lock(true); return; }
+      if (!g) { document.body.classList.add("flat"); map.invalidateSize(); introView(); lock(true); return; }
       if (started) g.destroy(); else globe = g;
     });
     const input = intro.querySelector("input"), list = intro.querySelector("ul");
@@ -287,17 +374,21 @@
       history.replaceState(null, "", "#" + CITY);
       document.body.classList.remove("searching", "flat");
       map.invalidateSize();
-      map.setView([10, 150], worldZoom(), { animate: false });
+      introView();
       mapEl.classList.add("pins-hidden");
       lock(true);
       intro.classList.add("gone");
-      // any click, tap, key or wheel from here on jumps to the end; armed after the event that started it
+      // the landing view's tiles and every pin's flag start loading now, whether the intro plays out or is skipped
+      const land = fitCity(), seen = fetchTiles(land.center, land.zoom, map.getSize());
+      D.pins.forEach(p => { new Image().src = `flags/circle/${p.c2}.svg`; });
+      // a click, tap or key from here on jumps to the end (not a wheel or pinch); armed after the event that started it
       let skipped = false, skipNow, fx = null;
       const skipP = new Promise(r => { skipNow = r; }), race = p => Promise.race([p, skipP]);
-      const swallow = e => { e.stopPropagation(); e.preventDefault(); };
-      const SKIP = ["pointerdown", "keydown", "wheel"], onSkip = e => { if (skipped) return; skipped = true; skipNow();
-        if (e.type === "pointerdown" && mapEl.contains(e.target)) { mapEl.addEventListener("click", swallow, { capture: true, once: true }); setTimeout(() => mapEl.removeEventListener("click", swallow, { capture: true }), 800); } };
-      setTimeout(() => { if (introBusy) SKIP.forEach(t => addEventListener(t, onSkip, { capture: true, passive: true })); }, 0);
+      const SKIP = ["click", "keydown"], onSkip = e => {
+        if (skipped || (e.type === "keydown" && ["Shift", "Control", "Alt", "Meta"].includes(e.key))) return;
+        skipped = true; skipNow();
+        if (e.type === "click" && mapEl.contains(e.target)) { e.stopPropagation(); e.preventDefault(); } };
+      setTimeout(() => { if (introBusy) SKIP.forEach(t => addEventListener(t, onSkip, { capture: true })); }, 0);
       const fxPane = map.getPanes().overlayPane;
       // the arcs and fills fade out as the camera passes the continent, before they can pile into a fan
       const fade = () => {
@@ -309,12 +400,17 @@
         SKIP.forEach(t => removeEventListener(t, onSkip, { capture: true }));
         map.off("zoom", fade); fxPane.style.opacity = "";
         if (fx) { map.removeLayer(fx); fx = null; }
+        map.options.zoomSnap = 1;
         if (skipped) map.fitBounds(cityBounds, { padding: [30, 30], animate: false });
         const a = document.activeElement, lost = !a || a === document.body || intro.contains(a);
         map.addLayer(pinLayer); intro.remove(); introBusy = false; paint(); lock(false); limitWorld();
-        const mp = map.getPanes().markerPane;
-        if (skipped) { mp.style.transition = "none"; mapEl.classList.remove("pins-hidden"); void mp.offsetWidth; mp.style.transition = ""; }
-        else requestAnimationFrame(() => mapEl.classList.remove("pins-hidden"));
+        // pins wait for the tiles on screen (not the buffer the flight left), up to 1.5s
+        const mp = map.getPanes().markerPane, t1 = performance.now();
+        const onScreen = () => { const M = mapEl.getBoundingClientRect(), lv = tiles._level; return !lv || [...lv.el.querySelectorAll("img")].every(i => {
+          const r = i.getBoundingClientRect(); return i.classList.contains("leaflet-tile-loaded") || r.right <= M.left || r.left >= M.right || r.bottom <= M.top || r.top >= M.bottom; }); };
+        new Promise(r => { const tick = () => onScreen() || performance.now() - t1 > 1500 ? r() : setTimeout(tick, 50); tick(); }).then(() => {
+          if (skipped) { mp.style.transition = "none"; mapEl.classList.remove("pins-hidden"); void mp.offsetWidth; mp.style.transition = ""; }
+          else requestAnimationFrame(() => mapEl.classList.remove("pins-hidden")); });
         if (pendingRow) { const [cc, b] = pendingRow; pendingRow = null; openRow(cc, b); }
         else if (lost) find.focus({ preventScroll: true });
       };
@@ -324,24 +420,14 @@
       // the flight is Leaflet's own van Wijk path, eased in and out; every tile it will pass over is fetched while the
       // arcs draw, and tiles are refreshed every frame, so no zoom level arrives blank
       const size = map.getSize(), z0 = map.getZoom(), from = map.project(map.getCenter(), z0);
-      const tgt = map._getBoundsCenterZoom(cityBounds, { padding: [30, 30] });
+      const tgt = fitCity();
       const toPx = map.project(tgt.center, z0), w0 = Math.max(size.x, size.y), w1 = w0 * map.getZoomScale(z0, tgt.zoom);
       const u1 = toPx.distanceTo(from) || 1, rho = 1.42, rho2 = rho * rho;
       const rr = i => { const b = (w1 * w1 - w0 * w0 + (i ? -1 : 1) * rho2 * rho2 * u1 * u1) / (2 * (i ? w1 : w0) * rho2 * u1), sq = Math.sqrt(b * b + 1) - b; return sq < 1e-9 ? -18 : Math.log(sq); };
       const r0 = rr(0), S = (rr(1) - r0) / rho;
       const at = t => { if (t >= 1) return tgt; const s = t * S, w = w0 * Math.cosh(r0) / Math.cosh(r0 + rho * s), u = w0 * (Math.cosh(r0) * Math.tanh(r0 + rho * s) - Math.sinh(r0)) / rho2;
         return { center: map.unproject(from.add(toPx.subtract(from).multiplyBy(u / u1)), z0), zoom: map.getScaleZoom(w0 / w, z0) }; };
-      if (!reduce) {
-        const subs = tiles.options.subdomains, seen = new Set(), maxZ = tiles.options.maxNativeZoom;
-        for (let i = 0; i <= 120; i++) {
-          const v = at(i / 120), tz = Math.min(maxZ, Math.round(v.zoom)), n = 2 ** tz, c = map.project(v.center, tz), h = size.divideBy(2 * 2 ** (v.zoom - tz));
-          for (let x = Math.floor((c.x - h.x) / 256); x <= Math.floor((c.x + h.x) / 256); x++)
-            for (let y = Math.max(0, Math.floor((c.y - h.y) / 256)); y <= Math.min(n - 1, Math.floor((c.y + h.y) / 256)); y++) {
-              const xx = ((x % n) + n) % n, url = L.Util.template(tiles._url, { s: subs[Math.abs(xx + y) % subs.length], x: xx, y, z: tz, r: "" });
-              if (!seen.has(url)) { seen.add(url); new Image().src = url; }
-            }
-        }
-      }
+      if (!reduce) for (let i = 0; i <= 120; i++) { const v = at(i / 120); fetchTiles(v.center, v.zoom, size, seen); }
       const fly = T => new Promise(res => {
         map._stop(); map._moveStart(true, false);
         const t0 = performance.now();
@@ -398,7 +484,7 @@
         else fills.forEach(f => f.setStyle({ fillOpacity: .85, opacity: .85 }));
       } catch (e) { if (fx) map.removeLayer(fx); fx = null; }
       if (skipped) return done();
-      if (reduce) { map.fitBounds(cityBounds, { padding: [30, 30] }); return done(); }
+      if (reduce) { map.options.zoomSnap = 1; map.fitBounds(cityBounds, { padding: [30, 30] }); return done(); }
       map.on("zoom", fade);
       await fly(3800);
       done();

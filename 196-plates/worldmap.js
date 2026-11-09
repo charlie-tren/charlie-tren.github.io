@@ -83,7 +83,7 @@
       const s = Math.max(.42, Math.min(1, (H - mh) / 309, W / 700));
       // a tall container (a phone held upright) gets the band it needs, and band plus map sit centred
       const band = Math.min(H - mh, Math.round(309 * s + 24)), top0 = Math.round((H - mh - band) / 2);
-      root.style.setProperty("--wm-s", s.toFixed(3));
+      root.style.setProperty("--wm-s", s.toFixed(3)); root.classList.toggle("wm-narrow", W < 360);
 
       // the band: count and the three-state bar
       // every figure is out of 196 and says what it counts

@@ -14,9 +14,9 @@
 <meta property="og:image" content="https://charlietrenorden.com/196-plates/og-card.png">
 <meta property="og:image:secure_url" content="https://charlietrenorden.com/196-plates/og-card.png">
 <meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="196 Plates - a smiling globe and the line: the best restaurant in Sydney for every country's food">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt" content="196 Plates - a smiling globe and the line: Sydney's best, country by country">
 <meta name="twitter:card" content="summary_large_image">
 <script>(function(){try{var t=JSON.parse(localStorage.getItem("196plates.theme"));if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <style>html[data-theme="dark"]{background:#121417}html[data-theme="light"]{background:#fff}</style>
@@ -40,18 +40,18 @@
   <aside class="panel" aria-label="Countries">
     <p class="lede">How many of Sydney's cuisines can you eat?</p>
     <p class="count"><span id="n"></span><span class="of"> of 196</span></p>
+    <div class="meta"><p class="you" id="been" hidden></p>
     <details class="how"><summary>Why these restaurants?</summary>
       <p>Out of about 1,600 <span class="city">Sydney</span> restaurants, each one here is the best for its country's food: the one with the best write-ups from critics, food bloggers and that country's own community press. A hatted restaurant or a full review beats a mention in a list. Every one was checked to be open and still serving that food.</p>
-    </details>
-    <p class="you" id="been" hidden></p>
-    <div class="filter" id="filter" role="group" aria-label="Show" hidden><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="eaten" aria-pressed="false">Eaten</button><button type="button" data-f="not" aria-pressed="false">To try</button></div>
-    <input id="find" class="find" type="search" placeholder="Search a country" aria-label="Search a country" autocomplete="off" spellcheck="false">
+    </details></div>
+    <div class="findbar"><input id="find" class="find" type="search" placeholder="Search a country" aria-label="Search a country" autocomplete="off" spellcheck="false"><div class="filter" id="filter" role="group" aria-label="Show" hidden><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="eaten" aria-pressed="false">Eaten</button><button type="button" data-f="not" aria-pressed="false">To try</button></div></div>
     <div id="groups"></div>
     <p class="empty" id="empty" hidden></p>
   </aside>
   <div class="grip" id="grip" role="separator" aria-orientation="vertical" aria-label="Resize the list" tabindex="0"></div>
   <div class="mapwrap"><div id="map" role="application" aria-label="Map of Sydney"></div></div>
 </div>
+<div class="sheet" id="sheet" role="dialog" tabindex="-1" hidden></div>
 <div class="intro" id="intro">
   <div class="search">
     <label for="city" class="sr">City</label>
