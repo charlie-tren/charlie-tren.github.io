@@ -112,9 +112,6 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 /* ---- map controls ---- */
 .map-toggle button { height: 34px; padding: 0 13px; border: 1px solid var(--rule); border-radius: 999px; background: var(--bg); color: var(--ink);
   font: 600 13px var(--sans); cursor: pointer; box-shadow: 0 1px 5px rgba(0,0,0,.15); }
-.legend { position: absolute; left: 12px; bottom: 22px; z-index: 900; padding: 8px 12px; border-radius: 8px; background: var(--bg);
-  color: var(--ink); box-shadow: 0 1px 8px rgba(0,0,0,.15); font: 600 13px var(--sans); }
-.legend i { display: inline-block; width: 11px; height: 11px; margin-right: 7px; border-radius: 2px; background: #2f6f4f; vertical-align: -1px; }
 /* zoom: two round buttons that match the World pill */
 .leaflet-control-zoom.leaflet-bar { border: 0; box-shadow: none; background: none; display: flex; flex-direction: column; gap: 6px; }
 .leaflet-control-zoom.leaflet-bar a { width: 34px; height: 34px; border: 1px solid var(--rule); border-radius: 50%; background: var(--bg); color: var(--ink);
@@ -125,9 +122,29 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 /* ---- the search page: nothing but the search ---- */
 body.searching .app { visibility: hidden; }
 .intro { position: fixed; inset: var(--top) 0 0 0; z-index: 1000; display: flex; align-items: flex-start; justify-content: center;
-  padding-top: 24vh; background: var(--paper); transition: opacity .6s; }
+  padding-top: 24vh; background: radial-gradient(ellipse at 50% 55%, #0c1424 0%, #070b14 45%, #030407 100%); transition: opacity .6s; }
 .intro.gone { opacity: 0; pointer-events: none; }
-.search { width: min(520px, calc(100vw - 32px)); }
+.intro.globe-on { transition-duration: 1s; }
+.globe-sky, .globe-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.globe-gl { opacity: 0; transition: opacity .5s; }
+.intro.globe-on .globe-gl { opacity: 1; }
+.search { position: relative; z-index: 1; width: min(520px, calc(100vw - 32px)); }
+/* no WebGL: the OpenStreetMap world behind the search, full bleed and locked */
+body.flat .intro { background: transparent; pointer-events: none; }
+body.flat .search, body.flat .credit { pointer-events: auto; }
+body.searching.flat .app { visibility: visible; }
+body.searching.flat .panel, body.searching.flat .grip, body.searching .map-toggle { visibility: hidden; }
+body.searching.flat .mapwrap { position: fixed; inset: var(--top) 0 0 0; height: auto; }
+body.searching .leaflet-control-attribution, body.flat .credit .gl { display: none; }
+.credit { position: absolute; right: 10px; bottom: 10px; z-index: 2; max-width: calc(100% - 20px); font: 11px/22px var(--sans); color: rgba(236,234,228,.75); }
+.credit summary { list-style: none; width: 24px; height: 24px; margin-left: auto; display: grid; place-items: center; border-radius: 12px; cursor: pointer;
+  background: rgba(18,20,23,.55); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); position: relative; z-index: 1; }
+.credit summary::-webkit-details-marker { display: none; }
+.credit summary svg { width: 16px; height: 16px; fill: rgba(236,234,228,.6); }
+.credit > div { position: absolute; right: 0; bottom: 0; padding: 1px 30px 1px 10px; border-radius: 12px; white-space: nowrap;
+  background: rgba(18,20,23,.7); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.credit a { color: inherit; text-decoration: none; }
+@media (max-width: 760px) { .credit > div { white-space: normal; width: max-content; max-width: calc(100vw - 20px); line-height: 1.5; padding: 4px 30px 4px 10px; } }
 .search label { display: block; margin-bottom: 14px; text-align: center; font: 700 32px/1.15 var(--serif); }
 .search input { width: 100%; padding: 16px 20px; border: 1px solid var(--rule); border-radius: 12px; font: 600 21px var(--sans);
   background: var(--bg); color: var(--ink); box-shadow: 0 4px 18px rgba(0,0,0,.1); outline: none; }
@@ -153,8 +170,7 @@ body.searching .app { visibility: hidden; }
 .filter button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .card-btn .via { font-weight: 500; opacity: .75; }
 .card-src ul { max-height: none; overflow: visible; }
-.filter[hidden], .legend[hidden], .you[hidden] { display: none; }
-#map.world { background: #cfe0e8; }
+.filter[hidden], .you[hidden] { display: none; }
 .card-actions { display: flex; flex-wrap: wrap; }
 .card-actions .card-btn { flex: 1 1 40%; }
 .card-actions .card-btn.wide, .card-actions .card-check { flex-basis: 100%; }

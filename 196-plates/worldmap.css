@@ -1,0 +1,19 @@
+/* 196 Plates world map. The band follows the page theme; the map keeps daylight colours. */
+.wm { --s: var(--wm-s, 1); position: absolute; inset: 0; overflow: hidden; background: var(--bg, #121417); color: var(--ink, #eceae4);
+  font-family: var(--sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif); font-feature-settings: "tnum", "lnum"; }
+.wm-band { position: absolute; left: 0; right: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 calc(40px * var(--s)) calc(40px * var(--s)); }
+.wm-count { font-weight: 800; font-size: calc(160px * var(--s)); line-height: .74; letter-spacing: -.06em; }
+.wm-count span { font-size: calc(32px * var(--s)); font-weight: 500; letter-spacing: -.01em; color: var(--ink-faint, #8a9099); margin-left: calc(14px * var(--s)); }
+.wm-bar { margin-top: calc(32px * var(--s)); }
+.wm-track { display: flex; gap: 3px; height: calc(8px * var(--s)); min-height: 5px; }
+.wm-track i { display: block; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(128, 128, 128, .35); }
+.wm-names { display: flex; margin-top: calc(9px * var(--s)); font-size: max(9px, calc(11px * var(--s))); font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-soft, #a9adb4); }
+.wm-names span { min-width: max-content; padding-right: 14px; white-space: nowrap; }
+.wm-map { position: absolute; left: 0; display: block; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.wm-map [data-pick] { cursor: pointer; }
+.wm-tab { position: absolute; z-index: 2; pointer-events: none; padding: 3px 6px 2px; border-radius: 3px; background: #17283a; color: #fff;
+  font-size: 10.5px; font-weight: 700; line-height: 1.35; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .25); }
+.wm-tab[hidden] { display: none; }

@@ -27,6 +27,7 @@
 <link rel="icon" href="/196-plates/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="icon" href="/196-plates/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/196-plates/apple-touch-icon.png">
+<script>(function(){if(location.hash)return;var ok=false;try{var c=document.createElement("canvas"),g=c.getContext("webgl2")||c.getContext("webgl");ok=!!g;var x=g&&g.getExtension("WEBGL_lose_context");if(x)x.loseContext();}catch(e){}window.__gl=ok;if(!ok)return;[["https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js","script","sha512-6p9lGA4Cm89KiwN1CixiOVQU2H9e13LeYoN6/Hj/qoUhtrMW5vNiqQz9Z96Z7/I8u89ghL6SPBz9na5HFVzF3g=="],["globe.js","script"],["globe/day-2048.webp","image"],["globe/lights-2048.webp","image"],["globe/land-1024.webp","image"]].forEach(function(r){var l=document.createElement("link");l.rel="preload";l.href=r[0];l.as=r[1];if(r[1]==="image"||r[2])l.crossOrigin="anonymous";if(r[2]){l.integrity=r[2];l.referrerPolicy="no-referrer";}document.head.appendChild(l);});})();</script>
 <script>/* Analytics, gated. Two kinds of visitor are not an audience: anyone who has opted out with ?nostats=1, and automation - navigator.webdriver is the one signal true for Playwright, Puppeteer and Selenium alike. Inline and dependency-free on purpose: served from the Worker, a bad deploy there would stop analytics on every site. See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2"\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
 </head>
 <body class="searching">
@@ -40,7 +41,7 @@
     <p class="lede">How many of Sydney's cuisines can you eat?</p>
     <p class="count"><span id="n"></span><span class="of"> of 196</span></p>
     <details class="how"><summary>How it picks</summary>
-      <p>The pick for each country is the <span class="city">Sydney</span> restaurant named by the most reviews, guides and food blogs. Critics' reviews and recent reviews carry more weight. Listing sites like Google and TripAdvisor don't count. Every pick has been checked to be open and to serve that country's food.</p>
+      <p>The pick for each country is the <span class="city">Sydney</span> restaurant with the strongest record in reviews, guides, food blogs and that country's own community press. A full review or a top spot on a best-of list counts for more than a passing mention. Recent coverage and awards like Good Food Guide hats add weight. Listing sites like Google and TripAdvisor don't count. Every pick has been checked to be open and to serve that country's food.</p>
     </details>
     <p class="you" id="been" hidden></p>
     <div class="filter" id="filter" role="group" aria-label="Show" hidden><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="eaten" aria-pressed="false">Eaten</button><button type="button" data-f="not" aria-pressed="false">To try</button></div>
@@ -48,7 +49,7 @@
     <div id="groups"></div>
   </aside>
   <div class="grip" id="grip" role="separator" aria-orientation="vertical" aria-label="Resize the list" tabindex="0"></div>
-  <div class="mapwrap"><div id="map" role="application" aria-label="Map of Sydney"></div><div class="legend" id="legend" hidden></div></div>
+  <div class="mapwrap"><div id="map" role="application" aria-label="Map of Sydney"></div></div>
 </div>
 <div class="intro" id="intro">
   <div class="search">
@@ -56,9 +57,12 @@
     <input id="city" type="search" placeholder="Search a city" autocomplete="off" spellcheck="false">
     <ul hidden></ul>
   </div>
+  <details class="credit"><summary aria-label="Map credits"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm.9 12.5H9.1V9h1.8v5.5zM10 7.6a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2z"/></svg></summary>
+    <div><span class="gl"><a href="https://cloudless.eox.at" target="_blank" rel="noopener">EOxCloudless</a> by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2024) | Night lights: <a href="https://earthdata.nasa.gov/gibs" target="_blank" rel="noopener">NASA Black Marble</a> | </span>&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></div></details>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js" integrity="sha512-4UKI/XKm3xrvJ6pZS5oTRvIQGIzZFoXR71rRBb1y2N+PbwAsKa5tPl2J6WvbEvwN3TxQCm8hMzsl/pO+82iRlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="worldmap.css">
+<script src="worldmap.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

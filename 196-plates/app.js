@@ -1,4 +1,21 @@
 (async function () {
+  // ---- the search page's globe, loaded only with no city in the address; without WebGL the flat world shows instead ----
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const THREE_JS = ["https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js",
+    "sha512-6p9lGA4Cm89KiwN1CixiOVQU2H9e13LeYoN6/Hj/qoUhtrMW5vNiqQz9Z96Z7/I8u89ghL6SPBz9na5HFVzF3g=="];
+  const script = (src, sri) => new Promise((res, rej) => { const s = document.createElement("script"); s.src = src;
+    if (sri) { s.integrity = sri; s.crossOrigin = "anonymous"; s.referrerPolicy = "no-referrer"; }
+    s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  const hasGL = () => { if (typeof window.__gl === "boolean") return window.__gl; try { const c = document.createElement("canvas"), g = c.getContext("webgl2") || c.getContext("webgl");
+    if (g) { const x = g.getExtension("WEBGL_lose_context"); if (x) x.loseContext(); } return !!g; } catch (e) { return false; } };
+  let globeReady = null;
+  const startGlobe = () => {
+    if (globeReady) return globeReady;
+    if (!hasGL()) return (globeReady = Promise.resolve(null));
+    return (globeReady = script(...THREE_JS).then(() => script("globe.js")).then(() => Globe.start(document.getElementById("intro"), { reduce })).catch(() => null));
+  };
+  if (!location.hash && document.getElementById("intro")) startGlobe();
+
   const ORDER = ["Europe", "Africa", "Middle East", "Central Asia", "South Asia", "Southeast Asia", "East Asia", "Oceania", "Americas"]; // left to right across the world view
   const D = await (await fetch("data.json")).json();
   const CITY = (D.city || "Sydney").toLowerCase();
@@ -146,68 +163,31 @@
   document.querySelectorAll(".how .city").forEach(s => { s.textContent = D.city; });
 
   // ---- world views: which of 196 the city has, and your own map ----
-  let worldData = null, worldLayer = null;
   // rings west of -25 move east by 360 and date-line rings are unwrapped, so the world reads once from -25 to 335
   const fix = r => { const xs = r.map(p => p[0]), spans = Math.max(...xs) - Math.min(...xs) > 180, mean = xs.reduce((a, b) => a + b, 0) / xs.length;
     return r.map(([x, y]) => [(spans ? x < 0 : mean < -25) ? x + 360 : x, y]); };
-  const loadWorld = async () => {
-    if (worldData) return worldData;
-    const [w, n3] = await Promise.all([fetch("world-110m.json").then(r => r.json()), fetch("ccn3.json").then(r => r.json())]);
-    const F = topojson.feature(w, w.objects.countries);
-    // Antarctica rings the pole: cut it at the map's left edge (-25) and close it along the bottom
-    const pole = r => { const xs = r.map(p => p[0]); if (Math.max(...xs) - Math.min(...xs) < 180) return fix(r);
-      let pts = r.filter(p => p[1] > -85).map(([x, y]) => [x < -25 ? x + 360 : x, y]);
-      const i = pts.findIndex((p, k) => k && Math.abs(p[0] - pts[k - 1][0]) > 180);
-      if (i > 0) pts = pts.slice(i).concat(pts.slice(0, i));
-      return pts.concat([[pts[pts.length - 1][0], -85], [pts[0][0], -85]]); };
-    F.features.forEach(d => { const g = d.geometry; if (!g) return; d.cc = n3[d.id];
-      if (d.id === "010") { g.coordinates = g.type === "Polygon" ? g.coordinates.map(pole) : g.coordinates.map(pl => pl.map(pole)); return; }
-      if (g.type === "Polygon") g.coordinates = g.coordinates.map(fix); else if (g.type === "MultiPolygon") g.coordinates = g.coordinates.map(pl => pl.map(fix)); });
-    return (worldData = F);
-  };
   const worldBtn = L.control({ position: "topright" });
   worldBtn.onAdd = () => { const d = L.DomUtil.create("div", "map-toggle");
     d.innerHTML = `<button type="button" id="worldbtn">World</button>`; L.DomEvent.disableClickPropagation(d); return d; };
   worldBtn.addTo(map);
-  const legend = document.getElementById("legend");
-  async function showWorld(mode) {
-    const F = await loadWorld();
-    if (worldLayer) map.removeLayer(worldLayer);
-    const on = mode === "mine" ? (cc => isEaten(cc)) : (cc => !!byCC[cc]);
-    // the world view is drawn, not tiled, and stays in daylight colours in both themes
-    map.removeLayer(tiles);
-    document.getElementById("map").classList.add("world");
-    worldLayer = L.geoJSON(F, {
-      style: f => ({ weight: .6, color: "#ffffff", fillOpacity: 1, fillColor: on(f.cc) ? "#2f6f4f" : "#e9e4d8" }),
-      onEachFeature: (f, l) => { const p = byCC[f.cc]; if (!p || !on(f.cc)) return;
-        l.bindPopup(`<div class="card-flag"><img src="flags/${p.c2}-320.png" alt="Flag of ${esc(p.country)}"></div><div class="card-body">
-          <div class="card-kicker">${esc(p.adj)}${p.suburb ? " &middot; " + esc(p.suburb) : ""}${mode === "mine" ? " &middot; " + fmtDate(eaten[p.cc]) : ""}</div>
-          <div class="card-name">${esc(p.name)}</div>
-          <div class="card-actions"><button type="button" class="card-btn wide" data-go="${esc(p.cc)}">Show in ${esc(D.city)}</button></div></div>`,
-          { className: "card", maxWidth: 270, minWidth: 250 }); } }).addTo(map);
-    map.removeLayer(pinLayer);
-    // one world exactly: 360 degrees of longitude fill the map width once, and the view cannot be dragged past it
-    const mw = document.getElementById("map").clientWidth, wz = Math.max(0, Math.log2(mw / 256));
-    map.setMinZoom(wz);
-    map.setMaxBounds([[-85, -25], [85, 335]]); map.options.maxBoundsViscosity = 1;
-    map.setView([0, 155], wz, { animate: false });
-    lock(true);
+  // the world views (city and your own) are one drawn map over the tiles (worldmap.js, design 348/352)
+  let wm = null;
+  function showWorld(mode) {
+    hideWorld();
+    const box = document.createElement("div"); box.id = "worldmap"; box.style.cssText = "position:absolute;inset:0;z-index:800";
+    document.querySelector(".mapwrap").appendChild(box);
+    map.closePopup(); lock(true);
+    wm = WorldMap.render(box, { mode, eaten, pins: D.pins, city: D.city, onPick: cc => { hideWorld(); openPin(cc); } });
     document.getElementById("worldbtn").textContent = `Back to ${D.city}`;
     document.getElementById("worldbtn").onclick = hideWorld;
-    const n = mode === "mine" ? Object.keys(eaten).length : D.pins.length;
-    legend.hidden = false;
-    legend.innerHTML = `<i></i>${mode === "mine" ? `${n} of 196 countries` : `In ${esc(D.city)}: ${n} of 196`}`;
   }
   function hideWorld() {
-    if (!worldLayer) return;
-    map.removeLayer(worldLayer); worldLayer = null; legend.hidden = true; tiles.addTo(map); document.getElementById("map").classList.remove("world");
-    map.setMaxBounds(L.latLngBounds([])); map.setMinZoom(0); lock(false);
-    map.addLayer(pinLayer); paint(); map.fitBounds(cityBounds, { padding: [30, 30] });
+    if (!wm) return;
+    wm.destroy(); wm = null; document.getElementById("worldmap").remove(); lock(false);
     document.getElementById("worldbtn").textContent = "World";
     document.getElementById("worldbtn").onclick = () => showWorld("city");
   }
   document.getElementById("worldbtn").onclick = () => showWorld("city");
-  map.on("popupopen", e => { const g = e.popup.getElement().querySelector("[data-go]"); if (g) g.onclick = () => { hideWorld(); setTimeout(() => openPin(g.dataset.go), 300); }; });
 
   // ---- the search intro: a plain page; pick a city, great-circle arcs draw in, the camera flies to it ----
   const intro = document.getElementById("intro");
@@ -221,10 +201,17 @@
     // the world view and every pin's flag load behind the search, so the intro starts on a finished map
     map.setView([10, 150], small ? 1 : 2, { animate: false });
     map.removeLayer(pinLayer);
-    D.pins.forEach(p => { new Image().src = `flags/circle/${p.c2}.svg`; });
     // the orange fills use 50m outlines, close enough to the tile coastlines at the zooms they are seen at
-    const introGeo = fetch("intro-50m.json").then(r => r.json()).then(G => {
-      G.features.forEach(f => { f.cc = f.properties.cc; f.geometry.coordinates = f.geometry.coordinates.map(pl => pl.map(fix)); }); return G; });
+    let introGeo = null;
+    const loadIntro = () => introGeo || (introGeo = fetch("intro-50m.json").then(r => r.json()).then(G => {
+      G.features.forEach(f => { f.cc = f.properties.cc; f.geometry.coordinates = f.geometry.coordinates.map(pl => pl.map(fix)); }); return G; }));
+    let globe = null, started = false;
+    startGlobe().then(g => {
+      // what only the flight needs waits until the globe is up, so it does not queue behind the globe's textures
+      loadIntro(); D.pins.forEach(p => { new Image().src = `flags/circle/${p.c2}.svg`; });
+      if (!g) { document.body.classList.add("flat"); map.invalidateSize(); map.setView([10, 150], 2, { animate: false }); lock(true); return; }
+      if (started) g.destroy(); else globe = g;
+    });
     const input = intro.querySelector("input"), list = intro.querySelector("ul");
     const cities = [{ name: D.city, country: "Australia", n: D.pins.length }];
     const render = () => {
@@ -238,17 +225,17 @@
     input.addEventListener("input", render);
     input.addEventListener("keydown", e => { if (e.key === "Enter") { const b = list.querySelector("button"); if (b) b.click(); } });
     input.focus();
-    let started = false;
     async function go() {
       if (started) return; started = true;
       history.replaceState(null, "", "#" + CITY);
-      document.body.classList.remove("searching");
+      document.body.classList.remove("searching", "flat");
       map.invalidateSize();
       map.setView([10, 150], small ? 1 : 2, { animate: false });
       document.getElementById("map").classList.add("pins-hidden");
       lock(true);
       intro.classList.add("gone");
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // the globe turns to the city as it fades, then the map's own intro runs from the world view beneath it
+      if (globe) { const g = globe, c = cityBounds.getCenter(); globe = null; await g.turnTo(c.lng, c.lat, 1000); setTimeout(() => g.destroy(), reduce ? 1000 : 0); }
       // the flight is Leaflet's own van Wijk path, eased in and out; every tile it will pass over is fetched while the
       // arcs draw, and tiles are refreshed every frame, so no zoom level arrives blank
       const size = map.getSize(), z0 = map.getZoom(), from = map.project(map.getCenter(), z0);
@@ -284,7 +271,7 @@
       });
       let fx = null;
       try {
-        const F = await introGeo;
+        const F = await loadIntro();
         fx = L.featureGroup().addTo(map);
         const canvas = L.canvas({ padding: .5 });
         const to = cityBounds.getCenter(), rad = Math.PI / 180;
