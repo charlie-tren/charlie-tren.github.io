@@ -34,9 +34,9 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 /* ---- masthead ---- */
 .top { height: var(--top); display: flex; align-items: center; gap: 12px; padding: 0 20px;
   border-bottom: 1px solid var(--rule); position: relative; z-index: 1100; background: var(--bg); }
-.masthead { margin: 0 auto 0 0; font: italic 800 26px/1 var(--display); letter-spacing: -.005em; }
-.masthead a { color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px; }
-.mark { width: 32px; height: 32px; flex: none; }
+.masthead { margin: 0 auto 0 0; font: italic 800 33px/1 var(--display); letter-spacing: -.005em; }
+.masthead a { color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; }
+.mark { width: 40px; height: 40px; flex: none; }
 .home, .theme-toggle {
   display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 15px; border: 1px solid var(--rule);
   border-radius: 999px; background: var(--bg); color: var(--ink); text-decoration: none; cursor: pointer;
@@ -115,13 +115,17 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 /* ---- map controls ---- */
 .map-toggle button { height: 34px; padding: 0 13px; border: 1px solid var(--rule); border-radius: 999px; background: var(--bg); color: var(--ink);
   font: 600 13px var(--sans); cursor: pointer; box-shadow: 0 1px 5px rgba(0,0,0,.15); }
-/* zoom: two round buttons that match the World pill */
-.leaflet-control-zoom.leaflet-bar { border: 0; box-shadow: none; background: none; display: flex; flex-direction: column; gap: 6px; }
-.leaflet-control-zoom.leaflet-bar a { width: 34px; height: 34px; border: 1px solid var(--rule); border-radius: 50%; background: var(--bg); color: var(--ink);
-  font: 500 19px/32px var(--sans); box-shadow: 0 1px 5px rgba(0,0,0,.15); }
-.leaflet-control-zoom.leaflet-bar a:first-child, .leaflet-control-zoom.leaflet-bar a:last-child { border-radius: 50%; }
-.leaflet-control-zoom.leaflet-bar a:hover { background: var(--hover); border-color: var(--ink); }
-.leaflet-control-zoom.leaflet-bar a.leaflet-disabled { color: var(--ink-faint); background: var(--bg); border-color: var(--rule); opacity: .6; }
+/* zoom: one joined stack bottom right above the credit; the third button fits the city again */
+.leaflet-control-zoom.leaflet-bar { display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden;
+  background: var(--bg); box-shadow: 0 1px 5px rgba(0,0,0,.15); }
+.leaflet-control-zoom.leaflet-bar a { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 0; background: var(--bg); color: var(--ink);
+  font: 500 19px/1 var(--sans); }
+.leaflet-control-zoom.leaflet-bar a + a { border-top: 1px solid var(--rule); }
+.leaflet-control-zoom.leaflet-bar a:first-child, .leaflet-control-zoom.leaflet-bar a:last-child { border-radius: 0; }
+.leaflet-control-zoom.leaflet-bar a:hover { background: var(--hover); }
+.leaflet-control-zoom.leaflet-bar a.leaflet-disabled { color: var(--ink-faint); background: var(--bg); opacity: .6; }
+.leaflet-control-zoom.leaflet-bar a:focus-visible { outline: 2px solid var(--ink); outline-offset: -3px; }
+.leaflet-control-zoom-fit svg { width: 18px; height: 18px; }
 
 /* ---- the search page: nothing but the search ---- */
 body.searching .app { visibility: hidden; }
@@ -161,7 +165,9 @@ body.searching .leaflet-control-attribution, body.flat .credit .gl { display: no
 @media (max-width: 760px) {
   :root { --top: 56px; }
   .top { padding: 0 14px; gap: 8px; }
-  .masthead { font-size: 21px; }
+  .masthead { font-size: 25px; }
+  .masthead a { gap: 9px; }
+  .mark { width: 30px; height: 30px; }
   .home, .theme-toggle { height: 32px; padding: 0 11px; font-size: 12px; }
   .app { flex-direction: column; height: auto; }
   .mapwrap { flex: none; height: 62vh; order: -1; }
@@ -207,7 +213,7 @@ body.searching .leaflet-control-attribution, body.flat .credit .gl { display: no
 .find::placeholder { color: var(--ink-faint); }
 /* nothing to drag or zoom while the intro plays or the world view is up */
 #map.locked .leaflet-control-zoom { display: none; }
-#map.pins-hidden .leaflet-top { display: none; }
+#map.pins-hidden .leaflet-top, #map.pins-hidden .leaflet-control-zoom { display: none; }
 /* how a pick is made: a disclosure under the count */
 .how { margin: 8px 0 0; font-size: 13px; color: var(--ink-soft); }
 .how summary { display: inline; cursor: pointer; color: var(--ink-faint); text-decoration: underline; text-underline-offset: 2px; list-style: none; }
@@ -229,7 +235,7 @@ body.searching .leaflet-control-attribution, body.flat .credit .gl { display: no
 /* phones: every tap target at least 40px */
 @media (max-width: 760px) {
   .home, .theme-toggle, .map-toggle button, .masthead a { height: 40px; }
-  .leaflet-control-zoom.leaflet-bar a { width: 40px; height: 40px; line-height: 38px; }
+  .leaflet-control-zoom.leaflet-bar a { width: 40px; height: 40px; }
   .filter button { box-sizing: border-box; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; }
   .linkish, .how summary { display: inline-flex; align-items: center; min-height: 40px; }
   .find { padding: 11px 14px; }

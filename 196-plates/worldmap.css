@@ -15,7 +15,7 @@
 .wm-key { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; padding: 0; border: 0; border-radius: 50%; background: transparent;
   pointer-events: none; outline: none; }
 .wm-key:focus-visible { background: #fff; box-shadow: 0 0 0 2px #0b1622; }
-.wm-names { display: flex; margin-top: calc(11px * var(--s)); font-size: max(11px, calc(14px * var(--s))); font-weight: 600; letter-spacing: .1em;
+.wm-names { display: flex; margin-top: calc(12px * var(--s)); font-size: max(13px, calc(17px * var(--s))); font-weight: 600; letter-spacing: .08em;
   text-transform: uppercase; color: var(--ink-soft, #a9adb4); }
 .wm-names span { min-width: max-content; padding-right: 14px; white-space: nowrap; }
 .wm-map { position: absolute; left: 0; display: block; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }

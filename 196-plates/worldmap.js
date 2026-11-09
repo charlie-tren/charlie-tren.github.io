@@ -2,7 +2,7 @@
    maths are inline. WorldMap.render(el, { mode, eaten, pins, city, onPick }) -> { destroy() }. */
 (function () {
   const RAD = Math.PI / 180, C = 150, CUT = C - 180, TOP = 75, BOT = -70.5, TOTAL = 196;
-  const COL = { eaten: "#17283a", city: "#a9bccd", none: "#f6f5f0", sea: "#dfe8ee", coast: "#7d93a8", coastW: .7, border: "#ffffff", borderW: .8 };
+  const COL = { eaten: "#17283a", city: "#b3c3d2", none: "#f7f6f2", sea: "#e4ebef", coast: "#4f6478", coastW: .8, border: "#6d8296", borderW: .6 };
   // UN members (plus the site's three) with no outline at 110m: a point to hover or tap
   const SMALL = { AND: [1.5, 42.5, "Andorra"], ATG: [-61.8, 17.1, "Antigua and Barbuda"], BHR: [50.5, 26, "Bahrain"], BRB: [-59.5, 13.2, "Barbados"],
     COM: [44.2, -12.2, "Comoros"], CPV: [-24, 16, "Cape Verde"], DMA: [-61.3, 15.4, "Dominica"], FSM: [158.2, 6.9, "Micronesia"], GRD: [-61.7, 12.1, "Grenada"],
@@ -51,8 +51,10 @@
     feats.forEach(f => { f.a3 = world.n3[f.id];
       f.polys = f.polys.map(p => p.map(r => f.id === "010" && Math.max(...r.map(q => q[0])) - Math.min(...r.map(q => q[0])) > 300 ? poleRing(r) : shiftRing(r))); });
     let l0 = Infinity, l1 = -Infinity;
-    feats.forEach(f => f.polys.forEach(p => p.forEach(r => r.forEach(([x, y]) => { if (y <= TOP && y >= BOT) { if (x < l0) l0 = x; if (x > l1) l1 = x; } }))));
-    return { feats, borders: borders.map(shiftLine), l0: l0 - .6, l1: l1 + .6 };
+    // the frame is the land's extent: Antarctica's strip runs off both edges and does not set it
+    feats.filter(f => f.id !== "010").forEach(f => f.polys.forEach(p => p.forEach(r => r.forEach(([x, y]) => { if (y <= TOP && y >= BOT) { if (x < l0) l0 = x; if (x > l1) l1 = x; } }))));
+    Object.values(SMALL).forEach(([x]) => { x = x < CUT ? x + 360 : x; if (x < l0) l0 = x; if (x > l1) l1 = x; });
+    return { feats, borders: borders.map(shiftLine), l0: l0 - 1.5, l1: l1 + 1.5 };
   }
 
   function render(el, o) {
@@ -73,7 +75,9 @@
       W = el.clientWidth; H = el.clientHeight; if (!W || !H) return;
       const span = (P.l1 - P.l0) * RAD, yT = my(TOP), yB = my(BOT);
       let k = W / span, mh = k * (yT - yB);
-      if (mh > H * .76) { k = H * .76 / (yT - yB); mh = H * .76; }
+      // fill the width unless that leaves the band too little room; then fit the height and centre
+      const minBand = Math.max(150, Math.min(240, H * .2));
+      if (mh > H - minBand) { k = (H - minBand) / (yT - yB); mh = H - minBand; }
       const mw = k * span, x0 = (W - mw) / 2;
       const pj = (x, y) => [x0 + k * (x - P.l0) * RAD, k * (yT - my(y))];
       const s = Math.max(.42, Math.min(1, (H - mh) / 309, W / 700));
@@ -82,13 +86,13 @@
       root.style.setProperty("--wm-s", s.toFixed(3));
 
       // the band: count and the three-state bar
-      // every figure is out of 196 and says what it counts; the headline's own figure is not repeated on the bar
+      // every figure is out of 196 and says what it counts
       const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
       const nC = o.pins.length, nNone = Math.max(0, TOTAL - nC - [...eaten].filter(a => !byCC[a]).length);
       const nE = three ? eaten.size : nC, inC = "In " + esc(o.city), notC = "Not in " + esc(o.city);
       const parts = three
-        ? [[eaten.size, PAL.eaten, "Eaten"], [nC - [...eaten].filter(a => byCC[a]).length, PAL.city, `${inC} <b>${nC}</b>`], [nNone, PAL.none, `${notC} <b>${nNone}</b>`]]
-        : [[nC, PAL.eaten, inC], [nNone, PAL.none, `${notC} <b>${nNone}</b>`]];
+        ? [[eaten.size, PAL.eaten, `Eaten <b>${eaten.size}</b>`], [nC - [...eaten].filter(a => byCC[a]).length, PAL.city, `${inC} <b>${nC}</b>`], [nNone, PAL.none, `${notC} <b>${nNone}</b>`]]
+        : [[nC, PAL.eaten, `${inC} <b>${nC}</b>`], [nNone, PAL.none, `${notC} <b>${nNone}</b>`]];
       root.innerHTML = `<div class="wm-band" style="top:${top0}px;height:${band}px"><div class="wm-count"><b>${nE}</b><span>of ${TOTAL} ${three ? "eaten" : "in " + esc(o.city)}</span></div>
         <div class="wm-bar"><div class="wm-track">${parts.map(([n, c], i) => `<i style="flex:${n};background:${c}"${i === parts.length - 1 ? ' class="gap"' : ""}></i>`).join("")}</div>
         <div class="wm-names">${parts.map(([n, , t]) => `<span style="flex:${n} 1 0">${t}</span>`).join("")}</div></div></div>

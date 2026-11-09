@@ -40,8 +40,14 @@
   themeBtn.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 
   // ---- map ----
-  const map = L.map("map", { zoomControl: true, attributionControl: true, zoomSnap: 1, worldCopyJump: false });
+  const map = L.map("map", { zoomControl: false, attributionControl: true, zoomSnap: 1, worldCopyJump: false });
   map.attributionControl.setPrefix(false);
+  // zoom sits bottom right above the credit; the third button fits the city again
+  const zoomCtl = L.control.zoom({ position: "bottomright" }).addTo(map);
+  const fitBtn = L.DomUtil.create("a", "leaflet-control-zoom-fit", zoomCtl.getContainer());
+  fitBtn.href = "#"; fitBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><circle cx="12" cy="12" r="2.2"/></svg>';
+  fitBtn.setAttribute("role", "button"); fitBtn.title = `Fit ${D.city}`; fitBtn.setAttribute("aria-label", `Fit ${D.city}`);
+  L.DomEvent.on(fitBtn, "click", e => { L.DomEvent.preventDefault(e); map.fitBounds(cityBounds, { padding: [30, 30] }); });
   const BASE = window.__BASE || { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' };
   const tiles = L.tileLayer(BASE.url, { maxZoom: 19, maxNativeZoom: BASE.max || 19, subdomains: BASE.sub || "abc", attribution: BASE.attribution, keepBuffer: 6, updateWhenIdle: false, updateWhenZooming: true }).addTo(map);
 
@@ -127,8 +133,8 @@
   map.on("popupopen", e => {
     const pp = e.popup, el = pp.getElement(), m = mapEl.getBoundingClientRect();
     const z = document.querySelector(".leaflet-control-zoom"), w = document.querySelector(".map-toggle");
-    const left = z && z.offsetWidth ? z.getBoundingClientRect().right - m.left + 8 : 24;
-    pp.options.autoPanPaddingTopLeft = [el.offsetWidth + left + 24 <= m.width ? left : 8, w && w.offsetWidth ? w.getBoundingClientRect().bottom - m.top + 8 : 24];
+    pp.options.autoPanPaddingTopLeft = [24, w && w.offsetWidth ? w.getBoundingClientRect().bottom - m.top + 8 : 24];
+    pp.options.autoPanPaddingBottomRight = [z && z.offsetWidth && el.offsetWidth + (m.right - z.getBoundingClientRect().left) + 32 <= m.width ? m.right - z.getBoundingClientRect().left + 8 : 24, 24];
     refit(pp);
     const img = el.querySelector(".card-flag img"); if (img && !img.complete) img.addEventListener("load", () => refit(pp), { once: true });
     const src = el.querySelector(".card-src"); if (src) src.addEventListener("toggle", () => refit(pp));

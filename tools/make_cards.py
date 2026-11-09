@@ -143,21 +143,8 @@ SITES = {
         "mark": "bookmark/favicon.svg",
         "assert_face": "400 16px 'Young Serif'",
     },
-    "196-plates": {
-        "name": "196 Plates",
-        "css": "196-plates/style.css",
-        "css_block": ':root[data-theme="dark"]',  # the page pins data-theme="dark" on <html> (rule 2)
-        "copy": ("196-plates/index.html", "og:description"),
-        "tokens": {"bg": "bg", "panel": "hover", "ink": "ink", "dim": "ink-soft",
-                   "faint": "ink-faint", "rule": "rule", "accent": "green"},
-        "fonts": "Playfair+Display:ital,wght@1,800",
-        "title_font": "'Playfair Display', Georgia, serif",
-        "title_style": "italic",
-        "title_weight": 800,
-        "body_font": "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-        "mark": "196-plates/favicon.svg",
-        "assert_face": "italic 800 16px 'Playfair Display'",
-    },
+    # 196-plates is not built here: its card (globe with the mark's face) is hand-built by
+    # opc-probe/site/yourmap/gen_og.py, which writes 196-plates/og-card.png and og-card-source.html.
 }
 SAFE = 160   # side margin: 1200 - 2 * 160 = 880, which survives a 1.4:1 centre crop
 
