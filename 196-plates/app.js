@@ -35,8 +35,8 @@
   const BOUNDS = [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]];
   const fitCamera = (w, h, pad = { top: 0, bottom: 0, left: 0, right: 0 }) => {
     const a = MC.fromLngLat(BOUNDS[0]), b = MC.fromLngLat(BOUNDS[1]), c = new MC((a.x + b.x) / 2, (a.y + b.y) / 2).toLngLat();
-    const z = Math.min(Math.log2((w - pad.left - pad.right - 60) / (512 * Math.abs(b.x - a.x))), Math.log2((h - pad.top - pad.bottom - 60) / (512 * Math.abs(b.y - a.y))));
-    return { center: [c.lng, c.lat], zoom: Math.floor(z), padding: pad };
+    const z = Math.min(Math.log2((w - pad.left - pad.right - 64) / (512 * Math.abs(b.x - a.x))), Math.log2((h - pad.top - pad.bottom - 64) / (512 * Math.abs(b.y - a.y))));
+    return { center: [c.lng, c.lat], zoom: z, padding: pad };
   };
 
   // ---- the intro decides how the map starts ----
@@ -432,7 +432,7 @@
     if (fresh) map.once("load", () => { limitWorld(); zoomState(); }); else { limitWorld(); zoomState(); }
     paint();
     if (pendingRow) { const [cc, b] = pendingRow; pendingRow = null; openRow(cc, b); }
-    else if (lost) find.focus({ preventScroll: true });
+    else if (lost && !phone()) find.focus({ preventScroll: true }); // a phone would raise its keyboard
   };
 
   // ---- a map's wiring: controls, pointer, pins and a watch on its WebGL context. It runs again on every rebuilt map. ----
@@ -449,7 +449,7 @@
     m.addControl(ac, "bottom-right");
     credit = ac._container; creditOpen = false; const cr = credit;
     cr.addEventListener("click", () => { creditOpen = !cr.classList.contains("maplibregl-compact-show"); }, true);
-    m.on("styledata", closeCredit); m.on("idle", closeCredit); closeCredit();
+    ["styledata", "sourcedata", "resize", "idle"].forEach(t => m.on(t, closeCredit)); closeCredit(); // MapLibre reopens it as sources change
     m.on("zoom", zoomState);
     m.addControl(ctl(zs), "bottom-right"); m.addControl(ctl(wb), "top-right");
     lastView.center = m.getCenter().toArray(); lastView.zoom = m.getZoom();
@@ -524,7 +524,8 @@
   input.addEventListener("keydown", e => {
     if (e.key === "Enter") { const b = list.querySelector("button"); if (b) b.click(); }
     else if (e.key === "Escape") { e.preventDefault(); show(false); } });
-  if (document.activeElement === document.body || !document.activeElement) input.focus(); else show(document.activeElement === input);
+  if (phone()) show(true); // the list without the keyboard
+  else if (document.activeElement === document.body || !document.activeElement) input.focus(); else show(document.activeElement === input);
   async function go(e) {
     if (started) return; started = true; introBusy = true;
     // the dive plays straight through, so it waits here until its imagery is in (12 s at most)
