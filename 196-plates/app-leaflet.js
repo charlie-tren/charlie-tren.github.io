@@ -37,7 +37,7 @@
   // ---- theme ----
   const themeBtn = document.getElementById("theme");
   const setTheme = t => { document.documentElement.dataset.theme = t; themeBtn.setAttribute("aria-pressed", t === "dark");
-    themeBtn.querySelector(".lbl").textContent = t === "dark" ? "Light" : "Dark"; store.set("196plates.theme", t); };
+    themeBtn.querySelector(".lbl").dataset.t = t === "dark" ? "Light" : "Dark"; store.set("196plates.theme", t); };
   setTheme(document.documentElement.dataset.theme || "dark");
   themeBtn.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 

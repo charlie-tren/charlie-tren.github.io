@@ -210,11 +210,12 @@ h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0
      analytics on every site. Braces are doubled because HEAD goes through .format().
      See site-stats/beacon. -->
 <script>(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2"}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
+<style>.theme-toggle .lbl[data-t]::after{content:attr(data-t)}</style>
 </head>
 <body>
 <div class="wrap">
   <div class="bar">
-    <button class="theme-toggle" id="tog" type="button" aria-label="Switch to light theme"><span class="dot" aria-hidden="true"></span><span class="lbl">Light</span></button>
+    <button class="theme-toggle" id="tog" type="button" aria-label="Switch to light theme"><span class="dot" aria-hidden="true"></span><span class="lbl" data-t="Light"></span></button>
     <a class="home" href="https://charlietrenorden.com/"><span class="back">&larr;</span>&nbsp;Other projects</a>
   </div>
   <h1 class="titled"><img class="face" src="../faces/thoreau.jpg" alt="" width="76" height="76" loading="lazy"><span>Henry David Thoreau</span></h1>
@@ -236,7 +237,7 @@ h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0
   (function(){
     var r=document.documentElement,b=document.getElementById("tog");
     function sync(){var t=r.getAttribute("data-theme")==="dark"?"Light":"Dark";
-      b.querySelector(".lbl").textContent=t;b.setAttribute("aria-label","Switch to "+t.toLowerCase()+" theme");}
+      b.querySelector(".lbl").dataset.t=t;b.setAttribute("aria-label","Switch to "+t.toLowerCase()+" theme");}
     sync();
     b.addEventListener("click",function(){
       var light=r.getAttribute("data-theme")!=="light";

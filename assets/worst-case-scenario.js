@@ -832,7 +832,7 @@
   /* The label names the theme you GET, not the one on screen. */
   function sync() {
     var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    lbl.textContent = next === "dark" ? "Dark" : "Light";
+    lbl.dataset.t = next === "dark" ? "Dark" : "Light";
     btn.setAttribute("aria-label", "Switch to " + next + " theme");
   }
   sync();

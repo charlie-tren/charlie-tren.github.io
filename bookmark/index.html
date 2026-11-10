@@ -376,6 +376,7 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
 </style>
 <script>/* Analytics, gated. Opt out with ?nostats=1; automation excluded via navigator.webdriver. */
 (function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'\x7b"token": "32b821209b5441a08df42ccf61c9e6c2", "spa": false\x7d');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
+<style>.theme-toggle .lbl[data-t]::after{content:attr(data-t)}</style>
 </head>
 <body>
 <div class="wrap">
@@ -388,7 +389,7 @@ footer{margin:52px 0 60px;padding-top:18px;border-top:1px solid var(--line);
         <path class="gut" d="M12 6.5v13.2"/>
       </svg><span class="wm">Bookmark<span class="dot">.</span></span></span>
     <div class="barright">
-      <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl">Dark</span></button>
+      <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl" data-t="Dark"></span></button>
       <a class="home" href="/"><span class="back" aria-hidden="true">&larr;</span>&nbsp;Other projects</a>
     </div>
   </div>
@@ -1072,7 +1073,7 @@ function showingDark(){
 }
 function labelTheme(){
   var next = showingDark() ? "light" : "dark";
-  document.getElementById("themeLbl").textContent =
+  document.getElementById("themeLbl").dataset.t =
     next.charAt(0).toUpperCase() + next.slice(1);
   document.getElementById("themeBtn")
     .setAttribute("aria-label", "Switch to " + next + " theme");
