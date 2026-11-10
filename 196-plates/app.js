@@ -533,8 +533,9 @@
   else if (document.activeElement === document.body || !document.activeElement) input.focus(); else show(document.activeElement === input);
   async function go(e) {
     if (started) return; started = true; introBusy = true;
-    // the dive plays straight through, so it waits here until its imagery is in (12 s at most)
-    if (I && I.progress && I.progress() < 1) {
+    // the dive plays straight through, so it waits here until the rest of its imagery will arrive in time (12 s at most)
+    const goNow = () => !I || (I.safe ? I.safe() : !I.progress || I.progress() >= 1);
+    if (!goNow()) {
       waiting = true; input.disabled = true;
       const b = e && e.currentTarget, n = b && b.querySelector(".n");
       let arc = null;
@@ -543,7 +544,7 @@
       const t1 = performance.now() + 12000;
       await new Promise(res => { const tick = () => { const p = I && I.progress ? I.progress() : 1;
         if (arc) arc.style.strokeDashoffset = 1 - p;
-        if (p >= 1 || performance.now() > t1) res(); else requestAnimationFrame(tick); }; tick(); });
+        if (p >= 1 || goNow() || performance.now() > t1) res(); else requestAnimationFrame(tick); }; tick(); });
       if (arc) { arc.style.strokeDashoffset = 0; await new Promise(r => setTimeout(r, 150)); }
     }
     history.replaceState(null, "", "#" + CITY);
