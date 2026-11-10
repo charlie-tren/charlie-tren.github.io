@@ -168,6 +168,10 @@ body.searching .leaflet-control-attribution, body.flat .credit .gl { display: no
 .search li button { all: unset; box-sizing: border-box; display: flex; justify-content: space-between; width: 100%; padding: 14px 20px; cursor: pointer; font-size: 16px; }
 .search li button:hover, .search li button:focus-visible { background: var(--hover); }
 .search li .n { color: var(--ink-faint); }
+.search li .n:has(.ring) { display: inline-flex; align-items: center; gap: 10px; }
+.search .ring { width: 16px; height: 16px; transform: rotate(-90deg); }
+.search .ring circle { fill: none; stroke: var(--rule); stroke-width: 2.5; }
+.search .ring .arc { stroke: var(--ink); stroke-dasharray: 1; stroke-dashoffset: 1; stroke-linecap: round; transition: stroke-dashoffset .2s linear; }
 .search li.soon { padding: 12px 20px; color: var(--ink-faint); font-size: 14px; border-top: 1px solid var(--rule); }
 
 @media (max-width: 760px) {

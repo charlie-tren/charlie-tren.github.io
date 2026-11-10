@@ -131,7 +131,7 @@
     const SHARP_TEX = (devicePixelRatio || 1) * R * Math.PI > 2600 ? "globe/day-4096.webp" : "globe/day-2048.webp";
     ready.then(() => { addRings();
       // while the globe spins: the first levels of the dive imagery, and the satellite tiles for the globe end of the dive
-      mosReady.then(() => { if (dead || !map.style) return; addMosaics(() => true); if (GO === null) { land = o.land(); start = map.getCenter().toArray(); buildCont(); } });
+      mosReady.then(() => { if (dead || !map.style) return; addMosaics(() => true); if (GO === null) { land = o.land(); start = map.getCenter().toArray(); buildCont(); prefetchCity(); } });
       if (!reduce) { const im = new Image(); im.src = SHARP_TEX; im.decode().then(() => { if (GO === null && !dead && map.style) map.getSource("day").updateImage({ url: SHARP_TEX }); }).catch(() => {}); } });
 
     // ---- the dive ----
@@ -153,10 +153,10 @@
     // each joins the map as a layer only about a second before the camera reaches its band, one a frame, and leaves once
     // the camera is past it, so the map carries a few dozen layers at a time rather than all of them
     const LEAD = 3.2, mosBlob = {}, mosFetchQ = [], mosLive = [];
-    const mosAdded = {}; let mosFetching = 0, mosNext = 0, mosOrder = null, mosAt = 0;
+    const mosAdded = {}, mosFail = {}; let mosFetching = 0, mosNext = 0, mosOrder = null, mosAt = 0, pathN = 0, pathDone = 0, built = false;
     const pump = () => { while (!dead && mosFetching < 6 && mosFetchQ.length) { const [i, j] = mosFetchQ.shift(); mosFetching++;
       fetch(`mosaic/${PROFILE}/${MOS[i].chunks[j].file}`).then(r => r.blob()).then(x => { mosBlob[i + "_" + j] = URL.createObjectURL(x); })
-        .catch(() => {}).finally(() => { mosFetching--; pump(); }); } };
+        .catch(() => { mosFail[i + "_" + j] = 1; }).finally(() => { mosFetching--; pump(); }); } };
     const addMosaics = which => { if (!MOS) return;
       if (!mosOrder) { mosOrder = []; MOS.forEach((L, i) => L.chunks.forEach((c, j) => mosOrder.push([i, j]))); }
       MOS.forEach((L, i) => { if (L.queued || !which(L)) return; L.queued = true; L.chunks.forEach((c, j) => mosFetchQ.push([i, j])); });
@@ -219,7 +219,7 @@
         return { center: [lon, lat], zoom: Z0 - .2 * Math.sin(Math.PI * s) + dive,
           padding: { top: lp.top * k, bottom: PADB * (1 - k) + lp.bottom * k, left: lp.left * k, right: lp.right * k } };
       };
-      pathPrefetch();
+      pathPrefetch(); built = true;
     };
     // the satellite tiles the dive will ask for, fetched as soon as the city is picked, in the order the camera needs them
     const pathPrefetch = () => {
@@ -232,7 +232,8 @@
           for (let y = Math.max(0, Math.floor((m.y - hh) * n)); y <= Math.min(n - 1, Math.floor((m.y + hh) * n)); y++) {
             const k = tz + "/" + ((x % n) + n) % n + "/" + y; if (!seen.has(k)) { seen.add(k); list.push([tz, ((x % n) + n) % n, y]); } }
       }
-      let i = 0; const next = () => { if (i >= list.length || dead) return; const [z, x, y] = list[i++]; fetch(satUrl(z, x, y)).catch(() => {}).finally(next); };
+      pathN = list.length; pathDone = 0;
+      let i = 0; const next = () => { if (i >= list.length || dead) return; const [z, x, y] = list[i++]; fetch(satUrl(z, x, y)).catch(() => {}).finally(() => { pathDone++; next(); }); };
       for (let k = 0; k < 6; k++) next();
     };
     // the city's OSM tiles, fetched the moment a city is picked so the cache has them when the camera arrives
@@ -250,7 +251,7 @@
     };
 
     // ---- one clock ----
-    let holdUsed = 0, lastT = null, t0 = null, lastNight = null, osmOn = false, baseIn = null, arrivedAt = null, cleaned = false, arrive, done;
+    let lastT = null, t0 = null, lastNight = null, osmOn = false, baseIn = null, arrivedAt = null, cleaned = false, arrive, done;
     const arrived = new Promise(r => { arrive = r; }), finished = new Promise(r => { done = r; });
     const clock = () => (performance.now() - t0) / 1000;
     function frame(T) {
@@ -305,8 +306,14 @@
     };
     ready.then(() => { if (t0 === null) { t0 = performance.now(); requestAnimationFrame(loop); } });
 
+    // share of the dive's imagery in the cache (a mosaic piece weighs about five satellite tiles)
+    const progress = () => { if (reduce || slow) return 1; if (!built) return 0;
+      let need = pathN, have = pathDone;
+      if (MOS) MOS.forEach((L, i) => { if (L.z0 - .45 >= land.zoom) return;
+        L.chunks.forEach((c, j) => { need += 5; if (mosBlob[i + "_" + j] || mosFail[i + "_" + j]) have += 5; }); });
+      return need ? Math.min(1, have / need) : 1; };
     return {
-      ready,
+      ready, progress,
       // the dive to the city; resolves once the camera is down
       go() {
         if (GO !== null) return arrived;

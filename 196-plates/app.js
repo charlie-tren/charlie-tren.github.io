@@ -507,7 +507,9 @@
   const cities = [{ name: D.city, country: "Australia", n: D.pins.length }];
   const box = intro.querySelector(".search");
   let open = false;
+  let waiting = false;
   const render = () => {
+    if (waiting) return;
     const q = input.value.trim().toLowerCase();
     const m = cities.filter(c => c.name.toLowerCase().startsWith(q)), hits = m.length ? m : cities;
     list.hidden = !open;
@@ -523,8 +525,21 @@
     if (e.key === "Enter") { const b = list.querySelector("button"); if (b) b.click(); }
     else if (e.key === "Escape") { e.preventDefault(); show(false); } });
   if (document.activeElement === document.body || !document.activeElement) input.focus(); else show(document.activeElement === input);
-  async function go() {
+  async function go(e) {
     if (started) return; started = true; introBusy = true;
+    // the dive plays straight through, so it waits here until its imagery is in (12 s at most)
+    if (I && I.progress && I.progress() < 1) {
+      waiting = true; input.disabled = true;
+      const b = e && e.currentTarget, n = b && b.querySelector(".n");
+      let arc = null;
+      if (n) { n.insertAdjacentHTML("beforeend", `<svg class="ring" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8"/><circle class="arc" cx="10" cy="10" r="8" pathLength="1"/></svg>`);
+        arc = n.querySelector(".arc"); b.setAttribute("aria-busy", "true"); }
+      const t1 = performance.now() + 12000;
+      await new Promise(res => { const tick = () => { const p = I && I.progress ? I.progress() : 1;
+        if (arc) arc.style.strokeDashoffset = 1 - p;
+        if (p >= 1 || performance.now() > t1) res(); else requestAnimationFrame(tick); }; tick(); });
+      if (arc) { arc.style.strokeDashoffset = 0; await new Promise(r => setTimeout(r, 150)); }
+    }
     history.replaceState(null, "", "#" + CITY);
     intro.classList.add("gone");
     // a click, tap or key from here on jumps to the end (not a wheel or pinch); armed after the event that started it
