@@ -6,7 +6,7 @@
 .wm-count { font-weight: 800; font-size: calc(160px * var(--s)); line-height: .74; letter-spacing: -.06em; }
 .wm-count span { font-size: calc(32px * var(--s)); font-weight: 500; letter-spacing: -.01em; color: var(--ink-faint, #8a9099); margin-left: calc(14px * var(--s)); }
 .wm-bar { margin-top: calc(32px * var(--s)); }
-.wm-track { display: flex; height: calc(10px * var(--s)); min-height: 7px; padding: 3px; border-radius: 5px; background: #dfe8ee; }
+.wm-track { display: flex; height: calc(16px * var(--s)); min-height: 11px; padding: 3px; border-radius: 5px; background: #dfe8ee; }
 .wm-track i { display: block; min-width: 2px; }
 .wm-track i:first-child { border-radius: 2px 0 0 2px; }
 .wm-track i.gap { margin-left: 3px; border-radius: 0 2px 2px 0; box-shadow: inset 0 0 0 1px rgba(23, 40, 58, .14); }
