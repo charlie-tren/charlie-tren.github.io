@@ -263,8 +263,6 @@
         return;
       }
       // the landing levels' pieces not yet in as the camera nears them: the ease waits for them, 0.6 s at most
-      if (MOS && arrivedAt === null && !reduce && holdUsed < .6 && T - GO > total - 1.8 && T - GO < total && lastT !== null
-        && !MOS.filter(L => L.z0 - .45 < land.zoom).slice(-3).every(L => L.chunks.every((c, j) => mosBlob[MOS.indexOf(L) + "_" + j]))) { const d = Math.min(T - lastT, .6 - holdUsed); GO += d; holdUsed += d; }
       lastT = T;
       const t = T - GO;
       halo.style.opacity = 1 - lin(t, 0, .6); sky.style.opacity = 1 - lin(t, TZ, TE - .4);
@@ -273,7 +271,7 @@
       // crossfade from the last half second of the dive, as soon as every OSM tile in view is in (or after 0.6 s more)
       const tc = (reduce ? 0 : total) - .5;
       if (t >= tc - .8 && !osmOn) { osmOn = true; map.moveLayer(o.osm, map.getLayer("rings") ? "rings" : below()); map.setLayoutProperty(o.osm, "visibility", "visible"); }
-      if (baseIn === null && t >= tc && osmOn && (!o.pinsReady || o.pinsReady()) && (map.isSourceLoaded(o.osm) || t - tc > .6)) baseIn = t;
+      if (baseIn === null && t >= tc && osmOn) baseIn = t; // never waits: the camera does not pause
       setG("hold", baseIn === null ? 1 : 1 - sm(lin(t, baseIn, baseIn + CF)));
       if (arrivedAt === null) {
         if (o.layoutAt) o.layoutAt(reduce ? 1 : sm(lin(t, TZ, TE)));
