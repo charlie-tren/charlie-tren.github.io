@@ -6,15 +6,14 @@ project's own repo, since most directories here are deploy targets.
 - [ ] **Employer exposure on the hub (external review, 11/11/2026).** **Charlie-only
   decision.** The homepage names him and links LinkedIn, which data brokers tie to
   Rochford. On the same site:
-  1. `index.html` "Also built" has two cards marked "Internal tool": Overlay &
-     Hedging Ops and Signal Pipelines. They describe Rochford's own operating model.
-     Recommended: remove both now (two `also-item is-int` divs, reversible from git).
-  2. `research/` publishes Buy and Hold calls with price targets, and
-     `position-record/` publishes his own FX trades (FX, FX). Both should
-     go past Rochford compliance under its personal-dealing and outside-activity policies.
-     Default: no change to the pages until compliance answers.
-  Fixed already: FX shown to four places, Expected labelled p.a. (`59b6093`), and the
-  Stride target taken from its PDF (`2e4fb57`).
+  1. Internal-tool cards: kept, with the two client-process phrases cut (11/11/2026).
+     Mention them to his director.
+  2. `research/` publishes Buy and Hold calls with price targets. Open question for
+     Rochford compliance under its personal-dealing and outside-activity policies.
+     Default: no change until compliance answers.
+  The personal FX trades came off the position record and out of this repo's history
+  on 11/11/2026. GitHub still serves the old commits by ID until Support purges them:
+  add this repo to the "Remove cached views" request in the item below.
 
 - [ ] **Point the Position Record trigger alert at an inbox that is read.**
   **07/10/2026: nothing to alert on for now.** Brent/WTI and Mastercard/Visa came

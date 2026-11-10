@@ -2,7 +2,7 @@ name: Refresh position record
 
 # The page states a live price and a distance to the stop for every open position,
 # and a stop-out closes itself off the daily bars - but only when build.py RUNS.
-# Until 20/09/2026 nothing ran it: FX traded through its stop on 14/09 and
+# Until 20/09/2026 nothing ran it: a position traded through its stop on 14/09 and
 # sat in Open for six days because the last build was a hand-run on 11/09.
 #
 # Daily, not weekdays: FX and index CFDs trade Sunday night AEST, so a Monday bar
