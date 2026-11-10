@@ -130,21 +130,26 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 .leaflet-control-zoom-fit svg { width: 18px; height: 18px; }
 
 /* ---- the search page: nothing but the search ---- */
-body.searching .app { visibility: hidden; }
+/* the map runs full bleed under the search (the globe, or without WebGL the flat OSM world), the list waits */
+body.searching .panel, body.searching .grip, body.searching .map-toggle, body.searching .zoomstack { visibility: hidden; }
+body.searching .mapwrap { position: fixed; inset: var(--top) 0 0 0; height: auto; background: #05070b; }
+body.searching #map { background: transparent; }
+html:has(body.searching), body.searching { overflow: hidden; }
+/* the dive's last second: the panel slides over the map's padded edge as the camera makes room for it, so landing resizes nothing visible */
+body.searching.diving .panel { visibility: visible; position: fixed; z-index: 5; pointer-events: none; left: 0; top: var(--top); bottom: 0; width: var(--panel);
+  background: var(--bg); will-change: transform; transform: translateX(calc((var(--k, 0) - 1) * 100%)); }
+@media (max-width: 760px) {
+  body.searching.diving .panel { width: auto; right: 0; top: calc(var(--top) + 62vh); overflow: hidden; transform: translateY(calc((1 - var(--k, 0)) * 100%)); }
+}
 .intro { position: fixed; inset: var(--top) 0 0 0; z-index: 1000; display: flex; align-items: flex-start; justify-content: center;
-  padding-top: 24vh; background: radial-gradient(ellipse at 50% 55%, #0c1424 0%, #070b14 45%, #030407 100%); transition: opacity .6s; }
-.intro.gone { opacity: 0; pointer-events: none; }
-.intro.globe-on { transition-duration: 1s; }
-.globe-sky, .globe-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.globe-gl { opacity: 0; transition: opacity .5s; }
-.intro.globe-on .globe-gl { opacity: 1; }
+  padding-top: 24vh; pointer-events: none; transition: opacity .6s; }
+.intro.gone { opacity: 0; }
+.intro .search, .intro .credit { pointer-events: auto; }
+.intro.gone .search { pointer-events: none; }
 .search { position: relative; z-index: 1; width: min(520px, calc(100vw - 32px)); }
-/* no WebGL: the OpenStreetMap world behind the search, full bleed and locked */
-body.flat .intro { background: transparent; pointer-events: none; }
-body.flat .search, body.flat .credit { pointer-events: auto; }
-body.searching.flat .app { visibility: visible; }
-body.searching.flat .panel, body.searching.flat .grip, body.searching .map-toggle { visibility: hidden; }
-body.searching.flat .mapwrap { position: fixed; inset: var(--top) 0 0 0; height: auto; }
+.intro-sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: opacity .3s; }
+.intro-halo { position: absolute; z-index: 2; pointer-events: none; border-radius: 50%;
+  background: radial-gradient(circle closest-side, rgba(120,175,255,0) 77%, rgba(120,175,255,.42) 80%, rgba(80,135,240,.14) 86%, rgba(50,90,210,0) 100%); }
 body.searching .leaflet-control-attribution, body.flat .credit .gl { display: none; }
 .credit { position: absolute; right: 10px; bottom: 10px; z-index: 2; max-width: calc(100% - 20px); font: 11px/22px var(--sans); color: rgba(236,234,228,.75); }
 .credit summary { list-style: none; width: 24px; height: 24px; margin-left: auto; display: grid; place-items: center; border-radius: 12px; cursor: pointer;
@@ -285,4 +290,39 @@ body.sheet-open .leaflet-control-zoom { display: none; }
 @media (max-width: 374px) {
   .theme-toggle .lbl, .home .lbl { display: none; }
   .home, .theme-toggle { width: 40px; padding: 0; justify-content: center; }
+}
+
+/* ---- MapLibre: the card, the zoom stack, the compact credit and the pins' keyboard stand-ins ---- */
+.maplibregl-popup.card .maplibregl-popup-content { padding: 0; width: 260px; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 26px rgba(0,0,0,.25);
+  background: var(--bg); color: var(--ink); font-family: var(--sans); }
+.maplibregl-popup.card.maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: var(--bg); }
+.maplibregl-popup.card .maplibregl-popup-close-button { top: 8px; right: 8px; width: 28px; height: 28px; padding: 0; display: grid; place-items: center; border-radius: 50%;
+  background: rgba(18,20,23,.72); color: #fff; font: 400 20px/1 var(--sans); }
+.maplibregl-popup.card .maplibregl-popup-close-button:hover, .maplibregl-popup.card .maplibregl-popup-close-button:focus { background: rgba(18,20,23,.92); color: #fff; }
+.maplibregl-popup.card .maplibregl-popup-content:focus { outline: none; }
+.zoomstack { display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--bg); box-shadow: 0 1px 5px rgba(0,0,0,.15); }
+.zoomstack button { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 34px; height: 34px; background: var(--bg); color: var(--ink);
+  font: 500 19px/1 var(--sans); cursor: pointer; }
+.zoomstack button + button { border-top: 1px solid var(--rule); }
+.zoomstack button:hover { background: var(--hover); }
+.zoomstack button:disabled { color: var(--ink-faint); background: var(--bg); opacity: .6; cursor: default; }
+.zoomstack button:focus-visible { outline: 2px solid var(--ink); outline-offset: -3px; }
+.zoomstack svg { width: 18px; height: 18px; }
+#map.locked .zoomstack, body.sheet-open .zoomstack { display: none; }
+.maplibregl-ctrl-attrib.maplibregl-compact { min-height: 24px; padding: 0 24px 0 0; border-radius: 12px; background: rgba(18,20,23,.6);
+  color: rgba(236,234,228,.78); font: 11px/24px var(--sans); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.maplibregl-ctrl-attrib.maplibregl-compact a { color: inherit; }
+.maplibregl-ctrl-attrib.maplibregl-compact-show { padding: 0 28px 0 10px; }
+.maplibregl-ctrl-attrib-button { width: 24px; height: 24px; background-color: transparent; background-repeat: no-repeat; background-position: center; filter: invert(1); opacity: .6; }
+.maplibregl-ctrl-attrib-button:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+.pin-keys { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.pin-key { position: absolute; left: -100px; top: -100px; transform: translate(-50%, -50%); padding: 0; border: 0; border-radius: 50%;
+  background: transparent; pointer-events: none; outline: none; }
+.pin-key:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #16191d; }
+#map.locked .pin-keys { visibility: hidden; }
+@media (max-width: 760px) {
+  .zoomstack button { width: 40px; height: 40px; }
+  .maplibregl-ctrl-attrib.maplibregl-compact { min-height: 40px; padding-right: 40px; border-radius: 20px; line-height: 1.5; }
+  .maplibregl-ctrl-attrib.maplibregl-compact-show { padding: 9px 44px 9px 12px; }
+  .maplibregl-ctrl-attrib-button { width: 40px; height: 40px; background-size: 30px; }
 }
