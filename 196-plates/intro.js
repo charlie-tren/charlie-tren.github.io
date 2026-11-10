@@ -348,7 +348,7 @@
     // the dive need not wait for everything: each piece still to come only has to arrive before the camera reaches its
     // level (the first mosaic level is 3.2 s in, the last 4.7 s), projected from the rate so far with a margin. A piece
     // that is late anyway leaves the level below it on screen, never a gap.
-    const MARGIN = .8, needT = {};
+    const MARGIN = 1.4, needT = {}; // 0.8 s let a phone on live 4G draw 2-4x the soft frames
     const zoomT = z => needT[z] !== undefined ? needT[z] : (needT[z] = (() => { for (let t = 0; t <= total; t += .05) if (contAt(t).zoom >= z) return t; return total; })());
     const levelT = i => zoomT(MOS[i].z0 - .45);
     const safe = () => { if (reduce || slow) return true; if (!built || !fetch0) return false;
