@@ -253,7 +253,9 @@ body.searching .leaflet-control-attribution, body.flat .credit .gl { display: no
 .credit summary::before { content: ""; position: absolute; inset: -8px; }
 /* phones: every tap target at least 40px */
 @media (max-width: 760px) {
-  .home, .theme-toggle, .map-toggle button, .masthead a { height: 40px; }
+  .map-toggle button, .masthead a { height: 40px; }
+  .home, .theme-toggle { height: 32px; position: relative; flex: none; white-space: nowrap; }
+  .home::after, .theme-toggle::after { content: ""; position: absolute; inset: -4px 0; }
   .leaflet-control-zoom.leaflet-bar a { width: 40px; height: 40px; }
   .filter { padding: 0; }
   .filter button { box-sizing: border-box; display: inline-flex; align-items: center; height: 40px; min-height: 40px; line-height: 40px; padding: 0 10px; }
@@ -294,7 +296,8 @@ body.sheet-open .leaflet-control-zoom { display: none; }
 #map.locked .leaflet-marker-pane { visibility: hidden; }
 @media (max-width: 374px) {
   .theme-toggle .lbl, .home .lbl { display: none; }
-  .home, .theme-toggle { width: 40px; padding: 0; justify-content: center; }
+  .home, .theme-toggle { width: 32px; padding: 0; justify-content: center; }
+  .home::after, .theme-toggle::after { inset: -4px; }
 }
 
 /* ---- MapLibre: the card, the zoom stack, the compact credit and the pins' keyboard stand-ins ---- */
