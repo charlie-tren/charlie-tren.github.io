@@ -23,6 +23,10 @@
   var el = function (id) { return document.getElementById(id); };
   var ws = null, room = null, myName = null, token = null;
   var beat = null, retry = null, tries = 0, paused = false;
+  /* When the room last said ANYTHING to us. A socket that has died quietly
+     still reports OPEN, so this timestamp - not readyState - is the only
+     honest evidence the connection is alive. */
+  var heard = 0;
   var last = null, serial = null, picked = null, swapping = false, pokeSeen = null;
 
   /* Identity that survives the socket. A phone that locks its screen, a tab left
@@ -53,9 +57,26 @@
   function fail(msg) { el("err").textContent = msg; }
   function note(msg) { el("tally").textContent = msg; }
 
+  /* Drop whatever socket we are holding and go straight for a new one.
+     Waiting for `onclose` is waiting forever when a socket is half-open:
+     no FIN ever arrives, so the browser never fires it. */
+  function revive() {
+    if (!room) return;
+    tries = 0;
+    open();
+  }
+
+  /* This used to return false in silence, and every caller ignored it, so a
+     tap on a card did nothing whatever and said nothing about why - which a
+     player cannot tell apart from the game being broken. Say so, and replace
+     the socket rather than leave it sitting there reporting OPEN. */
   function send(o) {
-    if (!ws || ws.readyState !== 1) return false;
-    try { ws.send(JSON.stringify(o)); return true; } catch (x) { return false; }
+    if (ws && ws.readyState === 1) {
+      try { ws.send(JSON.stringify(o)); return true; } catch (x) {}
+    }
+    note("Lost the room - reconnecting...");
+    revive();
+    return false;
   }
 
   function connect(codeIn, name) {
@@ -77,17 +98,26 @@
 
     ws.onopen = function () {
       tries = 0;
+      heard = Date.now();
       send({ t: "join", name: myName, token: token, icon: myIcon });
       /* The room answers "ping" from the runtime itself, so this keeps the
          socket warm without waking the Durable Object or costing anything. A
          round spends most of its life silent while people argue. */
       clearInterval(beat);
       beat = setInterval(function () {
-        if (ws && ws.readyState === 1) { try { ws.send("ping"); } catch (x) {} }
+        if (!ws || ws.readyState !== 1) return;
+        /* Sending a ping is half a heartbeat. The half that matters is
+           whether a pong came BACK: a phone that changes network or wakes
+           from sleep leaves a socket that still reports OPEN and swallows
+           everything put into it. Counting pings sent would read healthy
+           for ever. Two intervals of silence is a dead socket. */
+        if (Date.now() - heard > 60000) { revive(); return; }
+        try { ws.send("ping"); } catch (x) { revive(); }
       }, 25000);
     };
 
     ws.onmessage = function (e) {
+      heard = Date.now();
       if (e.data === "pong") return;
       var s;
       try { s = JSON.parse(e.data); } catch (x) { return; }
@@ -120,7 +150,12 @@
   function wake() {
     if (!room) return;
     paused = false;
-    if (!ws || ws.readyState === 3 || ws.readyState === 2) { tries = 0; open(); }
+    if (!ws || ws.readyState === 3 || ws.readyState === 2) { tries = 0; open(); return; }
+    /* readyState 1 is not proof of life, and this is the exact moment it
+       lies: a socket that died while the phone was asleep comes back still
+       claiming OPEN. Trusting it is what left a player tapping a card into
+       nothing. */
+    if (Date.now() - heard > 30000) revive();
   }
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "visible") wake();
