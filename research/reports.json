@@ -44,6 +44,7 @@
       "call": "Buy",
       "call_price": 79.09,
       "call_price_note": "Share Price, page 1",
+      "target": 123.83,
       "pdf": "/assets/research/stride-lrn-2026-08.pdf"
     },
     {
