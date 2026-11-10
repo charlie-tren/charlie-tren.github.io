@@ -153,13 +153,16 @@
     // each joins the map as a layer only about a second before the camera reaches its band, one a frame, and leaves once
     // the camera is past it, so the map carries a few dozen layers at a time rather than all of them
     const LEAD = 3.2, mosBlob = {}, mosFetchQ = [], mosLive = [];
-    let mosFetching = 0, mosNext = 0, mosOrder = null, mosAt = 0;
-    const pump = () => { while (!dead && mosFetching < (GO === null ? 2 : 6) && mosFetchQ.length) { const [i, j] = mosFetchQ.shift(); mosFetching++;
+    const mosAdded = {}; let mosFetching = 0, mosNext = 0, mosOrder = null, mosAt = 0;
+    const pump = () => { while (!dead && mosFetching < 6 && mosFetchQ.length) { const [i, j] = mosFetchQ.shift(); mosFetching++;
       fetch(`mosaic/${PROFILE}/${MOS[i].chunks[j].file}`).then(r => r.blob()).then(x => { mosBlob[i + "_" + j] = URL.createObjectURL(x); })
         .catch(() => {}).finally(() => { mosFetching--; pump(); }); } };
     const addMosaics = which => { if (!MOS) return;
       if (!mosOrder) { mosOrder = []; MOS.forEach((L, i) => L.chunks.forEach((c, j) => mosOrder.push([i, j]))); }
-      MOS.forEach((L, i) => { if (L.queued || !which(L)) return; L.queued = true; L.chunks.forEach((c, j) => mosFetchQ.push([i, j])); }); pump(); };
+      MOS.forEach((L, i) => { if (L.queued || !which(L)) return; L.queued = true; L.chunks.forEach((c, j) => mosFetchQ.push([i, j])); });
+      // in the order the camera needs them; a level the camera never reaches goes last
+      const key = i => !land || MOS[i].z0 - .45 < land.zoom ? i : 99 + i;
+      mosFetchQ.sort((p, q) => key(p[0]) - key(q[0]) || p[1] - q[1]); pump(); };
     const dropMosaics = () => { MOS = null; mosFetchQ.length = 0;
       mosLive.forEach(([, id]) => { if (map.getLayer(id)) map.removeLayer(id); if (map.getSource(id)) map.removeSource(id); }); mosLive.length = 0;
       Object.values(mosBlob).forEach(u => URL.revokeObjectURL(u));
@@ -169,14 +172,19 @@
       const now = performance.now(), z = map.getZoom();
       const zAhead = GO === null ? MOS[0].z1 - .01 : contAt(Math.min(total, T - GO + LEAD)).zoom;
       const due = GO === null ? now - mosAt > 45 : true;
-      for (let n = 0; n < 4 && due && mosNext < mosOrder.length; n++) { const [i, j] = mosOrder[mosNext], L = MOS[i], c = L.chunks[j], id = `mos${i}_${j}`;
-        const blob = mosBlob[i + "_" + j], needNow = L.z0 - .45 < z + .1;
+      // each piece joins once its blob is in (a late one never holds up the rest, and is never fetched a second time)
+      let n = 0;
+      for (let k = mosNext; k < mosOrder.length && n < 4 && due; k++) { const [i, j] = mosOrder[k], L = MOS[i], c = L.chunks[j], id = `mos${i}_${j}`;
+        if (L.z0 - .45 >= zAhead) break;
+        if (mosAdded[id]) { if (k === mosNext) mosNext++; continue; }
+        const blob = mosBlob[i + "_" + j]; if (!blob) continue;
+        if (L.z1 + .8 < z) { mosAdded[id] = 1; continue; } // the camera is past it
         if (n && L.z0 - .45 > z + .25) break; // a second piece in the same frame only when the camera is close to it
-        if (L.z0 - .45 < zAhead && (blob || needNow)) { mosAt = now; mosNext++;
-          map.addSource(id, { type: "image", url: blob || `mosaic/${PROFILE}/${c.file}`, coordinates: c.coords });
-          const mn = L.z0 - .45 + .4 * j / L.chunks.length; // each piece fades in over the level below it, which stays until it is whole
-          map.addLayer({ id, type: "raster", source: id, minzoom: mn, maxzoom: L.z1 + .8, paint: { "raster-opacity": ["interpolate", ["linear"], ["zoom"], mn, 0, mn + .8, 1], "raster-fade-duration": 0 } }, "night");
-          mosLive.push([i, id]); } else break; }
+        mosAdded[id] = 1; n++; mosAt = now; if (k === mosNext) mosNext++;
+        map.addSource(id, { type: "image", url: blob, coordinates: c.coords });
+        const mn = L.z0 - .45 + .4 * j / L.chunks.length; // each piece fades in over the level below it, which stays until it is whole
+        map.addLayer({ id, type: "raster", source: id, minzoom: mn, maxzoom: L.z1 + .8, paint: { "raster-opacity": ["interpolate", ["linear"], ["zoom"], mn, 0, mn + .8, 1], "raster-fade-duration": 0 } }, "night");
+        mosLive.push([i, id]); }
       if (GO !== null && mosLive.length && MOS[mosLive[0][0]].z1 < z - 1) { const [, id] = mosLive.shift(); map.removeLayer(id); map.removeSource(id); }
     };
     // share of the view not drawn at screen density: outside the active level, or its image not in yet (a measure, not a gate)
@@ -242,7 +250,7 @@
     };
 
     // ---- one clock ----
-    let t0 = null, lastNight = null, osmOn = false, baseIn = null, arrivedAt = null, cleaned = false, arrive, done;
+    let holdUsed = 0, lastT = null, t0 = null, lastNight = null, osmOn = false, baseIn = null, arrivedAt = null, cleaned = false, arrive, done;
     const arrived = new Promise(r => { arrive = r; }), finished = new Promise(r => { done = r; });
     const clock = () => (performance.now() - t0) / 1000;
     function frame(T) {
@@ -254,6 +262,10 @@
         if (lastNight === null || Math.abs(lon - lastNight) > .25) { lastNight = lon; const s = map.getSource("night"); if (s) s.setData(night(sunFor([lon, LAT0]))); }
         return;
       }
+      // the landing levels' pieces not yet in as the camera nears them: the ease waits for them, 0.6 s at most
+      if (MOS && arrivedAt === null && !reduce && holdUsed < .6 && T - GO > total - 1.8 && T - GO < total && lastT !== null
+        && !MOS.filter(L => L.z0 - .45 < land.zoom).slice(-3).every(L => L.chunks.every((c, j) => mosBlob[MOS.indexOf(L) + "_" + j]))) { const d = Math.min(T - lastT, .6 - holdUsed); GO += d; holdUsed += d; }
+      lastT = T;
       const t = T - GO;
       halo.style.opacity = 1 - lin(t, 0, .6); sky.style.opacity = 1 - lin(t, TZ, TE - .4);
       setG("nk", 1 - lin(t, 0, .8));
@@ -305,6 +317,7 @@
         if (MOS && !MOS[0].chunks.every((c, j) => mosBlob["0_" + j])) dropMosaics();
         GO = t0 === null ? 0 : clock();
         if (t0 === null) { t0 = performance.now(); requestAnimationFrame(loop); }
+        if (MOS) mosFetchQ.splice(0, mosFetchQ.length, ...mosFetchQ.filter(([i]) => MOS[i].z0 - .45 < land.zoom));
         prefetchCity(); buildCont();
         addMosaics(() => true); // the rest of the dive's levels on the pick
         return arrived;
