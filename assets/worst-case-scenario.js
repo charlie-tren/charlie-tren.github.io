@@ -27,6 +27,9 @@
      still reports OPEN, so this timestamp - not readyState - is the only
      honest evidence the connection is alive. */
   var heard = 0;
+  /* An action that may not have arrived, held to send once more on a fresh
+     socket, and the timer that decides it did not arrive. */
+  var pending = null, ackTimer = null;
   var last = null, serial = null, picked = null, swapping = false, pokeSeen = null;
 
   /* Identity that survives the socket. A phone that locks its screen, a tab left
@@ -70,13 +73,38 @@
      tap on a card did nothing whatever and said nothing about why - which a
      player cannot tell apart from the game being broken. Say so, and replace
      the socket rather than leave it sitting there reporting OPEN. */
-  function send(o) {
+  function send(o, again) {
     if (ws && ws.readyState === 1) {
-      try { ws.send(JSON.stringify(o)); return true; } catch (x) {}
+      try {
+        ws.send(JSON.stringify(o));
+        if (o.t !== "join") confirm(o, again);
+        return true;
+      } catch (x) {}
     }
+    lost(o, again);
+    return false;
+  }
+
+  /* A half-open socket accepts a send without complaint, so a tap made the
+     moment the network dropped vanished and the round said it was still
+     waiting on you. The room does not answer every message, but the runtime
+     answers "ping" on the same connection every time, so a ping straight
+     after an action proves the action had somewhere to go. */
+  function confirm(o, again) {
+    var asked = Date.now();
+    try { ws.send("ping"); } catch (x) {}
+    clearTimeout(ackTimer);
+    ackTimer = setTimeout(function () {
+      if (heard < asked) lost(o, again);
+    }, 4000);
+  }
+
+  /* Once only: a resend that also goes unanswered is left to the heartbeat,
+     rather than looping. */
+  function lost(o, again) {
+    pending = o && o.t !== "join" && !again ? o : null;
     note("Lost the room - reconnecting...");
     revive();
-    return false;
   }
 
   function connect(codeIn, name) {
@@ -121,7 +149,10 @@
       if (e.data === "pong") return;
       var s;
       try { s = JSON.parse(e.data); } catch (x) { return; }
-      if (s.t === "state") render(s);
+      if (s.t === "state") {
+        render(s);
+        if (pending) { var p = pending; pending = null; send(p, true); }
+      }
       /* The room refusing something, aimed at one person. Shown where the round
          talks, and cleared by the next state, so it cannot linger. */
       else if (s.t === "nope" && s.text) note(s.text);
