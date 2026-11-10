@@ -180,13 +180,13 @@
     // each joins the map as a layer only about a second before the camera reaches its band, one a frame, and leaves once
     // the camera is past it, so the map carries a few dozen layers at a time rather than all of them
     const LEAD = 3.2, mosBlob = {}, mosFetchQ = [], mosLive = [];
-    const mosAdded = {}, mosFail = {}; let fetch0 = 0, mosFetching = 0, mosNext = 0, mosOrder = null, mosAt = 0, pathN = 0, pathDone = 0, built = false;
+    const mosAdded = {}, mosFail = {}; let fetch0 = 0, bytesIn = 0, pathBytes = 0, mosFetching = 0, mosNext = 0, mosOrder = null, mosAt = 0, pathN = 0, pathDone = 0, built = false;
     // requests in flight (Pages is HTTP/2, so the browser's 6-per-host cap does not apply). At 6 the ~350 small requests
     // of the desktop dive were round-trip bound: the last arrived ~14 s after load, and a pick before that waited
     const PAR = 24;
     const pump = () => { if (!fetch0 && mosFetchQ.length) fetch0 = performance.now();
       while (!dead && mosFetching < PAR && mosFetchQ.length) { const [i, j] = mosFetchQ.shift(); mosFetching++;
-      fetch(`mosaic/${PROFILE}/${MOS[i].chunks[j].file}`).then(r => r.blob()).then(x => { mosBlob[i + "_" + j] = URL.createObjectURL(x); })
+      fetch(`mosaic/${PROFILE}/${MOS[i].chunks[j].file}`).then(r => r.blob()).then(x => { bytesIn += x.size; mosBlob[i + "_" + j] = URL.createObjectURL(x); })
         .catch(() => { mosFail[i + "_" + j] = 1; }).finally(() => { mosFetching--; pump(); }); } };
     const addMosaics = which => { if (!MOS) return;
       if (!mosOrder) { mosOrder = []; MOS.forEach((L, i) => L.chunks.forEach((c, j) => mosOrder.push([i, j]))); }
@@ -264,7 +264,7 @@
             const k = tz + "/" + ((x % n) + n) % n + "/" + y; if (!seen.has(k)) { seen.add(k); list.push([tz, ((x % n) + n) % n, y]); } }
       }
       pathN = list.length; pathDone = 0; if (!fetch0) fetch0 = performance.now();
-      let i = 0; const next = () => { if (i >= list.length || dead) return; const [z, x, y] = list[i++]; fetch(satUrl(z, x, y)).catch(() => {}).finally(() => { pathDone++; next(); }); };
+      let i = 0; const next = () => { if (i >= list.length || dead) return; const [z, x, y] = list[i++]; fetch(satUrl(z, x, y)).then(r => r.blob()).then(x => { bytesIn += x.size; pathBytes += x.size; }).catch(() => {}).finally(() => { pathDone++; next(); }); };
       for (let k = 0; k < PAR; k++) next();
     };
     // the city's OSM tiles, fetched the moment a city is picked so the cache has them when the camera arrives
@@ -348,17 +348,23 @@
     // the dive need not wait for everything: each piece still to come only has to arrive before the camera reaches its
     // level (the first mosaic level is 3.2 s in, the last 4.7 s), projected from the rate so far with a margin. A piece
     // that is late anyway leaves the level below it on screen, never a gap.
-    const MARGIN = 1.4, needT = {}; // 0.8 s let a phone on live 4G draw 2-4x the soft frames
+    const MARGIN = 1, needT = {};
     const zoomT = z => needT[z] !== undefined ? needT[z] : (needT[z] = (() => { for (let t = 0; t <= total; t += .05) if (contAt(t).zoom >= z) return t; return total; })());
     const levelT = i => zoomT(MOS[i].z0 - .45);
     const safe = () => { if (reduce || slow) return true; if (!built || !fetch0) return false;
-      const el = (performance.now() - fetch0) / 1000; let have = pathDone, q = pathN - pathDone;
-      if (MOS) MOS.forEach((L, i) => L.chunks.forEach((c, j) => { if (mosBlob[i + "_" + j] || mosFail[i + "_" + j]) have += 5; }));
-      if (el < .5 || have < 10) return progress() >= 1;
-      const rate = have / el; // units a second, averaged from the first request (slow start makes it conservative)
+      const el = (performance.now() - fetch0) / 1000;
+      if (el < 1 || !bytesIn) return progress() >= 1;
+      const rate = bytesIn / el, tileB = pathDone ? pathBytes / pathDone : 15e3; // bytes a second since the first request
+      let q = (pathN - pathDone) * tileB;
       if (q / rate > zoomT(3) - MARGIN) return false; // the satellite tiles for the globe end, needed from zoom 3 (pathPrefetch)
-      if (MOS) for (const [i, j] of mosOrder || []) { if (MOS[i].z0 - .45 >= land.zoom || mosBlob[i + "_" + j] || mosFail[i + "_" + j]) continue;
-        q += 5; if (q / rate > levelT(i) - MARGIN) return false; }
+      if (!MOS) return true;
+      const rest = (mosOrder || []).filter(([i, j]) => MOS[i].z0 - .45 < land.zoom && !mosBlob[i + "_" + j] && !mosFail[i + "_" + j]);
+      const b = ([i, j]) => MOS[i].chunks[j].b || 5 * tileB; // sizes from the manifest
+      // PAR pieces download at once and share the line: a piece lands after the ones ahead of it and about half of the
+      // ones beside it (an in-order estimate let an immediate pick on live 4G draw half its frames soft)
+      for (let k = 0; k < rest.length; k++) { q += b(rest[k]); let side = 0;
+        for (let m = k + 1; m < Math.min(rest.length, k + PAR); m++) side += b(rest[m]);
+        if ((q + side / 2) / rate > levelT(rest[k][0]) - MARGIN) return false; }
       return true; };
     return {
       ready, progress, safe,
