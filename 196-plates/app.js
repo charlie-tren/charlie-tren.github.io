@@ -96,7 +96,7 @@
   const setPanel = w => { w = Math.round(Math.min(Math.max(w, 240), Math.min(760, innerWidth - 320)));
     document.documentElement.style.setProperty("--panel", w + "px"); map.resize(); return w; };
   const saved = store.get("196plates.panel", null);
-  if (saved && !small) setPanel(saved);
+  if (saved) document.documentElement.style.setProperty("--panel", saved + "px"); // the CSS fits it to the window, then and on resize
   grip.addEventListener("pointerdown", e => {
     e.preventDefault(); grip.setPointerCapture(e.pointerId); grip.classList.add("drag");
     const move = ev => setPanel(ev.clientX);
@@ -111,7 +111,8 @@
 
   // ---- places you have eaten at, kept on this device (cc -> date) ----
   const KEY = "196plates.eaten." + CITY;
-  let eaten = store.get(KEY, {});
+  // a tick on a country this city no longer lists is set aside: opening it from the world map crashed
+  let eaten = Object.fromEntries(Object.entries(store.get(KEY, {}) || {}).filter(([cc]) => D.pins.some(p => p.cc === cc)));
   const isEaten = cc => !!eaten[cc];
   const eatenCount = document.getElementById("been");
   const paint = () => {
@@ -413,7 +414,11 @@
   // where the map will sit once the list is back: the intro lands the city in that part of the full-bleed map
   const landCam = () => {
     const w = mapEl.clientWidth, h = mapEl.clientHeight;
-    const pad = phone() ? { top: 0, left: 0, right: 0, bottom: Math.max(0, h - Math.round(innerHeight * .62)) }
+    // the landed map is 62vh tall; on a phone vh is the viewport without the address bar, not innerHeight, and the
+    // difference showed as a jump at the hand-off
+    const vh62 = (() => { const d = document.createElement("div"); d.style.cssText = "position:absolute;visibility:hidden;height:62vh";
+      document.body.appendChild(d); const v = d.getBoundingClientRect().height; d.remove(); return v; })();
+    const pad = phone() ? { top: 0, left: 0, right: 0, bottom: Math.max(0, h - Math.round(vh62)) }
       : { top: 0, bottom: 0, right: 0, left: Math.round(document.querySelector(".panel").getBoundingClientRect().right) };
     return fitCamera(w, h, pad);
   };

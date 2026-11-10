@@ -112,18 +112,23 @@
             area += Math.abs(a / 2); if (a && (!best || Math.abs(a) > best.a)) best = { a: Math.abs(a), xy: [cx / (3 * a), cy / (3 * a)] }; }
           return ringD(r); }).join("")).join("");
         const st = f.id === "010" ? "none" : state(f.a3), ix = items.length;
-        items.push({ a3: f.a3, name: nameOf(f.a3, f.name), xy: best ? best.xy : [0, 0], d, st, ant: f.id === "010" });
+        f.xy = best ? best.xy : [0, 0];
+        items.push({ a3: f.a3, name: nameOf(f.a3, f.name), xy: f.xy, d, st, ant: f.id === "010" });
         out.push(`<path d="${d}" fill="${PAL[st]}" stroke="${PAL.coast}" stroke-width="${PAL.coastW}" stroke-linejoin="round"${f.id === "010" ? "" : ` data-k="${ix}" data-cc="${f.a3}"${pickable(f.a3) ? " data-pick" : ""}`}/>`);
         f.area = area;
       });
       out.push(`<path d="${P.borders.map(l => "M" + l.map(([x, y]) => pj(x, y).map(v => v.toFixed(1)).join(",")).join("L")).join("")}" fill="none" stroke="${PAL.border}" stroke-width="${PAL.borderW}" stroke-linejoin="round"/>`);
-      // points for the countries too small to see: drawn when they are eaten or in the city, a hit area either way
+      // points for the countries too small to see: drawn when they are eaten or in the city, a hit area either way. The hit
+      // areas sit UNDER the countries: over sea they catch the tap, over land the country drawn there wins (they sat on
+      // top and turned a click on Italy into Vatican City, and on a phone Germany into Czechia)
       const dots = Object.entries(SMALL).map(([a3, [x, y]]) => ({ a3, xy: pj(x < CUT ? x + 360 : x, y), name: nameOf(a3) }))
-        .concat(P.feats.filter(f => f.area < 30 && f.id !== "010").map(f => ({ a3: f.a3, xy: items.find(i => i.a3 === f.a3).xy, name: nameOf(f.a3, f.name), tiny: true })));
+        .concat(P.feats.filter(f => f.area < 30 && f.id !== "010").map(f => ({ a3: f.a3, xy: f.xy, name: nameOf(f.a3, f.name), tiny: true })));
+      const hits = [];
       dots.forEach(dt => { const st = state(dt.a3), ix = items.length;
         items.push({ ...dt, st, dot: true });
-        const vis = st !== "none" && (!dt.tiny || st === "eaten") ? `<circle cx="${dt.xy[0].toFixed(1)}" cy="${dt.xy[1].toFixed(1)}" r="3.6" fill="${PAL[st]}" stroke="#fff" stroke-width="1.2"/>` : "";
-        out.push(`${vis}<circle cx="${dt.xy[0].toFixed(1)}" cy="${dt.xy[1].toFixed(1)}" r="8" fill="transparent" data-k="${ix}"${pickable(dt.a3) ? " data-pick" : ""}/>`); });
+        if (st !== "none" && (!dt.tiny || st === "eaten")) out.push(`<circle cx="${dt.xy[0].toFixed(1)}" cy="${dt.xy[1].toFixed(1)}" r="3.6" fill="${PAL[st]}" stroke="#fff" stroke-width="1.2" data-k="${ix}"${pickable(dt.a3) ? " data-pick" : ""}/>`);
+        hits.push(`<circle cx="${dt.xy[0].toFixed(1)}" cy="${dt.xy[1].toFixed(1)}" r="8" fill="transparent" data-k="${ix}"${pickable(dt.a3) ? " data-pick" : ""}/>`); });
+      out.splice(1, 0, ...hits);
       out.push(`<g class="wm-hl" pointer-events="none"></g>`);
       svg.innerHTML = out.join("");
 

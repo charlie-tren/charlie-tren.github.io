@@ -27,15 +27,38 @@
     // MapLibre 5.24's image queue throws on a request it has already cancelled; the next request starts the queue again
     addEventListener("unhandledrejection", e => { if (/reading 'signal'/.test(String(e.reason && e.reason.message))) e.preventDefault(); });
     // a tile that fails or is cancelled comes back empty: MapLibre mishandles a rejection after it has dropped the request
-    const BLANK = Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="), c => c.charCodeAt(0)).buffer;
+    // (fully transparent: the old pixel was half-opaque blue, and tinted every failed tile)
+    const BLANK = Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNgYGBgAAAABQABeqhXUAAAAABJRU5ErkJggg=="), c => c.charCodeAt(0)).buffer;
     const token = window.__satToken = {};
+    const tileLat = (y, z) => Math.atan(Math.sinh(Math.PI * (1 - 2 * y / 2 ** z))) / D2R;
     maplibregl.addProtocol("sat", async (req, abort) => {
-      const [z, x, y] = req.url.slice(6).split("/");
+      const [z, x, y] = req.url.slice(6).split("/").map(Number);
       try {
         const r = await fetch(satUrl(z, x, y), { signal: abort && abort.signal });
-        return { data: r.ok ? await r.arrayBuffer() : BLANK.slice(0) };
+        if (!r.ok) return { data: BLANK.slice(0) };
+        // EOX has no imagery of Antarctica, only flat white: tone it the way the globe texture is toned
+        if (tileLat(y + 1, z) < -55 && typeof OffscreenCanvas === "function") return { data: await iceTile(await r.blob(), x, y, z) };
+        return { data: await r.arrayBuffer() };
       } catch (e) { return { data: BLANK.slice(0) }; }
     });
+    // the same formula as tone_antarctica.py, so the tiles meet the texture without a seam
+    const ICE = lat => { const t = Math.min(1, Math.max(0, (-lat - 60) / 25)) ** .8; return [214 - 36 * t, 222 - 32 * t, 231 - 27 * t]; };
+    const iceNoise = (lon, lat) => 1 + .05 * (.5 * Math.sin(.13 * lon + .9 * Math.sin(.05 * lon)) * Math.cos(.31 * lat) + .5 * Math.sin(.047 * lon - .21 * lat + 1.7));
+    const iceTile = async (blob, x, y, z) => {
+      const bm = await createImageBitmap(blob), n = bm.width, cv = new OffscreenCanvas(n, n), cx = cv.getContext("2d");
+      cx.drawImage(bm, 0, 0); const im = cx.getImageData(0, 0, n, n), d = im.data, Z = 2 ** z;
+      for (let j = 0; j < n; j++) {
+        const lat = tileLat(y + (j + .5) / n, z), band = Math.min(1, Math.max(0, (-lat - 55) / 5)); if (!band) continue;
+        const c = ICE(lat);
+        for (let i = 0; i < n; i++) {
+          const k = 4 * (j * n + i), mn = Math.min(d[k], d[k + 1], d[k + 2]), w = band * Math.min(1, Math.max(0, (mn - 200) / 45)); if (!w) continue;
+          const f = iceNoise(((x + (i + .5) / n) / Z) * 360 - 180, lat);
+          d[k] += (c[0] * f - d[k]) * w; d[k + 1] += (c[1] * f - d[k + 1]) * w; d[k + 2] += (c[2] * f - d[k + 2]) * w;
+        }
+      }
+      cx.putImageData(im, 0, 0);
+      return (await cv.convertToBlob({ type: "image/jpeg", quality: .9 })).arrayBuffer();
+    };
     // the protocol outlives the intro by a few seconds, for tiles still in flight; a newer intro's protocol is left alone
     const dropProtocol = () => setTimeout(() => { if (window.__satToken === token) try { maplibregl.removeProtocol("sat"); } catch (e) {} }, 4000);
 
@@ -82,13 +105,14 @@
     // ---- the intro's layers, under the app's pins; everything that animates reads a global-state value ----
     const gs = k => ["global-state", k], clamp01 = e => ["min", 1, ["max", 0, e]];
     const setG = (k, v) => { v = Math.round(v * 1000) / 1000; if (!map.style) return; if (setG[k] !== v) { setG[k] = v; map.setGlobalStateProperty(k, v); } };
-    // the tile size that draws one texel per screen pixel; the dive asks one level finer, so while the next level loads
-    // the tiles standing in for it are still at screen density
-    const tileNeed = (devicePixelRatio || 1) >= 1.5 ? 128 : 256, tile = tileNeed / 2;
+    // the tile size that draws one texel per screen pixel; on a 1x screen the dive asks one level finer, so while the next
+    // level loads the tiles standing in for it are still at screen density. A high-density screen asks at screen density:
+    // one level finer there is 16x the tiles of 256px slots, and cost a phone ~45% more stalling (4+4 filmed runs, 10/11/2026)
+    const hiDpi = (devicePixelRatio || 1) >= 1.5, tileNeed = hiDpi ? 128 : 256, tile = hiDpi ? tileNeed : tileNeed / 2;
     const FADE_OUT = [Z0 + 1.6, Z0 + 3.2];
     let osmBefore = null;
     const below = () => map.getLayer("pins") ? "pins" : undefined;
-    const OWN = { layers: ["day", "eox", "night", "rings"], sources: ["day", "eox", "night", "rings"] };
+    const OWN = { layers: ["pole", "day", "eox", "night", "rings"], sources: ["day", "eox", "night", "rings"] };
     const setup = () => {
       Object.entries({ nk: 1, rr: -10, ra: 0, hold: 1 }).forEach(([k, v]) => setG(k, v));
       map.setLayerZoomRange(o.osm, 8, 24); map.setPaintProperty(o.osm, "raster-fade-duration", 0);
@@ -101,6 +125,9 @@
       map.setLayoutProperty(o.osm, "visibility", "none");
       { const ls = map.getStyle().layers, i = ls.findIndex(l => l.id === o.osm); osmBefore = ls[i + 1] && ls[i + 1].id; }
       map.setPaintProperty(o.osm, "raster-opacity", ["-", 1, gs("hold")]);
+      // the globe's surface under everything: it fills the caps past 85 degrees that no image reaches (a black dot at the
+      // south pole), in the toned ice colour of the texture's last row (tone_antarctica.py)
+      map.addLayer({ id: "pole", type: "background", maxzoom: 8, paint: { "background-color": "rgb(177,189,203)" } }, map.getStyle().layers[0].id);
       map.addLayer({ id: "day", type: "raster", source: "day", maxzoom: 10, paint: { "raster-opacity": ["interpolate", ["linear"], ["zoom"], 7, 1, 10, 0], "raster-fade-duration": 0 } }, below());
       // the satellite holds until the basemap under it has loaded (hold), then crossfades; it never leaves a blank
       map.addLayer({ id: "eox", type: "raster", source: "eox", maxzoom: 14, minzoom: Z0 + .6, paint: { "raster-opacity": 1, "raster-fade-duration": 0 } }, below());
@@ -138,7 +165,7 @@
     const lin = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
     const sm = x => x * x * (3 - 2 * x);
     const ripple = (a, b) => t => { const k = lin(t, a, b); return k >= 1 ? 1.1 : 1 - (1 - k) ** 1.6; };
-    const TT = 2.7, TZ = 2.0, TE = 5.3, RING = .55, CF = .7, PLATE_T = 1.0;
+    const TT = 2.7, TZ = 2.0, TE = 5.3, RING = .55, CF = .7, PLATE_T = 1.0, RIP0 = 1.7;
     let GO = null, start = null, total = TE, contAt = null, land = null, dead = false;
 
     // ---- the dive's satellite: one pre-built image per half zoom level, cut to the view along the fixed path to the city,
@@ -280,7 +307,9 @@
         else {
           const c = contAt(Math.min(t, total));
           map.jumpTo(c);
-          const r = ripple(.15, 2.0)(t); setG("rr", r * 180); setG("ra", RING * (1 - lin(r, .85, 1.05)));
+          // the ripple starts as the city turns to face the camera (from about 1.8 s): run any earlier and only its far
+          // side is ever seen, as stray arcs across the other hemisphere
+          const r = ripple(RIP0, RIP0 + 1.7)(t); setG("rr", r * 90); setG("ra", RING * (1 - lin(r, .85, 1.05)));
         }
       }
       if ((reduce || t >= total) && baseIn !== null && t >= baseIn + CF) {

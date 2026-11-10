@@ -63,7 +63,7 @@
   const setPanel = w => { w = Math.round(Math.min(Math.max(w, 240), Math.min(760, innerWidth - 320)));
     document.documentElement.style.setProperty("--panel", w + "px"); map.invalidateSize(); return w; };
   const saved = store.get("196plates.panel", null);
-  if (saved && !small) setPanel(saved);
+  if (saved) document.documentElement.style.setProperty("--panel", saved + "px"); // the CSS fits it to the window, then and on resize
   grip.addEventListener("pointerdown", e => {
     e.preventDefault(); grip.setPointerCapture(e.pointerId); grip.classList.add("drag");
     const move = ev => setPanel(ev.clientX);
@@ -78,7 +78,8 @@
 
   // ---- places you have eaten at, kept on this device (cc -> date) ----
   const KEY = "196plates.eaten." + CITY;
-  let eaten = store.get(KEY, {});
+  // a tick on a country this city no longer lists is set aside: opening it from the world map crashed
+  let eaten = Object.fromEntries(Object.entries(store.get(KEY, {}) || {}).filter(([cc]) => D.pins.some(p => p.cc === cc)));
   const isEaten = cc => !!eaten[cc];
   const eatenCount = document.getElementById("been");
   const paint = () => {
