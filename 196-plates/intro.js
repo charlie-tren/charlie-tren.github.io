@@ -181,7 +181,10 @@
     // the camera is past it, so the map carries a few dozen layers at a time rather than all of them
     const LEAD = 3.2, mosBlob = {}, mosFetchQ = [], mosLive = [];
     const mosAdded = {}, mosFail = {}; let mosFetching = 0, mosNext = 0, mosOrder = null, mosAt = 0, pathN = 0, pathDone = 0, built = false;
-    const pump = () => { while (!dead && mosFetching < 6 && mosFetchQ.length) { const [i, j] = mosFetchQ.shift(); mosFetching++;
+    // requests in flight (Pages is HTTP/2, so the browser's 6-per-host cap does not apply). At 6 the ~350 small requests
+    // of the desktop dive were round-trip bound: the last arrived ~14 s after load, and a pick before that waited
+    const PAR = +((location.search.match(/[?&]par=(\d+)/) || [])[1] || 24);
+    const pump = () => { while (!dead && mosFetching < PAR && mosFetchQ.length) { const [i, j] = mosFetchQ.shift(); mosFetching++;
       fetch(`mosaic/${PROFILE}/${MOS[i].chunks[j].file}`).then(r => r.blob()).then(x => { mosBlob[i + "_" + j] = URL.createObjectURL(x); })
         .catch(() => { mosFail[i + "_" + j] = 1; }).finally(() => { mosFetching--; pump(); }); } };
     const addMosaics = which => { if (!MOS) return;
@@ -261,7 +264,7 @@
       }
       pathN = list.length; pathDone = 0;
       let i = 0; const next = () => { if (i >= list.length || dead) return; const [z, x, y] = list[i++]; fetch(satUrl(z, x, y)).catch(() => {}).finally(() => { pathDone++; next(); }); };
-      for (let k = 0; k < 6; k++) next();
+      for (let k = 0; k < PAR; k++) next();
     };
     // the city's OSM tiles, fetched the moment a city is picked so the cache has them when the camera arrives
     const prefetchCity = () => {
