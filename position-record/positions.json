@@ -1,0 +1,62 @@
+{
+  "_comment": "Source of truth for the positions page. Hand-edited when a position is opened or closed; build.py adds the live price and derives R. The thesis is written AT ENTRY - a thesis composed at exit is marking your own homework, and the whole point of the page is that the claim was on the record before the outcome was.",
+  "_symbol_note": "Yahoo symbols. Japan 225 uses NIY=F, the yen Nikkei future, NOT ^N225: the spot index closes with Tokyo while CMC's cash CFD tracks the future, so ^N225 reads about 0.8% away from the platform and puts the stop distance visibly wrong.",
+  "_r_note": "1R is the distance from entry to the initial stop. Every outcome on this page is quoted in multiples of it, so positions of different sizes are comparable.",
+  "open": [
+    {
+      "name": "Japan 225",
+      "kind": "Index",
+      "symbol": "NIY=F",
+      "direction": "Long",
+      "entry_date": "2026-09-08",
+      "entry": 66332.94,
+      "stop": 64043.0,
+      "target": 70970.0,
+      "horizon_months": 6,
+      "dp": 0,
+      "ccy": "¥",
+      "carry_pct": -3.477,
+      "carry_dir": "charged",
+      "thesis": "AI chips are built and tested on Advantest and Tokyo Electron equipment. Price weighting makes the Nikkei the most concentrated way to own both.",
+      "catalyst": "The index had fallen 16% from its June high, then rose 2% on chip stocks in the session before this went on.",
+      "breaks": "Semiconductor capex slows and the two chip names fall. Nothing else in the index is big enough to offset them.",
+      "postmortem": "The thesis worked on a six-month horizon. The stop and target worked on a weekly one."
+    }
+  ],
+  "closed": [],
+  "watching": [
+    {
+      "name": "WTI / Diesel",
+      "kind": "Commodity pair",
+      "long": {
+        "name": "WTI crude",
+        "symbol": "CL=F"
+      },
+      "short": {
+        "name": "Heating oil",
+        "symbol": "HO=F"
+      },
+      "reading": "level",
+      "formula": {
+        "kind": "crack",
+        "product": "HO=F",
+        "crude": "CL=F",
+        "barrels": 42
+      },
+      "unit": "$/bbl",
+      "trigger_event": "A ceasefire, or a refinery restart, or Russia lifting the export ban",
+      "exit_days": 60,
+      "thesis": [
+        "On 6 October diesel cost $101 a barrel more than the crude it is made from, against a 2015-2024 average of $25. It touched $118 on 16 September, the highest in the 26 years Yahoo carries.",
+        "It is there because supply left: the Iran conflict took about 3mb/d of refining offline, Russia extended its diesel export ban to the end of 2026, and US distillate stocks are the lowest for the time of year since 1951.",
+        "Past spikes in the diesel margin ended when supply returned."
+      ],
+      "breaks": "Refining capacity stays offline into the northern winter and the crack holds above $100."
+    }
+  ],
+  "_watching_note": "A watched pair is not a position. Trigger and exit are written down before the entry so the entry cannot be talked into later. Now is built by build.py from a year of daily closes and is never typed. A row with trigger_event instead of trigger_pct is waiting on a headline rather than a level: it is never armed, and it raises no alert, because nothing it reads can fire it.",
+  "_thesis_note": "thesis: why the PRICE moves this way, or why the carry is not handed back in the exchange rate. Describing the carry is not a thesis. Caps: thesis 24 words, catalyst 22, breaks 20. See the position-thesis skill. A watched pair's thesis may be a list of up to three sentences, and it carries the measure and the costs, which have no slot of their own.",
+  "_dp_note": "dp is DISPLAY precision only. The stored entry and stop keep their full precision, so R and the distance to the stop are unaffected by it.",
+  "_ccy_note": "ccy is what the PRICE is quoted in: for a cross that is the quote currency (the second one), for an index the currency of the index.",
+  "_sources_note": "As at 10/09/2026. Policy rates on Bloomberg: UKBRBASE 3.75, SZLTDEP 0.00, MXONBR 6.50, FDTR 3.75. Advantest over the 10% cap at the 31/07 review, weight cut from 01/10 (Nikkei Inc). Mexican FDI and the 2026 USMCA joint review from press coverage, not a primary source - re-check before quoting."
+}

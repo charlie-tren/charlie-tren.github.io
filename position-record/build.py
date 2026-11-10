@@ -1,0 +1,464 @@
+"""Render positions/index.html from positions.json plus a live price for each holding.
+
+Run: python position-record/build.py
+
+WHY A BUILD STEP: the page states a live price and a distance to the stop. Typed by
+hand those are wrong within a day, and a stale price beside a stop level is worse than
+no price - it tells a reader a position is safe when it has already been taken out.
+
+GUARD BEFORE WRITE: a failed fetch reuses the previous quote from prices.json and the
+page says when it was taken. If there is no price at all for an open position the build
+exits non-zero and index.html is left untouched, because a blank distance-to-stop reads
+as "not close" rather than as "unknown".
+
+SYMBOLS: Japan 225 is NIY=F, the yen Nikkei future, not ^N225. The spot index closes
+with Tokyo while CMC's cash CFD tracks the future, so ^N225 measures about 0.8% away
+from the platform - enough to put the stop distance visibly wrong.
+"""
+import json, math, sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SOURCE = HERE / "positions.json"
+PRICES = HERE / "prices.json"
+TEMPLATE = HERE / "template.html.j2"
+OUT = HERE / "index.html"
+
+
+def usable(q):
+    p = q.get("price")
+    return isinstance(p, (int, float)) and not isinstance(p, bool) and math.isfinite(p) and p > 0
+
+
+def load_prices():
+    """A NaN that reached the file is not a price to reuse: drop it, so the
+    missing-price guard fires instead of republishing "nan" for ever."""
+    if PRICES.exists():
+        cache = json.loads(PRICES.read_text(encoding="utf-8"))
+        # Keep an entry that carries BARS but no price: that is a closed position,
+        # which is never priced, and its bars are what stop a failed fetch quietly
+        # re-opening it. Only the price itself is dropped when unusable.
+        out = {}
+        for k, v in cache.items():
+            if usable(v):
+                out[k] = v
+            elif v.get("bars"):
+                out[k] = {"bars": v["bars"]}
+            elif k.startswith("watch:") and isinstance(v.get("value"), (int, float))                     and math.isfinite(v["value"]):
+                out[k] = v                       # a watched pair's reading, not a price
+        return out
+    return {}
+
+
+def fetch(symbols, cache):
+    """Update the cache in place. A failure leaves the previous value alone."""
+    import yfinance as yf
+    fresh, kept = [], []
+    for sym in symbols:
+        try:
+            hist = yf.Ticker(sym).history(period="5d", auto_adjust=False)
+            if len(hist):
+                hist = hist.dropna(subset=["Close"])
+            if not len(hist):
+                raise ValueError("no rows")
+            # yfinance hands back a NaN close for a name it half-knows, and NaN
+            # survives round(), json.dump and every sum after it.
+            close = round(float(hist["Close"].iloc[-1]), 5)
+            if not math.isfinite(close) or close <= 0:
+                raise ValueError(f"close is {close!r}")
+            cache[sym] = {"price": close, "asof": str(hist.index[-1].date())}
+            fresh.append(sym)
+        except Exception as exc:                       # noqa: BLE001 - any failure is the same failure
+            print(f"  ! {sym}: {type(exc).__name__}: {exc}"[:120])
+            if sym in cache:
+                kept.append(sym)
+    return fresh, kept
+
+
+def stopped_out(p, bars):
+    """The session a position traded through its stop, or None.
+
+    Charlie, 11/09/2026: *"but if its gone below the stop then it's closed by
+    default"*. Correct, and it is derivable rather than something to be typed: a
+    stop is a resting order, so the exit price IS the stop and R is exactly -1.00.
+    Japan 225 sat in the open list at -1.32R for a day because nothing was watching.
+
+    THE LOW DATES IT, NOT THE CLOSE. A close through the stop proves the level
+    traded, but the level can be hit intraday on a session that closes back above
+    it - so a close-based test reports the stop-out late and prices it at a level
+    the position never saw. For a short it is the high.
+
+    ONLY SESSIONS FROM THE ENTRY DATE ON. Japan 225's stop of 64,043 was breached
+    on 02/09 and 03/09, six days BEFORE the position existed; without that filter
+    this would have closed the trade before it was opened, at a loss it never took.
+
+    `bars` is [(iso date, low, high)] ascending.
+    """
+    if not p.get("stop") or not p.get("entry_date"):
+        return None
+    long = p["direction"] == "Long"
+    for day, low, high in bars:
+        if day < p["entry_date"]:
+            continue
+        hit = (low is not None and low <= p["stop"]) if long else \
+              (high is not None and high >= p["stop"])
+        if hit:
+            return day
+    return None
+
+
+def bars_for(symbol, cache):
+    """Daily low and high since entry, cached beside the spot price.
+
+    Cached because a failed fetch must not silently un-close a position: the page
+    would go back to reporting a stopped-out trade as still running, which is the
+    fault this whole change exists to remove.
+    """
+    import yfinance as yf
+    try:
+        hist = yf.Ticker(symbol).history(period="3mo", auto_adjust=False)
+        bars = [(str(i.date()), None if math.isnan(r.Low) else round(float(r.Low), 5),
+                 None if math.isnan(r.High) else round(float(r.High), 5))
+                for i, r in hist.iterrows()]
+        if bars:
+            cache.setdefault(symbol, {})["bars"] = bars
+        return bars
+    except Exception as exc:                           # noqa: BLE001
+        print(f"  ! bars {symbol}: {type(exc).__name__}: {exc}"[:120])
+        return (cache.get(symbol) or {}).get("bars") or []
+
+
+def enrich(p, price):
+    """Derive everything the page shows from entry, stop and the live price.
+
+    R is the unit throughout: 1R is the entry-to-stop distance, so a reader can compare
+    a peso position with an index position without knowing the size of either, and the
+    page discloses no position size and no account balance.
+    """
+    sign = 1 if p["direction"] == "Long" else -1
+    risk = abs(p["entry"] - p["stop"])
+    row = dict(p)
+    row["move_pct"] = (price - p["entry"]) / p["entry"] * 100 * sign
+    row["r"] = (price - p["entry"]) * sign / risk if risk else None
+    row["price"] = price
+    # Distance left to the stop, as a share of the original risk. 1.00 means untouched,
+    # 0.00 means it is at the stop. This is the number that decides whether a position
+    # is still live in any meaningful sense, and it is not visible from the P&L.
+    row["stop_left"] = max(0.0, (price - p["stop"]) * sign / risk) if risk else None
+    row["reward_r"] = (p["target"] - p["entry"]) * sign / risk if risk and p.get("target") else None
+    # How far the target still is, in R. R itself covers the other end: a position
+    # at -1R is at its stop. Not a restatement of R, because each position has its
+    # own reward-to-risk, so two rows on the same R can have very different left
+    # to run.
+    row["to_target"] = (row["reward_r"] - row["r"]) if row["reward_r"] is not None else None
+    if p.get("entry_date"):                 # the ISO date stays on the row, for sorting
+        y, m, d = p["entry_date"].split("-")
+        row["opened"] = f"{d}/{m}/{y}"
+        row["opened_short"] = f"{d}/{m}/{y[2:]}"
+    row.update(track(row["r"], row["reward_r"]))
+    row["exp_cagr"] = expected_cagr(p)
+    row["cagr"] = None
+    if p.get("entry_date"):
+        held = _days(p["entry_date"], datetime.now(timezone.utc).date().isoformat())
+        row["held_days"] = held
+        row["cagr"] = annualise((price - p["entry"]) / p["entry"] * sign, held)
+    return row
+
+
+#: Below this many days an annualised return is an artefact of the exponent, not a
+#: property of the trade. Japan 225 lost 3.45% in two sessions, which annualises to
+#: MINUS 99.8% - a number that describes the compounding maths and says nothing about
+#: the position. The cell shows a dash instead, because a plausible wrong figure in a
+#: percent column is worse than an obvious gap.
+CAGR_MIN_DAYS = 30
+
+
+def annualise(ret, days):
+    """A simple return over `days`, compounded to a year. None when too short to mean
+    anything, and None rather than a crash when the return wipes out the stake."""
+    if ret is None or not days or days < CAGR_MIN_DAYS:
+        return None
+    if ret <= -1:
+        return -1.0
+    return (1.0 + ret) ** (365.0 / days) - 1.0
+
+
+def expected_cagr(p):
+    """The move to target annualised over the stated horizon, PLUS carry.
+
+    Charlie's call, 11/09/2026, and it is the right one for this book: a carry trade's
+    target can be worth less than the carry it pays a year, so a price-only figure
+    would report the smaller half of the expected return and rank a carry trade
+    below a directional one for the wrong reason.
+
+    Needs `horizon_months`. Returns None without it rather than assuming a horizon -
+    the whole point of recording one is that the Japan 225 post-mortem found a
+    six-month thesis carried on weekly risk parameters, and a guessed horizon would
+    hide exactly that mismatch again.
+    """
+    months = p.get("horizon_months")
+    if not months or not p.get("target") or not p.get("entry"):
+        return None
+    sign = 1 if p["direction"] == "Long" else -1
+    price_ret = (p["target"] - p["entry"]) / p["entry"] * sign
+    years = months / 12.0
+    if price_ret <= -1:
+        return None
+    price_cagr = (1.0 + price_ret) ** (1.0 / years) - 1.0
+    return price_cagr + (p.get("carry_pct") or 0.0) / 100.0
+
+
+def track(r, reward_r):
+    """Where entry and the current price sit on a stop-to-target track, as percents.
+
+    IN R-SPACE, not in price. The stop is -1R by construction and the target is a
+    fixed R, so one track carries entry, stop, target and distance-to-target at once -
+    and a short needs no inversion, because the left end is the losing end for both
+    directions. Plotting price would put a short's target to the LEFT of its stop and
+    invite exactly the misreading the R unit exists to prevent.
+    """
+    if r is None or reward_r is None or reward_r <= -1:
+        return {"pct_now": None, "pct_entry": None}
+    span = reward_r + 1                       # -1R .. +reward_r
+    return {"pct_now": max(0.0, min(100.0, (r + 1) / span * 100)),
+            "pct_entry": 1 / span * 100}
+
+
+def shut_row(p):
+    """A closed position, with R measured to the EXIT rather than to a live price.
+
+    R is derived here and never read from the file. A typed R is a number that can
+    disagree with the entry, stop and exit sitting beside it, and on a page whose
+    whole claim is the record it is the one figure nobody could check.
+    """
+    for field in ("exit", "exit_date"):
+        if p.get(field) in (None, ""):
+            sys.exit(f"ERROR: {p['name']} is closed but has no {field}.")
+    # A stop-out is priced AT the stop by construction, so R must come out at -1.00.
+    # Asserted rather than trusted: a derivation that quietly disagreed with the unit
+    # the page is quoted in would be worse than no derivation.
+    if p.get("stopped") and abs(p["exit"] - p["stop"]) > 1e-9:
+        sys.exit(f"ERROR: {p['name']} is marked stopped but exited away from its stop.")
+    sign = 1 if p["direction"] == "Long" else -1
+    risk = abs(p["entry"] - p["stop"])
+    row = dict(p)
+    row["r"] = (p["exit"] - p["entry"]) * sign / risk if risk else None
+    row["move_pct"] = (p["exit"] - p["entry"]) / p["entry"] * 100 * sign
+    row["reward_r"] = (p["target"] - p["entry"]) * sign / risk if risk and p.get("target") else None
+    row["to_target"] = None                   # it is over; there is no distance left
+    row["price"] = p["exit"]
+    for key, src in (("opened", "entry_date"), ("closed", "exit_date")):
+        y, m, d = p[src].split("-")
+        row[key] = f"{d}/{m}/{y}"
+        row[key + "_short"] = f"{d}/{m}/{y[2:]}"
+    held = _days(p["entry_date"], p["exit_date"])
+    row["held"] = f"{held} day{'s' if held != 1 else ''}"
+    row["held_days"] = held
+    row["exp_cagr"] = expected_cagr(p)
+    row["cagr"] = annualise((p["exit"] - p["entry"]) / p["entry"] * sign, held)
+    row.update(track(row["r"], row["reward_r"]))
+    return row
+
+
+def crack_now(w, cache):
+    """A refining crack in dollars a barrel: product x barrels, less the crude.
+
+    A LEVEL, not a ratio against its own mean, because a crack has a meaning of its
+    own - $105 a barrel says something a reader can check against the $25 the last
+    decade averaged, where "+2.1% vs its mean" says nothing. Its row is waiting on a
+    headline rather than a level, so the number is context and never a trigger.
+    """
+    import math
+    import yfinance as yf
+    f = w["formula"]
+    key = f"watch:{f['product']}-{f['crude']}"
+    try:
+        prod = yf.Ticker(f["product"]).history(period="6mo", auto_adjust=False)["Close"]
+        crude = yf.Ticker(f["crude"]).history(period="6mo", auto_adjust=False)["Close"]
+        both = prod.to_frame("p").join(crude.to_frame("c"), how="inner").dropna()
+        if both.empty:
+            raise ValueError("no overlapping sessions")
+        value = round(float(both["p"].iloc[-1] * f["barrels"] - both["c"].iloc[-1]), 1)
+        if not math.isfinite(value):
+            raise ValueError(f"crack is {value!r}")
+        cache[key] = {"value": value, "asof": str(both.index[-1].date())}
+    except Exception as exc:                           # noqa: BLE001
+        print(f"  ! {key}: {type(exc).__name__}: {exc}"[:120])
+    return cache.get(key)
+
+
+def ratio_now(w, cache):
+    """Where a watched pair's price ratio sits against its own mean, in percent.
+
+    log(long / short) over the last `window_days` sessions, minus its mean over the
+    same window. Negative means the long leg has lagged the short leg. BUILT, never
+    typed: the number moves every session, and the whole point of publishing a
+    trigger is that the reading beside it is current.
+
+    Cached under "watch:<long>/<short>" with the session it was taken from, so a
+    failed fetch republishes the last reading with its date rather than a blank.
+    """
+    import math
+    import yfinance as yf
+    key = f"watch:{w['long']['symbol']}/{w['short']['symbol']}"
+    try:
+        n = int(w["window_days"])
+        a = yf.Ticker(w["long"]["symbol"]).history(period="2y", auto_adjust=True)["Close"]
+        b = yf.Ticker(w["short"]["symbol"]).history(period="2y", auto_adjust=True)["Close"]
+        both = a.to_frame("a").join(b.to_frame("b"), how="inner").dropna().tail(n)
+        if len(both) < n * 0.9:
+            raise ValueError(f"only {len(both)} sessions for a {n}-session window")
+        ratio = (both["a"] / both["b"]).map(math.log)
+        value = round(float(ratio.iloc[-1] - ratio.mean()) * 100, 2)
+        if not math.isfinite(value):
+            raise ValueError(f"ratio is {value!r}")
+        cache[key] = {"value": value, "asof": str(both.index[-1].date())}
+    except Exception as exc:                           # noqa: BLE001
+        print(f"  ! {key}: {type(exc).__name__}: {exc}"[:120])
+    return cache.get(key)
+
+
+def watch_row(w, reading):
+    """A watched item, with the live reading beside whatever it is waiting for.
+
+    Two kinds. A PAIR carries `trigger_pct`, a level its ratio is measured against,
+    and arms itself when the reading goes through it. An EVENT carries
+    `trigger_event`, a sentence, and can never arm: no number it reads decides it,
+    so a reading beside it is context and the alert must stay silent. Writing that
+    as `armed=False` rather than leaving the key off keeps every consumer - the
+    page, the alert - on one shape.
+    """
+    row = dict(w)
+    row["now_pct"] = reading["value"]
+    row["asof"] = reading["asof"]
+    row["is_event"] = bool(w.get("trigger_event"))
+    if row["is_event"]:
+        row["armed"] = False
+        return row
+    # Armed when the reading is through the trigger, on the trigger's own side.
+    row["armed"] = (reading["value"] <= w["trigger_pct"]) if w["trigger_pct"] < 0                    else (reading["value"] >= w["trigger_pct"])
+    return row
+
+
+def _days(a: str, b: str) -> int:
+    from datetime import date
+    return (date.fromisoformat(b) - date.fromisoformat(a)).days
+
+
+def main():
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+    try:
+        from jinja2 import Markup
+    except ImportError:          # jinja2 >= 3.1 moved it back to markupsafe
+        from markupsafe import Markup
+
+    data = json.loads(SOURCE.read_text(encoding="utf-8"))
+    # A POSITION IS CLOSED BECAUSE IT HAS AN EXIT, not because it was typed into the
+    # other array. Charlie closes one by adding exit_date, exit and postmortem to the
+    # entry where it already sits; this moves it. Keeping the two lists as the source
+    # of truth meant cutting an object from one array and pasting it into another by
+    # hand, which is a step that can be half-done - and a position left in `open`
+    # with an exit on it would have been priced live and reported as still running.
+    cache = load_prices()
+    both = list(data.get("open") or []) + list(data.get("closed") or [])
+    # A STOP-OUT CLOSES ITSELF. Derived before the split, so a position that traded
+    # through its stop lands in Closed on the same run rather than waiting for
+    # someone to type an exit. A hand-entered exit_date always wins: Charlie closing
+    # early, or moving a stop the page does not know about, must not be overwritten
+    # by a derivation.
+    for p in both:
+        if p.get("exit_date"):
+            continue
+        day = stopped_out(p, bars_for(p["symbol"], cache))
+        if day:
+            p["exit_date"] = day
+            p["exit"] = p["stop"]
+            p["stopped"] = True
+            print(f"  stop-out: {p['name']} traded through {p['stop']} on {day}")
+    openp = [p for p in both if not p.get("exit_date")]
+    closed = [p for p in both if p.get("exit_date")]
+    names = [p["name"] for p in both]
+    if len(set(names)) != len(names):
+        dupe = sorted({n for n in names if names.count(n) > 1})
+        sys.exit(f"ERROR: the same position appears twice: {', '.join(dupe)}.")
+
+    symbols = sorted({p["symbol"] for p in openp})
+    fresh, kept = fetch(symbols, cache)
+    print(f"  {len(fresh)} fetched, {len(kept)} reused from cache")
+
+    # A USABLE PRICE, not merely a key. bars_for() creates a bars-only entry for
+    # every open symbol, so `s not in cache` silently stopped being able to fire and
+    # the next line raised KeyError instead of the guard's message.
+    missing = [s for s in symbols if not usable(cache.get(s) or {})]
+    if missing:
+        sys.exit(f"ERROR: no price at all for {missing}. index.html left untouched.")
+
+    rows = [enrich(p, cache[p["symbol"]]["price"]) for p in openp]
+    for r, p in zip(rows, openp):
+        r["asof"] = cache[p["symbol"]]["asof"]
+    rows.sort(key=lambda r: r["entry_date"], reverse=True)
+
+    shut = sorted((shut_row(c) for c in closed),
+                  key=lambda c: c["exit_date"], reverse=True)
+
+    # A watched pair is not a position: no entry, no stop, no R. What it carries is
+    # a trigger written down in advance and a reading against it, and the reading is
+    # subject to the same guard as a price - stale with its date beats blank.
+    watch = []
+    for w in data.get("watching") or []:
+        reading = crack_now(w, cache) if w.get("reading") == "level" else ratio_now(w, cache)
+        if not reading:
+            sys.exit(f"ERROR: no reading at all for {w['name']}. index.html left untouched.")
+        watch.append(watch_row(w, reading))
+
+    def px(v, dp, ccy=""):
+        """A letter code needs a space before the digits; a glyph does not. CHF1.10
+        reads as a typo, CHF 1.10 reads as a price."""
+        gap = " " if ccy[-1:].isalpha() else ""
+        return f"{ccy}{gap}{v:,.{int(dp)}f}"
+
+    def rail(p):
+        """The stop-to-target track, as markup. Empty when the geometry is unknown.
+
+        Built here rather than in CSS because the two positions on it are data: a
+        percentage along the track cannot be expressed as a class.
+        """
+        if p.get("pct_now") is None:
+            return Markup("")
+        cls = "up" if (p.get("r") or 0) >= 0 else "dn"
+        now, ent = p["pct_now"], p["pct_entry"]
+        lo, hi = sorted((ent, now))
+        ends = (f'<span class="lo">{px(p["stop"], p["dp"], p["ccy"])}<i>stop</i></span>'
+                f'<span class="hi">{px(p["target"], p["dp"], p["ccy"])}<i>target</i></span>')
+        return Markup(
+            f'<div class="rail" aria-hidden="true">'
+            f'<span class="trk"></span>'
+            f'<span class="fil {cls}" style="left:{lo:.2f}%;width:{hi - lo:.2f}%"></span>'
+            f'<span class="tk" style="left:{ent:.2f}%"></span>'
+            f'<span class="dot {cls}" style="left:{now:.2f}%"></span>'
+            f'</div><div class="ends">{ends}</div>')
+
+    env = Environment(loader=FileSystemLoader(HERE), autoescape=select_autoescape(["html"]))
+    def pc(v):
+        """A signed percent, or an en-rule when the figure does not exist. Never a
+        zero: a blank CAGR means "too short to annualise" or "no horizon recorded",
+        and 0.0% would read as a measured flat return."""
+        return "-" if v is None else f"{v * 100:+.1f}%"
+
+    env.filters["px"] = px
+    env.filters["pc"] = pc
+    env.globals["rail"] = rail
+    html = env.get_template(TEMPLATE.name).render(
+        rows=rows,
+        closed=shut,
+        watching=watch,
+        built=datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M"),
+    )
+    OUT.write_text(html, encoding="utf-8", newline="\n")
+    PRICES.write_text(json.dumps(cache, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8", newline="\n")
+    print(f"  wrote {OUT.relative_to(HERE.parent)} - {len(rows)} open, {len(shut)} closed, {len(watch)} watched")
+
+
+if __name__ == "__main__":
+    main()
