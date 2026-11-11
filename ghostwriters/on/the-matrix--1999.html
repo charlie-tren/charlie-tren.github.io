@@ -52,6 +52,7 @@ a{color:inherit}
   padding:.42rem .82rem;border:1px solid var(--rule);border-radius:999px;background:transparent;
   color:var(--dim);font:500 12.5px/1 var(--sans);letter-spacing:.02em;text-transform:none}
 .theme-toggle .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.theme-toggle .lbl[data-t]::after{content:attr(data-t)}
 .theme-toggle:hover{color:var(--ink);border-color:var(--accent)}
 h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0 .5rem;
   letter-spacing:-.01em;text-wrap:balance}
@@ -210,7 +211,6 @@ h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0
      analytics on every site. Braces are doubled because HEAD goes through .format().
      See site-stats/beacon. -->
 <script>(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2"}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
-<style>.theme-toggle .lbl[data-t]::after{content:attr(data-t)}</style>
 </head>
 <body>
 <div class="wrap">
@@ -222,7 +222,7 @@ h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0
   <nav class="tabs"><a href="../index.html">Latest</a><a href="../writers.html">Writers</a><a href="../objects.html" aria-current="page">Subjects</a><a href="../guess.html">Guess</a></nav>
   <ul class="list">
     <li data-score="6.8" data-seq="0"><a href="../e/2026-10-28-dickinson-the-matrix--1999.html"><span class="t">Emily Dickinson <span class="thing">on The Matrix (1999)</span></span><span class="rate"><span class="verdict">admirably managed</span><span class="score s-good">6.8</span></span></a></li>
-    <li data-score="2.3" data-seq="1"><a href="../e/2026-10-24-orwell-the-matrix--1999.html"><span class="t">George Orwell <span class="thing">on The Matrix (1999)</span></span><span class="rate"><span class="verdict">a flattering lie</span><span class="score s-bad">2.3</span></span></a></li>
+    <li data-score="1.6" data-seq="1"><a href="../e/2026-10-24-orwell-the-matrix--1999.html"><span class="t">George Orwell <span class="thing">on The Matrix (1999)</span></span><span class="rate"><span class="verdict">comforting fantasy</span><span class="score s-bad">1.6</span></span></a></li>
     <li data-score="2.4" data-seq="2"><a href="../e/2026-09-19-russell-the-matrix--1999.html"><span class="t">Bertrand Russell <span class="thing">on The Matrix (1999)</span></span><span class="rate"><span class="verdict">acrobatic display</span><span class="score s-bad">2.4</span></span></a></li>
     <li data-score="6.8" data-seq="3"><a href="../e/2026-09-08-proust-the-matrix--1999.html"><span class="t">Marcel Proust <span class="thing">on The Matrix (1999)</span></span><span class="rate"><span class="verdict">a small invention</span><span class="score s-good">6.8</span></span></a></li>
     <li data-score="0.9" data-seq="4"><a href="../e/2026-09-06-nietzsche-the-matrix--1999.html"><span class="t">Friedrich Nietzsche <span class="thing">on The Matrix (1999)</span></span><span class="rate"><span class="verdict">flattering spectacle</span><span class="score s-bad">0.9</span></span></a></li>

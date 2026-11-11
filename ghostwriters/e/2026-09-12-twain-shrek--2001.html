@@ -52,6 +52,7 @@ a{color:inherit}
   padding:.42rem .82rem;border:1px solid var(--rule);border-radius:999px;background:transparent;
   color:var(--dim);font:500 12.5px/1 var(--sans);letter-spacing:.02em;text-transform:none}
 .theme-toggle .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.theme-toggle .lbl[data-t]::after{content:attr(data-t)}
 .theme-toggle:hover{color:var(--ink);border-color:var(--accent)}
 h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0 .5rem;
   letter-spacing:-.01em;text-wrap:balance}
@@ -210,7 +211,6 @@ h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0
      analytics on every site. Braces are doubled because HEAD goes through .format().
      See site-stats/beacon. -->
 <script>(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2"}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
-<style>.theme-toggle .lbl[data-t]::after{content:attr(data-t)}</style>
 </head>
 <body>
 <div class="wrap">
@@ -225,7 +225,7 @@ h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0
     <p>You sit there watching these moving light-pictures, where every bristle on a talking donkey&#x27;s snout is drawn with excruciating detail, and you realize the whole grand enterprise was built to teach us a lesson about human beauty. It takes a dragon, an ill-mannered ogre, and a beast of burden with a relentless talent for conversation to deliver a princess from the grave error of marrying a man who keeps a castle full of wooden puppets.</p>
     <p>By the time the princess sheds her sleek skin to turn green and thick-waisted for love, you are expected to feel that true virtue has triumphed. A body cannot help but marvel at the sheer amount of clever wizardry required to convince an audience of grown taxpayers that they would all be considerably happier living in a ditch.</p>
   </div>
-  <p class="foot">Also on Shrek (2001): <a href="../e/2026-09-04-montaigne-shrek--2001.html">Michel de Montaigne</a>, <a href="../e/2026-11-04-proust-shrek--2001.html">Marcel Proust</a>, <a href="../e/2026-10-04-russell-shrek--2001.html">Bertrand Russell</a>, <a href="../e/2026-09-27-suntzu-shrek--2001.html">Sun Tzu</a>, <a href="../e/2026-10-22-thoreau-shrek--2001.html">Henry David Thoreau</a>, <a href="../e/2026-10-06-tolstoy-shrek--2001.html">Leo Tolstoy</a>, <a href="../e/2026-08-27-wilde-shrek--2001.html">Oscar Wilde</a>.</p>
+  <p class="foot">Also on Shrek (2001): <a href="../e/2026-09-04-montaigne-shrek--2001.html">Michel de Montaigne</a>, <a href="../e/2026-11-11-orwell-shrek--2001.html">George Orwell</a>, <a href="../e/2026-11-04-proust-shrek--2001.html">Marcel Proust</a>, <a href="../e/2026-10-04-russell-shrek--2001.html">Bertrand Russell</a>, <a href="../e/2026-09-27-suntzu-shrek--2001.html">Sun Tzu</a>, <a href="../e/2026-10-22-thoreau-shrek--2001.html">Henry David Thoreau</a>, <a href="../e/2026-10-06-tolstoy-shrek--2001.html">Leo Tolstoy</a>, <a href="../e/2026-11-10-whitman-shrek--2001.html">Walt Whitman</a>, <a href="../e/2026-08-27-wilde-shrek--2001.html">Oscar Wilde</a>.</p>
 
   <p class="foot"></p>
 </div>

@@ -52,6 +52,7 @@ a{color:inherit}
   padding:.42rem .82rem;border:1px solid var(--rule);border-radius:999px;background:transparent;
   color:var(--dim);font:500 12.5px/1 var(--sans);letter-spacing:.02em;text-transform:none}
 .theme-toggle .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.theme-toggle .lbl[data-t]::after{content:attr(data-t)}
 .theme-toggle:hover{color:var(--ink);border-color:var(--accent)}
 h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0 .5rem;
   letter-spacing:-.01em;text-wrap:balance}
@@ -210,7 +211,6 @@ h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0
      analytics on every site. Braces are doubled because HEAD goes through .format().
      See site-stats/beacon. -->
 <script>(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2"}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);}catch(e){}})();</script>
-<style>.theme-toggle .lbl[data-t]::after{content:attr(data-t)}</style>
 </head>
 <body>
 <div class="wrap">
@@ -235,7 +235,7 @@ h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0
     <li><a href="by/kafka.html"><img class="face" src="faces/kafka.jpg" alt="" width="86" height="86" loading="lazy">Franz Kafka <span class="n">16</span></a></li>
     <li><a href="by/montaigne.html"><img class="face" src="faces/montaigne.jpg" alt="" width="86" height="86" loading="lazy">Michel de Montaigne <span class="n">15</span></a></li>
     <li><a href="by/nietzsche.html"><img class="face" src="faces/nietzsche.jpg" alt="" width="86" height="86" loading="lazy">Friedrich Nietzsche <span class="n">12</span></a></li>
-    <li><a href="by/orwell.html"><img class="face" src="faces/orwell.jpg" alt="" width="86" height="86" loading="lazy">George Orwell <span class="n">14</span></a></li>
+    <li><a href="by/orwell.html"><img class="face" src="faces/orwell.jpg" alt="" width="86" height="86" loading="lazy">George Orwell <span class="n">15</span></a></li>
     <li><a href="by/proust.html"><img class="face" src="faces/proust.jpg" alt="" width="86" height="86" loading="lazy">Marcel Proust <span class="n">9</span></a></li>
     <li><a href="by/russell.html"><img class="face" src="faces/russell.jpg" alt="" width="86" height="86" loading="lazy">Bertrand Russell <span class="n">10</span></a></li>
     <li><a href="by/suntzu.html"><img class="face" src="faces/suntzu.jpg" alt="" width="86" height="86" loading="lazy">Sun Tzu <span class="n">6</span></a></li>
@@ -244,7 +244,7 @@ h1{font-weight:400;font-size:clamp(2rem,5.5vw,2.9rem);line-height:1.1;margin:0 0
     <li><a href="by/tolstoy.html"><img class="face" src="faces/tolstoy.jpg" alt="" width="86" height="86" loading="lazy">Leo Tolstoy <span class="n">6</span></a></li>
     <li><a href="by/twain.html"><img class="face" src="faces/twain.jpg" alt="" width="86" height="86" loading="lazy">Mark Twain <span class="n">12</span></a></li>
     <li><a href="by/wallace.html"><img class="face" src="faces/wallace.jpg" alt="" width="86" height="86" loading="lazy">David Foster Wallace <span class="n">8</span></a></li>
-    <li><a href="by/whitman.html"><img class="face" src="faces/whitman.jpg" alt="" width="86" height="86" loading="lazy">Walt Whitman <span class="n">7</span></a></li>
+    <li><a href="by/whitman.html"><img class="face" src="faces/whitman.jpg" alt="" width="86" height="86" loading="lazy">Walt Whitman <span class="n">8</span></a></li>
     <li><a href="by/wilde.html"><img class="face" src="faces/wilde.jpg" alt="" width="86" height="86" loading="lazy">Oscar Wilde <span class="n">14</span></a></li>
     <li><a href="by/woolf.html"><img class="face" src="faces/woolf.jpg" alt="" width="86" height="86" loading="lazy">Virginia Woolf <span class="n">12</span></a></li>
   </ul>
