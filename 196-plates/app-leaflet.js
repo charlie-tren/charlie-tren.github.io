@@ -17,8 +17,11 @@
   if (!location.hash && document.getElementById("intro")) startGlobe();
 
   const ORDER = ["Europe", "Africa", "Middle East", "Central Asia", "South Asia", "Southeast Asia", "East Asia", "Oceania", "Americas"]; // left to right across the world view
-  const D = await (await fetch("data.json")).json();
-  const CITY = (D.city || "Sydney").toLowerCase();
+  // the fallback plays the intro for the first city only; another city opens straight on its map (#id)
+  const CITIES = await fetch("cities.json").then(r => r.json()).catch(() => null) || [{ id: "sydney", name: "Sydney", country: "Australia", base: "" }];
+  const C = CITIES.find(c => "#" + c.id === location.hash.toLowerCase()) || CITIES[0];
+  const D = await (await fetch(C.base + "data.json")).json();
+  const CITY = C.id;
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const safeUrl = u => /^https?:\/\//.test(u || "") ? u : null;
   const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } },
@@ -96,7 +99,7 @@
   const fmtDate = iso => iso ? iso.split("-").reverse().join("/") : "";
 
   const dirUrl = p => "https://www.google.com/maps/dir/?api=1&destination=" +
-    encodeURIComponent(p.address ? `${p.name}, ${p.address}` : `${p.name}, ${p.suburb || ""} NSW`);
+    encodeURIComponent(p.address ? `${p.name}, ${p.address}` : `${p.name}, ${p.suburb || ""}, ${D.city}`);
   const cardParts = p => {
     const links = (p.src || []).filter(s => safeUrl(s.url));
     const rev = p.review && safeUrl(p.review.url) ? p.review : null;
@@ -358,14 +361,14 @@
       if (started) g.destroy(); else globe = g;
     });
     const input = intro.querySelector("input"), list = intro.querySelector("ul");
-    const cities = [{ name: D.city, country: "Australia", n: D.pins.length }];
+    const cities = CITIES;
     const box = intro.querySelector(".search");
     let open = false;
     const render = () => {
       const q = input.value.trim().toLowerCase();
       const m = cities.filter(c => c.name.toLowerCase().startsWith(q)), hits = m.length ? m : cities;
       list.hidden = !open;
-      list.innerHTML = hits.map(c => `<li><button type="button"><span><b>${esc(c.name)}</b>, ${esc(c.country)}</span><span class="n">${c.n} cuisines</span></button></li>`).join("")
+      list.innerHTML = hits.map(c => `<li><button type="button" data-id="${esc(c.id)}"><span><b>${esc(c.name)}</b>, ${esc(c.country)}</span><span class="n">${c.n} cuisines</span></button></li>`).join("")
         + `<li class="soon">More cities coming</li>`;
       list.querySelectorAll("button").forEach(b => b.addEventListener("click", go));
     };
@@ -377,7 +380,9 @@
       if (e.key === "Enter") { const b = list.querySelector("button"); if (b) b.click(); }
       else if (e.key === "Escape") { e.preventDefault(); show(false); } });
     input.focus();
-    async function go() {
+    async function go(e) {
+      const id = e && e.currentTarget && e.currentTarget.dataset.id;
+      if (id && id !== C.id) { location.hash = id; location.reload(); return; }
       if (started) return; started = true; introBusy = true;
       history.replaceState(null, "", "#" + CITY);
       document.body.classList.remove("searching", "flat");

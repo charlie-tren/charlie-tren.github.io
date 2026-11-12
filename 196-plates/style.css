@@ -76,6 +76,9 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
 .row .rc { font-weight: 600; font-size: 13.5px; line-height: 1.25; }
 .row .rn { font-size: 12.5px; line-height: 1.3; color: var(--ink-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .row.is-been .rc::after { content: " \2713"; color: var(--green); }
+.row .rn { display: flex; min-width: 0; }
+.row .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.row .rp { flex: none; margin-left: 6px; letter-spacing: .04em; }
 
 /* ---- pins ---- */
 .pin { position: relative; border-radius: 50%; border: 2.5px solid #16191d; box-shadow: 0 1px 4px rgba(0,0,0,.35);

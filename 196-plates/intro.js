@@ -1,6 +1,6 @@
 // 196 Plates intro: the search page's spinning globe and the dive to the city (design 369: one continuous camera, OSM raster to land on). It is a hook on a map the app owns:
 //   const intro = runIntro(map, opts); intro.ready -> first frame; intro.go() -> the dive; intro.skip() -> the end state.
-// opts: { pins, city: [lon, lat], cbd: [lon, lat], land() -> { center, zoom, padding }, reduce, osm: layer id,
+// opts: { base: the city's asset folder, bounds, land() -> { center, zoom, padding }, reduce, osm: layer id,
 //   pinsAt(seconds) pops the app's pins in, onArrive() once the camera is down and the map is the
 //   app's again, onDone() once the intro's layers are gone }.
 // Everything that moves is a function of one time, frame(T).
@@ -14,13 +14,15 @@
     // camera 1.5 x the map height away (36.87 deg field of view): the sphere radius whose silhouette is R pixels
     const zoomFor = (r0, lat) => { const d = 1.5 * H, r = (r0 * r0 + r0 * Math.sqrt(r0 * r0 + d * d)) / d; return Math.log2(2 * Math.PI * r * Math.cos(lat * D2R) / 512); };
     const Z0 = zoomFor(R, LAT0), PADB = Math.max(0, H - 2 * cy);
-    const CITY = o.city, CBD = o.cbd, pins = o.pins;
+    let BASE = o.base || "", GEN = 0; // GEN counts retargets: work started for an earlier city drops its result
 
     // the satellite: tiles on the dive path are hosted with the site (dive/), the rest come from EOX
     const EOX = (z, x, y) => `https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/${z}/${y}/${x}.jpg`;
     let DIVE = new Set();
-    fetch("dive/manifest.json").then(r => r.ok ? r.json() : []).then(a => { DIVE = new Set(a); }).catch(() => {});
-    const satUrl = (z, x, y) => DIVE.has(`${z}/${x}/${y}`) ? `dive/${z}/${x}/${y}.jpg` : EOX(z, x, y);
+    const loadDive = () => { const g = GEN; DIVE = new Set();
+      fetch(`${BASE}dive/manifest.json`).then(r => r.ok ? r.json() : []).then(a => { if (g === GEN) DIVE = new Set(a); }).catch(() => {}); };
+    loadDive();
+    const satUrl = (z, x, y) => DIVE.has(`${z}/${x}/${y}`) ? `${BASE}dive/${z}/${x}/${y}.jpg` : EOX(z, x, y);
     // a dive passes a zoom level every third of a second; 16 requests in flight (the default) cannot keep up
     maplibregl.setMaxParallelImageRequests(64);
     // MapLibre 5.24's image queue throws on a request it has already cancelled; the next request starts the queue again
@@ -187,8 +189,9 @@
     const PROFILE = phone ? "phone" : "desktop";
     let MOS = null;
     const nc = navigator.connection, slow = !!nc && (nc.saveData || /^(slow-2g|2g|3g)$/.test(nc.effectiveType || ""));
-    const mosReady = reduce || slow ? Promise.resolve() : fetch(`mosaic/${PROFILE}/manifest.json`).then(r => r.ok ? r.json() : null)
-      .then(m => { if (m && m.levels && m.levels.length) { MOS = m.levels; return ready.then(() => { if (!dead && map.style) map.setLayerZoomRange("eox", Z0 + .6, MOS[0].z0 + .02); }); } }).catch(() => {});
+    const loadMos = () => { const g = GEN; return reduce || slow ? Promise.resolve() : fetch(`${BASE}mosaic/${PROFILE}/manifest.json`).then(r => r.ok ? r.json() : null)
+      .then(m => { if (g === GEN && m && m.levels && m.levels.length) { MOS = m.levels; return ready.then(() => { if (g === GEN && !dead && map.style) map.setLayerZoomRange("eox", Z0 + .6, MOS[0].z0 + .02); }); } }).catch(() => {}); };
+    let mosReady = loadMos();
     // the pieces are fetched in dive order (the first levels while the globe spins, the rest on the pick) and held as blobs;
     // each joins the map as a layer only about a second before the camera reaches its band, one a frame, and leaves once
     // the camera is past it, so the map carries a few dozen layers at a time rather than all of them
@@ -198,9 +201,9 @@
     // of the desktop dive were round-trip bound: the last arrived ~14 s after load, and a pick before that waited
     const PAR = 24;
     const pump = () => { if (!fetch0 && mosFetchQ.length) fetch0 = performance.now();
-      while (!dead && mosFetching < PAR && mosFetchQ.length) { const [i, j] = mosFetchQ.shift(); mosFetching++;
-      fetch(`mosaic/${PROFILE}/${MOS[i].chunks[j].file}`).then(r => r.blob()).then(x => { bytesIn += x.size; mosBlob[i + "_" + j] = URL.createObjectURL(x); })
-        .catch(() => { mosFail[i + "_" + j] = 1; }).finally(() => { mosFetching--; pump(); }); } };
+      while (!dead && mosFetching < PAR && mosFetchQ.length) { const [i, j] = mosFetchQ.shift(), g = GEN; mosFetching++;
+      fetch(`${BASE}mosaic/${PROFILE}/${MOS[i].chunks[j].file}`).then(r => r.blob()).then(x => { if (g !== GEN) return; bytesIn += x.size; mosBlob[i + "_" + j] = URL.createObjectURL(x); })
+        .catch(() => { if (g === GEN) mosFail[i + "_" + j] = 1; }).finally(() => { mosFetching--; pump(); }); } };
     const addMosaics = which => { if (!MOS) return;
       if (!mosOrder) { mosOrder = []; MOS.forEach((L, i) => L.chunks.forEach((c, j) => mosOrder.push([i, j]))); }
       MOS.forEach((L, i) => { if (L.queued || !which(L)) return; L.queued = true; L.chunks.forEach((c, j) => mosFetchQ.push([i, j])); });
@@ -263,6 +266,7 @@
         return { center: [lon, lat], zoom: Z0 - .2 * Math.sin(Math.PI * s) + dive,
           padding: { top: lp.top * k, bottom: PADB * (1 - k) + lp.bottom * k, left: lp.left * k, right: lp.right * k } };
       };
+      for (const k in needT) delete needT[k];
       pathPrefetch(); built = true;
     };
     // the satellite tiles the dive will ask for, fetched as soon as the city is picked, in the order the camera needs them
@@ -277,7 +281,8 @@
             const k = tz + "/" + ((x % n) + n) % n + "/" + y; if (!seen.has(k)) { seen.add(k); list.push([tz, ((x % n) + n) % n, y]); } }
       }
       pathN = list.length; pathDone = 0; if (!fetch0) fetch0 = performance.now();
-      let i = 0; const next = () => { if (i >= list.length || dead) return; const [z, x, y] = list[i++]; fetch(satUrl(z, x, y)).then(r => r.blob()).then(x => { bytesIn += x.size; pathBytes += x.size; }).catch(() => {}).finally(() => { pathDone++; next(); }); };
+      const g = GEN; let i = 0; const next = () => { if (i >= list.length || dead || g !== GEN) return; const [z, x, y] = list[i++];
+        fetch(satUrl(z, x, y)).then(r => r.blob()).then(x => { if (g === GEN) { bytesIn += x.size; pathBytes += x.size; } }).catch(() => {}).finally(() => { if (g === GEN) pathDone++; next(); }); };
       for (let k = 0; k < PAR; k++) next();
     };
     // the city's OSM tiles, fetched the moment a city is picked so the cache has them when the camera arrives
@@ -379,6 +384,17 @@
       return true; };
     return {
       ready, progress, safe,
+      // another city, picked while the globe still spins: its bounds and imagery replace the first city's
+      retarget(o2) {
+        if (GO !== null || dead) return; GEN++; Object.assign(o, o2); BASE = o.base || "";
+        mosFetchQ.length = 0; mosLive.forEach(([, id]) => { if (map.getLayer(id)) map.removeLayer(id); if (map.getSource(id)) map.removeSource(id); }); mosLive.length = 0;
+        Object.values(mosBlob).forEach(u => URL.revokeObjectURL(u));
+        [mosBlob, mosAdded, mosFail, needT].forEach(h => { for (const k in h) delete h[k]; });
+        MOS = null; mosOrder = null; mosNext = mosAt = fetch0 = bytesIn = pathBytes = pathN = pathDone = 0; built = false;
+        if (map.getLayer("eox")) map.setLayerZoomRange("eox", Z0 + .6, 24);
+        loadDive(); const g = GEN; mosReady = loadMos();
+        mosReady.then(() => { if (g !== GEN || dead || !map.style || GO !== null) return; addMosaics(() => true); land = o.land(); start = map.getCenter().toArray(); buildCont(); prefetchCity(); });
+      },
       // the dive to the city; resolves once the camera is down
       go() {
         if (GO !== null) return arrived;

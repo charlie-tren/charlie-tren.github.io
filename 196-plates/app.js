@@ -3,15 +3,28 @@
   // landing is here. Without WebGL the page runs app-leaflet.js instead (the loader in the template decides).
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ORDER = ["Europe", "Africa", "Middle East", "Central Asia", "South Asia", "Southeast Asia", "East Asia", "Oceania", "Americas"]; // left to right across the world view
-  const D = await (await fetch("data.json")).json();
-  const CITY = (D.city || "Sydney").toLowerCase();
+  // cities.json lists every city; each keeps its data and dive imagery under its own folder (the first city's at the root)
+  const [cl, d0] = await Promise.all([fetch("cities.json").then(r => r.json()).catch(() => null), fetch("data.json").then(r => r.json())]);
+  const CITIES = cl && cl.length ? cl : [{ id: (d0.city || "Sydney").toLowerCase(), name: d0.city, country: "Australia", n: 0, base: "" }];
+  const loadCity = async c => c.base ? (await fetch(c.base + "data.json")).json() : d0;
+  const hashCity = CITIES.find(c => "#" + c.id === location.hash.toLowerCase());
+  let C = hashCity || CITIES[0], D, CITY, byCC, BOUNDS, KEY, eaten = {};
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const safeUrl = u => /^https?:\/\//.test(u || "") ? u : null;
   const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } },
                   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
-  D.pins = D.pins.filter(p => /^[a-z]{2}$/.test(p.c2));
-  const byCC = Object.fromEntries(D.pins.map(p => [p.cc, p]));
-  document.getElementById("n").textContent = D.pins.length;
+  // places you have eaten at are kept on this device per city (cc -> date); a tick on a country the city no longer lists
+  // is set aside: opening it from the world map crashed
+  const useData = d => {
+    d.pins = d.pins.filter(p => /^[a-z]{2}$/.test(p.c2)); D = d; CITY = C.id;
+    byCC = Object.fromEntries(D.pins.map(p => [p.cc, p]));
+    document.getElementById("n").textContent = D.pins.length;
+    const lons = D.pins.map(p => p.lon), lats = D.pins.map(p => p.lat);
+    BOUNDS = [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]];
+    KEY = "196plates.eaten." + CITY;
+    eaten = Object.fromEntries(Object.entries(store.get(KEY, {}) || {}).filter(([cc]) => byCC[cc]));
+  };
+  useData(await loadCity(C));
   // every circle flag is one image (flags-atlas.webp, built by build_atlas.py): one request, started before anything else
   const atlas = Promise.all([fetch("flags-atlas.json").then(r => r.json()), new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = "flags-atlas.webp"; })]);
   const mq = window.matchMedia("(max-width: 760px)"), phone = () => mq.matches, coarse = window.matchMedia("(pointer: coarse)");
@@ -30,8 +43,6 @@
 
   // ---- the city's frame: fitted at a whole zoom so the raster tiles stay sharp ----
   const MC = maplibregl.MercatorCoordinate;
-  const lons = D.pins.map(p => p.lon), lats = D.pins.map(p => p.lat);
-  const BOUNDS = [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]];
   const fitCamera = (w, h, pad = { top: 0, bottom: 0, left: 0, right: 0 }) => {
     const a = MC.fromLngLat(BOUNDS[0]), b = MC.fromLngLat(BOUNDS[1]), c = new MC((a.x + b.x) / 2, (a.y + b.y) / 2).toLngLat();
     const z = Math.min(Math.log2((w - pad.left - pad.right - 64) / (512 * Math.abs(b.x - a.x))), Math.log2((h - pad.top - pad.bottom - 64) / (512 * Math.abs(b.y - a.y))));
@@ -40,7 +51,7 @@
 
   // ---- the intro decides how the map starts ----
   const intro = document.getElementById("intro");
-  const deep = !intro || location.hash.toLowerCase() === "#" + CITY;
+  const deep = !intro || !!hashCity;
   if (intro) { const cr = intro.querySelector(".credit"); if (cr) cr.remove(); } // the map's own credit replaces the page's
   if (deep) { if (intro) intro.remove(); document.body.classList.remove("searching"); }
   else document.body.classList.add("searching");
@@ -80,7 +91,7 @@
   const closeCredit = () => { if (creditOpen || !credit) return; credit.removeAttribute("open"); credit.classList.remove("maplibregl-compact-show"); };
   const zs = document.createElement("div"); zs.className = "maplibregl-ctrl zoomstack";
   zs.innerHTML = `<button type="button" aria-label="Zoom in">+</button><button type="button" aria-label="Zoom out">&minus;</button>`
-    + `<button type="button" class="fit" aria-label="Fit ${esc(D.city)}" title="Fit ${esc(D.city)}"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><circle cx="12" cy="12" r="2.2"/></svg></button>`;
+    + `<button type="button" class="fit"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><circle cx="12" cy="12" r="2.2"/></svg></button>`;
   const [zin, zout, zfit] = zs.querySelectorAll("button");
   const dur = ms => reduce ? 0 : ms;
   zin.onclick = () => map.zoomIn({ duration: dur(250) }); zout.onclick = () => map.zoomOut({ duration: dur(250) });
@@ -108,10 +119,7 @@
     if (d) { e.preventDefault(); store.set("196plates.panel", setPanel(document.querySelector(".panel").offsetWidth + d)); }
   });
 
-  // ---- places you have eaten at, kept on this device (cc -> date) ----
-  const KEY = "196plates.eaten." + CITY;
-  // a tick on a country this city no longer lists is set aside: opening it from the world map crashed
-  let eaten = Object.fromEntries(Object.entries(store.get(KEY, {}) || {}).filter(([cc]) => D.pins.some(p => p.cc === cc)));
+  // ---- places you have eaten at ----
   const isEaten = cc => !!eaten[cc];
   const eatenCount = document.getElementById("been");
   const paint = () => {
@@ -127,15 +135,20 @@
   };
   const toggleEaten = cc => { if (eaten[cc]) delete eaten[cc]; else eaten[cc] = new Date().toISOString().slice(0, 10); store.set(KEY, eaten); paint(); };
 
+  // a row shows the name without its trailing bracket ("Restoran Dukat (Bonnyrigg Sports Club)"); the card keeps it whole
+  const SHORT = { "Mother Chu's Taiwanese Gourmet": "Mother Chu's", "Mama Lor Restaurant & Bakery": "Mama Lor",
+    "K&K Austrian Cafe & Coffee House": "K&K Austrian Cafe", "Botellon Spanish Tapas & Wine Bar": "Botellon" };
+  const rowName = p => `<span class="rn"><span class="nm">${esc(SHORT[p.name] || p.name.replace(/\s*\([^)]*\)$/, ""))}</span>${p.price
+    ? `<span class="rp" aria-label="${["", "Cheap", "Mid-range", "Expensive"][p.price]}">${"$".repeat(p.price)}</span>` : ""}</span>`;
   const dirUrl = p => "https://www.google.com/maps/dir/?api=1&destination=" +
-    encodeURIComponent(p.address ? `${p.name}, ${p.address}` : `${p.name}, ${p.suburb || ""} NSW`);
+    encodeURIComponent(p.address ? `${p.name}, ${p.address}` : `${p.name}, ${p.suburb || ""}, ${D.city}`);
   const cardParts = p => {
     const links = (p.src || []).filter(s => safeUrl(s.url));
     const rev = p.review && safeUrl(p.review.url) ? p.review : null;
     const web = safeUrl(p.web);
     const n = links.length;
     return {
-      head: `<div class="card-kicker">${esc(p.adj)}${p.suburb ? " &middot; " + esc(p.suburb) : ""}</div>
+      head: `<div class="card-kicker">${esc(p.adj)}${p.suburb ? " &middot; " + esc(p.suburb) : ""}${p.price ? " &middot; " + "$".repeat(p.price) : ""}</div>
       <div class="card-name">${esc(p.name)}</div>`,
       src: n ? `<details class="card-src"><summary>${n} ${n === 1 ? "source" : "sources"}</summary><ul>${links.map(s =>
         `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></li>`).join("")}</ul></details>` : "",
@@ -152,7 +165,6 @@
 
   // ---- the pins: each flag drawn once into the map as a round icon with the dark rim, at the screen's pixel ratio ----
   let pinsIn = false, pinT = deep ? 9 : -1; // seconds since the camera landed: each flag pops in on its own beat
-  const CBD = [151.2093, -33.8688];
   // the pop-in: each flag's own beat k (0..1) comes from the shared clock pinT and the flag's fixed offset r
   const popK = ["max", 0, ["min", 1, ["/", ["-", gs("pinT"), ["*", ["get", "r"], .5]], .42]]];
   const popSize = ["let", "k", popK, ["+", 1, ["*", 2.9, ["^", ["-", ["var", "k"], 1], 3]], ["*", 1.9, ["^", ["-", ["var", "k"], 1], 2]]]];
@@ -232,6 +244,7 @@
   const keys = {};
   let keyOn = null;
   const placeKey = () => { if (!keyOn) return; const p = byCC[keyOn.dataset.cc], pt = map.project([p.lon, p.lat]); keyOn.style.left = pt.x + "px"; keyOn.style.top = pt.y + "px"; };
+  const buildKeys = () => { keyBox.querySelectorAll(".pin-key").forEach(b => b.remove()); for (const k in keys) delete keys[k]; keyOn = null;
   D.pins.forEach(p => {
     const b = document.createElement("button"); b.type = "button"; b.className = "pin-key"; b.dataset.cc = p.cc;
     b.setAttribute("aria-label", `${p.adj}: ${p.name}`); b.style.width = b.style.height = W + "px";
@@ -240,7 +253,8 @@
     b.addEventListener("blur", () => { if (keyOn === b) keyOn = null; });
     b.addEventListener("click", () => { if (phone()) openSheet([p], { opener: b, at: [p.lon, p.lat], zoom: map.getZoom() }); else openCard(p, b); });
     keyBox.appendChild(b); keys[p.cc] = b;
-  });
+  }); };
+  buildKeys();
 
   // ---- the desktop card: a popup above the pin that pans itself clear of the map's controls and holds focus ----
   let cardPopup = null, cardPin = null, opener = null, nextOpener = null;
@@ -315,7 +329,7 @@
     if (one) { const c = cardParts(p);
       body = `<div class="sheet-head"><img class="sheet-flag fit-${p.fit}" src="flags/${p.c2}-320.png" alt="Flag of ${esc(p.country)}"><div>${c.head}</div></div>${c.src}`;
       foot = `<div class="sheet-foot">${c.actions}</div>`;
-    } else body = `<ul class="sheet-list">${list.map(q => `<li><button type="button" class="row${isEaten(q.cc) ? " is-been" : ""}" data-cc="${esc(q.cc)}"><img class="fit-${q.fit}" src="flags/${q.c2}-80.png" alt=""><span class="rc">${esc(q.country)}</span><span class="rn">${esc(q.name)}</span></button></li>`).join("")}</ul>`;
+    } else body = `<ul class="sheet-list">${list.map(q => `<li><button type="button" class="row${isEaten(q.cc) ? " is-been" : ""}" data-cc="${esc(q.cc)}"><img class="fit-${q.fit}" src="flags/${q.c2}-80.png" alt=""><span class="rc">${esc(q.country)}</span>${rowName(q)}</button></li>`).join("")}</ul>`;
     sheet.innerHTML = `<div class="sheet-grab" aria-hidden="true"><span></span></div><button type="button" class="sheet-x" aria-label="Close">&times;</button><div class="sheet-body">${body}</div>${foot}`;
     sheet.setAttribute("aria-label", one ? p.name : `${list.length} restaurants`);
     sheet.style.transform = ""; sheet.hidden = false; sheetOn = true; document.body.classList.add("sheet-open");
@@ -350,7 +364,7 @@
 
   // ---- side panel: rows, alphabetical within each region ----
   const groups = document.getElementById("groups");
-  ORDER.forEach(g => {
+  const buildGroups = () => { groups.innerHTML = ""; ORDER.forEach(g => {
     const ps = D.pins.filter(p => p.group === g).sort((a, b) => a.country.localeCompare(b.country));
     if (!ps.length) return;
     const sec = document.createElement("section");
@@ -358,18 +372,21 @@
     sec.innerHTML = `<h2>${esc(g)}</h2><ul class="rows"></ul>`;
     ps.forEach(p => {
       const li = document.createElement("li");
-      li.innerHTML = `<button type="button" class="row" data-cc="${esc(p.cc)}"><img class="fit-${p.fit}" src="flags/${p.c2}-80.png" alt="" loading="lazy"><span class="rc">${esc(p.country)}</span><span class="rn">${esc(p.name)}</span></button>`;
+      li.innerHTML = `<button type="button" class="row" data-cc="${esc(p.cc)}"><img class="fit-${p.fit}" src="flags/${p.c2}-80.png" alt="" loading="lazy"><span class="rc">${esc(p.country)}</span>${rowName(p)}</button>`;
       li.querySelector("button").addEventListener("click", e => { const b = e.currentTarget;
         if (introBusy) { pendingRow = [p.cc, b]; toMap(); } else openRow(p.cc, b); });
       sec.querySelector(".rows").appendChild(li);
     });
     groups.appendChild(sec);
-  });
+  }); };
+  buildGroups();
 
   // ---- filter the list: all / eaten / to try, and a search on country, cuisine or restaurant ----
   let filterMode = "all";
   const fold = s => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
-  const inFilter = cc => filterMode === "eaten" ? isEaten(cc) : filterMode === "not" ? !isEaten(cc) : true;
+  const prices = new Set();  // empty = any price
+  const inFilter = cc => (filterMode === "eaten" ? isEaten(cc) : filterMode === "not" ? !isEaten(cc) : true) &&
+    (!prices.size || prices.has(byCC[cc].price));
   const empty = document.getElementById("empty");
   function applyFilter() {
     const q = fold(document.getElementById("find").value.trim());
@@ -381,22 +398,38 @@
     });
     document.querySelectorAll("#groups .group").forEach(sec => { sec.hidden = ![...sec.querySelectorAll("li")].some(li => !li.hidden); });
     document.querySelectorAll("#filter button").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === filterMode));
+    document.querySelectorAll("#price button").forEach(b => b.setAttribute("aria-pressed", prices.has(+b.dataset.p)));
     empty.hidden = shown > 0;
-    empty.innerHTML = shown ? "" : filterMode !== "all" && hits
-      ? `No match in ${filterMode === "eaten" ? "Eaten" : "To try"}. <button type="button" class="linkish" id="showall">Show all</button>` : "No countries match.";
+    empty.innerHTML = shown ? "" : (filterMode !== "all" || prices.size) && hits
+      ? `No match. <button type="button" class="linkish" id="showall">Show all</button>` : "No countries match.";
     const all = document.getElementById("showall");
-    if (all) all.onclick = () => { filterMode = "all"; applyFilter(); document.getElementById("find").focus({ preventScroll: true }); };
+    if (all) all.onclick = () => { filterMode = "all"; prices.clear(); applyFilter(); document.getElementById("find").focus({ preventScroll: true }); };
     D.pins.forEach(p => { const off = !inFilter(p.cc);
       if (pinsIn && ok()) map.setFeatureState({ source: "pins", id: p.cc }, { dim: off });
       if (keys[p.cc]) keys[p.cc].tabIndex = off ? -1 : 0; });
   }
   document.querySelectorAll("#filter button").forEach(b => b.addEventListener("click", () => { filterMode = b.dataset.f; applyFilter(); }));
+  document.querySelectorAll("#price button").forEach(b => b.addEventListener("click", () => {
+    const v = +b.dataset.p; if (!prices.delete(v)) prices.add(v); applyFilter(); }));
   const find = document.getElementById("find");
   find.addEventListener("input", applyFilter);
   find.addEventListener("keydown", e => { if (e.key !== "Enter") return;
     const li = [...document.querySelectorAll("#groups .rows li")].find(l => !l.hidden); if (li) li.firstElementChild.click(); });
-  document.querySelector(".lede").textContent = `How many of the ${D.pins.length} cuisines in ${D.city} can you eat?`;
-  document.querySelectorAll(".how .city").forEach(s => { s.textContent = D.city; });
+  const cityText = () => {
+    document.querySelector(".lede").textContent = `How many of the ${D.pins.length} cuisines in ${D.city} can you eat?`;
+    document.querySelectorAll(".how .city").forEach(s => { s.textContent = D.city; });
+    // a city's venue count: the template carries the first city's; null means none is stated
+    if (D.venues) document.querySelectorAll(".how .nv").forEach(s => { s.textContent = (Math.round(D.venues / 100) * 100).toLocaleString("en-AU"); });
+    document.querySelectorAll(".how .nvw").forEach(s => { s.hidden = D.venues === null; });
+    zfit.setAttribute("aria-label", `Fit ${D.city}`); zfit.title = `Fit ${D.city}`; mapEl.setAttribute("aria-label", `Map of ${D.city}`);
+  };
+  cityText();
+  // another city picked on the search page: the list, keys and pins are rebuilt for it under the spinning globe
+  const setCity = async c => {
+    C = c; useData(await loadCity(c)); buildKeys(); buildGroups(); cityText();
+    if (pinsIn && ok()) { const m = map, [AT, sheet] = await atlas; if (m === map && ok()) { drawFlags(AT, sheet); map.getSource("pins").setData(pinData()); } }
+    paint();
+  };
 
   // ---- world views: which of 196 the city has, and your own map (worldmap.js, design 348/352) ----
   let wm = null, worldOpener = null;
@@ -436,8 +469,7 @@
       : { top: 0, bottom: 0, right: 0, left: Math.round(document.querySelector(".panel").getBoundingClientRect().right) };
     return fitCamera(w, h, pad);
   };
-  const startIntro = () => { const m0 = map; return typeof window.runIntro !== "function" ? null : window.runIntro(map, { pins: D.pins,
-    city: [(BOUNDS[0][0] + BOUNDS[1][0]) / 2, (BOUNDS[0][1] + BOUNDS[1][1]) / 2], cbd: CBD, bounds: BOUNDS,
+  const startIntro = () => { const m0 = map; return typeof window.runIntro !== "function" ? null : window.runIntro(map, { base: C.base, bounds: BOUNDS,
     land: landCam, reduce, osm: "osm", pinsAt: t => { if (m0 === map) pinsAt(t); }, pinsReady: () => pinsIn,
     layoutAt: k => { if (m0 !== map) return; document.body.classList.add("diving"); document.documentElement.style.setProperty("--k", k); } }); };
   let landed = deep, started = false, I = null, skipOff = null;
@@ -523,7 +555,7 @@
   }
   if (!I) I = startIntro();
   const input = intro.querySelector("input"), list = intro.querySelector("ul");
-  const cities = [{ name: D.city, country: "Australia", n: D.pins.length }];
+  const cities = CITIES;
   const box = intro.querySelector(".search");
   let open = false;
   let waiting = false;
@@ -532,7 +564,7 @@
     const q = input.value.trim().toLowerCase();
     const m = cities.filter(c => c.name.toLowerCase().startsWith(q)), hits = m.length ? m : cities;
     list.hidden = !open;
-    list.innerHTML = hits.map(c => `<li><button type="button"><span><b>${esc(c.name)}</b>, ${esc(c.country)}</span><span class="n">${c.n} cuisines</span></button></li>`).join("")
+    list.innerHTML = hits.map(c => `<li><button type="button" data-id="${esc(c.id)}"><span><b>${esc(c.name)}</b>, ${esc(c.country)}</span><span class="n">${c.n} cuisines</span></button></li>`).join("")
       + `<li class="soon">More cities coming</li>`;
     list.querySelectorAll("button").forEach(b => b.addEventListener("click", go));
   };
@@ -547,11 +579,13 @@
   else if (document.activeElement === document.body || !document.activeElement) input.focus(); else show(document.activeElement === input);
   async function go(e) {
     if (started) return; started = true; introBusy = true;
+    const btn = e && e.currentTarget, pick = CITIES.find(c => btn && c.id === btn.dataset.id) || C;
+    if (pick !== C) { await setCity(pick); if (I && I.retarget) I.retarget({ base: C.base, bounds: BOUNDS }); }
     // the dive plays straight through, so it waits here until the rest of its imagery will arrive in time (12 s at most)
     const goNow = () => !I || (I.safe ? I.safe() : !I.progress || I.progress() >= 1);
     if (!goNow()) {
       waiting = true; input.disabled = true;
-      const b = e && e.currentTarget, n = b && b.querySelector(".n");
+      const b = btn, n = b && b.querySelector(".n");
       let arc = null;
       if (n) { n.insertAdjacentHTML("beforeend", `<svg class="ring" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8"/><circle class="arc" cx="10" cy="10" r="8" pathLength="1"/></svg>`);
         arc = n.querySelector(".arc"); b.setAttribute("aria-busy", "true"); }
