@@ -1,5 +1,4 @@
-// 196 Plates intro: the search page's spinning globe and the dive to the city (design 369: a ripple out from the city,
-// one continuous camera, OSM raster to land on). It is a hook on a map the app owns:
+// 196 Plates intro: the search page's spinning globe and the dive to the city (design 369: one continuous camera, OSM raster to land on). It is a hook on a map the app owns:
 //   const intro = runIntro(map, opts); intro.ready -> first frame; intro.go() -> the dive; intro.skip() -> the end state.
 // opts: { pins, city: [lon, lat], cbd: [lon, lat], land() -> { center, zoom, padding }, reduce, osm: layer id,
 //   pinsAt(seconds) pops the app's pins in, onArrive() once the camera is down and the map is the
@@ -37,7 +36,7 @@
         const r = await fetch(satUrl(z, x, y), { signal: abort && abort.signal });
         if (!r.ok) return { data: BLANK.slice(0) };
         // EOX has no imagery of Antarctica, only flat white: tone it the way the globe texture is toned
-        if (tileLat(y + 1, z) < -55 && typeof OffscreenCanvas === "function") return { data: await iceTile(await r.blob(), x, y, z) };
+        if (tileLat(y + 1, z) < -55 && typeof OffscreenCanvas === "function") return { data: await iceOff(await r.blob(), x, y, z) };
         return { data: await r.arrayBuffer() };
       } catch (e) { return { data: BLANK.slice(0) }; }
     });
@@ -59,8 +58,20 @@
       cx.putImageData(im, 0, 0);
       return (await cv.convertToBlob({ type: "image/jpeg", quality: .9 })).arrayBuffer();
     };
+    // the toning is 260k pixels of JavaScript a tile: it runs in two workers, from this same function, so the main thread keeps its frames
+    let iceWs = null, iceId = 0; const icePending = new Map();
+    const iceOff = (blob, x, y, z) => {
+        if (iceWs === null) try {
+            const code = `const D2R=${D2R};const tileLat=${tileLat};const ICE=${ICE};const iceNoise=${iceNoise};const iceTile=${iceTile};` +
+                `onmessage=async e=>{const{id,blob,x,y,z}=e.data;try{const out=await iceTile(blob,x,y,z);postMessage({id,out},[out]);}catch(err){postMessage({id,err:String(err)});}};`;
+            const url = URL.createObjectURL(new Blob([code], { type: "text/javascript" }));
+            iceWs = [0, 1].map(() => { const w = new Worker(url); w.onmessage = e => { const p = icePending.get(e.data.id); icePending.delete(e.data.id); if (p) e.data.err ? p.rej(new Error(e.data.err)) : p.res(e.data.out); }; return w; });
+        } catch (e) { iceWs = false; }
+        if (iceWs) return new Promise((res, rej) => { const id = ++iceId; icePending.set(id, { res, rej }); iceWs[id & 1].postMessage({ id, blob, x, y, z }); }).catch(() => iceTile(blob, x, y, z));
+        return iceTile(blob, x, y, z);
+    };
     // the protocol outlives the intro by a few seconds, for tiles still in flight; a newer intro's protocol is left alone
-    const dropProtocol = () => setTimeout(() => { if (window.__satToken === token) try { maplibregl.removeProtocol("sat"); } catch (e) {} }, 4000);
+    const dropProtocol = () => setTimeout(() => { if (window.__satToken === token) { try { maplibregl.removeProtocol("sat"); } catch (e) {} if (iceWs) iceWs.forEach(w => w.terminate()); } }, 4000);
 
     // ---- space: a deep gradient and a seeded starfield behind the transparent map, and the atmosphere's halo ----
     const sky = document.createElement("canvas"), halo = document.createElement("div");
@@ -112,9 +123,24 @@
     const FADE_OUT = [Z0 + 1.6, Z0 + 3.2];
     let osmBefore = null;
     const below = () => map.getLayer("pins") ? "pins" : undefined;
-    const OWN = { layers: ["pole", "day", "eox", "night", "rings"], sources: ["day", "eox", "night", "rings"] };
+    // MapLibre compiles a shader the first time a layer type is drawn in a projection: at zoom 8, where the globe goes flat, that
+    // is the raster, line and icon programs together (~60 ms each, inside the dive's frames). Compile them while the globe still spins
+    const WARM = { raster: 1, line: 1, symbolIcon: 1, projectionErrorMeasurement: 1 }; let warmQ = [], warmUse = null, warmAt = 0;
+    const warmInit = () => { try {
+      const P = map.painter, use = P.useProgram, seen = {}; if (typeof use !== "function") return; warmUse = use;
+      P.useProgram = function (name, cfg, fsp, defs) {
+        if (WARM[name] && !fsp && map.transform.zoom < 5) { const k = name + (cfg ? cfg.cacheKey : "") + defs; if (!seen[k]) { seen[k] = 1; warmQ.push([name, cfg, defs]); } }
+        return use.apply(this, arguments); };
+    } catch (e) {} };
+    const warmStep = (T, now) => { if (!warmUse) return;
+      if (GO !== null) return warmDone();
+      if (T < 1.5 || now - warmAt < 350) return;
+      if (warmQ.length) { warmAt = now; const [n, c, d] = warmQ.shift(); try { warmUse.call(map.painter, n, c, true, d); } catch (e) {} }
+      else if (T > 5) warmDone(); };
+    const warmDone = () => { try { delete map.painter.useProgram; } catch (e) {} warmUse = null; warmQ = []; };
+    const OWN = { layers: ["pole", "day", "eox", "night"], sources: ["day", "eox", "night"] };
     const setup = () => {
-      Object.entries({ nk: 1, rr: -10, ra: 0, hold: 1 }).forEach(([k, v]) => setG(k, v));
+      Object.entries({ nk: 1, hold: 1 }).forEach(([k, v]) => setG(k, v));
       map.setLayerZoomRange(o.osm, 8, 24); map.setPaintProperty(o.osm, "raster-fade-duration", 0);
       map.setProjection({ type: ["interpolate", ["linear"], ["zoom"], 5, "vertical-perspective", 8, "mercator"] });
       map.setSky({ "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 5, 1, 7, 0] });
@@ -134,6 +160,7 @@
       map.addLayer({ id: "night", type: "fill", source: "night", paint: { "fill-color": "#02040a", "fill-antialias": false,
         "fill-opacity": ["interpolate", ["linear"], ["zoom"], FADE_OUT[0] - 1, ["*", .16, gs("nk")], FADE_OUT[0], 0] } }, below());
       map.jumpTo({ center: [LON0, LAT0], zoom: Z0, padding: { top: 0, bottom: PADB, left: 0, right: 0 } });
+      warmInit();
     };
     if (map.style && map.getStyle()) setup(); else map.once("style.load", setup); // isStyleLoaded() is false while tiles load, after style.load has fired
 
@@ -141,22 +168,9 @@
     let firstFrame; const ready = new Promise(r => { firstFrame = r; });
     map.on("render", function first() { if (map.style && map.getSource("day") && map.isSourceLoaded("day")) { map.off("render", first); performance.mark("globe-first-frame"); firstFrame(); } });
 
-    // ---- the ripple's rings, spreading out from the city ----
-    const unwrap = pts => { for (let i = 1; i < pts.length; i++) { while (pts[i][0] - pts[i - 1][0] > 180) pts[i][0] -= 360; while (pts[i][0] - pts[i - 1][0] < -180) pts[i][0] += 360; } return pts; };
-    const circle = rad => { const f1 = CITY[1] * D2R, l1 = CITY[0] * D2R, d = rad * D2R, pts = [];
-      for (let b = 0; b <= 360; b += 2) { const br = b * D2R, f2 = Math.asin(Math.sin(f1) * Math.cos(d) + Math.cos(f1) * Math.sin(d) * Math.cos(br));
-        pts.push([(l1 + Math.atan2(Math.sin(br) * Math.sin(d) * Math.cos(f1), Math.cos(d) - Math.sin(f1) * Math.sin(f2))) / D2R, f2 / D2R]); }
-      return unwrap(pts); };
-    const addRings = () => {
-      if (dead || !map.style || map.getSource("rings")) return;
-      map.addSource("rings", { type: "geojson", data: { type: "FeatureCollection",
-        features: Array.from({ length: 72 }, (_, i) => ({ type: "Feature", properties: { rad: 2.5 * (i + 1) }, geometry: { type: "LineString", coordinates: circle(2.5 * (i + 1)) } })) } });
-      map.addLayer({ id: "rings", type: "line", source: "rings", paint: { "line-color": "#ffb08a", "line-width": phone ? 1.2 : 1.6, "line-blur": 1.2,
-        "line-opacity": ["interpolate", ["linear"], ["zoom"], FADE_OUT[0], ["*", gs("ra"), ["max", 0, ["-", 1, ["/", ["abs", ["-", gs("rr"), ["get", "rad"]]], 4]]]], FADE_OUT[1], 0] } }, below());
-    };
     // the spinning globe is one texture, sharp at its size on this screen, swapped in once the small one is up
     const SHARP_TEX = (devicePixelRatio || 1) * R * Math.PI > 2600 ? "globe/day-4096.webp" : "globe/day-2048.webp";
-    ready.then(() => { addRings();
+    ready.then(() => {
       // while the globe spins: the first levels of the dive imagery, and the satellite tiles for the globe end of the dive
       mosReady.then(() => { if (dead || !map.style) return; addMosaics(() => true); if (GO === null) { land = o.land(); start = map.getCenter().toArray(); buildCont(); prefetchCity(); } });
       if (!reduce) { const im = new Image(); im.src = SHARP_TEX; im.decode().then(() => { if (GO === null && !dead && map.style) map.getSource("day").updateImage({ url: SHARP_TEX }); }).catch(() => {}); } });
@@ -164,8 +178,7 @@
     // ---- the dive ----
     const lin = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
     const sm = x => x * x * (3 - 2 * x);
-    const ripple = (a, b) => t => { const k = lin(t, a, b); return k >= 1 ? 1.1 : 1 - (1 - k) ** 1.6; };
-    const TT = 2.7, TZ = 2.0, TE = 5.3, RING = .55, CF = .7, PLATE_T = 1.0, RIP0 = 1.7;
+    const TT = 2.7, TZ = 2.0, TE = 5.3, CF = .7, PLATE_T = 1.0;
     let GO = null, start = null, total = TE, contAt = null, land = null, dead = false;
 
     // ---- the dive's satellite: one pre-built image per half zoom level, cut to the view along the fixed path to the city,
@@ -289,6 +302,7 @@
       if (dead || !map.style) return; // no style while the WebGL context is lost
       try { feed(T); } catch (e) {} // a style that is mid-rebuild refuses layers
       if (GO === null) { // spinning; the night follows the sun held to the camera's left
+        warmStep(T, performance.now());
         const lon = LON0 - (reduce ? 0 : SPIN * T);
         map.jumpTo({ center: [lon, LAT0] });
         if (lastNight === null || Math.abs(lon - lastNight) > .25) { lastNight = lon; const s = map.getSource("night"); if (s) s.setData(night(sunFor([lon, LAT0]))); }
@@ -302,7 +316,7 @@
       // the hand-off to OSM: OSM on beneath from 1.3 s out (its tiles for this zoom and one below are cached), then an eased
       // crossfade from the last half second of the dive, as soon as every OSM tile in view is in (or after 0.6 s more)
       const tc = (reduce ? 0 : total) - .5;
-      if (t >= tc - .8 && !osmOn) { osmOn = true; map.moveLayer(o.osm, map.getLayer("rings") ? "rings" : below()); map.setLayoutProperty(o.osm, "visibility", "visible"); }
+      if (t >= tc - .8 && !osmOn) { osmOn = true; map.moveLayer(o.osm, below()); map.setLayoutProperty(o.osm, "visibility", "visible"); }
       if (baseIn === null && t >= tc && osmOn) baseIn = t; // never waits: the camera does not pause
       setG("hold", baseIn === null ? 1 : 1 - sm(lin(t, baseIn, baseIn + CF)));
       if (arrivedAt === null) {
@@ -311,9 +325,6 @@
         else {
           const c = contAt(Math.min(t, total));
           map.jumpTo(c);
-          // the ripple starts as the city turns to face the camera (from about 1.8 s): run any earlier and only its far
-          // side is ever seen, as stray arcs across the other hemisphere
-          const r = ripple(RIP0, RIP0 + 1.7)(t); setG("rr", r * 90); setG("ra", RING * (1 - lin(r, .85, 1.05)));
         }
       }
       if ((reduce || t >= total) && baseIn !== null && t >= baseIn + CF) {
@@ -333,7 +344,7 @@
       map.setLayerZoomRange(o.osm, 0, 24); map.setPaintProperty(o.osm, "raster-fade-duration", 100);
       map.setPaintProperty(o.osm, "raster-opacity", 1); if (osmBefore && map.getLayer(osmBefore)) map.moveLayer(o.osm, osmBefore);
       map.setSky({ "atmosphere-blend": 0 }); map.setProjection({ type: "mercator" });
-      dropProtocol();
+      dropProtocol(); warmDone();
       sky.remove(); halo.remove();
       done();
     };
@@ -383,7 +394,7 @@
       },
       // straight to the end state: the camera on the city, the satellite gone as soon as the OSM tiles are in
       // the app is rebuilding the map: stop, touch nothing, let go() return
-      abort() { if (dead) return; dead = true; cleaned = true; Object.values(mosBlob).forEach(u => URL.revokeObjectURL(u)); dropProtocol(); sky.remove(); halo.remove(); arrive(); done(); },
+      abort() { if (dead) return; dead = true; cleaned = true; warmDone(); Object.values(mosBlob).forEach(u => URL.revokeObjectURL(u)); dropProtocol(); sky.remove(); halo.remove(); arrive(); done(); },
       skip() { if (GO === null || arrivedAt !== null) return; GO = clock() - total; },
       arrived, finished
     };
