@@ -296,17 +296,18 @@ body.sheet-open .leaflet-control-zoom { display: none; }
 @media (prefers-reduced-motion: reduce) { .sheet { transition: none; } }
 /* nothing under the world view is reachable */
 #map.locked .leaflet-marker-pane { visibility: hidden; }
-/* the wordmark needs 390px beside both labelled buttons; the theme label goes first, with 30px to spare */
+/* the wordmark and both labelled buttons need 390px at the phone spacing; 389px and under tightens it by 18px,
+   and under 375px the back link drops its label, never the theme word */
 .masthead a { white-space: nowrap; }
-@media (max-width: 419px) {
-  .theme-toggle .lbl { display: none; }
-  .theme-toggle { width: 32px; padding: 0; justify-content: center; }
-  .theme-toggle::after { inset: -4px; }
+@media (max-width: 389px) {
+  .top { padding: 0 12px; gap: 6px; }
+  .masthead a { gap: 7px; }
+  .home, .theme-toggle { padding: 0 9px; }
 }
 @media (max-width: 374px) {
-  .theme-toggle .lbl, .home .lbl { display: none; }
-  .home, .theme-toggle { width: 32px; padding: 0; justify-content: center; }
-  .home::after, .theme-toggle::after { inset: -4px; }
+  .home .lbl { display: none; }
+  .home { width: 32px; padding: 0; justify-content: center; }
+  .home::after { inset: -4px; }
 }
 
 /* ---- MapLibre: the card, the zoom stack, the compact credit and the pins' keyboard stand-ins ---- */
