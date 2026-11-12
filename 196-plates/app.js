@@ -15,8 +15,7 @@
   // every circle flag is one image (flags-atlas.webp, built by build_atlas.py): one request, started before anything else
   const atlas = Promise.all([fetch("flags-atlas.json").then(r => r.json()), new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = "flags-atlas.webp"; })]);
   const mq = window.matchMedia("(max-width: 760px)"), phone = () => mq.matches, coarse = window.matchMedia("(pointer: coarse)");
-  const small = mq.matches;
-  const W = small ? 22 : 32;
+  let W = mq.matches ? 22 : 32;
   const mapEl = document.getElementById("map");
   // returns where the map's top will be once the scroll lands
   const toMap = () => { if (!phone()) return null; mapEl.scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); return 0; };
@@ -160,18 +159,33 @@
   const popOp = ["min", 1, ["/", popK, .3]];
   const pinData = () => ({ type: "FeatureCollection", features: D.pins.map(p =>
     ({ type: "Feature", properties: { cc: p.cc, c2: p.c2, k: -p.lat, r: (p.lat * 977 % 1 + 1) % 1 }, geometry: { type: "Point", coordinates: [p.lon, p.lat] } })) });
-  const addPins = async () => {
+  const drawFlags = (AT, sheet) => {
     const dpr = Math.min(devicePixelRatio || 1, 3), n = Math.round(W * dpr);
-    const m = map, [AT, sheet] = await atlas;
-    if (m !== map || !ok()) return; // the map was rebuilt, or lost its context, while the flags loaded
     if (sheet) D.pins.forEach(p => {
       const xy = AT.at[p.c2]; if (!xy) return;
       const c = document.createElement("canvas"); c.width = c.height = n;
       const x = c.getContext("2d", { willReadFrequently: true }), r = n / 2, rim = 2.5 * dpr;
       x.save(); x.beginPath(); x.arc(r, r, r - rim / 2, 0, Math.PI * 2); x.clip(); x.drawImage(sheet, xy[0], xy[1], AT.cell, AT.cell, 0, 0, n, n); x.restore();
       x.beginPath(); x.arc(r, r, r - rim / 2, 0, Math.PI * 2); x.lineWidth = rim; x.strokeStyle = "#16191d"; x.stroke();
-      if (!map.hasImage("f-" + p.c2)) map.addImage("f-" + p.c2, x.getImageData(0, 0, n, n), { pixelRatio: dpr });
+      if (map.hasImage("f-" + p.c2)) map.removeImage("f-" + p.c2);
+      map.addImage("f-" + p.c2, x.getImageData(0, 0, n, n), { pixelRatio: dpr });
     });
+  };
+  // crossing the phone breakpoint (a rotation, a resized window) redraws the flags at the new size
+  mq.addEventListener("change", async () => {
+    W = phone() ? 22 : 32;
+    keyBox.querySelectorAll(".pin-key").forEach(b => { b.style.width = b.style.height = W + "px"; });
+    if (!pinsIn || !ok()) return;
+    const [AT, sheet] = await atlas; if (!pinsIn || !ok()) return;
+    drawFlags(AT, sheet);
+    map.setLayoutProperty("ticks", "icon-offset", [W / 2 - 1.5, 0.5 - W / 2]);
+    map.triggerRepaint(); placeKey();
+  });
+  const addPins = async () => {
+    const dpr = Math.min(devicePixelRatio || 1, 3);
+    const m = map, [AT, sheet] = await atlas;
+    if (m !== map || !ok()) return; // the map was rebuilt, or lost its context, while the flags loaded
+    drawFlags(AT, sheet);
     // the eaten tick: a green disc with a white ring, top right of the flag
     const t = Math.round(18 * dpr), tc = document.createElement("canvas"); tc.width = tc.height = t;
     const x = tc.getContext("2d", { willReadFrequently: true }), tr = t / 2;
