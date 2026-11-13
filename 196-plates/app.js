@@ -43,9 +43,12 @@
 
   // ---- the city's frame: fitted at a whole zoom so the raster tiles stay sharp ----
   const MC = maplibregl.MercatorCoordinate;
+  // the zoom buttons cover the right edge: the pins fit in the width left of them (Yemen sat under them on a phone)
+  const ctrlW = () => { const e = mapEl.querySelector(".maplibregl-ctrl-bottom-right .maplibregl-ctrl-group"); return e ? e.offsetWidth + 10 : 52; };
   const fitCamera = (w, h, pad = { top: 0, bottom: 0, left: 0, right: 0 }) => {
-    const a = MC.fromLngLat(BOUNDS[0]), b = MC.fromLngLat(BOUNDS[1]), c = new MC((a.x + b.x) / 2, (a.y + b.y) / 2).toLngLat();
-    const z = Math.min(Math.log2((w - pad.left - pad.right - 64) / (512 * Math.abs(b.x - a.x))), Math.log2((h - pad.top - pad.bottom - 64) / (512 * Math.abs(b.y - a.y))));
+    const a = MC.fromLngLat(BOUNDS[0]), b = MC.fromLngLat(BOUNDS[1]), R = ctrlW();
+    const z = Math.min(Math.log2((w - pad.left - pad.right - R - 64) / (512 * Math.abs(b.x - a.x))), Math.log2((h - pad.top - pad.bottom - 64) / (512 * Math.abs(b.y - a.y))));
+    const c = new MC((a.x + b.x) / 2 + R / 2 / (512 * 2 ** z), (a.y + b.y) / 2).toLngLat();
     return { center: [c.lng, c.lat], zoom: z, padding: pad };
   };
 
