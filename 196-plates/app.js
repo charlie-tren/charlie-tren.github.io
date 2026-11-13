@@ -423,7 +423,7 @@
     document.querySelectorAll("#price button").forEach(b => b.setAttribute("aria-pressed", prices.has(+b.dataset.p)));
     empty.hidden = shown > 0;
     empty.innerHTML = shown ? "" : (filterMode !== "all" || prices.size) && hits
-      ? `No match. <button type="button" class="linkish" id="showall">Show all</button>` : "No countries match.";
+      ? `No match. <button type="button" class="linkish" id="showall">Show all</button>` : "Nothing matches.";
     const all = document.getElementById("showall");
     if (all) all.onclick = () => { filterMode = "all"; prices.clear(); applyFilter(); document.getElementById("find").focus({ preventScroll: true }); };
     D.pins.forEach(p => { const off = !inFilter(p.cc);
