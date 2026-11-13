@@ -6,7 +6,7 @@
   // cities.json lists every city; each keeps its data and dive imagery under its own folder (the first city's at the root)
   const [cl, d0] = await Promise.all([fetch("cities.json").then(r => r.json()).catch(() => null), fetch("data.json").then(r => r.json())]);
   const CITIES = cl && cl.length ? cl : [{ id: (d0.city || "Sydney").toLowerCase(), name: d0.city, country: "Australia", n: 0, base: "" }];
-  const loadCity = async c => c.base ? (await fetch(c.base + "data.json")).json() : d0;
+  const loadCity = async c => { if (!c.base) return d0; const r = await fetch(c.base + "data.json"); if (!r.ok) throw new Error(r.status); return r.json(); };
   const hashCity = CITIES.find(c => "#" + c.id === location.hash.toLowerCase());
   let C = hashCity || CITIES[0], D, CITY, byCC, BOUNDS, KEY, eaten = {};
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -24,7 +24,7 @@
     KEY = "196plates.eaten." + CITY;
     eaten = Object.fromEntries(Object.entries(store.get(KEY, {}) || {}).filter(([cc]) => byCC[cc]));
   };
-  useData(await loadCity(C));
+  try { useData(await loadCity(C)); } catch (e) { C = CITIES.find(c => !c.base) || CITIES[0]; useData(await loadCity(C)); }
   // every circle flag is one image (flags-atlas.webp, built by build_atlas.py): one request, started before anything else
   const atlas = Promise.all([fetch("flags-atlas.json").then(r => r.json()), new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = "flags-atlas.webp"; })]);
   const mq = window.matchMedia("(max-width: 760px)"), phone = () => mq.matches, coarse = window.matchMedia("(pointer: coarse)");
@@ -111,8 +111,8 @@
     e.preventDefault(); grip.setPointerCapture(e.pointerId); grip.classList.add("drag");
     const move = ev => setPanel(ev.clientX);
     const up = ev => { grip.classList.remove("drag"); store.set("196plates.panel", setPanel(ev.clientX));
-      grip.removeEventListener("pointermove", move); grip.removeEventListener("pointerup", up); };
-    grip.addEventListener("pointermove", move); grip.addEventListener("pointerup", up);
+      grip.removeEventListener("pointermove", move); grip.removeEventListener("pointerup", up); grip.removeEventListener("pointercancel", up); };
+    grip.addEventListener("pointermove", move); grip.addEventListener("pointerup", up); grip.addEventListener("pointercancel", up);
   });
   grip.addEventListener("keydown", e => {
     const d = e.key === "ArrowLeft" ? -24 : e.key === "ArrowRight" ? 24 : 0;
@@ -240,7 +240,7 @@
 
   // ---- keyboard: one hidden button per pin, in the map; focus shows a ring on the pin, Enter opens its card ----
   const keyBox = document.createElement("div"); keyBox.className = "pin-keys";
-  mapEl.insertBefore(keyBox, mapEl.querySelector(".maplibregl-control-container"));
+  mapEl.appendChild(keyBox);
   const keys = {};
   let keyOn = null;
   const placeKey = () => { if (!keyOn) return; const p = byCC[keyOn.dataset.cc], pt = map.project([p.lon, p.lat]); keyOn.style.left = pt.x + "px"; keyOn.style.top = pt.y + "px"; };
@@ -288,6 +288,7 @@
     panIntoView(pp);
   }
   const closeCard = () => { if (cardPopup) cardPopup.remove(); };
+  const preloadFlags = () => D.pins.forEach(p => { const im = new Image(); im.src = `flags/${p.c2}-320.png`; });
   const openPin = (cc, mapTop) => {
     const p = byCC[cc], z = Math.max(map.getZoom(), 14);
     if (phone()) { openSheet([p], { opener: nextOpener || keys[cc], at: [p.lon, p.lat], zoom: z, mapTop }); nextOpener = null; return; }
@@ -426,10 +427,21 @@
   cityText();
   // another city picked on the search page: the list, keys and pins are rebuilt for it under the spinning globe
   const setCity = async c => {
-    C = c; useData(await loadCity(c)); buildKeys(); buildGroups(); cityText();
+    const d = await loadCity(c); C = c; useData(d); buildKeys(); buildGroups(); cityText(); if (landed) preloadFlags();
     if (pinsIn && ok()) { const m = map, [AT, sheet] = await atlas; if (m === map && ok()) { drawFlags(AT, sheet); map.getSource("pins").setData(pinData()); } }
     paint();
   };
+  addEventListener("hashchange", () => { const c = CITIES.find(x => "#" + x.id === location.hash.toLowerCase()); if (c && c !== C) location.reload(); });
+  // panned or zoomed into another city: the page follows it (cities.json "b" is each city's pin bounds)
+  let following = false;
+  function followCity() {
+    if (!landed || introBusy || wm || following || map.getZoom() < 7) return;
+    const { lng, lat } = map.getCenter(), P = 0.3;
+    const c = CITIES.find(x => x.b && lng > x.b[0] - P && lat > x.b[1] - P && lng < x.b[2] + P && lat < x.b[3] + P);
+    if (!c || c === C) return;
+    following = true; closeCard(); closeSheet();
+    setCity(c).then(() => { history.replaceState(null, "", "#" + CITY); following = false; }, () => { following = false; });
+  }
 
   // ---- world views: which of 196 the city has, and your own map (worldmap.js, design 348/352) ----
   let wm = null, worldOpener = null;
@@ -481,7 +493,7 @@
     map.resize(); map.setPadding({ top: 0, bottom: 0, left: 0, right: 0 }); map.redraw();
     intro.remove(); introBusy = false; lock(false); landed = true; I = null;
     if (fresh) map.once("load", () => { limitWorld(); zoomState(); }); else { limitWorld(); zoomState(); }
-    paint();
+    paint(); preloadFlags();
     if (pendingRow) { const [cc, b] = pendingRow; pendingRow = null; openRow(cc, b); }
     else if (lost && !phone()) find.focus({ preventScroll: true }); // a phone would raise its keyboard
   };
@@ -501,7 +513,7 @@
     credit = ac._container; creditOpen = false; const cr = credit;
     cr.addEventListener("click", () => { creditOpen = !cr.classList.contains("maplibregl-compact-show"); }, true);
     ["styledata", "sourcedata", "resize", "idle"].forEach(t => m.on(t, closeCredit)); closeCredit(); // MapLibre reopens it as sources change
-    m.on("zoom", zoomState);
+    m.on("zoom", zoomState); m.on("moveend", followCity);
     m.addControl(ctl(zs), "bottom-right"); m.addControl(ctl(wb), "top-right");
     lastView.center = m.getCenter().toArray(); lastView.zoom = m.getZoom();
     m.on("move", () => { placeKey(); lastView.center = m.getCenter().toArray(); lastView.zoom = m.getZoom(); });
@@ -536,7 +548,7 @@
       else createMap({ center: [150, 8], zoom: 1, landed: false });
       wireMap();
     } catch (e) { toLeaflet(); return; }
-    mapEl.insertBefore(keyBox, mapEl.querySelector(".maplibregl-control-container"));
+    mapEl.appendChild(keyBox);
     lock(locked);
     if (phase === "search") I = startIntro();
     else if (phase === "dive") { I = null; landTail(true); }
@@ -546,7 +558,7 @@
 
   // ---- straight to the city, or the search page and the intro ----
   wireMap();
-  if (deep) { map.once("load", () => { limitWorld(); zoomState(); }); paint(); return; }
+  if (deep) { map.once("load", () => { limitWorld(); zoomState(); preloadFlags(); }); paint(); return; }
   lock(true);
   let tries = 0;
   while (typeof window.runIntro !== "function" && tries++ < 100) {
@@ -562,10 +574,10 @@
   const render = () => {
     if (waiting) return;
     const q = input.value.trim().toLowerCase();
-    const m = cities.filter(c => c.name.toLowerCase().startsWith(q)), hits = m.length ? m : cities;
+    const hits = cities.filter(c => c.name.toLowerCase().startsWith(q));
     list.hidden = !open;
     list.innerHTML = hits.map(c => `<li><button type="button" data-id="${esc(c.id)}"><span><b>${esc(c.name)}</b>, ${esc(c.country)}</span><span class="n">${c.n} cuisines</span></button></li>`).join("")
-      + `<li class="soon">More cities coming</li>`;
+      + (hits.length ? "" : `<li class="soon">No city matches</li>`) + `<li class="soon">More cities coming</li>`;
     list.querySelectorAll("button").forEach(b => b.addEventListener("click", go));
   };
   const show = on => { open = on; render(); };
@@ -580,7 +592,10 @@
   async function go(e) {
     if (started) return; started = true; introBusy = true;
     const btn = e && e.currentTarget, pick = CITIES.find(c => btn && c.id === btn.dataset.id) || C;
-    if (pick !== C) { await setCity(pick); if (I && I.retarget) I.retarget({ base: C.base, bounds: BOUNDS }); }
+    if (pick !== C) {
+      try { await setCity(pick); } catch (err) {
+        started = false; introBusy = false; const n = btn && btn.querySelector(".n"); if (n) n.textContent = "Couldn't load, try again"; return; }
+      if (I && I.retarget) I.retarget({ base: C.base, bounds: BOUNDS }); }
     // the dive plays straight through, so it waits here until the rest of its imagery will arrive in time (12 s at most)
     const goNow = () => !I || (I.safe ? I.safe() : !I.progress || I.progress() >= 1);
     if (!goNow()) {

@@ -99,10 +99,12 @@
     const SUNV = [-1.0, 0.22, 0.38], sl = Math.hypot(...SUNV), TH = Math.acos(SUNV[2] / sl), BE = Math.atan2(SUNV[0], SUNV[1]);
     const sunFor = ([lon, lat]) => { const f = lat * D2R, la = Math.asin(Math.sin(f) * Math.cos(TH) + Math.cos(f) * Math.sin(TH) * Math.cos(BE));
       return [lon + Math.atan2(Math.sin(BE) * Math.sin(TH) * Math.cos(f), Math.cos(TH) - Math.sin(f) * Math.sin(la)) / D2R, la / D2R]; };
+    // many faint steps, the same total dark as 7 steps of 16%, whose edges showed as rings on the night side
+    const NSTEP = .5, NA = 1 - Math.pow(.84, 7 / (18 / NSTEP + 1));
     const night = ([lonS, latS]) => {
       lonS = ((lonS + 540) % 360) - 180;
       const sg = latS >= 0 ? 1 : -1, ps = Math.abs(latS) * D2R, feats = [];
-      for (const e of [-12, -9, -6, -3, 0, 3, 6]) {
+      for (let e = -12; e <= 6; e += NSTEP) {
         const se = Math.sin(e * D2R), ring = [];
         for (let lon = -180; lon <= 180; lon += 2.5) {
           const a = Math.sin(ps), b = Math.cos(ps) * Math.cos((lon - lonS) * D2R), x = se / Math.hypot(a, b);
@@ -160,7 +162,7 @@
       // the satellite holds until the basemap under it has loaded (hold), then crossfades; it never leaves a blank
       map.addLayer({ id: "eox", type: "raster", source: "eox", maxzoom: 14, minzoom: Z0 + .6, paint: { "raster-opacity": 1, "raster-fade-duration": 0 } }, below());
       map.addLayer({ id: "night", type: "fill", source: "night", paint: { "fill-color": "#02040a", "fill-antialias": false,
-        "fill-opacity": ["interpolate", ["linear"], ["zoom"], FADE_OUT[0] - 1, ["*", .16, gs("nk")], FADE_OUT[0], 0] } }, below());
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], FADE_OUT[0] - 1, ["*", NA, gs("nk")], FADE_OUT[0], 0] } }, below());
       map.jumpTo({ center: [LON0, LAT0], zoom: Z0, padding: { top: 0, bottom: PADB, left: 0, right: 0 } });
       warmInit();
     };

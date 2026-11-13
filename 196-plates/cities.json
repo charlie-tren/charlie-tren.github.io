@@ -1,1 +1,1 @@
-[{"id":"sydney","name":"Sydney","country":"Australia","base":"","n":64},{"id":"brisbane","name":"Brisbane","country":"Australia","base":"brisbane/","n":34}]
+[{"id":"sydney","name":"Sydney","country":"Australia","base":"","n":64,"b":[150.843,-33.967,151.286,-33.763]},{"id":"brisbane","name":"Brisbane","country":"Australia","base":"brisbane/","n":34,"b":[152.952,-27.627,153.118,-27.451]}]

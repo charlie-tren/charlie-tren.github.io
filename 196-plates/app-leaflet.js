@@ -200,7 +200,7 @@
     if (one) { const c = cardParts(p);
       body = `<div class="sheet-head"><img class="sheet-flag fit-${p.fit}" src="flags/${p.c2}-320.png" alt="Flag of ${esc(p.country)}"><div>${c.head}</div></div>${c.src}`;
       foot = `<div class="sheet-foot">${c.actions}</div>`;
-    } else body = `<ul class="sheet-list">${list.map(q => `<li><button type="button" class="row${isEaten(q.cc) ? " is-been" : ""}" data-cc="${esc(q.cc)}"><img class="fit-${q.fit}" src="flags/${q.c2}-80.png" alt=""><span class="rc">${esc(q.country)}</span><span class="rn">${esc(q.name)}</span></button></li>`).join("")}</ul>`;
+    } else body = `<ul class="sheet-list">${list.map(q => `<li><button type="button" class="row${isEaten(q.cc) ? " is-been" : ""}" data-cc="${esc(q.cc)}"><img class="fit-${q.fit}" src="flags/${q.c2}-80.png" alt=""><span class="rc">${esc(q.country)}</span>${rowName(q)}</button></li>`).join("")}</ul>`;
     sheet.innerHTML = `<div class="sheet-grab" aria-hidden="true"><span></span></div><button type="button" class="sheet-x" aria-label="Close">&times;</button><div class="sheet-body">${body}</div>${foot}`;
     sheet.setAttribute("aria-label", one ? p.name : `${list.length} restaurants`);
     sheet.style.transform = ""; sheet.hidden = false; sheetOn = true; document.body.classList.add("sheet-open");
@@ -244,7 +244,7 @@
     sec.innerHTML = `<h2>${esc(g)}</h2><ul class="rows"></ul>`;
     ps.forEach(p => {
       const li = document.createElement("li");
-      li.innerHTML = `<button type="button" class="row" data-cc="${esc(p.cc)}"><img class="fit-${p.fit}" src="flags/${p.c2}-80.png" alt="" loading="lazy"><span class="rc">${esc(p.country)}</span><span class="rn">${esc(p.name)}</span></button>`;
+      li.innerHTML = `<button type="button" class="row" data-cc="${esc(p.cc)}"><img class="fit-${p.fit}" src="flags/${p.c2}-80.png" alt="" loading="lazy"><span class="rc">${esc(p.country)}</span>${rowName(p)}</button>`;
       li.querySelector("button").addEventListener("click", e => { const b = e.currentTarget;
         if (introBusy) { pendingRow = [p.cc, b]; toMap(); } else openRow(p.cc, b); });
       sec.querySelector(".rows").appendChild(li);
@@ -253,9 +253,15 @@
   });
 
   // ---- filter the list: all / eaten / to try, and a search on country, cuisine or restaurant ----
+  const SHORT = { "Mother Chu's Taiwanese Gourmet": "Mother Chu's", "Mama Lor Restaurant & Bakery": "Mama Lor",
+    "K&K Austrian Cafe & Coffee House": "K&K Austrian Cafe", "Botellon Spanish Tapas & Wine Bar": "Botellon" };
+  const rowName = p => `<span class="rn"><span class="nm">${esc(SHORT[p.name] || p.name.replace(/\s*\([^)]*\)$/, ""))}</span>${p.price
+    ? `<span class="rp" aria-label="${["", "Cheap", "Mid-range", "Expensive"][p.price]}">${"$".repeat(p.price)}</span>` : ""}</span>`;
   let filterMode = "all";
+  const prices = new Set();  // empty = any price
   const fold = s => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
-  const inFilter = cc => filterMode === "eaten" ? isEaten(cc) : filterMode === "not" ? !isEaten(cc) : true;
+  const inFilter = cc => (filterMode === "eaten" ? isEaten(cc) : filterMode === "not" ? !isEaten(cc) : true) &&
+    (!prices.size || prices.has(byCC[cc].price));
   const empty = document.getElementById("empty");
   function applyFilter() {
     const q = fold(document.getElementById("find").value.trim());
@@ -267,15 +273,18 @@
     });
     document.querySelectorAll("#groups .group").forEach(sec => { sec.hidden = ![...sec.querySelectorAll("li")].some(li => !li.hidden); });
     document.querySelectorAll("#filter button").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === filterMode));
+    document.querySelectorAll("#price button").forEach(b => b.setAttribute("aria-pressed", prices.has(+b.dataset.p)));
     empty.hidden = shown > 0;
-    empty.innerHTML = shown ? "" : filterMode !== "all" && hits
-      ? `No match in ${filterMode === "eaten" ? "Eaten" : "To try"}. <button type="button" class="linkish" id="showall">Show all</button>` : "No countries match.";
+    empty.innerHTML = shown ? "" : (filterMode !== "all" || prices.size) && hits
+      ? `No match. <button type="button" class="linkish" id="showall">Show all</button>` : "No countries match.";
     const all = document.getElementById("showall");
-    if (all) all.onclick = () => { filterMode = "all"; applyFilter(); document.getElementById("find").focus({ preventScroll: true }); };
+    if (all) all.onclick = () => { filterMode = "all"; prices.clear(); applyFilter(); document.getElementById("find").focus({ preventScroll: true }); };
     D.pins.forEach(p => { const el = markers[p.cc].getElement(); if (!el) return;
       const off = !inFilter(p.cc); el.classList.toggle("dim", off); el.tabIndex = off ? -1 : 0; });
   }
   document.querySelectorAll("#filter button").forEach(b => b.addEventListener("click", () => { filterMode = b.dataset.f; applyFilter(); }));
+  document.querySelectorAll("#price button").forEach(b => b.addEventListener("click", () => {
+    const v = +b.dataset.p; if (!prices.delete(v)) prices.add(v); applyFilter(); }));
   const find = document.getElementById("find");
   find.addEventListener("input", applyFilter);
   find.addEventListener("keydown", e => { if (e.key !== "Enter") return;
