@@ -133,7 +133,7 @@
     const warmInit = () => { try {
       const P = map.painter, use = P.useProgram, seen = {}; if (typeof use !== "function") return; warmUse = use;
       P.useProgram = function (name, cfg, fsp, defs) {
-        if (WARM[name] && !fsp && map.transform.zoom < 5) { const k = name + (cfg ? cfg.cacheKey : "") + defs; if (!seen[k]) { seen[k] = 1; warmQ.push([name, cfg, defs]); } }
+        if (WARM[name] && !fsp && map.getZoom() < 5) { const k = name + (cfg ? cfg.cacheKey : "") + defs; if (!seen[k]) { seen[k] = 1; warmQ.push([name, cfg, defs]); } }
         return use.apply(this, arguments); };
     } catch (e) {} };
     const warmStep = (T, now) => { if (!warmUse) return;
