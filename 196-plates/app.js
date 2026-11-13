@@ -6,7 +6,9 @@
   // cities.json lists every city; each keeps its data and dive imagery under its own folder (the first city's at the root)
   const [cl, d0] = await Promise.all([fetch("cities.json").then(r => r.json()).catch(() => null), fetch("data.json").then(r => r.json())]);
   const CITIES = cl && cl.length ? cl : [{ id: (d0.city || "Sydney").toLowerCase(), name: d0.city, country: "Australia", n: 0, base: "" }];
-  const loadCity = async c => { if (!c.base) return d0; const r = await fetch(c.base + "data.json"); if (!r.ok) throw new Error(r.status); return r.json(); };
+  const cache = {};
+  const loadCity = async c => { if (!c.base) return d0; if (cache[c.id]) return cache[c.id];
+    const r = await fetch(c.base + "data.json"); if (!r.ok) throw new Error(r.status); return (cache[c.id] = await r.json()); };
   const hashCity = CITIES.find(c => "#" + c.id === location.hash.toLowerCase());
   let C = hashCity || CITIES[0], D, CITY, byCC, BOUNDS, KEY, eaten = {};
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -174,9 +176,20 @@
   const popOp = ["min", 1, ["/", popK, .3]];
   const pinData = () => ({ type: "FeatureCollection", features: D.pins.map(p =>
     ({ type: "Feature", properties: { cc: p.cc, c2: p.c2, k: -p.lat, r: (p.lat * 977 % 1 + 1) % 1 }, geometry: { type: "Point", coordinates: [p.lon, p.lat] } })) });
+  // the other cities' pins, drawn too, so a city shows before you are zoomed into it; a tap there switches city
+  let AWAY = [];
+  const awayData = () => ({ type: "FeatureCollection", features: AWAY.map(p =>
+    ({ type: "Feature", properties: { cc: p.cc, c2: p.c2, k: -p.lat, r: (p.lat * 977 % 1 + 1) % 1 }, geometry: { type: "Point", coordinates: [p.lon, p.lat] } })) });
+  const showAway = async () => {
+    const o = await Promise.all(CITIES.filter(c => c !== C).map(c => loadCity(c).then(d => d.pins.filter(p => /^[a-z]{2}$/.test(p.c2)).map(p => ({ ...p, city: c.id })), () => [])));
+    AWAY = o.flat();
+    if (!pinsIn || !ok()) return;
+    const m = map, [AT, sheet] = await atlas; if (m !== map || !ok()) return;
+    drawFlags(AT, sheet); map.getSource("away").setData(awayData());
+  };
   const drawFlags = (AT, sheet) => {
     const dpr = Math.min(devicePixelRatio || 1, 3), n = Math.round(W * dpr);
-    if (sheet) D.pins.forEach(p => {
+    if (sheet) [...new Map([...D.pins, ...AWAY].map(p => [p.c2, p])).values()].forEach(p => {
       const xy = AT.at[p.c2]; if (!xy) return;
       const c = document.createElement("canvas"); c.width = c.height = n;
       const x = c.getContext("2d", { willReadFrequently: true }), r = n / 2, rim = 2.5 * dpr;
@@ -208,8 +221,11 @@
     x.fillStyle = "#fff"; x.font = `700 ${9 * dpr}px -apple-system, "Segoe UI", Roboto, Arial, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("✓", tr, tr + .5 * dpr);
     map.addImage("tick", x.getImageData(0, 0, t, t), { pixelRatio: dpr });
     map.setGlobalStateProperty("pinT", pinT);
+    map.addSource("away", { type: "geojson", data: awayData() });
+    map.addLayer({ id: "away", type: "symbol", source: "away", layout: { "icon-image": ["concat", "f-", ["get", "c2"]], "icon-allow-overlap": true, "icon-ignore-placement": true,
+      "symbol-sort-key": ["get", "k"] }, paint: { "icon-opacity": popOp } });
     map.addSource("pins", { type: "geojson", data: pinData(), promoteId: "cc" });
-    const dim = ["case", ["boolean", ["feature-state", "dim"], false], .25, 1];
+    const dim =["case", ["boolean", ["feature-state", "dim"], false], .25, 1];
     map.addLayer({ id: "pins", type: "symbol", source: "pins", layout: { "icon-image": ["concat", "f-", ["get", "c2"]], "icon-allow-overlap": true, "icon-ignore-placement": true,
       "icon-size": popSize, "symbol-sort-key": ["get", "k"] }, paint: { "icon-opacity": ["*", popOp, dim] } });
     map.addLayer({ id: "ticks", type: "symbol", source: "pins", layout: { "icon-image": "tick", "icon-allow-overlap": true, "icon-ignore-placement": true,
@@ -226,9 +242,11 @@
   // which pins sit under a point, topmost (southernmost) first; dimmed ones are not there
   const dimmed = cc => !inFilter(cc);
   const pinsNear = (pt, r) => D.pins.filter(q => !dimmed(q.cc)).map(q => ({ q, d: map.project([q.lon, q.lat]).dist(pt) })).filter(x => x.d <= r);
+  const awayNear = (pt, r) => landed && !wm ? AWAY.map(q => ({ q, d: map.project([q.lon, q.lat]).dist(pt) })).filter(x => x.d <= r).sort((a, b) => a.q.lat - b.q.lat)[0] : null;
   const onMouseMove = e => {
     const h = !locked && !introBusy && pinsNear(e.point, W / 2).sort((a, b) => a.q.lat - b.q.lat)[0];
-    map.getCanvas().style.cursor = h ? "pointer" : ""; map.getCanvas().title = h ? `${h.q.adj}: ${h.q.name}` : "";
+    const a = !h && !locked && !introBusy && awayNear(e.point, W / 2), t = h || a;
+    map.getCanvas().style.cursor = t ? "pointer" : ""; map.getCanvas().title = t ? `${t.q.adj}: ${t.q.name}` : "";
     hover(h ? h.q.cc : "");
   };
   let hovered = "";
@@ -236,7 +254,7 @@
   const onMapClick = e => {
     if (locked || introBusy) return;
     const hits = pinsNear(e.point, W / 2 + (coarse.matches ? 9 : 0));
-    if (!hits.length) { closeSheet(); return; }
+    if (!hits.length) { const a = awayNear(e.point, W / 2 + (coarse.matches ? 9 : 0)); if (a) goAway(a.q); else closeSheet(); return; }
     const p = hits.sort((a, b) => a.q.lat - b.q.lat)[0].q;
     if (phone()) tapPin(p, e.point); else openCard(p, keys[p.cc]);
   };
@@ -432,6 +450,7 @@
   const setCity = async c => {
     const d = await loadCity(c); C = c; useData(d); buildKeys(); buildGroups(); cityText(); if (landed) preloadFlags();
     if (pinsIn && ok()) { const m = map, [AT, sheet] = await atlas; if (m === map && ok()) { drawFlags(AT, sheet); map.getSource("pins").setData(pinData()); } }
+    if (landed) await showAway();
     paint();
   };
   addEventListener("hashchange", () => { const c = CITIES.find(x => "#" + x.id === location.hash.toLowerCase()); if (c && c !== C) location.reload(); });
@@ -445,6 +464,12 @@
     following = true; closeCard(); closeSheet();
     setCity(c).then(() => { history.replaceState(null, "", "#" + CITY); following = false; }, () => { following = false; });
   }
+  window.__plates = { map: () => map, pins: () => D.pins, away: () => AWAY };  // read by test_site.py
+  const goAway = q => {
+    const c = CITIES.find(x => x.id === q.city); if (!c || following) return;
+    following = true; closeCard(); closeSheet();
+    setCity(c).then(() => { history.replaceState(null, "", "#" + CITY); following = false; openRow(q.cc, null); }, () => { following = false; });
+  };
 
   // ---- world views: which of 196 the city has, and your own map (worldmap.js, design 348/352) ----
   let wm = null, worldOpener = null;
@@ -496,7 +521,7 @@
     map.resize(); map.setPadding({ top: 0, bottom: 0, left: 0, right: 0 }); map.redraw();
     intro.remove(); introBusy = false; lock(false); landed = true; I = null;
     if (fresh) map.once("load", () => { limitWorld(); zoomState(); }); else { limitWorld(); zoomState(); }
-    paint(); preloadFlags();
+    paint(); preloadFlags(); showAway();
     if (pendingRow) { const [cc, b] = pendingRow; pendingRow = null; openRow(cc, b); }
     else if (lost && !phone()) find.focus({ preventScroll: true }); // a phone would raise its keyboard
   };
@@ -561,7 +586,7 @@
 
   // ---- straight to the city, or the search page and the intro ----
   wireMap();
-  if (deep) { map.once("load", () => { limitWorld(); zoomState(); preloadFlags(); }); paint(); return; }
+  if (deep) { map.once("load", () => { limitWorld(); zoomState(); preloadFlags(); showAway(); }); paint(); return; }
   lock(true);
   let tries = 0;
   while (typeof window.runIntro !== "function" && tries++ < 100) {
