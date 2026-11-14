@@ -378,7 +378,7 @@
       const m = cities.filter(c => c.name.toLowerCase().startsWith(q)), hits = m.length ? m : cities;
       list.hidden = !open;
       list.innerHTML = hits.map(c => `<li><button type="button" data-id="${esc(c.id)}"><span><b>${esc(c.name)}</b>, ${esc(c.country)}</span><span class="n">${c.n} cuisines</span></button></li>`).join("")
-        + `<li class="soon">More cities coming</li>`;
+        + `<li class="soon">More cities coming soon</li>`;
       list.querySelectorAll("button").forEach(b => b.addEventListener("click", go));
     };
     const show = on => { open = on; render(); };
