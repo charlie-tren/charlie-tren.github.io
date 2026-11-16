@@ -97,7 +97,7 @@ for (const [name, url] of Object.entries(SITES)) {
      test now. Two things make it matter here more than on a normal site.
      Several projects are reachable at BOTH a path on the apex and their own
      subdomain, or at their deploy origin as well as the custom domain
-     (dcf-studio.vercel.app and crowdwise-live.vercel.app both answer 200), so
+     (dcf-studio and crowdwise on charlie-rochfordgroup.workers.dev both answer 200), so
      without one tag Google is choosing between duplicates on its own. And DCF
      Studio carries its whole assumption set in the query string, so one company
      has an unbounded number of URLs.
