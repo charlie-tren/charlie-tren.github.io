@@ -44,6 +44,11 @@ project's own repo, since most directories here are deploy targets.
   2. Settings, Emails: tick "Block command line pushes that expose my email", so a
      machine set to a real address is refused rather than published.
 
+- [ ] **Delete or keep the old Vercel projects, from about 14/12/2026.** **Charlie-only.**
+  DCF Studio and Crowdwise moved to Cloudflare Workers on 16/11/2026. The Vercel
+  projects `dcf-studio` and `crowdwise-live` (team `charlierochfordgroups-projects`,
+  paused 14/11) are the rollback until the pause clears.
+
 ## Shipped
 
 - ~~Link the podcast from the homepage~~ - the Elsewhere row links the Thinkerings
