@@ -56,6 +56,8 @@
           color: var(--soft); text-decoration: none; display: inline-flex; align-items: center; transition: color .2s; }
   .home:hover { color: var(--accent); }
   .home .back { font-size: 15.5px; position: relative; top: -.5px; }
+  .home { position: relative; }
+  .home::after { content: ""; position: absolute; inset: -12px -10px; }
   .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
                   border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem;
                   font: 500 12.5px/1 var(--sans); letter-spacing: .02em;
@@ -123,8 +125,9 @@
 
   table { width: 100%; border-collapse: collapse; font: 400 var(--t-s)/1.4 var(--sans); font-variant-numeric: tabular-nums; }
   th { font: 600 var(--t-xs)/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--soft);
-       text-align: right; padding: 0 0 .6rem; border-bottom: 1px solid var(--rule); }
-  td { text-align: right; padding: .6rem 0; border-bottom: 1px solid var(--rule); }
+       text-align: right; padding: 0 0 .6rem .9rem; border-bottom: 1px solid var(--rule); vertical-align: bottom; }
+  td { text-align: right; padding: .6rem 0 .6rem .9rem; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th:first-child, td:first-child { padding-left: 0; }
   th:first-child, td:first-child { text-align: left; }
   td.m { color: var(--fc-text); font-weight: 600; }
 
@@ -154,6 +157,8 @@
     .stat:nth-child(even) .help { left: auto; right: 0; }
     .symbols { grid-template-columns: 4.5rem minmax(0, 1fr); }
     .hide-s { display: none; }
+    input[type=range] { height: 40px; }
+    th { letter-spacing: .05em; }
     .pdesc { min-height: 3em; }
   }
 </style>
@@ -415,7 +420,9 @@
   [["chart", "tip1", false], ["ratio", "tip2", true]].forEach(function (c) {
     var svg = document.getElementById(c[0]), tip = document.getElementById(c[1]);
     svg.addEventListener("pointermove", function (e) { hover(c[2] ? C2 : C1, tip, e, c[2]); });
-    svg.addEventListener("pointerleave", function () { tip.style.display = "none"; (c[2] ? C2 : C1).hl.setAttribute("visibility", "hidden"); });
+    svg.addEventListener("pointerdown", function (e) { hover(c[2] ? C2 : C1, tip, e, c[2]); });
+    svg.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { tip.style.display = "none"; (c[2] ? C2 : C1).hl.setAttribute("visibility", "hidden"); } });
+    document.addEventListener("pointerdown", function (e) { if (!svg.contains(e.target)) { tip.style.display = "none"; (c[2] ? C2 : C1).hl.setAttribute("visibility", "hidden"); } });
   });
 
   function label() {
