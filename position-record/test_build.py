@@ -326,6 +326,9 @@ def test_a_hand_entered_exit_beats_the_derivation():
     survive a rebuild. The derivation only fills a blank."""
     src_p = HERE / "positions.json"
     before = src_p.read_text(encoding="utf-8")
+    # Put the files back byte for byte: a rebuild here refetches live prices and
+    # rewrote prices.json and index.html under a commit on 21/11/2026.
+    kept = {p: p.read_bytes() for p in (HERE / "prices.json", HERE / "index.html")}
     try:
         d = json.loads(before)
         target = next(p for p in d["open"] if p["name"] == "Japan 225")
@@ -340,8 +343,8 @@ def test_a_hand_entered_exit_beats_the_derivation():
         assert "09/09/26" in html and "hand-entered" in html
     finally:
         src_p.write_text(before, encoding="utf-8")
-        subprocess.run([sys.executable, str(HERE / "build.py")],
-                       capture_output=True, text=True)
+        for p, b in kept.items():
+            p.write_bytes(b)
 
 
 def test_the_missing_price_guard_can_still_fire():
