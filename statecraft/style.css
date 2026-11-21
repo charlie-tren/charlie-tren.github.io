@@ -233,7 +233,7 @@ header.wrap { padding-top: 1rem; }
 
 /* The arrow is muted like its label. An accent-coloured glyph in a grey line
    is the brightest thing on the page and it points away from it. */
-.home .back { color: var(--faint); }
+.home .back { color: var(--faint); font-size: calc(1em + 1.5px); position: relative; top: -1.5px; }
 
 /* The wordmark now SHARES the top line with the theme toggle and the back-link,
    so it no longer gets a row and a 1.4rem margin to itself. It is the item that

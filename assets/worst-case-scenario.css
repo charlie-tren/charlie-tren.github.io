@@ -47,7 +47,7 @@
   .bar { gap: .6rem; }
   .barright { gap: .6rem; }
   .barright .home { font-size: 0; }
-  .barright .home .back { font-size: 15px; }
+  .barright .home .back { font-size: 16.5px; }
   .wm { font-size: 15px; overflow: hidden; text-overflow: ellipsis; }
 }
 @media (prefers-reduced-motion: reduce) {

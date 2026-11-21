@@ -45,7 +45,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -we
   font: 600 13px/1 var(--sans); letter-spacing: .01em; transition: border-color .15s, background .15s;
 }
 .home:hover, .theme-toggle:hover { border-color: var(--ink); background: var(--hover); }
-.home .back { width: 14px; height: 14px; }
+.home .back { width: 15.5px; height: 15.5px; }
 .theme-toggle .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
 
 /* ---- layout ---- */

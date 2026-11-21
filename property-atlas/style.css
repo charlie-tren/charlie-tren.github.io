@@ -93,7 +93,7 @@ header.wrap { padding-top: 26px; }
 .topnav a:hover { color: var(--ink-soft); }
 /* The arrow is muted with its label. A single accent glyph in a grey line is
    the brightest thing in the header, pointing away from the page. */
-.topnav .back { position: relative; top: -1px; }
+.topnav .back { font-size: calc(1em + 1.5px); position: relative; top: -2.5px; }
 
 h1 {
   font: 400 clamp(30px, 7vw, 46px)/1.05 var(--font-title);

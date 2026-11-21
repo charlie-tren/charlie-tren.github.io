@@ -38,7 +38,7 @@ a { color: inherit; }
         text-transform: uppercase; color: var(--soft); text-decoration: none;
         display: inline-flex; align-items: center; gap: 0; transition: color .2s; }
 .home:hover { color: var(--accent); }
-.home .back { font-size: 14px; }
+.home .back { font-size: 15.5px; position: relative; top: -1.5px; }
 /* The estate's one theme toggle: immediately left of Other projects on every site. */
 .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
                 border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem;
