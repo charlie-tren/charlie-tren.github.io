@@ -143,19 +143,8 @@ SITES = {
         "mark": "bookmark/favicon.svg",
         "assert_face": "400 16px 'Young Serif'",
     },
-    # No title drawn, on Charlie's brief (21/11/2026): the og:title sits beside the card,
-    # so the sentence carries it, set larger in ink.
-    "bitcoin-power-law-forecast": {
-        "name": "Bitcoin Power Law Forecast",
-        "css": "bitcoin-power-law-forecast/index.html",
-        "copy": ("bitcoin-power-law-forecast/index.html", "og:description"),
-        "tokens": {"bg": "bg", "panel": "raised", "ink": "ink", "dim": "soft",
-                   "faint": "soft", "rule": "rule", "accent": "accent"},
-        "title_font": "ui-sans-serif, system-ui, sans-serif",
-        "body_font": "ui-sans-serif, system-ui, sans-serif",
-        "mark": "bitcoin-power-law-forecast/favicon.svg",
-        "title": False,
-    },
+    # bitcoin-power-law-forecast is not built here: its card (name over the page's own chart) is built by
+    # bitcoin-power-law-forecast/make_card.py (picked 21/11/2026 after a title-less card here was "terrible").
     # 196-plates is not built here: its card (globe with the mark's face) is hand-built by
     # opc-probe/site/yourmap/gen_og.py, which writes 196-plates/og-card.png and og-card-source.html.
 }
