@@ -302,7 +302,7 @@ footer a { color: var(--ink-faint); }@media (max-width: 620px) {
    value in a column changes. The nine add to 100. */
 table#grid {
   width: 100%; border-collapse: collapse; white-space: nowrap;
-  table-layout: fixed; min-width: 760px;
+  table-layout: fixed; min-width: 840px;
   font-size: .92rem; font-variant-numeric: tabular-nums;
 }
 table#grid th:nth-child(1) { width: 17%; }   /* Market */
@@ -328,6 +328,7 @@ table#grid th {
   cursor: pointer; user-select: none; vertical-align: bottom;
   padding-bottom: 8px; border-bottom: 1.5px solid var(--ink);
 }
+@media (max-width: 1200px) { table#grid th { white-space: normal; } }
 table#grid th::after { content: " ↓"; opacity: .3; font-size: 11px; }
 table#grid th:hover { color: var(--ink); }
 table#grid th:hover::after { opacity: .75; }
@@ -413,7 +414,6 @@ tr.detail td { padding: 0 0 18px; white-space: normal; }
      page on. The table is the substance, so it leads and the map follows. */
   table#grid { font-size: .8rem; }
   table#grid th, table#grid td { padding: 6px 9px 6px 0; }
-  table#grid th { white-space: normal; }
 }
 
 /* ---- map ---- */
