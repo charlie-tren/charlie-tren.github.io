@@ -596,7 +596,7 @@ footer.site sup { font-size: 0.7em; }
   #r-pct { font-size: 2.4rem; }
   .qnav button { min-width: 0; flex: 1; }
 }
-/* Phones: 16px stops iOS zooming into a field; the back link gets a finger-sized hit area. */
+/* Phones: the back link gets a finger-sized hit area. */
 @media (pointer: coarse) {
   .home { position: relative; }
   .home::after { content: ""; position: absolute; inset: -14px -10px; }

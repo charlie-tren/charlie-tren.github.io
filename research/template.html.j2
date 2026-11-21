@@ -153,7 +153,7 @@
     .now:not(:empty)::before { content: "Now"; }
     .target:not(:empty)::before { content: "Target"; }
   }
-/* Phones: 16px stops iOS zooming into a field; the back link gets a finger-sized hit area. */
+/* Phones: the back link gets a finger-sized hit area. */
 @media (pointer: coarse) {
   .home { position: relative; }
   .home::after { content: ""; position: absolute; inset: -14px -10px; }
