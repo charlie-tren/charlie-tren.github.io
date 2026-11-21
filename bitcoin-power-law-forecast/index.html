@@ -380,7 +380,7 @@
     // numbers
     document.getElementById("sPrice").textContent = usd(D.price);
     document.getElementById("sPriceS").textContent = fday(T0).replace(/ \d{4}$/, "") + ", " + (D.price / trendAt(T0)).toFixed(2) + "x trend";
-    document.getElementById("sTrendS").textContent = fday(T0).replace(/ d{4}$/, "");
+    document.getElementById("sTrendS").textContent = document.getElementById("sPriceS").textContent.split(",")[0];
     document.getElementById("sTrend").textContent = usd(trendAt(T0));
         document.getElementById("sFc").textContent = usd(F[2][h]);
     document.getElementById("sFcS").textContent = fdate(th) + ", " + ret(F[2][h], h);
