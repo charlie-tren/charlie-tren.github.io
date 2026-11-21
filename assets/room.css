@@ -384,3 +384,9 @@ input[type=range].slider::-moz-range-thumb { width: 18px; height: 18px; border-r
 input[type=range].slider:disabled::-webkit-slider-thumb { cursor: default; }
 input[type=range].slider:disabled::-moz-range-thumb { cursor: default; }
 #answered { color: var(--faint); }
+/* Phones: 16px stops iOS zooming into a field; the back link gets a finger-sized hit area. */
+@media (pointer: coarse) {
+  input:not([type=checkbox]):not([type=radio]):not([type=range]), select, textarea { font-size: 16px !important; }
+  .home { position: relative; }
+  .home::after { content: ""; position: absolute; inset: -14px -10px; }
+}

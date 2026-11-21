@@ -687,3 +687,9 @@ td.asat { white-space: nowrap; font-variant-numeric: tabular-nums; }
 }
 /* The rule keeps its distance from the line now, not from the name. */
 header.wrap { padding-bottom: 16px; }
+/* Phones: 16px stops iOS zooming into a field; the back link gets a finger-sized hit area. */
+@media (pointer: coarse) {
+  input:not([type=checkbox]):not([type=radio]):not([type=range]), select, textarea { font-size: 16px !important; }
+  .topnav .home { position: relative; }
+  .topnav .home::after { content: ""; position: absolute; inset: -14px -10px; }
+}
