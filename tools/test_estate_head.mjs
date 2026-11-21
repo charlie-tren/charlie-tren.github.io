@@ -37,6 +37,7 @@ const SITES = {
   "Equity Research":   "https://charlietrenorden.com/research/",
   "Crosscheck":        "https://charlietrenorden.com/crosscheck/",
   "Position Record":   "https://charlietrenorden.com/position-record/",
+  "Bitcoin Power Law Forecast": "https://charlietrenorden.com/bitcoin-power-law-forecast/",
   "Vantage":           "https://charlietrenorden.com/vantage/",
   "Fakle":             "https://charlietrenorden.com/fakle/",
   "Crowdwise":         "https://crowdwise.charlietrenorden.com/",

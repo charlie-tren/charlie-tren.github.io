@@ -143,6 +143,19 @@ SITES = {
         "mark": "bookmark/favicon.svg",
         "assert_face": "400 16px 'Young Serif'",
     },
+    # No title drawn, on Charlie's brief (21/11/2026): the og:title sits beside the card,
+    # so the sentence carries it, set larger in ink.
+    "bitcoin-power-law-forecast": {
+        "name": "Bitcoin Power Law Forecast",
+        "css": "bitcoin-power-law-forecast/index.html",
+        "copy": ("bitcoin-power-law-forecast/index.html", "og:description"),
+        "tokens": {"bg": "bg", "panel": "raised", "ink": "ink", "dim": "soft",
+                   "faint": "soft", "rule": "rule", "accent": "accent"},
+        "title_font": "ui-sans-serif, system-ui, sans-serif",
+        "body_font": "ui-sans-serif, system-ui, sans-serif",
+        "mark": "bitcoin-power-law-forecast/favicon.svg",
+        "title": False,
+    },
     # 196-plates is not built here: its card (globe with the mark's face) is hand-built by
     # opc-probe/site/yourmap/gen_og.py, which writes 196-plates/og-card.png and og-card-source.html.
 }
@@ -194,6 +207,9 @@ def page_html(spec, t, text):
         top = f'<div class="mark">{svg}</div>'
     else:
         top = f'<p class="eyebrow">{spec["eyebrow"]}</p>'
+    drawn = spec.get("title", True)
+    title = f"<h1>{spec['name']}</h1>" if drawn else ""
+    solo = "" if drawn else " solo"
     return f"""<!doctype html>
 <html><head><meta charset="utf-8">
 <meta name="robots" content="noindex">
@@ -250,11 +266,12 @@ def page_html(spec, t, text):
   }}
   .foot .dom {{ color: {t['dim']}; }}
   .mark svg {{ display: block; width: 84px; height: 84px; }}
+  .lede.solo {{ margin-top: 40px; color: {t['ink']}; font-size: 46px; line-height: 1.3; letter-spacing: -0.01em; }}
 </style></head>
 <body>
   {top}
-  <h1>{spec['name']}</h1>
-  <p class="lede">{text}</p>
+  {title}
+  <p class="lede{solo}">{text}</p>
   <div class="foot"><span class="dom">charlietrenorden.com/{spec['slug']}</span><span>Charlie Trenorden</span></div>
 </body></html>"""
 

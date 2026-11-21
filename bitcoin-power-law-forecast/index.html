@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bitcoin Power Law Forecast</title>
+<!-- Written for search and AI answer engines, and deliberately NOT the visible lede. -->
+<meta name="description" content="Bitcoin price forecast and prediction from the power-law trend: where BTC sits against its long-run trend, and four-year scenarios from a reversion model and a slowing-growth model. Updated daily.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bitcoin Power Law Forecast">
+<meta property="og:description" content="Bitcoin's price compared with its long-run power-law trend, and a forecast of where it could be in one to four years.">
+<meta property="og:url" content="https://charlietrenorden.com/bitcoin-power-law-forecast/">
+<link rel="canonical" href="https://charlietrenorden.com/bitcoin-power-law-forecast/">
+<meta property="og:image" content="https://charlietrenorden.com/bitcoin-power-law-forecast/og-card.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt" content="An orange Bitcoin coin above the page's one-line description">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/bitcoin-power-law-forecast/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/bitcoin-power-law-forecast/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="icon" href="/bitcoin-power-law-forecast/favicon-48.png" type="image/png" sizes="48x48">
+<link rel="apple-touch-icon" href="/bitcoin-power-law-forecast/apple-touch-icon.png">
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      var dark = saved ? saved === "dark"
+        : !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root, :root[data-theme="dark"] { --bg:#0f1319; --raised:#171c24; --ink:#e6e9ee; --soft:#8a94a3;
+    --rule:#262d38; --accent:#82a8ca; --trend:#7FA7D9; --fc:#E8892F; --fc-text:#EE9A48;
+    --band:rgba(232,137,47,.32); --band2:rgba(232,137,47,.14); }
+  :root[data-theme="light"] { --bg:#eef0f3; --raised:#fbfcfd; --ink:#14171c; --soft:#565d68;
+    --rule:#d7dbe2; --accent:#3a5f80; --trend:#4F7FB8; --fc:#D0701A; --fc-text:#A85410;
+    --band:rgba(208,112,26,.30); --band2:rgba(208,112,26,.12); }
+  :root { --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+          --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+          --t-xl: clamp(2.1rem, 5.6vw, 3.1rem); --t-l: 20px; --t-m: 17px; --t-s: 14px; --t-xs: 12px; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--t-m)/1.6 var(--sans);
+         -webkit-font-smoothing: antialiased; transition: background .3s, color .3s; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 2.2rem 2rem 5rem; }
+  .s { font-size: var(--t-s); }
+  .caps { font: 600 var(--t-xs)/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2.6rem; }
+  .barright { display: flex; align-items: center; gap: 1rem; flex: none; }
+  .home { font: 500 13px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
+          color: var(--soft); text-decoration: none; display: inline-flex; align-items: center; transition: color .2s; }
+  .home:hover { color: var(--accent); }
+  .home .back { font-size: 15.5px; position: relative; top: -.5px; }
+  .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
+                  border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem;
+                  font: 500 12.5px/1 var(--sans); letter-spacing: .02em;
+                  display: inline-flex; align-items: center; gap: .45rem; transition: border-color .2s, color .2s; }
+  .theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .theme-toggle .lbl[data-t]::after { content: attr(data-t); }
+
+  h1.wm { font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -.02em; margin: 0;
+          display: flex; align-items: center; gap: .4em; min-width: 0; }
+  h1.wm svg { width: 1.05em; height: 1.05em; flex: none; }
+  .lede { max-width: 62ch; margin: 0 0 .5rem; }
+  .over { color: var(--soft); max-width: 80ch; margin: 0 0 2.8rem; }
+  h2 { font-weight: 600; font-size: var(--t-l); margin: 4rem 0 1.2rem; letter-spacing: -.015em; }
+
+  .now { display: flex; flex-wrap: wrap; gap: .6rem 2.6rem; margin: 0 0 2rem; }
+  .stat .k { display: block; margin-bottom: .25rem; }
+  .stat .v { font-size: var(--t-l); font-weight: 600; letter-spacing: -.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stat .sub { display: block; font-size: var(--t-s); color: var(--soft); margin-top: .1rem; white-space: nowrap; }
+
+  .presets { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 .7rem; }
+  .pdesc { font-size: var(--t-s); line-height: 1.5; color: var(--soft); margin: 0 0 1.4rem; min-height: 1.5em; max-width: 70ch; }
+  .preset { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule);
+            border-radius: 999px; padding: .5rem .9rem; font: 400 var(--t-s)/1 var(--sans);
+            transition: border-color .2s, color .2s, background .2s; position: relative; }
+  .preset::after { content: ""; position: absolute; inset: -5px -2px; }
+  .preset:hover { color: var(--ink); border-color: var(--accent); }
+  .preset[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-color: var(--fc); background: var(--band2); }
+
+  .chartbox { position: relative; }
+  .chart { width: 100%; display: block; touch-action: pan-y; }
+  #chart { height: clamp(300px, 52vw, 460px); }
+  #ratio { height: clamp(200px, 30vw, 270px); }
+  .chart text { font: 400 var(--t-xs) var(--sans); fill: var(--soft); }
+  .tip { position: absolute; pointer-events: none; background: var(--raised); border: 1px solid var(--rule); border-radius: 6px;
+         padding: .45rem .65rem; font: 400 var(--t-s)/1.45 var(--sans); color: var(--ink);
+         white-space: nowrap; font-variant-numeric: tabular-nums; display: none; box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+  .tip b { font-weight: 600; } .tip span { color: var(--soft); }
+  .key { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; margin: .7rem 0 0; font: 400 var(--t-s)/1.4 var(--sans); color: var(--soft); }
+  .key span { display: inline-flex; align-items: center; gap: .45rem; }
+  .key i { display: inline-block; width: 18px; height: 0; border-top: 2px solid; }
+  .key i.sw { height: 10px; border: 0; }
+  .key i.sw2 { height: 10px; border: 1px solid var(--band); }
+
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem 2.8rem; margin: 2.4rem 0 0; }
+  .ctl { position: relative; }
+  .ctl label { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+               font: 600 var(--t-s)/1.3 var(--sans); color: var(--ink); margin-bottom: .55rem; }
+  .ctl label .name { display: inline-flex; align-items: center; }
+  .ctl output { font-variant-numeric: tabular-nums; color: var(--fc-text); white-space: nowrap; }
+  input[type=range] { width: 100%; margin: 0; accent-color: var(--fc); height: 28px; cursor: pointer; }
+  .info { appearance: none; cursor: pointer; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--soft);
+          background: transparent; color: var(--soft); padding: 0; margin-left: .45rem; display: inline-grid; place-items: center;
+          position: relative; flex: none; opacity: .8; }
+  .info svg { width: 10px; height: 10px; display: block; }
+  .info::after { content: ""; position: absolute; inset: -11px; }
+  .info:hover, .info[aria-expanded="true"] { color: var(--ink); border-color: var(--fc); opacity: 1; }
+  .help { position: absolute; z-index: 6; left: 0; top: 1.9rem; width: min(380px, 100%); margin: 0; display: none;
+          background: var(--raised); border: 1px solid var(--rule); border-radius: 8px; padding: .7rem .85rem;
+          box-shadow: 0 8px 24px rgba(0,0,0,.22); font: 400 var(--t-s)/1.5 var(--sans); color: var(--ink); }
+  .ctl.open .help, .stat.open .help { display: block; }
+  .stat { position: relative; }
+  .stat .k { display: flex; align-items: center; }
+  .stat .help { top: 1.5rem; width: 300px; text-transform: none; letter-spacing: 0; }
+
+  table { width: 100%; border-collapse: collapse; font: 400 var(--t-s)/1.4 var(--sans); font-variant-numeric: tabular-nums; }
+  th { font: 600 var(--t-xs)/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--soft);
+       text-align: right; padding: 0 0 .6rem; border-bottom: 1px solid var(--rule); }
+  td { text-align: right; padding: .6rem 0; border-bottom: 1px solid var(--rule); }
+  th:first-child, td:first-child { text-align: left; }
+  td.m { color: var(--fc-text); font-weight: 600; }
+
+  .models { border-bottom: 1px solid var(--rule); }
+  .mrow { display: grid; grid-template-columns: 220px 1fr; gap: 1.6rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
+  .mrow h3 { font-size: var(--t-m); font-weight: 600; margin: 0; line-height: 1.5; }
+  .mrow p { margin: 0 0 .8rem; color: var(--soft); max-width: 72ch; }
+  code { font: 400 var(--t-s)/1.6 var(--mono); color: var(--ink); display: block;
+         background: var(--raised); border: 1px solid var(--rule); border-radius: 6px; padding: .6rem .85rem; width: fit-content; max-width: 100%; }
+  .symbols { margin: 0; display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) 4.5rem minmax(0, 1fr); gap: .5rem 1rem;
+             font-size: var(--t-s); line-height: 1.5; max-width: 760px; }
+  .symbols dt { font-family: var(--mono); }
+  .symbols dd { margin: 0; color: var(--soft); }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 1.4rem 1rem 4rem; }
+    .bar { margin-bottom: 1.8rem; gap: .6rem; }
+    .barright { gap: .6rem; }
+    h1.wm { font-size: 17px; }
+    .home .hl { display: none; }
+    .now { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.2rem; }
+    .controls { grid-template-columns: 1fr; gap: 1.3rem; }
+    h2 { margin-top: 3.2rem; }
+    .mrow { grid-template-columns: 1fr; gap: .6rem; }
+    .help { width: 100%; }
+    .stat .help { width: min(300px, 88vw); }
+    .stat:nth-child(even) .help { left: auto; right: 0; }
+    .symbols { grid-template-columns: 4.5rem minmax(0, 1fr); }
+    .hide-s { display: none; }
+    .pdesc { min-height: 3em; }
+  }
+</style>
+<script>/* Analytics, gated: opted out with ?nostats=1, or automation (navigator.webdriver). See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var E=["pointermove","pointerdown","scroll","keydown","touchstart","wheel"],go=function(){if(go.d)return;go.d=1;E.forEach(function(e){removeEventListener(e,go,true)});var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2", "spa": false}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);};E.forEach(function(e){addEventListener(e,go,{capture:true,passive:true})});}catch(e){}})();</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <h1 class="wm"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#E8892F"/><g fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" transform="translate(-1.6 0)"><path d="M12 9.3 H18.1 a3.05 3.05 0 0 1 0 6.1 H12 M12 15.4 H18.9 a3.65 3.65 0 0 1 0 7.3 H12"/><path d="M13.5 9.3 V22.7"/><path d="M14.6 6.6 V9.3 M18 6.6 V9.3 M14.6 22.7 V25.4 M18 22.7 V25.4" stroke-width="2.1"/></g></svg><span>Bitcoin Power Law Forecast</span></h1>
+    <div class="barright">
+    <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl" data-t="Dark"></span></button>
+    <a class="home" href="https://charlietrenorden.com/" aria-label="Other projects"><span class="back">&larr;</span><span class="hl">&nbsp;Other projects</span></a>
+    </div>
+  </div>
+
+  <p class="lede">Bitcoin's price compared with its long-run power-law trend, and a forecast of where it could be in one to four years. Updated daily.</p>
+  <p class="over">The forecast blends two models. The first expects price to move back toward the trend, as it did after the 2015, 2018 and 2022 lows. The second expects each four-year cycle to grow less than the one before.</p>
+
+  <div class="now">
+    <div class="stat"><span class="k caps">Price</span><span class="v" id="sPrice">-</span><span class="sub" id="sPriceS"></span></div>
+    <div class="stat"><span class="k caps"><span>Power-Law Trend</span><button class="info" type="button" aria-expanded="false" aria-controls="hT" aria-label="About the power-law trend"></button></span><span class="v" id="sTrend">-</span><span class="sub" id="sTrendS"></span><p class="help" id="hT" role="tooltip">Today's value of the long-run trend line. Past cycle lows were 0.4-0.5x it.</p></div>
+    <div class="stat"><span class="k caps"><span>Median Forecast</span><button class="info" type="button" aria-expanded="false" aria-controls="hF" aria-label="About the median forecast"></button></span><span class="v" id="sFc">-</span><span class="sub" id="sFcS"></span><p class="help" id="hF" role="tooltip">The middle forecast outcome, and the yearly growth it implies from today.</p></div>
+    <div class="stat"><span class="k caps"><span>Middle 50%</span><button class="info" type="button" aria-expanded="false" aria-controls="hB" aria-label="About the middle 50% range"></button></span><span class="v" id="sBand">-</span><span class="sub" id="sBandS"></span><p class="help" id="hB" role="tooltip">Half of forecast outcomes fall in this range. Ranges come from each model's past misses.</p></div>
+  </div>
+
+  <div class="presets" id="presets" role="group" aria-label="Scenarios">
+    <button class="preset" type="button" data-p="70,100,0" data-d="70% reversion model, 30% slowing-growth model.">Central Case</button>
+    <button class="preset" type="button" data-p="100,100,0" data-d="Reversion model only: price moves back toward the trend.">Back to Trend</button>
+    <button class="preset" type="button" data-p="0,100,0" data-d="Slowing-growth model only: each cycle grows less than the last.">Diminishing Returns</button>
+    <button class="preset" type="button" data-p="70,100,12" data-d="The central case, 12% lower, allowing for the reversion model running high since 2021.">Track-Record Cut</button>
+    <button class="preset" type="button" data-p="100,0,0" data-d="Price stays at today's distance below the trend.">Stuck Below Trend</button>
+  </div>
+  <p class="pdesc" id="pdesc"></p>
+
+  <div class="chartbox"><svg class="chart" id="chart" role="img" aria-label="Bitcoin price, its power-law trend and the forecast range, log scale"></svg><div class="tip" id="tip1"></div></div>
+  <div class="key">
+    <span><i style="border-color:var(--ink)"></i>Price</span>
+    <span><i style="border-top-style:dashed;border-color:var(--trend)"></i>Power-Law Trend</span>
+    <span><i style="border-color:var(--fc)"></i>Median Forecast</span>
+    <span><i class="sw" style="background:var(--band)"></i>Middle 50%</span>
+    <span><i class="sw sw2" style="background:var(--band2)"></i>Middle 80%</span>
+    <span><i style="border-top:1.5px dotted var(--soft)"></i>Horizon</span>
+  </div>
+
+  <div class="controls ui">
+    <div class="ctl"><label for="rH"><span class="name">Horizon<button class="info" type="button" aria-expanded="false" aria-controls="hH" aria-label="About horizon"></button></span><output id="oH"></output></label>
+      <p class="help" id="hH" role="tooltip">How far ahead to forecast, up to four years.</p>
+      <input id="rH" type="range" min="1" max="48" step="1" value="36"></div>
+    <div class="ctl"><label for="rW"><span class="name">Reversion Model Weight<button class="info" type="button" aria-expanded="false" aria-controls="hW" aria-label="About model weight"></button></span><output id="oW"></output></label>
+      <p class="help" id="hW" role="tooltip">Share of the forecast from the reversion model; the rest comes from the slowing-growth model. The default 70% reflects its better accuracy since 2017.</p>
+      <input id="rW" type="range" min="0" max="100" step="5" value="70"></div>
+    <div class="ctl"><label for="rK"><span class="name">Reversion Strength<button class="info" type="button" aria-expanded="false" aria-controls="hK" aria-label="About reversion strength"></button></span><output id="oK"></output></label>
+      <p class="help" id="hK" role="tooltip">How hard price is pulled back toward the trend. 100% matches past cycles; 0% means no pull.</p>
+      <input id="rK" type="range" min="0" max="150" step="5" value="100"></div>
+    <div class="ctl"><label for="rC"><span class="name">Reversion Forecast Cut<button class="info" type="button" aria-expanded="false" aria-controls="hC" aria-label="About the forecast cut"></button></span><output id="oC"></output></label>
+      <p class="help" id="hC" role="tooltip">Lowers the reversion model's forecast by this much. Since 2021 its 1-2 year forecasts have come in 8-16% too high.</p>
+      <input id="rC" type="range" min="0" max="40" step="2" value="0"></div>
+  </div>
+
+  <h2>Price Against Trend</h2>
+  <div class="chartbox"><svg class="chart" id="ratio" role="img" aria-label="Bitcoin price divided by its power-law trend, log scale, with past cycle lows and the forecast median"></svg><div class="tip" id="tip2"></div></div>
+  <div class="key">
+    <span><i style="border-color:var(--ink)"></i>Price / Trend</span>
+    <span><i style="border-color:var(--fc)"></i>Median Forecast</span>
+    <span><i class="sw" style="background:var(--band)"></i>Middle 50%</span>
+  </div>
+
+  <h2>By Year</h2>
+  <table>
+    <thead><tr><th>Horizon</th><th class="hide-s">Date</th><th>Median Forecast</th><th>A Year</th><th>Middle 50%</th><th class="hide-s">Middle 80%</th></tr></thead>
+    <tbody id="tbl"></tbody>
+  </table>
+
+  <h2>Models</h2>
+  <div class="models">
+    <div class="mrow"><h3>Power-Law Trend</h3><div><p>A straight line fitted through Bitcoin's daily prices since July 2010, with both price and time (days since 3 January 2009) on log scales.</p>
+      <code id="fTrend"></code></div></div>
+    <div class="mrow"><h3>Reversion Model</h3><div><p>Price grows with the trend, and part of the gap to the trend closes. Up to six months ahead it also uses momentum: price against its 200-day average. Since 2021 its 1-2 year forecasts have come in 8-16% too high.</p>
+      <code>log10(P[t+h] / P[t]) = log10(T[t+h] / T[t]) + a + b&nbsp;log10(P[t] / T[t]) + c&nbsp;log10(P[t] / M[t])</code></div></div>
+    <div class="mrow"><h3>Slowing-Growth Model</h3><div><p>The four-year average price keeps growing, at a rate that has been falling since 2015, and part of the gap between price and that average closes.</p>
+      <code>log10(P[t+h] / P[t]) = g(A[t], h) + a + b&nbsp;log10(P[t] / A[t])</code></div></div>
+    <div class="mrow"><h3>Symbols</h3><dl class="symbols"><dt>P</dt><dd>Price</dd><dt>T</dt><dd>Power-law trend</dd><dt>M</dt><dd>200-day average price</dd><dt>A</dt><dd>Four-year average price</dd><dt>h</dt><dd>Months ahead</dd><dt>g</dt><dd>Projected growth of A over h</dd><dt>a, b, c</dt><dd>Fitted each month on data known then</dd></dl></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
+  function sync() {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    lbl.dataset.t = next === "dark" ? "Dark" : "Light";
+    btn.setAttribute("aria-label", "Switch to " + next + " theme");
+  }
+  sync();
+  btn.addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") !== "dark";
+    root.setAttribute("data-theme", dark ? "dark" : "light");
+    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
+    sync(); draw();
+  });
+
+  var D, F, FD, T0, NS = "http://www.w3.org/2000/svg", DAY = 864e5, G0 = Date.parse("2009-01-03");
+  var R = { H: document.getElementById("rH"), W: document.getElementById("rW"), K: document.getElementById("rK"), C: document.getElementById("rC") };
+  var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var LOWS = [["2011-07-01","2013-06-30"],["2014-01-01","2017-01-01"],["2018-01-01","2020-12-31"],["2021-06-01","2024-01-01"]];
+  var QS = [.1, .25, .5, .75, .9];
+
+  function usd(v) {
+    if (v >= 1e6) return "US$" + +(v / 1e6).toFixed(v >= 1e7 ? 0 : 1) + "m";
+    if (v >= 1e3) return "US$" + Math.round(v / 1e3) + "k";
+    if (v >= 1) return "US$" + Math.round(v);
+    return "US$" + +v.toPrecision(1);
+  }
+  function pct(r) { return (r >= 0 ? "+" : "") + Math.round(r * 100) + "%"; }
+  function ret(v, h) { return h >= 12 ? pct(Math.pow(v / D.price, 12 / h) - 1) + " a year" : pct(v / D.price - 1) + " in " + h + (h === 1 ? " month" : " months"); }
+  function fdate(t) { var d = new Date(t); return MON[d.getUTCMonth()] + " " + d.getUTCFullYear(); }
+  function fday(t) { return new Date(t).getUTCDate() + " " + fdate(t); }
+  function trendAt(t) { return Math.pow(10, D.trend[0] * Math.log10((t - G0) / DAY) + D.trend[1]); }
+  function addMonths(t, m) { return t + Math.round(365.25 * m / 12) * DAY; }
+  function css(n) { return getComputedStyle(root).getPropertyValue(n).trim(); }
+
+  function mixQ(a, wa, b, wb) {
+    var pts = [], i;
+    for (i = 0; i < a.length; i++) pts.push([a[i], wa / a.length]);
+    for (i = 0; i < b.length; i++) pts.push([b[i], wb / b.length]);
+    pts.sort(function (x, y) { return x[0] - y[0]; });
+    var out = [], c = 0, j = 0, tot = wa + wb;
+    QS.forEach(function (q) {
+      while (j < pts.length - 1 && (c + pts[j][1]) / tot < q) { c += pts[j][1]; j++; }
+      out.push(pts[j][0]);
+    });
+    return out;
+  }
+  function smooth(arr) {
+    var n = arr.length, s = new Array(n);
+    for (var i = 0; i < n; i++) {
+      var lo = Math.max(0, i - 3), hi = Math.min(n - 1, i + 3), t = 0;
+      for (var k = lo; k <= hi; k++) t += arr[k];
+      s[i] = t / (hi - lo + 1);
+    }
+    s[0] = arr[0];
+    return s;
+  }
+  function forecast() {
+    var w = R.W.value / 100, k = R.K.value / 100, cut = R.C.value / 100, paths = QS.map(function () { return [0]; });
+    D.months.forEach(function (m, i) {
+      var tv = D.trend_view[i], sv = D.slow_view[i];
+      // k scales the whole fitted move relative to trend growth: 0 holds today's ratio to trend
+      var mt = tv.g + k * (tv.a + tv.b * D.x_trend) + tv.c * D.mayer + Math.log10(1 - cut) * Math.min(m, 12) / 12;
+      var ms = sv.g + sv.a + sv.b * D.x_slow;
+      mixQ(tv.miss.map(function (e) { return mt + e; }), w, sv.miss.map(function (e) { return ms + e; }), 1 - w)
+        .forEach(function (v, j) { paths[j].push(v); });
+    });
+    return paths.map(function (p) { return smooth(p).map(function (v) { return D.price * Math.pow(10, v); }); });
+  }
+
+  function el(n, a, parent) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); parent.appendChild(e); return e; }
+
+  // one chart frame: log y axis, time x axis, clipped plot group; returns scales and the group
+  function frame(svg, x0, x1, lo, hi, ticks, fmt) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = svg.clientWidth, H = svg.clientHeight, small = W < 560, m = { l: 62, r: 0, t: 10, b: 26 };
+    var X = function (t) { return m.l + (t - x0) / (x1 - x0) * (W - m.l - m.r); };
+    var Y = function (v) { return m.t + (Math.log10(hi) - Math.log10(Math.max(v, 1e-9))) / (Math.log10(hi) - Math.log10(lo)) * (H - m.t - m.b); };
+    ticks.forEach(function (v) {
+      el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: css("--rule"), "stroke-width": 1 }, svg);
+      el("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end" }, svg).textContent = fmt(v);
+    });
+    var step = small ? 4 : 2, y1 = new Date(x1).getUTCFullYear();
+    for (var yr = new Date(x0).getUTCFullYear(); yr <= y1; yr++) {
+      var t = Date.UTC(yr, 0, 1); if (yr % step || t < x0 || X(t) > W - 16) continue;
+      el("text", { x: X(t), y: H - 6, "text-anchor": "middle" }, svg).textContent = yr;
+    }
+    var cp = el("clipPath", { id: svg.id + "c" }, el("defs", {}, svg));
+    el("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b }, cp);
+    return { X: X, Y: Y, W: W, H: H, m: m, small: small, g: el("g", { "clip-path": "url(#" + svg.id + "c)" }, svg), svg: svg, x0: x0, x1: x1 };
+  }
+  function path(f, pts) { return pts.map(function (p, i) { return (i ? "L" : "M") + f.X(p[0]).toFixed(1) + "," + f.Y(p[1]).toFixed(1); }).join(""); }
+  function band(f, lo, hi, fill) {
+    var up = FD.map(function (t, i) { return [t, hi[i]]; }), dn = FD.map(function (t, i) { return [t, lo[i]]; }).reverse();
+    el("path", { d: path(f, up) + path(f, dn).replace("M", "L") + "Z", fill: fill }, f.g);
+  }
+
+  var C1, C2, HIST;
+  function draw() {
+    if (!D) return;
+    F = forecast(); T0 = Date.parse(D.asof);
+    FD = [T0].concat(D.months.map(function (m) { return addMonths(T0, m); }));
+    var h = +R.H.value, th = FD[h], small = document.getElementById("chart").clientWidth < 560;
+    var x0 = Date.parse(small ? "2013-01-01" : "2011-01-01"), x1 = FD[FD.length - 1];
+
+    // price chart
+    var f = C1 = frame(document.getElementById("chart"), x0, x1, small ? 50 : 1, 2e6,
+      [1, 10, 100, 1e3, 1e4, 1e5, 1e6].filter(function (v) { return v >= (small ? 50 : 1); }), usd);
+    band(f, F[0], F[4], css("--band2")); band(f, F[1], F[3], css("--band"));
+    var tr = []; for (var t = x0; t <= x1; t += 30 * DAY) tr.push([t, trendAt(t)]);
+    el("path", { d: path(f, tr), fill: "none", stroke: css("--trend"), "stroke-width": 1.6, "stroke-dasharray": "5 4" }, f.g);
+    el("path", { d: path(f, HIST.filter(function (p) { return p[0] >= x0; })), fill: "none", stroke: css("--ink"), "stroke-width": 1.3, "stroke-linejoin": "round" }, f.g);
+    el("path", { d: path(f, FD.map(function (t, i) { return [t, F[2][i]]; })), fill: "none", stroke: css("--fc"), "stroke-width": 2 }, f.g);
+    el("line", { x1: f.X(th), x2: f.X(th), y1: f.m.t, y2: f.H - f.m.b, stroke: css("--soft"), "stroke-width": 1, "stroke-dasharray": "2 3" }, f.svg);
+    el("circle", { cx: f.X(th), cy: f.Y(F[2][h]), r: 3.5, fill: css("--fc") }, f.svg);
+    el("circle", { cx: f.X(T0), cy: f.Y(D.price), r: 3, fill: css("--ink") }, f.svg);
+    f.hl = el("line", { y1: f.m.t, y2: f.H - f.m.b, stroke: css("--soft"), "stroke-width": 1, visibility: "hidden" }, f.svg);
+
+    // price / trend chart
+    var g = C2 = frame(document.getElementById("ratio"), x0, x1, .15, 12, [.2, .5, 1, 2, 5, 10], function (v) { return v + "x"; });
+    var tn = FD.map(trendAt);
+    band(g, F[1].map(function (v, i) { return v / tn[i]; }), F[3].map(function (v, i) { return v / tn[i]; }), css("--band"));
+    el("line", { x1: g.m.l, x2: g.W, y1: g.Y(1), y2: g.Y(1), stroke: css("--trend"), "stroke-width": 1.6, "stroke-dasharray": "5 4" }, g.g);
+    var rt = HIST.filter(function (p) { return p[0] >= x0; }).map(function (p) { return [p[0], p[1] / trendAt(p[0])]; });
+    el("path", { d: path(g, rt), fill: "none", stroke: css("--ink"), "stroke-width": 1.3, "stroke-linejoin": "round" }, g.g);
+    el("path", { d: path(g, FD.map(function (t, i) { return [t, F[2][i] / tn[i]]; })), fill: "none", stroke: css("--fc"), "stroke-width": 2 }, g.g);
+    LOWS.forEach(function (w) {
+      var a = Date.parse(w[0]), b = Date.parse(w[1]), lo = null;
+      rt.forEach(function (p) { if (p[0] >= a && p[0] <= b && (!lo || p[1] < lo[1])) lo = p; });
+      if (!lo) return;
+      el("circle", { cx: g.X(lo[0]), cy: g.Y(lo[1]), r: 2.6, fill: css("--soft") }, g.svg);
+      el("text", { x: g.X(lo[0]), y: g.Y(lo[1]) + 16, "text-anchor": "middle" }, g.svg).textContent = lo[1].toFixed(2) + "x";
+    });
+    el("circle", { cx: g.X(T0), cy: g.Y(D.price / trendAt(T0)), r: 3, fill: css("--ink") }, g.svg);
+    el("text", { x: g.X(T0), y: g.Y(D.price / trendAt(T0)) + 16, "text-anchor": "middle", style: "fill:var(--ink)" }, g.svg).textContent = (D.price / trendAt(T0)).toFixed(2) + "x";
+    g.hl = el("line", { y1: g.m.t, y2: g.H - g.m.b, stroke: css("--soft"), "stroke-width": 1, visibility: "hidden" }, g.svg);
+
+    // numbers
+    document.getElementById("sPrice").textContent = usd(D.price);
+    document.getElementById("sPriceS").textContent = fday(T0).replace(/ \d{4}$/, "") + ", " + (D.price / trendAt(T0)).toFixed(2) + "x trend";
+    document.getElementById("sTrendS").textContent = fday(T0).replace(/ d{4}$/, "");
+    document.getElementById("sTrend").textContent = usd(trendAt(T0));
+        document.getElementById("sFc").textContent = usd(F[2][h]);
+    document.getElementById("sFcS").textContent = fdate(th) + ", " + ret(F[2][h], h);
+    document.getElementById("sBandS").textContent = fdate(th);
+    document.getElementById("sBand").textContent = usd(F[1][h]) + " - " + usd(F[3][h]);
+    document.getElementById("tbl").innerHTML = [12, 24, 36, 48].map(function (m) {
+      return "<tr><td>" + m / 12 + (m === 12 ? " year" : " years") + "</td><td class='hide-s'>" + fdate(FD[m]) + "</td><td class='m'>" + usd(F[2][m]) +
+        "</td><td>" + pct(Math.pow(F[2][m] / D.price, 12 / m) - 1) + "</td><td>" + usd(F[1][m]) + " - " + usd(F[3][m]) +
+        "</td><td class='hide-s'>" + usd(F[0][m]) + " - " + usd(F[4][m]) + "</td></tr>";
+    }).join("");
+  }
+
+  // hover / tap readout, shared by both charts
+  function hover(f, tip, e, ratio) {
+    var r = f.svg.getBoundingClientRect(), x = e.clientX - r.left;
+    if (x < f.m.l || x > f.W) { tip.style.display = "none"; f.hl.setAttribute("visibility", "hidden"); return; }
+    var t = f.x0 + (x - f.m.l) / (f.W - f.m.l - f.m.r) * (f.x1 - f.x0), html, d = ratio ? function (v, t2) { return (v / trendAt(t2)).toFixed(2) + "x"; } : usd;
+    if (t <= T0) {
+      var best = HIST[0]; HIST.forEach(function (p) { if (Math.abs(p[0] - t) < Math.abs(best[0] - t)) best = p; });
+      t = best[0];
+      html = "<b>" + fday(t) + "</b><br>" + (ratio ? "Price / trend " + d(best[1], t) : "Price " + usd(best[1]) + "<br><span>Trend " + usd(trendAt(t)) + "</span>");
+    } else {
+      var i = 1; while (i < FD.length - 1 && FD[i] < t) i++; t = FD[i];
+      html = "<b>" + fdate(t) + "</b><br>Median forecast " + d(F[2][i], t) + "<br><span>Middle 50% " + d(F[1][i], t) + " - " + d(F[3][i], t) +
+        "</span><br><span>Middle 80% " + d(F[0][i], t) + " - " + d(F[4][i], t) + "</span>";
+    }
+    f.hl.setAttribute("x1", f.X(t)); f.hl.setAttribute("x2", f.X(t)); f.hl.setAttribute("visibility", "visible");
+    tip.innerHTML = html; tip.style.display = "block";
+    var left = f.X(t) + 12; if (left + tip.offsetWidth > f.W) left = f.X(t) - tip.offsetWidth - 12;
+    tip.style.left = left + "px"; tip.style.top = (f.m.t + 6) + "px";
+  }
+  [["chart", "tip1", false], ["ratio", "tip2", true]].forEach(function (c) {
+    var svg = document.getElementById(c[0]), tip = document.getElementById(c[1]);
+    svg.addEventListener("pointermove", function (e) { hover(c[2] ? C2 : C1, tip, e, c[2]); });
+    svg.addEventListener("pointerleave", function () { tip.style.display = "none"; (c[2] ? C2 : C1).hl.setAttribute("visibility", "hidden"); });
+  });
+
+  function label() {
+    var h = +R.H.value;
+    document.getElementById("oH").textContent = h < 12 ? h + (h === 1 ? " month" : " months") : (h % 12 ? (h / 12).toFixed(1) + " years" : h / 12 + (h === 12 ? " year" : " years"));
+    document.getElementById("oW").textContent = R.W.value + "%";
+    document.getElementById("oK").textContent = R.K.value + "%";
+    document.getElementById("oC").textContent = R.C.value + "%";
+    var cur = [R.W.value, R.K.value, R.C.value].join(",");
+    var desc = "Custom settings.";
+    document.querySelectorAll(".preset").forEach(function (b) { var on = b.dataset.p === cur; b.setAttribute("aria-pressed", on ? "true" : "false"); if (on) desc = b.dataset.d; });
+    document.getElementById("pdesc").textContent = desc;
+  }
+  Object.keys(R).forEach(function (k) { R[k].addEventListener("input", function () { label(); draw(); }); });
+  document.querySelectorAll(".preset").forEach(function (b) {
+    b.addEventListener("click", function () { var p = b.dataset.p.split(","); R.W.value = p[0]; R.K.value = p[1]; R.C.value = p[2]; label(); draw(); });
+  });
+  // (i) help: shows on hover; a click or tap pins it open until clicked again or elsewhere
+  var ISVG = '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="1.6" r="1.15" fill="currentColor"/><rect x="4.05" y="3.6" width="1.9" height="5.6" rx=".5" fill="currentColor"/></svg>';
+  function setOpen(b, on) { b.closest(".ctl, .stat").classList.toggle("open", on); b.setAttribute("aria-expanded", on); }
+  document.querySelectorAll(".info").forEach(function (b) {
+    b.innerHTML = ISVG;
+    b.addEventListener("mouseenter", function () { setOpen(b, true); });
+    b.addEventListener("mouseleave", function () { if (!b.dataset.pin) setOpen(b, false); });
+    b.addEventListener("focus", function () { setOpen(b, true); });
+    b.addEventListener("blur", function () { if (!b.dataset.pin) setOpen(b, false); });
+    b.addEventListener("click", function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var pin = !b.dataset.pin; if (pin) b.dataset.pin = "1"; else delete b.dataset.pin; setOpen(b, pin);
+    });
+  });
+  document.addEventListener("click", function () {
+    document.querySelectorAll(".info[data-pin]").forEach(function (b) { delete b.dataset.pin; setOpen(b, false); });
+  });
+  var rt; addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(draw, 80); });
+
+  fetch("data.json").then(function (r) { return r.json(); }).then(function (d) {
+    D = d; HIST = D.hist.map(function (r) { return [Date.parse(r[0]), r[1]]; });
+    document.getElementById("fTrend").textContent = "log10 P = " + D.trend[1].toFixed(3) + " + " + D.trend[0].toFixed(3) + " log10 d";
+        label(); draw();
+  });
+})();
+</script>
+</body>
+</html>

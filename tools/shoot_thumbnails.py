@@ -76,6 +76,7 @@ SITES = {
     # render path, so the card cannot show something the game does not do.
     "worst-case-scenario": "https://charlietrenorden.com/worst-case-scenario/?demo=1",
     "bookmark": "https://charlietrenorden.com/bookmark/",
+    "bitcoin-power-law-forecast": "https://charlietrenorden.com/bitcoin-power-law-forecast/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -131,6 +132,8 @@ READY = {
     # redesigned, this is the second place to look.
     "property-atlas": "table tbody tr",
     "196-plates": ".leaflet-marker-icon .pin",
+    # The chart is drawn by script from data.json; the svg is empty in the markup.
+    "bitcoin-power-law-forecast": "#chart path",
 }
 READY_TIMEOUT = 30000
 
@@ -319,6 +322,8 @@ SCHEME = {
     # Statecraft follows prefers-color-scheme with nothing stored, same as the two
     # above, so emulation alone flips it and no PREPARE step is needed.
     "statecraft": "dark",
+    # Dark unless the browser asks for light, like Crosscheck.
+    "bitcoin-power-law-forecast": "dark",
 }
 
 # Pages whose top is a masthead rather than the product: frame on an element
@@ -356,6 +361,9 @@ ANCHOR = {
     # #stripPanel: "Distributions" draws density curves now, not the strip of dots
     # it did when this file was first written.
     "shortfall": {"selector": "#quadPanel", "context_above": 0.10},
+    # The top is a lede, a model paragraph and the stats; the chart sits below the fold
+    # at 1280x800. 0.30 frames stats, scenario buttons, the whole chart and its key.
+    "bitcoin-power-law-forecast": {"selector": "#chart", "context_above": 0.30},
     # The top of the page is a wordmark, a country picker and three meters. The
     # product is the choosing: option cards with a policy, who already does it,
     # and what it costs. The first shot, 30/08/2026, reached only the "Tax and
