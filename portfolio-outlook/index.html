@@ -389,9 +389,10 @@
     <div class="mrow"><h3>Adjustments</h3><div>
       <p>Shares close to their 52-week high (the highest price of the past year) have tended to beat shares far below it. So have companies listed for many years, and US companies buying back their own shares.</p>
       <p>The best fifth of shares on these measures beat the worst fifth by 6-9 percentage points a year. In Japan none of them held, and Japanese shares keep the starting point.</p>
+      <p>These hold for the next year. Over three and five years only US buybacks still helped, at three years, so the longer estimates stay close to the starting point.</p>
     </div></div>
     <div class="mrow"><h3>Left Out</h3><div>
-      <p>About 320 other measures were tested, including momentum, price to earnings, profitability, analyst price targets and earnings surprises. Each was fitted on earlier years and checked on the next, every year from 1995 to 2025.</p>
+      <p>About 320 other measures were tested, including momentum, price to earnings, profitability, analyst price targets and earnings surprises. Each was tried on earlier years, then checked against the year that followed, for every year from 1995 to 2025.</p>
       <p>None improved the estimate. Giving all of them a small weight made it worse in 61% of years.</p>
     </div></div>
     <div class="mrow"><h3>Delisted Companies</h3><div>
@@ -738,7 +739,7 @@
       hit.addEventListener("pointermove", function (e) {
         showTip(e, "<b>" + esc(d.f) + "</b> " + (d.ic > 0 ? "+" : "−") + Math.abs(d.ic).toFixed(3) + "<br>" + Object.keys(d.eras).map(function (k) {
           var v = d.eras[k]; return "<span>" + k + "-" + (k === "2010" ? 2014 : +k + 9) + "</span> " + (v > 0 ? "+" : "−") + Math.abs(v).toFixed(3);
-        }).join("<br>") + "<br><span>" + (d.pass ? "In the estimate" : "Left out: failed the yearly test or added nothing to it") + "</span>");
+        }).join("<br>") + "<br><span>" + (d.pass ? "In the estimate" : "Left out: it did not improve the estimate when checked against later years") + "</span>");
       });
       hit.addEventListener("pointerleave", hideTip);
     });
