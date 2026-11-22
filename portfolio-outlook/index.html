@@ -339,7 +339,7 @@
       <div class="card"><span class="k caps"><span>Mean Return</span><button class="info" type="button" aria-expanded="false" aria-controls="hA" aria-label="About Mean Return"></button></span><span class="v" id="sAvg">&mdash;</span><span class="sub" id="sAvgS"></span>
         <p class="help" id="hA" role="tooltip">Each holding's mean return, weighted by its share of the portfolio.</p></div>
       <div class="card"><span class="k caps"><span>Volatility</span><button class="info" type="button" aria-expanded="false" aria-controls="hV" aria-label="About Volatility"></button></span><span class="v" id="sVol">&mdash;</span><span class="sub">likely swing in a year</span>
-        <p class="help" id="hV" role="tooltip">From each holding's price swings and how closely the holdings have moved together.</p></div>
+        <p class="help" id="hV" role="tooltip">From each holding's price swings over three years and how closely the holdings move together, crashes included.</p></div>
       <div class="card"><span class="k caps"><span>Sharpe Ratio</span><button class="info" type="button" aria-expanded="false" aria-controls="hS" aria-label="About Sharpe Ratio"></button></span><span class="v" id="sSh">&mdash;</span><span class="sub" id="sShS"></span>
         <p class="help" id="hS" role="tooltip">Mean return above cash, divided by volatility.</p></div>
       <div class="card"><span class="k caps"><span>P(Gain)</span><button class="info" type="button" aria-expanded="false" aria-controls="hP" aria-label="About P(Gain)"></button></span><span class="v" id="sPg">&mdash;</span><span class="sub" id="sPgS"></span>
@@ -347,7 +347,7 @@
       <div class="card"><span class="k caps"><span>Bad Year</span><button class="info" type="button" aria-expanded="false" aria-controls="hB" aria-label="About Bad Year"></button></span><span class="v" id="sBad">&mdash;</span><span class="sub">1 year in 20 is this bad</span>
         <p class="help" id="hB" role="tooltip">A one-year result this bad or worse comes about one year in twenty.</p></div>
       <div class="card"><span class="k caps"><span>Correlation</span><button class="info" type="button" aria-expanded="false" aria-controls="hC" aria-label="About Correlation"></button></span><span class="v" id="sCor">&mdash;</span><span class="sub" id="sCorS"></span>
-        <p class="help" id="hC" role="tooltip">How closely the holdings have moved together, from 0 (unrelated) to 1 (in step). Shares: three years of weekly prices.</p></div>
+        <p class="help" id="hC" role="tooltip">How closely the holdings have moved together, from 0 (unrelated) to 1 (in step). Shares: three years of weekly prices, moved halfway to how they moved in crashes.</p></div>
     </div>
     <div class="card alloc"><span class="k caps">Allocation</span><div class="allocrow"><svg class="pie" id="pie" viewBox="0 0 42 42" role="img" aria-label="Allocation by asset type"></svg><ul class="alloclist" id="legend"></ul></div></div>
   </div>
@@ -368,7 +368,7 @@
 
   <section id="trades" hidden>
   <div class="tophead"><h2>Suggested Trades</h2><button class="info" type="button" aria-expanded="false" aria-controls="hTr" aria-label="About suggested trades"></button>
-    <p class="help" id="hTr" role="tooltip">The mix with the most mean return for its risk, with cash left as it is, no holding above 15% and Bitcoin funds 15% together. Within My Holdings only reweights what you own; From Anything can also buy the 60 shares Optimal Mix is chosen from. Changes under 2% are left out. Brokerage and tax are not counted.</p></div>
+    <p class="help" id="hTr" role="tooltip">The mix with the most mean return for its risk, with cash left as it is, no holding above 15% and Bitcoin funds 15% together. Within My Holdings only reweights what you own; From Anything can also buy the large shares Optimal Mix is chosen from. Changes under 2% are left out. Brokerage and tax are not counted.</p></div>
   <div class="topctl"><div class="seg" role="group" aria-label="What to trade" id="trMode"></div></div>
   <table class="top trs"><colgroup><col style="width:5.5rem"><col><col><col><col class="nph"><col class="nph"></colgroup>
     <thead><tr><th class="l"></th><th>Mean</th><th>Volatility</th><th>Sharpe</th><th class="nph">P(Gain)</th><th class="nph">Bad Year</th></tr></thead>
@@ -514,7 +514,7 @@
     return L.map(function (x, i) {
       var n = D.names[x[0]] || {}, r = n.r ? n.r[st.h] : [];
       return { i: i, id: x[0], code: code(x[0]), co: n.c || "", mk: n.m || "", w: (+x[1] || 0) / tot, raw: x[1], off: Math.abs(tot - 100) > 0.5, cat: n.r ? cat(n.b) : "", g: n.g || "",
-               dd: n.dd, d52: n.d52, v: n.v, y: n.y, typ: pa(r[0], y), avg: pa(tmean(r), y), q25: pa(r[2], y), q75: pa(r[3], y),
+               dd: n.dd, d52: n.d52, bh: n.bh == null ? null : n.bh, v: n.v, vr: n.v3 != null ? n.v3 : n.v, y: n.y, typ: pa(r[0], y), avg: pa(tmean(r), y), q25: pa(r[2], y), q75: pa(r[3], y),
                up: r[4] == null ? null : r[4], own: pa(r[5], y), own_n: r[6] || null,
                mid: r[2] == null ? null : (pa(r[2], y) + pa(r[3], y)) / 2, avgTot: tmean(r) == null ? null : tmean(r) };
     });
@@ -555,9 +555,10 @@
           ["avg", "Mean", 96, 1, "The average result, lifted by rare big winners, so a more volatile holding shows a higher mean even with the same median. The portfolio total uses this.", function (r) { return "<td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td>"; }],
           ["mid", "Middle 50%", 140, 1, "Half of similar holdings ended in this range.", function (r) { return "<td>" + rangeCell(r) + "</td>"; }],
           ["up", "P(Gain)", 120, 0, "Share of similar holdings that ended above today's price over the whole period.", function (r) { return "<td>" + chance(r.up) + "</td>"; }]],
-    now: [["dd", "Off High", 110, 0, "Today's price against its highest close.", function (r) { return "<td>" + pct(r.dd) + "</td>"; }],
-          ["d52", "Off 1-Year High", 140, 1, "Against the highest close in the past year. Closer to it has meant better years ahead.", function (r) { return "<td class='nph'>" + pct(r.d52) + "</td>"; }],
-          ["v", "Volatility", 110, 0, "How much the price swings in a year. Higher has meant worse typical outcomes.", function (r) { return "<td class='dim'>" + plain(r.v) + "</td>"; }],
+    now: [["dd", "Off High", 100, 0, "Today's price against its highest close.", function (r) { return "<td>" + pct(r.dd) + "</td>"; }],
+          ["bh", "Back to High", 118, 1, "Share of similar shares this far below their high that got back to it within three years.", function (r) { return "<td class='nph'>" + plain(r.bh) + "</td>"; }],
+          ["d52", "Off 1-Year High", 126, 1, "Against the highest close in the past year. Closer to it has meant better years ahead.", function (r) { return "<td class='nph'>" + pct(r.d52) + "</td>"; }],
+          ["v", "Volatility", 100, 0, "How much the price swings in a year. Higher has meant worse typical outcomes.", function (r) { return "<td class='dim'>" + plain(r.v) + "</td>"; }],
           ["y", "Yield", 96, 1, "Yearly dividends over today's price, using the lower of last year's and the three-year median.", function (r) { return "<td class='nph dim'>" + (r.y ? plain(r.y, 1) : plain(null)) + "</td>"; }]],
     own: [["typ", "Median", 104, 0, "What one holding usually returns a year.", function (r) { return "<td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) + "</b></td>"; }],
           ["own", "Own Record", 120, 0, "What this holding did from past times this far below its high. It counts for at most 16% of the median, and much less with only one or two.", function (r) { return "<td class='" + sgn(r.own) + "'>" + pct(r.own) + "</td>"; }],
@@ -581,9 +582,10 @@
     document.querySelectorAll(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.v === st.view ? "true" : "false"); });
   }
 
-  // portfolio risk from each holding's yearly swing and how closely holdings move together. Shares: measured on
-  // weekly returns of each market's 100 largest companies, 2022-11 to 2025-11 (same market 0.14-0.26, about 0.20;
-  // US against Australia 0.11). Smaller names read lower, so the large-company figure is used.
+  // portfolio risk from each holding's three-year swing (vr) and how closely holdings move together. Shares: half the
+  // calm 2022-25 level (0.22 same market, 0.145 across) and half the crash level (2008, 2020, 2022, 2000-02: 0.35 and
+  // 0.26), so 0.275 and 0.185 (optmix_rebuild.py, 23/11/2026: one-year swings and calm correlations under-predicted
+  // the realised swing 1.48x).
   // Index ETFs, Bitcoin funds and cash: standard estimates.
   var OI = {};
   function rho(a, b) {
@@ -593,17 +595,17 @@
     if (a.cat === "Bitcoin" || b.cat === "Bitcoin") return a.cat === b.cat ? 0.95 : 0.2;
     if (a.cat === "Index ETFs" && b.cat === "Index ETFs") return 0.8;
     if (a.cat === "Index ETFs" || b.cat === "Index ETFs") return 0.4;
-    return a.mk === b.mk ? 0.20 : 0.11;
+    return a.mk === b.mk ? 0.275 : 0.185;
   }
   function cashRate() { var c = D.names["AAA.AX"]; return c && c.r[st.h][0] != null ? pa(c.r[st.h][0], YRS[st.h]) : 0.04; }
   function ncdf(z) { var t = 1 / (1 + 0.2316419 * Math.abs(z)), d = 0.3989423 * Math.exp(-z * z / 2);
     var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return z > 0 ? 1 - p : p; }
   function pstats(R, y) {
-    var H = R.filter(function (r) { return r.avg != null && r.v != null && r.w > 0; }), tw = H.reduce(function (s0, r) { return s0 + r.w; }, 0);
+    var H = R.filter(function (r) { return r.avg != null && r.vr != null && r.w > 0; }), tw = H.reduce(function (s0, r) { return s0 + r.w; }, 0);
     if (!H.length || !tw) return null;
     var mu = 0, v2 = 0, cs = 0, cw = 0;
     H.forEach(function (a) { mu += a.w / tw * a.avg; H.forEach(function (b) { var p = a === b ? 1 : rho(a, b), ww = (a.w / tw) * (b.w / tw);
-      v2 += ww * (a.cat === "Cash" ? 0.01 : a.v) * (b.cat === "Cash" ? 0.01 : b.v) * p;
+      v2 += ww * (a.cat === "Cash" ? 0.01 : a.vr) * (b.cat === "Cash" ? 0.01 : b.vr) * p;
       if (a !== b && a.cat !== "Cash" && b.cat !== "Cash") { cs += ww * p; cw += ww; } }); });
     var vol = Math.sqrt(v2), rf = cashRate(), m = Math.log(1 + mu) - v2 / 2;
     return { cor: cw > 0 ? cs / cw : null, mu: mu, vol: vol, rf: rf, sharpe: vol > 0 ? (mu - rf) / vol : 0, up: ncdf(m * y / (vol * Math.sqrt(y) || 1e-9)), bad: Math.expm1(m - 1.645 * vol) };
@@ -822,7 +824,7 @@
     return v.map(function (x) { return Math.min(cap, Math.max(0, x - hi)); });
   }
   function maxSharpe(A, B, rf) {
-    var n = A.length, cap = Math.max(0.15, B / n + 1e-9), C = A.map(function (a, i) { return A.map(function (b, j) { return (i === j ? 1 : rho(a, b)) * a.v * b.v; }); });
+    var n = A.length, cap = Math.max(0.15, B / n + 1e-9), C = A.map(function (a, i) { return A.map(function (b, j) { return (i === j ? 1 : rho(a, b)) * a.vr * b.vr; }); });
     var mu = A.map(function (a) { return a.avg - rf; }), G = [], O = [];
     A.forEach(function (a, i) { (a.cat === "Bitcoin" ? G : O).push(i); });
     function proj(v) {
@@ -850,9 +852,9 @@
     var R = rows(), y = YRS[st.h], rf = cashRate(), have = {}, U = R.map(function (r) { have[r.id] = 1; return Object.assign({}, r); });
     if (trMode === 1 && D.opt) D.opt.ids.forEach(function (id) {
       var n = D.names[id]; if (have[id] || !n || !n.r) return;
-      U.push({ id: id, code: code(id), co: n.c || "", mk: n.m || "", cat: cat(n.b), g: n.g || "", v: n.v, avg: pa(tmean(n.r[st.h]), y), w: 0 });
+      U.push({ id: id, code: code(id), co: n.c || "", mk: n.m || "", cat: cat(n.b), g: n.g || "", v: n.v, vr: n.v3 != null ? n.v3 : n.v, avg: pa(tmean(n.r[st.h]), y), w: 0 });
     });
-    var F = U.filter(function (a) { return a.cat !== "Cash" && a.avg != null && a.v != null; }), B = F.reduce(function (s0, a) { return s0 + a.w; }, 0);
+    var F = U.filter(function (a) { return a.cat !== "Cash" && a.avg != null && a.vr != null; }), B = F.reduce(function (s0, a) { return s0 + a.w; }, 0);
     var tb = document.getElementById("trB"), ts = document.getElementById("trS");
     if (F.length < 2 || B <= 0) { ts.innerHTML = ""; tb.innerHTML = "<tr><td colspan='4' class='l' style='color:var(--soft);padding:1.2rem 0'>Needs two or more holdings.</td></tr>"; return; }
     var t = maxSharpe(F, B, rf);
@@ -886,7 +888,7 @@
     "US Tech": "Seven large US technology companies", "US Blue Chips": "Twelve established US companies",
     "Japan Leaders": "Ten large Japanese companies", "UK Leaders": "Ten large UK companies", "Canada Leaders": "Ten large Canadian companies",
     "Bitcoin Barbell": "Half cash, a third US shares, the rest Bitcoin funds",
-    "Optimal Mix": "Shares with high medians, weighted for the most return for the risk" };
+    "Optimal Mix": "Large shares from five markets, weighted for the most return for the risk" };
   var pfBtn = document.getElementById("pfBtn"), pfMenu = document.getElementById("pfMenu"), act = 0;
   function menu(open) {
     pfMenu.hidden = !open; pfBtn.setAttribute("aria-expanded", open ? "true" : "false");
