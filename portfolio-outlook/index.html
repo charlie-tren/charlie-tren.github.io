@@ -601,7 +601,7 @@
     }).join("");
     var cov = R.filter(function (r) { return r.avgTot != null; }), cw = cov.reduce(function (s, r) { return s + r.w; }, 0);
     var avgPa = pa(cw ? cov.reduce(function (s, r) { return s + r.w * r.avgTot; }, 0) / cw : null, y);
-    if (!R.length) html = "<tr><td colspan='" + (V.length + 3) + "' class='l' style='color:var(--soft);padding:1.2rem 0'>Add a holding below.</td></tr>";
+    if (!R.length) html = "<tr><td colspan='" + (V.length + 3) + "' class='l' style='color:var(--soft);padding:1.2rem 0'>Add a holding above.</td></tr>";
     document.getElementById("tb").innerHTML = html;
     // headline cards
     var se = document.getElementById("sAvg"); se.textContent = pct(avgPa, false); se.className = "v " + sgn(avgPa);
