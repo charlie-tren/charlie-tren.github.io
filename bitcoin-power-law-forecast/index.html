@@ -197,10 +197,10 @@
   </div>
 
   <div class="presets" id="presets" role="group" aria-label="Scenarios">
-    <button class="preset" type="button" data-p="70,100,0" data-d="70% reversion model, 30% slowing-growth model.">Central Case</button>
+    <button class="preset" id="pC" type="button" data-p="70,100,0" data-d="70% reversion model, 30% slowing-growth model.">Central Case</button>
     <button class="preset" type="button" data-p="100,100,0" data-d="Reversion model only: price moves back toward the trend.">Back to Trend</button>
     <button class="preset" type="button" data-p="0,100,0" data-d="Slowing-growth model only: each cycle grows less than the last.">Diminishing Returns</button>
-    <button class="preset" type="button" data-p="70,100,12" data-d="The central case, 12% lower, allowing for the reversion model running high since 2021.">Track-Record Cut</button>
+    <button class="preset" id="pT" type="button" data-p="70,100,12" data-d="The central case, 12% lower, allowing for the reversion model running high since 2021.">Track-Record Cut</button>
     <button class="preset" type="button" data-p="100,0,0" data-d="Price stays at today's distance below the trend.">Stuck Below Trend</button>
   </div>
   <p class="pdesc" id="pdesc"></p>
@@ -250,7 +250,7 @@
   <div class="models">
     <div class="mrow"><h3>Power-Law Trend</h3><div><p>A straight line fitted through Bitcoin's daily prices since July 2010, with both price and time (days since 3 January 2009) on log scales.</p>
       <code id="fTrend"></code></div></div>
-    <div class="mrow"><h3>Reversion Model</h3><div><p>Price grows with the trend, and part of the gap to the trend closes. Up to six months ahead it also uses momentum: price against its 200-day average. Since 2021 its 1-2 year forecasts have come in 8-16% too high.</p>
+    <div class="mrow"><h3>Reversion Model</h3><div><p>Price grows with the trend, and part of the gap to the trend closes. Up to six months ahead it also uses momentum: price against its 200-day average. <span id="mBias">Since 2021 its 1-2 year forecasts have come in 8-16% too high.</span></p>
       <code>log10(P[t+h] / P[t]) = log10(T[t+h] / T[t]) + a + b&nbsp;log10(P[t] / T[t]) + c&nbsp;log10(P[t] / M[t])</code></div></div>
     <div class="mrow"><h3>Slowing-Growth Model</h3><div><p>The four-year average price keeps growing, at a rate that has been falling since 2015, and part of the gap between price and that average closes.</p>
       <code>log10(P[t+h] / P[t]) = g(A[t], h) + a + b&nbsp;log10(P[t] / A[t])</code></div></div>
@@ -359,7 +359,7 @@
 
   var C1, C2, HIST;
   function draw() {
-    if (!D) return;
+    if (!D || !document.getElementById("chart").clientWidth) return;
     F = forecast(); T0 = Date.parse(D.asof);
     FD = [T0].concat(D.months.map(function (m) { return addMonths(T0, m); }));
     var h = +R.H.value, th = FD[h], small = document.getElementById("chart").clientWidth < 560;
@@ -476,6 +476,18 @@
 
   fetch("data.json").then(function (r) { return r.json(); }).then(function (d) {
     D = d; HIST = D.hist.map(function (r) { return [Date.parse(r[0]), r[1]]; });
+    // defaults re-measured monthly by calibrate.py
+    var df = D.defaults;
+    if (df) {
+      var w = df.weight, c = df.cut, b = df.bias_5y_pct, $ = function (id) { return document.getElementById(id); };
+      var miss = "Over the last five years its 1-2 year forecasts came in " + Math.abs(Math.round(b)) + "% too " + (b < 0 ? "high" : "low") + " on average.";
+      R.W.value = w;
+      $("pC").dataset.p = w + ",100,0"; $("pC").dataset.d = w + "% reversion model, " + (100 - w) + "% slowing-growth model.";
+      $("pT").dataset.p = w + ",100," + c; $("pT").dataset.d = "The central case, " + c + "% lower, allowing for the reversion model running high over the last five years.";
+      $("hW").textContent = "Share of the forecast from the reversion model; the rest comes from the slowing-growth model. The default " + w + "% is reset each month from how accurate each model has been since 2017.";
+      $("hC").textContent = "Lowers the reversion model's forecast by this much. " + miss;
+      $("mBias").textContent = miss;
+    }
     document.getElementById("fTrend").textContent = "log10 P = " + D.trend[1].toFixed(3) + " + " + D.trend[0].toFixed(3) + " log10 d";
         label(); draw();
   });
