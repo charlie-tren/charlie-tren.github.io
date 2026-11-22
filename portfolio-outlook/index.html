@@ -183,6 +183,7 @@
   input.w:focus { border-color: var(--accent); outline: none; }
   input.w::-webkit-outer-spin-button, input.w::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   input.w { -moz-appearance: textfield; appearance: textfield; }
+  .pc { color: var(--soft); margin-left: .2rem; }
   .norm { color: var(--soft); font-size: var(--t-xs); margin-left: .45rem; display: inline-block; min-width: 2.4em; text-align: right; font-variant-numeric: tabular-nums; }
   .rm { appearance: none; background: transparent; border: 0; color: var(--soft); cursor: pointer; font-size: 22px; line-height: 1; padding: .4rem; }
   .rm { color: var(--neg); opacity: .75; }
@@ -497,7 +498,7 @@
     var L = list(), y = YRS[st.h], tot = L.reduce(function (s, x) { return s + (+x[1] || 0); }, 0) || 1;
     return L.map(function (x, i) {
       var n = D.names[x[0]] || {}, r = n.r ? n.r[st.h] : [];
-      return { i: i, id: x[0], code: code(x[0]), co: n.c || "", mk: n.m || "", w: (+x[1] || 0) / tot, raw: x[1], cat: n.r ? cat(n.b) : "", g: n.g || "",
+      return { i: i, id: x[0], code: code(x[0]), co: n.c || "", mk: n.m || "", w: (+x[1] || 0) / tot, raw: x[1], off: Math.abs(tot - 100) > 0.5, cat: n.r ? cat(n.b) : "", g: n.g || "",
                dd: n.dd, d52: n.d52, v: n.v, y: n.y, typ: pa(r[0], y), avg: pa(r[1], y), q25: pa(r[2], y), q75: pa(r[3], y),
                up: r[4] == null ? null : r[4], own: pa(r[5], y), own_n: r[6] || null,
                mid: r[2] == null ? null : (pa(r[2], y) + pa(r[3], y)) / 2, avgTot: r[1] == null ? null : r[1] };
@@ -529,8 +530,9 @@
   // a share of the portfolio in whole percent; anything above zero but under half a percent reads <1
   function share(w) { return w > 0 && w < 0.005 ? "&lt;1" : Math.round(w * 100); }
   function weight(r) {
-    return st.pf === "mine" ? "<input class='w' type='number' min='0' step='1' inputmode='decimal' value='" + esc(r.raw) + "' data-i='" + r.i +
-      "' aria-label='Weight of " + esc(r.code) + "'><span class='norm nph'>" + share(r.w) + "%</span>" : Math.round(r.w * 100) + "%";
+    return st.pf === "mine" ? "<input class='w' type='number' min='0' step='0.1' inputmode='decimal' value='" + esc(r.raw) + "' data-i='" + r.i +
+      "' aria-label='Weight of " + esc(r.code) + " in percent'><span class='pc'>%</span><span class='norm nph'" +
+      (r.off ? " title='Share once weights are scaled to add to 100%'>" + share(r.w) + "%" : ">") + "</span>" : Math.round(r.w * 100) + "%";
   }
   // columns per view: key, label, width, phone-hidden, help, cell
   var VIEWS = {
@@ -933,6 +935,11 @@
   });
   q.addEventListener("blur", function () { setTimeout(hideSugg, 100); });
 
+  // weights entered as dollars or any other scale become percentages of the total, to one decimal
+  function pctify() {
+    var t = mine.reduce(function (s, x) { return s + (+x[1] || 0); }, 0);
+    if (t > 0 && Math.abs(t - 100) > 0.5) { mine.forEach(function (x) { x[1] = Math.round((+x[1] || 0) / t * 1000) / 10; }); save(); }
+  }
   // #mine=TICKER:weight,... loads a portfolio into "My Portfolio" (kept in this browser only), then clears the hash
   function fromHash() {
     try {
@@ -972,7 +979,7 @@
     if (D.opt) SAMPLES["Optimal Mix"] = D.opt.w;
     for (var k0 in S0) if (!SAMPLES[k0]) SAMPLES[k0] = S0[k0];
     NAMES = Object.keys(SAMPLES);
-    example(); fromHash(); render();
+    example(); fromHash(); pctify(); render();
   }).catch(function (e) {
     console.error(e);
     document.getElementById("tb").innerHTML = "<tr><td class='l' style='color:var(--soft);padding:1.2rem 0'>The figures did not load. Reload the page to try again.</td></tr>";
