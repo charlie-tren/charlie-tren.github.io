@@ -598,6 +598,9 @@
   function cashRate() { var c = D.names["AAA.AX"]; return c && c.r[st.h][0] != null ? pa(c.r[st.h][0], YRS[st.h]) : 0.04; }
   function ncdf(z) { var t = 1 / (1 + 0.2316419 * Math.abs(z)), d = 0.3989423 * Math.exp(-z * z / 2);
     var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return z > 0 ? 1 - p : p; }
+  // Bad Year: 1.9 swings below, not the textbook 1.645 (his pick 23/11/2026). Rebuilt yearly 1995-2025, 1.645 was breached
+  // 7-26% of years; equal weight needed 1.90, and today's 3y volatility and crash-aware correlations still read ~1.15x low.
+  var BADZ = 1.9;
   function pstats(R, y) {
     var H = R.filter(function (r) { return r.avg != null && r.vr != null && r.w > 0; }), tw = H.reduce(function (s0, r) { return s0 + r.w; }, 0);
     if (!H.length || !tw) return null;
@@ -606,7 +609,7 @@
       v2 += ww * (a.cat === "Cash" ? 0.01 : a.vr) * (b.cat === "Cash" ? 0.01 : b.vr) * p;
       if (a !== b && a.cat !== "Cash" && b.cat !== "Cash") { cs += ww * p; cw += ww; } }); });
     var vol = Math.sqrt(v2), rf = cashRate(), m = Math.log(1 + mu) - v2 / 2;
-    return { cor: cw > 0 ? cs / cw : null, med: Math.expm1(m), mu: mu, vol: vol, rf: rf, sharpe: vol > 0 ? (mu - rf) / vol : 0, up: ncdf(m * y / (vol * Math.sqrt(y) || 1e-9)), bad: Math.expm1(m - 1.645 * vol) };
+    return { cor: cw > 0 ? cs / cw : null, med: Math.expm1(m), mu: mu, vol: vol, rf: rf, sharpe: vol > 0 ? (mu - rf) / vol : 0, up: ncdf(m * y / (vol * Math.sqrt(y) || 1e-9)), bad: Math.expm1(m - BADZ * vol) };
   }
   function render() {
     if (!D) return;
