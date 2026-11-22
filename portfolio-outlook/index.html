@@ -38,11 +38,11 @@
   :root, :root[data-theme="dark"] { color-scheme: dark; --bg:#0f1319; --raised:#171c24; --card:#141922; --ink:#e6e9ee; --soft:#8a94a3;
     --rule:#262d38; --axis:#3a4352; --accent:#82a8ca; --pos:#5fc4b5; --neg:#ec8f78; --fill:rgba(130,168,202,.10);
     --band:#5a82a8; --own:#f0a24e; --stock:#6fa0d6; --index:#a78bfa; --btc:#f0973f; --cash:#8a94a3;
-    --c1:#3987e5; --c2:#199e70; --c3:#c98500; --c4:#d55181; --c5:#0ca30c; --c6:#9085e9; --c7:#e66767; }
+    --c1:#199e70; --c2:#3987e5; --c3:#d55181; --c4:#0ca30c; --c5:#9085e9; }
   :root[data-theme="light"] { color-scheme: light; --bg:#eef0f3; --raised:#fbfcfd; --card:#fbfcfd; --ink:#14171c; --soft:#565d68;
     --rule:#d7dbe2; --axis:#b9bfc9; --accent:#3a5f80; --pos:#16786b; --neg:#a8432c; --fill:rgba(58,95,128,.07);
     --band:#8fadc9; --own:#b4600f; --stock:#2f6fb2; --index:#6d4fd8; --btc:#c8681a; --cash:#6b7380;
-    --c1:#2a78d6; --c2:#1baf7a; --c3:#eda100; --c4:#e87ba4; --c5:#008300; --c6:#6250d6; --c7:#e34948; }
+    --c1:#1baf7a; --c2:#2a78d6; --c3:#e87ba4; --c4:#008300; --c5:#6250d6; }
   :root { --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
           --t-l: 20px; --t-m: 17px; --t-s: 14px; --t-xs: 12px; }
   html { -webkit-text-size-adjust: 100%; background: var(--bg); }
@@ -178,13 +178,13 @@
   .ctrk { width: 44px; height: 5px; border-radius: 3px; background: var(--rule); position: relative; overflow: hidden; }
   .ctrk i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--pos); border-radius: 3px; }
   tr.total td { border-bottom: 0; font-weight: 600; padding-top: .85rem; }
-  input.w { width: 54px; font: inherit; text-align: right; color: var(--ink); background: var(--raised); border: 1px solid var(--rule);
+  input.w { width: 70px; font: inherit; text-align: right; color: var(--ink); background: var(--raised); border: 1px solid var(--rule);
             border-radius: 6px; padding: .3rem .45rem; font-variant-numeric: tabular-nums; }
   input.w:focus { border-color: var(--accent); outline: none; }
   input.w::-webkit-outer-spin-button, input.w::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   input.w { -moz-appearance: textfield; appearance: textfield; }
-  .norm { color: var(--soft); font-size: var(--t-xs); margin-left: .45rem; }
-  .rm { appearance: none; background: transparent; border: 0; color: var(--soft); cursor: pointer; font-size: var(--t-m); line-height: 1; padding: .5rem; }
+  .norm { color: var(--soft); font-size: var(--t-xs); margin-left: .45rem; display: inline-block; min-width: 2.4em; text-align: left; }
+  .rm { appearance: none; background: transparent; border: 0; color: var(--soft); cursor: pointer; font-size: 22px; line-height: 1; padding: .4rem; }
   .rm { color: var(--neg); opacity: .75; }
   .rm:hover { color: var(--neg); opacity: 1; }
 
@@ -293,7 +293,7 @@
     .av { width: 24px; height: 24px; font-size: var(--t-xs); }
     .hold { gap: .5rem; }
     td, th { padding-left: 10px; }
-    input.w { width: 46px; font-size: 16px; }
+    input.w { width: 62px; font-size: 16px; padding: .3rem .35rem; }
     .figs { grid-template-columns: 1fr 1fr; }
     table.ex td { padding-left: .9rem; }
     .mrow { grid-template-columns: 1fr; gap: .4rem; }
@@ -525,9 +525,11 @@
     return "<span class='hold'><span class='av' style='background:" + col(r.cat) + "'>" + esc(init) + "</span><span class='badge'>" + esc(r.code) +
       "</span><span class='co'>" + esc(short(r.co) || "Not covered") + "</span><span class='mk'>" + esc(r.mk) + "</span></span>";
   }
+  // a share of the portfolio in whole percent; anything above zero but under half a percent reads <1
+  function share(w) { return w > 0 && w < 0.005 ? "&lt;1" : Math.round(w * 100); }
   function weight(r) {
     return st.pf === "mine" ? "<input class='w' type='number' min='0' step='1' inputmode='decimal' value='" + esc(r.raw) + "' data-i='" + r.i +
-      "' aria-label='Weight of " + esc(r.code) + "'><span class='norm nph'>" + Math.round(r.w * 100) + "%</span>" : Math.round(r.w * 100) + "%";
+      "' aria-label='Weight of " + esc(r.code) + "'><span class='norm nph'>" + share(r.w) + "%</span>" : Math.round(r.w * 100) + "%";
   }
   // columns per view: key, label, width, phone-hidden, help, cell
   var VIEWS = {
@@ -550,7 +552,7 @@
   function header() {
     var V = cols(), ed = st.pf === "mine";
     var ph = PH.matches;  // a phone keeps ~100px for the holding: weight, two figures and the remove button share the rest
-    document.getElementById("cg").innerHTML = "<col><col style='width:" + (ed ? (ph ? 66 : 110) : (ph ? 54 : 84)) + "px'>" + V.map(function (c) {
+    document.getElementById("cg").innerHTML = "<col><col style='width:" + (ed ? (ph ? 72 : 136) : (ph ? 54 : 84)) + "px'>" + V.map(function (c) {
       return "<col style='width:" + (ph ? 74 : c[2]) + "px'>"; }).join("") + "<col style='width:" + (ed ? (ph ? 30 : 36) : 8) + "px'>";
     document.getElementById("th").innerHTML = "<tr><th class='l' data-k='code'>Holding</th><th data-k='w'>Weight</th>" + V.map(function (c) {
       return "<th class='" + (c[3] ? "nph" : "") + "' data-k='" + c[0] + "' data-help='" + esc(c[4]) + "' tabindex='0'>" + "<span class='lb'>" + c[1] + "</span>" + "</th>"; }).join("") + "<th aria-label='Remove'></th></tr>";
@@ -623,12 +625,12 @@
     R.forEach(function (r) { var c = r.cat || "Not covered", k = r.g && r.g !== c && c !== "Bitcoin" && c !== "Cash" ? r.g : "";
       by[c] = (by[c] || 0) + r.w; sub[c] = sub[c] || {}; sub[c][k] = (sub[c][k] || 0) + r.w; });
     var cats = ["Stocks", "Index ETFs", "Bitcoin", "Cash", "Not covered"].filter(function (c) { return by[c]; }), off = 0, segs = [], leg = [];
-    // a hue for each of the seven largest sectors or indexes over 3% (orange stays Bitcoin's), dealt in display order;
+    // a hue for each of the five largest sectors or indexes over 3% (orange stays Bitcoin's), dealt in display order;
     // the rest fold into their family's Other
     var cand = [];
     ["Stocks", "Index ETFs"].forEach(function (c) { if (sub[c]) Object.keys(sub[c]).forEach(function (k) { if (k && sub[c][k] >= 0.03) cand.push([c + "|" + k, sub[c][k]]); }); });
     var lit = {}, hue = 0;
-    cand.sort(function (x, y) { return y[1] - x[1]; }).slice(0, 7).forEach(function (x) { lit[x[0]] = 1; });
+    cand.sort(function (x, y) { return y[1] - x[1]; }).slice(0, 5).forEach(function (x) { lit[x[0]] = 1; });
     cats.forEach(function (c) {
       var G = Object.keys(sub[c]).map(function (k) { return [k, sub[c][k]]; }).sort(function (x, y) { return y[1] - x[1]; }), keep = [], rest = 0;
       var parts = c === "Stocks" || c === "Index ETFs";
@@ -636,10 +638,10 @@
       var own = c === "Bitcoin" ? "var(--btc)" : c === "Cash" ? "var(--cash)" : "var(--axis)";
       if (rest > 1e-9) keep.push([parts ? "Other" : c, rest, own]);
       var solo = keep.length === 1 && !parts;
-      leg.push("<li class='fam'>" + (solo ? "<i style='background:" + own + "'></i>" : "") + c + "<b>" + Math.round(by[c] * 100) + "%</b></li>");
+      leg.push("<li class='fam'>" + (solo ? "<i style='background:" + own + "'></i>" : "") + c + "<b>" + share(by[c]) + "%</b></li>");
       keep.forEach(function (x) {
         segs.push([x[1], x[2]]);
-        if (!solo) leg.push("<li><i style='background:" + x[2] + "'></i>" + esc(x[0]) + "<b>" + Math.round(x[1] * 100) + "%</b></li>");
+        if (!solo) leg.push("<li><i style='background:" + x[2] + "'></i>" + esc(x[0]) + "<b>" + share(x[1]) + "%</b></li>");
       });
     });
     // pie as dashed rings: circumference 100, so each dash is the share in percent
