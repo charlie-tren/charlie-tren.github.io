@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio Outlook</title>
+<!-- Written for search and AI answer engines, and deliberately NOT the visible lede. -->
+<meta name="description" content="Expected one, three and five year returns for shares, ETFs and Bitcoin funds, from what similar holdings went on to do since 1962, in Australian dollars, with a portfolio total.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Portfolio Outlook">
+<meta property="og:description" content="What happened next to every share since 1962, turned into expected returns for 7,800 shares, ETFs and Bitcoin funds.">
+<meta property="og:url" content="https://charlietrenorden.com/portfolio-outlook/">
+<meta property="og:site_name" content="Charlie Trenorden">
+<meta property="og:image" content="https://charlietrenorden.com/portfolio-outlook/og-card.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt" content="A teal rising-chart mark beside the name Portfolio Outlook, over a faded chart of return ranges">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://charlietrenorden.com/portfolio-outlook/og-card.png">
+<link rel="canonical" href="https://charlietrenorden.com/portfolio-outlook/">
+<link rel="icon" href="/portfolio-outlook/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/portfolio-outlook/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="icon" href="/portfolio-outlook/favicon-48.png" type="image/png" sizes="48x48">
+<link rel="apple-touch-icon" href="/portfolio-outlook/apple-touch-icon.png">
+<link rel="preload" href="data.json" as="fetch" crossorigin>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      var dark = saved ? saved === "dark"
+        : !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root, :root[data-theme="dark"] { color-scheme: dark; --bg:#0f1319; --raised:#171c24; --card:#141922; --ink:#e6e9ee; --soft:#8a94a3;
+    --rule:#262d38; --axis:#3a4352; --accent:#82a8ca; --pos:#5fc4b5; --neg:#ec8f78; --fill:rgba(130,168,202,.10);
+    --band:#5a82a8; --own:#f0a24e; --stock:#6fa0d6; --index:#a78bfa; --btc:#f0973f; --cash:#8a94a3; }
+  :root[data-theme="light"] { color-scheme: light; --bg:#eef0f3; --raised:#fbfcfd; --card:#fbfcfd; --ink:#14171c; --soft:#565d68;
+    --rule:#d7dbe2; --axis:#b9bfc9; --accent:#3a5f80; --pos:#16786b; --neg:#a8432c; --fill:rgba(58,95,128,.07);
+    --band:#8fadc9; --own:#b4600f; --stock:#2f6fb2; --index:#6d4fd8; --btc:#c8681a; --cash:#6b7380; }
+  :root { --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+          --t-l: 20px; --t-m: 17px; --t-s: 14px; --t-xs: 12px; }
+  html { -webkit-text-size-adjust: 100%; background: var(--bg); }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--t-m)/1.6 var(--sans);
+         -webkit-font-smoothing: antialiased; transition: background .3s, color .3s; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 2.2rem 2rem 5rem; }
+  .caps { font: 600 var(--t-xs)/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2.6rem; }
+  .barright { display: flex; align-items: center; gap: 1rem; flex: none; }
+  .home { font: 500 13px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; position: relative;
+          color: var(--soft); text-decoration: none; display: inline-flex; align-items: center; transition: color .2s; }
+  .home:hover { color: var(--accent); }
+  .home .back { font-size: 15.5px; position: relative; top: -2px; }
+  .home::after { content: ""; position: absolute; inset: -12px -10px; }
+  .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
+                  border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem;
+                  font: 500 12.5px/1 var(--sans); letter-spacing: .02em;
+                  display: inline-flex; align-items: center; gap: .45rem; transition: border-color .2s, color .2s; }
+  .theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .theme-toggle .lbl[data-t]::after { content: attr(data-t); }
+
+  h1.wm { font-weight: 600; font-size: clamp(22px, 1.6vw + 14px, 36px); line-height: 1.15; letter-spacing: -.02em; margin: 0;
+          display: flex; align-items: center; gap: .4em; min-width: 0; }
+  h1.wm svg { width: 1.2em; height: 1.2em; flex: none; }
+  .lede { max-width: 74ch; margin: 0 0 2.2rem; }
+  h2 { font-weight: 600; font-size: var(--t-l); margin: 4rem 0 1.2rem; letter-spacing: -.015em; }
+
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.6rem; margin: 0 0 1.6rem; }
+  .seg { display: inline-flex; flex-wrap: wrap; gap: .45rem; }
+  .pill { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule);
+          border-radius: 999px; padding: .5rem .9rem; font: 400 var(--t-s)/1 var(--sans); display: inline-flex; align-items: center; gap: .45rem;
+          transition: border-color .2s, color .2s, background .2s; position: relative; }
+  .pill::after { content: ""; position: absolute; inset: -6px -2px; }
+  .pill:hover { color: var(--ink); border-color: var(--accent); }
+  .pill[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-color: var(--accent); background: var(--fill); }
+  .pill i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .sep { width: 1px; align-self: stretch; background: var(--rule); }
+  .cyc { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .45rem .35rem; }
+  .nav { appearance: none; cursor: pointer; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--rule); background: transparent;
+         color: var(--ink); font: 400 18px/1 var(--sans); display: grid; place-items: center; transition: border-color .2s, background .2s; }
+  .nav:hover { border-color: var(--accent); background: var(--fill); }
+  .pick { position: relative; }
+  .pfbtn { appearance: none; cursor: pointer; display: inline-flex; align-items: center; gap: .7rem; min-width: 13rem; justify-content: space-between;
+           font: 600 var(--t-s)/1 var(--sans); color: var(--ink); background: var(--fill); border: 1px solid var(--accent); border-radius: 999px; padding: .6rem 1rem; }
+  .pfbtn.off { background: transparent; border-color: var(--rule); font-weight: 400; color: var(--soft); }
+  .pfbtn:hover { border-color: var(--accent); color: var(--ink); }
+  .chev { width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-2px); opacity: .7; }
+  .pfmenu { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; width: 330px; max-width: calc(100vw - 2rem); margin: 0; padding: .35rem;
+            list-style: none; background: var(--raised); border: 1px solid var(--rule); border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.35); }
+  .pfmenu li { padding: .55rem .7rem; border-radius: 8px; cursor: pointer; display: grid; gap: .1rem; }
+  .pfmenu li b { font-size: var(--t-s); font-weight: 600; color: var(--ink); }
+  .pfmenu li span { font-size: var(--t-xs); color: var(--soft); }
+  .pfmenu li[aria-selected="true"] b { color: var(--accent); }
+  .pfmenu li.act, .pfmenu li:hover { background: var(--fill); }
+  .pfn { color: var(--soft); font-size: var(--t-xs); margin: 0 .3rem; font-variant-numeric: tabular-nums; }
+
+  /* headline cards */
+  .cards { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1.15fr); gap: .9rem; margin: 0 0 2rem; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--card); border: 1px solid var(--rule); border-radius: 12px; }
+  .stats .card { padding: 1.05rem 1.3rem 1.15rem; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .stats .card:nth-child(3n) { border-right: 0; } .stats .card:nth-child(n+4) { border-bottom: 0; }
+  .card { position: relative; min-width: 0; }
+  .card.alloc { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 1.05rem 1.3rem; display: flex; flex-direction: column; }
+  .card.alloc .allocrow { flex: 1; }
+  .card .k { display: flex; align-items: center; margin-bottom: .35rem; }
+  .card .v { font-size: 28px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.15; white-space: nowrap; }
+  .card .sub { display: block; font-size: var(--t-s); color: var(--soft); margin-top: .25rem; line-height: 1.35; }
+  .allocrow { display: flex; align-items: center; gap: 1.1rem; margin-top: .25rem; }
+  .pie { width: 112px; height: 112px; flex: none; transform: rotate(-90deg); }
+  .allocrow .legend { flex-direction: column; gap: .15rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: .2rem 1rem; font-size: var(--t-s); color: var(--soft); }
+  .legend span { display: inline-flex; align-items: center; gap: .4rem; white-space: nowrap; }
+  .legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .legend b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pos { color: var(--pos); } .neg { color: var(--neg); }
+  .info { appearance: none; cursor: pointer; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--soft);
+          background: transparent; color: var(--soft); padding: 0; margin-left: .45rem; display: inline-grid; place-items: center;
+          position: relative; flex: none; opacity: .8; }
+  .info svg { width: 10px; height: 10px; display: block; }
+  .info::after { content: ""; position: absolute; inset: -11px; }
+  .info:hover, .info[aria-expanded="true"] { color: var(--ink); border-color: var(--accent); opacity: 1; }
+  .help { position: absolute; z-index: 6; left: .8rem; top: 2.2rem; width: 290px; margin: 0; display: none; text-transform: none; letter-spacing: 0;
+          background: var(--raised); border: 1px solid var(--rule); border-radius: 8px; padding: .7rem .85rem;
+          box-shadow: 0 8px 24px rgba(0,0,0,.22); font: 400 var(--t-s)/1.5 var(--sans); color: var(--ink); }
+  .card.open .help { display: block; }
+
+  /* holdings table */
+  .tabbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--rule); margin: 0 0 .2rem; }
+  .tabs { display: flex; gap: 1.4rem; }
+  .tab { appearance: none; background: none; border: 0; cursor: pointer; padding: .55rem 0 .7rem; color: var(--soft);
+         font: 400 var(--t-s)/1 var(--sans); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; font: 400 var(--t-s)/1.4 var(--sans); font-variant-numeric: tabular-nums; }
+  th { font: 600 var(--t-s)/1.3 var(--sans); letter-spacing: .01em; color: var(--soft); text-align: right;
+       padding: .8rem 0 .7rem 16px; border-bottom: 1px solid var(--rule); vertical-align: bottom; white-space: nowrap; }
+  th.l, td.l { text-align: left; padding-left: 0; }
+  th[data-k] { cursor: pointer; user-select: none; }
+  th[data-k]:hover { color: var(--ink); }
+  th[data-help] .lb { text-decoration: underline dotted var(--axis); text-underline-offset: 3px; }
+  /* sort arrow sits BEFORE a right-aligned label, so labels end on the figures' edge */
+  th[data-k]::before { content: "\2195"; opacity: .35; margin-right: .3em; font-size: var(--t-xs); }
+  th.l[data-k]::before { content: none; }
+  th.l[data-k]::after { content: "\2195"; opacity: .35; margin-left: .3em; font-size: var(--t-xs); }
+  th[aria-sort="ascending"]::before, th.l[aria-sort="ascending"]::after { content: "\2191"; opacity: 1; }
+  th[aria-sort="descending"]::before, th.l[aria-sort="descending"]::after { content: "\2193"; opacity: 1; }
+  th.l[aria-sort="ascending"]::before, th.l[aria-sort="descending"]::before { content: none; }
+  td { text-align: right; padding: .62rem 0 .62rem 16px; border-bottom: 1px solid var(--rule); vertical-align: middle; white-space: nowrap; }
+  tbody tr:hover td, tbody tr.hl td { background: var(--fill); }
+  tbody tr.flash td { animation: fl 1.2s; }
+  @keyframes fl { 0% { background: var(--band); } 100% { background: transparent; } }
+  .hold { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+  .av { width: 28px; height: 28px; border-radius: 50%; flex: none; display: grid; place-items: center; color: #fff;
+        font: 600 var(--t-s)/1 var(--sans); }
+  .badge { font: 600 var(--t-xs)/1 var(--sans); background: var(--rule); color: var(--ink); border-radius: 5px; padding: .32rem .45rem; flex: none; letter-spacing: .02em; }
+  .co { color: var(--ink); min-width: 0; white-space: normal; line-height: 1.25; }
+  .mk { color: var(--soft); font-size: var(--t-xs); flex: none; }
+  td.dim, .na { color: var(--soft); }
+  .rng { display: inline-flex; align-items: center; gap: 10px; justify-content: flex-end; }
+  .rtrk { position: relative; width: 150px; height: 20px; flex: none; }
+  .rtrk .zero { position: absolute; top: -4px; bottom: -4px; width: 0; border-left: 1px dashed var(--soft); z-index: 1; opacity: .8; }
+  .rtrk .q { position: absolute; top: 4px; height: 12px; border-radius: 3px; background: color-mix(in srgb, var(--accent) 38%, transparent); }
+  .rtrk .t { position: absolute; top: 1px; width: 3px; height: 18px; border-radius: 2px; margin-left: -1.5px; background: var(--ink); }
+  .rtrk.rax { height: 14px; }
+  .rtrk.rax span { position: absolute; top: 0; transform: translateX(-50%); font: 400 var(--t-xs)/14px var(--sans); color: var(--soft); white-space: nowrap; }
+  .rtxt { color: var(--soft); min-width: 108px; text-align: right; }
+  .chance { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .ctrk { width: 44px; height: 5px; border-radius: 3px; background: var(--rule); position: relative; overflow: hidden; }
+  .ctrk i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--pos); border-radius: 3px; }
+  tr.total td { border-bottom: 0; font-weight: 600; padding-top: .85rem; }
+  input.w { width: 54px; font: inherit; text-align: right; color: var(--ink); background: var(--raised); border: 1px solid var(--rule);
+            border-radius: 6px; padding: .3rem .45rem; font-variant-numeric: tabular-nums; }
+  input.w:focus { border-color: var(--accent); outline: none; }
+  input.w::-webkit-outer-spin-button, input.w::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input.w { -moz-appearance: textfield; appearance: textfield; }
+  .norm { color: var(--soft); font-size: var(--t-xs); margin-left: .45rem; }
+  .rm { appearance: none; background: transparent; border: 0; color: var(--soft); cursor: pointer; font-size: var(--t-m); line-height: 1; padding: .5rem; }
+  .rm { color: var(--neg); opacity: .75; }
+  .rm:hover { color: var(--neg); opacity: 1; }
+
+  .add { position: relative; margin: 0 0 .55rem; width: min(360px, 100%); }
+  .add input { width: 100%; font: 400 var(--t-s)/1.3 var(--sans); color: var(--ink); background: var(--raised);
+               border: 1px solid var(--rule); border-radius: 8px; padding: .65rem .8rem; }
+  .add input:focus { border-color: var(--accent); outline: none; }
+  .sugg { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: var(--raised); border: 1px solid var(--rule);
+          border-radius: 8px; margin: 0; padding: .3rem 0; list-style: none; z-index: 5; box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+  .sugg li { padding: .5rem .8rem; cursor: pointer; font-size: var(--t-s); display: flex; gap: .6rem; align-items: center; }
+  .sugg li[aria-selected="true"] { background: var(--fill); }
+  .sugg .co { color: var(--soft); white-space: nowrap; }
+  .sugg .mk { margin-left: auto; }
+
+  .key { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; margin: 0 0 .8rem; font: 400 var(--t-s)/1.4 var(--sans); color: var(--soft); }
+  .key span, .kb { display: inline-flex; align-items: center; gap: .45rem; }
+  .kb { appearance: none; cursor: pointer; background: transparent; border: 1px solid transparent; border-radius: 999px; padding: .3rem .7rem;
+        color: var(--soft); font: 400 var(--t-s)/1.2 var(--sans); margin-left: -.7rem; margin-right: .2rem; transition: border-color .2s, color .2s; }
+  .kb:hover { color: var(--ink); border-color: var(--rule); }
+  .kb[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-color: var(--accent); background: var(--fill); }
+  .kb .ar { font-size: var(--t-xs); opacity: .8; }
+  .chart { display: block; width: 100%; }
+  .chart text { font: 400 var(--t-xs) var(--sans); fill: var(--soft); }
+  .chart text.lab { fill: var(--ink); font-size: var(--t-s); }
+  .chart text.axt { font-size: var(--t-s); fill: var(--ink); opacity: .8; }
+  .chart g.r { cursor: pointer; }
+  .chart g.r.hl rect.bg { fill: var(--fill); }
+  .tip { position: fixed; pointer-events: none; background: var(--raised); border: 1px solid var(--rule); border-radius: 6px;
+         padding: .45rem .65rem; font: 400 var(--t-s)/1.45 var(--sans); color: var(--ink); max-width: 300px;
+         font-variant-numeric: tabular-nums; display: none; box-shadow: 0 4px 14px rgba(0,0,0,.18); z-index: 10; }
+  .tip b { font-weight: 600; } .tip span { color: var(--soft); }
+
+  /* method */
+  .method { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
+  .steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .steps li { display: grid; grid-template-columns: 2.2rem 1fr; gap: .2rem .8rem; padding: .85rem 0; border-top: 1px solid var(--rule); counter-increment: s; }
+  .steps li::before { content: counter(s); grid-row: span 2; width: 1.7rem; height: 1.7rem; border-radius: 50%; border: 1.5px solid var(--accent);
+                      color: var(--accent); font: 600 var(--t-xs)/1 var(--sans); display: grid; place-items: center; margin-top: .1rem; }
+  .steps b { font-size: var(--t-s); }
+  .steps p { margin: 0; font-size: var(--t-s); color: var(--soft); line-height: 1.5; }
+  .figs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0 1.2rem; margin: 0 0 1.6rem; }
+  table.ex { width: auto; table-layout: auto; margin: .4rem 0 .8rem; font-size: var(--t-s); }
+  table.ex td { padding: .4rem 0 .4rem 1.6rem; border-bottom: 1px solid var(--rule); color: var(--soft); }
+  table.ex td:first-child { padding-left: 0; text-align: left; color: var(--ink); }
+  table.ex tr.sum td { color: var(--ink); font-weight: 600; border-bottom: 0; }
+  table.ex b { color: var(--ink); font-weight: 600; }
+  .fig { padding: .85rem 0; border-top: 1px solid var(--rule); }
+  .fig .n { font-size: 26px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .fig p { margin: .2rem 0 0; font-size: var(--t-s); color: var(--soft); line-height: 1.4; padding-right: 1rem; }
+  details.full { border-top: 1px solid var(--rule); margin-top: 1.6rem; }
+  details.full summary { cursor: pointer; padding: 1rem 0; font-weight: 600; font-size: var(--t-s); color: var(--soft); list-style: none; }
+  details.full summary::-webkit-details-marker { display: none; }
+  details.full summary::before { content: "+ "; color: var(--accent); }
+  details.full[open] summary::before { content: "\2212 "; }
+  details.full summary:hover { color: var(--ink); }
+  .models { border-bottom: 1px solid var(--rule); }
+  .mrow { display: grid; grid-template-columns: 220px 1fr; gap: 1.6rem; padding: 1.2rem 0; border-top: 1px solid var(--rule); }
+  .mrow h3 { font-size: var(--t-s); font-weight: 600; margin: 0; line-height: 1.6; }
+  .mrow p { margin: 0 0 .6rem; color: var(--soft); max-width: 76ch; font-size: var(--t-s); }
+  .mrow p:last-child { margin-bottom: 0; }
+  .fine { font-size: var(--t-s); color: var(--soft); margin-top: 2.4rem; }
+  .tophead { display: flex; align-items: center; gap: .2rem; }
+  .tophead h2 { margin-bottom: 0; }
+  .tophead .help { top: 2.6rem; left: 0; width: 340px; }
+  .tophead.open .help { display: block; }
+  .tophead { position: relative; margin: 4rem 0 1rem; }
+  .tophead h2 { margin-top: 0; }
+  .topctl { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; margin: 0 0 1rem; }
+  td.rk { color: var(--soft); width: 2rem; }
+  .pager { display: flex; align-items: center; justify-content: flex-end; gap: .7rem; margin: .8rem 0 0; font-size: var(--t-s); color: var(--soft); font-variant-numeric: tabular-nums; }
+  .pager button { appearance: none; cursor: pointer; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--rule); background: transparent;
+                  color: var(--ink); font: 400 18px/1 var(--sans); }
+  .pager button:hover:not([disabled]) { border-color: var(--accent); background: var(--fill); }
+  .pager button[disabled] { opacity: .35; cursor: default; }
+  .addb { appearance: none; cursor: pointer; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--rule);
+          background: transparent; color: var(--accent); font: 600 var(--t-m)/1 var(--sans); }
+  .addb:hover { border-color: var(--accent); background: var(--fill); }
+  .addb[disabled] { color: var(--pos); border-color: transparent; cursor: default; }
+
+
+  @media (max-width: 980px) {
+    .cards { grid-template-columns: 1fr; }
+    .figs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 1.4rem 1rem 4rem; }
+    .bar { margin-bottom: 1.2rem; gap: .6rem; }
+    .barright { gap: .55rem; }
+    h1.wm { font-size: 20px; }
+    .home { font-size: 11.5px; letter-spacing: .06em; }
+    .home .hl { display: none; }
+    .theme-toggle { padding: .4rem .62rem; }
+    .lede { font-size: 16px; margin-bottom: 1rem; }
+    .sep, .pfn, .ctrk { display: none; }
+    table.top col.nph { width: 0 !important; }  /* a hidden column's declared width still counts in a fixed table */
+    .pfbtn { min-width: 11rem; }
+    .pill { white-space: nowrap; }
+    .nph { display: none; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stats .card { padding: .9rem 1rem; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .stats .card:nth-child(3n) { border-right: 1px solid var(--rule); } .stats .card:nth-child(2n) { border-right: 0; }
+    .stats .card:nth-child(n+4) { border-bottom: 1px solid var(--rule); } .stats .card:nth-child(n+5) { border-bottom: 0; }
+    .card.alloc { padding: .9rem 1rem; } .pie { width: 84px; height: 84px; }
+    .card .v { font-size: 22px; }
+    .co, .mk { display: none; }
+    .av { width: 24px; height: 24px; font-size: var(--t-xs); }
+    .hold { gap: .5rem; }
+    td, th { padding-left: 10px; }
+    .rtrk { width: 72px; } .rtxt { display: none; }
+    input.w { width: 46px; font-size: 16px; }
+    .figs { grid-template-columns: 1fr 1fr; }
+    table.ex td { padding-left: .9rem; }
+    .mrow { grid-template-columns: 1fr; gap: .4rem; }
+    .help { width: min(290px, 84vw); }
+  }
+</style>
+<script>/* Analytics, gated: opted out with ?nostats=1, or automation (navigator.webdriver). See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var E=["pointermove","pointerdown","scroll","keydown","touchstart","wheel"],go=function(){if(go.d)return;go.d=1;E.forEach(function(e){removeEventListener(e,go,true)});var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2", "spa": false}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);};E.forEach(function(e){addEventListener(e,go,{capture:true,passive:true})});}catch(e){}})();</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <h1 class="wm"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15.6" fill="#1F9E8F"/><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 22 L13 15.5 L17 19 L24.5 10.5"/><path d="M18.5 10.5 H24.5 V16.5"/></g></svg><span>Portfolio Outlook</span></h1>
+    <div class="barright">
+      <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl" data-t="Dark"></span></button>
+      <a class="home" href="https://charlietrenorden.com/" aria-label="Other projects"><span class="back">&larr;</span><span class="hl">&nbsp;Other projects</span></a>
+    </div>
+  </div>
+  <p class="lede">What happened next to every share since 1962, turned into expected returns for 7,800 shares, ETFs and Bitcoin funds. In Australian dollars, updated weekly<span id="asof"></span>.</p>
+
+  <div class="controls">
+    <div class="cyc" role="group" aria-label="Portfolio">
+      <div class="pick" id="pick">
+        <button class="pfbtn" id="pfBtn" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="pfname" id="pfName"></span><span class="chev" aria-hidden="true"></span></button>
+        <ul class="pfmenu" id="pfMenu" role="listbox" aria-label="Sample portfolios" hidden></ul>
+      </div>
+      <button class="pill" type="button" id="mineBtn">My Portfolio</button>
+    </div>
+    <span class="sep" aria-hidden="true"></span>
+    <div class="seg" role="group" aria-label="Horizon">
+      <button class="pill" type="button" data-h="0">1 Year</button>
+      <button class="pill" type="button" data-h="1">3 Years</button>
+      <button class="pill" type="button" data-h="2">5 Years</button>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="stats">
+      <div class="card"><span class="k caps"><span>Mean Return</span><button class="info" type="button" aria-expanded="false" aria-controls="hA" aria-label="About Mean Return"></button></span><span class="v" id="sAvg">&mdash;</span><span class="sub" id="sAvgS"></span>
+        <p class="help" id="hA" role="tooltip">Each holding's mean return, weighted by its share of the portfolio.</p></div>
+      <div class="card"><span class="k caps"><span>Volatility</span><button class="info" type="button" aria-expanded="false" aria-controls="hV" aria-label="About Volatility"></button></span><span class="v" id="sVol">&mdash;</span><span class="sub">likely swing in a year</span>
+        <p class="help" id="hV" role="tooltip">From each holding's price swings and how closely the holdings have moved together.</p></div>
+      <div class="card"><span class="k caps"><span>Sharpe Ratio</span><button class="info" type="button" aria-expanded="false" aria-controls="hS" aria-label="About Sharpe Ratio"></button></span><span class="v" id="sSh">&mdash;</span><span class="sub" id="sShS"></span>
+        <p class="help" id="hS" role="tooltip">Mean return above cash, divided by volatility.</p></div>
+      <div class="card"><span class="k caps"><span>P(Gain)</span><button class="info" type="button" aria-expanded="false" aria-controls="hP" aria-label="About P(Gain)"></button></span><span class="v" id="sPg">&mdash;</span><span class="sub" id="sPgS"></span>
+        <p class="help" id="hP" role="tooltip">Chance the whole portfolio ends higher, from its mean return and volatility.</p></div>
+      <div class="card"><span class="k caps"><span>Bad Year</span><button class="info" type="button" aria-expanded="false" aria-controls="hB" aria-label="About Bad Year"></button></span><span class="v" id="sBad">&mdash;</span><span class="sub">1 year in 20 is this bad</span>
+        <p class="help" id="hB" role="tooltip">A one-year result this bad or worse comes about one year in twenty.</p></div>
+      <div class="card"><span class="k caps"><span>Correlation</span><button class="info" type="button" aria-expanded="false" aria-controls="hC" aria-label="About Correlation"></button></span><span class="v" id="sCor">&mdash;</span><span class="sub" id="sCorS"></span>
+        <p class="help" id="hC" role="tooltip">How closely the holdings have moved together, from 0 (unrelated) to 1 (in step). Shares: three years of weekly prices.</p></div>
+    </div>
+    <div class="card alloc"><span class="k caps">Allocation</span><div class="allocrow"><svg class="pie" id="pie" viewBox="0 0 42 42" role="img" aria-label="Allocation by asset type"></svg><div class="legend" id="legend"></div></div></div>
+  </div>
+
+  <div class="tabbar">
+  <div class="tabs" role="tablist" aria-label="Table view">
+    <button class="tab" type="button" role="tab" data-v="ret" data-help="Median, mean, range and chance of a gain.">Expected Return</button>
+    <button class="tab" type="button" role="tab" data-v="now" data-help="Distance from its highs, price swings and dividend.">Price and Yield</button>
+    <button class="tab" type="button" role="tab" data-v="own" data-help="What it did after past falls like today's.">Track Record</button>
+  </div>
+    <div class="add" id="addBox">
+    <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Add a holding: ticker or company" aria-label="Add a holding"
+           role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg">
+    <ul class="sugg" id="sugg" role="listbox" hidden></ul>
+  </div>
+  </div>
+  <table id="tbl"><colgroup id="cg"></colgroup><thead id="th"></thead><tbody id="tb"></tbody></table>
+
+  <h2>Range of Outcomes</h2>
+  <div class="key" id="key1" role="group" aria-label="Sort by"></div>
+  <div id="c1"></div>
+
+  <h2>What Predicted Next-Year Returns</h2>
+  <div class="key">
+    <span><svg width="16" height="10" aria-hidden="true"><rect width="16" height="10" rx="3" fill="var(--accent)"/></svg>In the Estimate</span>
+    <span><svg width="16" height="10" aria-hidden="true"><rect width="16" height="10" rx="3" fill="var(--soft)" fill-opacity=".6"/></svg>Left Out</span>
+  </div>
+  <div id="c2"></div>
+
+  <h2>Method</h2>
+  <div class="models">
+    <div class="mrow"><h3>What This Estimates</h3><div>
+      <p>A best guess at what a holding will return over the next one, three or five years, including dividends, in Australian dollars. It comes from what similar holdings returned in the past.</p>
+    </div></div>
+    <div class="mrow" id="exRow" hidden><h3>Worked Example</h3><div>
+      <p id="exIntro"></p>
+      <table class="ex"><tbody id="exT"></tbody></table>
+      <p id="exOut"></p></div></div>
+    <div class="mrow"><h3>Starting Point</h3><div>
+      <p>Every share listed in the US, Japan, Australia, Canada and the UK since 1962, about 8,000 companies. On average they rose about 4% a year before dividends.</p>
+    </div></div>
+    <div class="mrow"><h3>Adjustments</h3><div>
+      <p>Shares close to their 52-week high (the highest price of the past year) have tended to beat shares far below it. So have companies listed for many years, and US companies buying back their own shares.</p>
+      <p>The best fifth of shares on these measures beat the worst fifth by 6-9 percentage points a year. In Japan none of them held, and Japanese shares keep the starting point.</p>
+    </div></div>
+    <div class="mrow"><h3>Left Out</h3><div>
+      <p>About 320 other measures were tested, including momentum, price to earnings, profitability, analyst price targets and earnings surprises. Each was fitted on earlier years and checked on the next, every year from 1995 to 2025.</p>
+      <p>None improved the estimate. Giving all of them a small weight made it worse in 61% of years.</p>
+    </div></div>
+    <div class="mrow"><h3>Delisted Companies</h3><div>
+      <p>Share price records usually drop companies that stop trading. In the US, shares still listed today returned about 5% a year more than all shares did. Each estimate takes this off: up to 14% a year for small, volatile companies and almost nothing for the largest. In Japan most delistings were takeovers, and the deduction is close to zero.</p>
+    </div></div>
+    <div class="mrow"><h3>Dividends</h3><div>
+      <p>Dividends count in full up to 6% a year and for less above that. Shares yielding 6-10% did no better than average the following year, and those yielding over 10% did worse.</p>
+    </div></div>
+    <div class="mrow"><h3>Track Record</h3><div>
+      <p>What the holding did after its own past falls of a similar size counts for at most 16% of the estimate, and less when there have been only one or two.</p>
+    </div></div>
+    <div class="mrow"><h3>ETFs, Bitcoin and Cash</h3><div>
+      <p>Index ETFs get the average return of 58 country, sector and style ETFs, including Greece and Turkey. Bitcoin funds use the <a href="https://charlietrenorden.com/bitcoin-power-law-forecast/">Bitcoin Power Law Forecast</a>, and a 2x fund also pays about 6% a year in fees and borrowing. Cash ETFs use their own record.</p>
+    </div></div>
+    <div class="mrow"><h3>Currency</h3><div>
+      <p>No exchange-rate move is assumed. Nothing tested predicted exchange rates better than assuming no change. Past currency moves widen the range for overseas holdings.</p>
+    </div></div>
+    <div class="mrow"><h3>Reading the Figures</h3><div>
+      <p>The median return is what one holding usually returns. The mean return is the average result, and a few big winners lift it above the median. The portfolio total uses the mean.</p>
+      <p>Middle 50% is the range half of similar holdings ended in, and P(Gain) is how often they finished higher. Three and five year figures are per year.</p>
+    </div></div>
+    <div class="mrow"><h3>Limits</h3><div>
+      <p>For any single share the estimate is close to a coin flip. A list of the 20 highest-ranked shares did not beat owning everything. Taxes and trading costs are not included.</p>
+    </div></div>
+  </div>
+
+  <div class="tophead"><h2>Highest Median Returns</h2><button class="info" type="button" aria-expanded="false" aria-controls="hTop" aria-label="About this list"></button>
+    <p class="help" id="hTop" role="tooltip">Shares only, ranked by median return over the horizon chosen above. A list of the highest-ranked shares did not beat owning the whole market in testing, so treat it as a place to start looking, not a buy list.</p></div>
+  <div class="topctl">
+    <div class="seg" role="group" aria-label="Market" id="topMkt"></div>
+    <div class="seg" role="group" aria-label="Company size" id="topCap"></div>
+  </div>
+  <table id="topT" class="top"><colgroup><col style="width:2.4rem"><col><col style="width:104px"><col style="width:96px" class="nph"><col style="width:272px" class="nph"><col style="width:120px"><col style="width:40px"></colgroup>
+    <thead><tr><th class="l">#</th><th class="l">Holding</th><th>Median</th><th class="nph">Mean</th><th class="nph" id="topMid">Middle 50%</th><th>P(Gain)</th><th></th></tr></thead>
+    <tbody id="topB"></tbody></table>
+  <div class="pager" id="topPg"></div>
+
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
+  function sync() {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    lbl.dataset.t = next === "dark" ? "Dark" : "Light";
+    btn.setAttribute("aria-label", "Switch to " + next + " theme");
+  }
+  sync();
+  btn.addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") !== "dark";
+    root.setAttribute("data-theme", dark ? "dark" : "light");
+    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
+    sync(); charts();
+  });
+
+  var SAMPLES = {
+    "Index Mix": [["IVV.AX", 30], ["VAS.AX", 25], ["NDQ.AX", 10], ["BHP.AX", 5], ["CSL.AX", 5], ["CBA.AX", 5], ["NVDA", 5], ["MSFT", 5], ["7203.T", 5], ["IBIT.AX", 5]],
+    "Global ETFs": [["IVV.AX", 30], ["VGS.AX", 30], ["VAS.AX", 20], ["NDQ.AX", 10], ["SEMI.AX", 10]],
+    "ASX Leaders": [["BHP.AX", 1], ["CBA.AX", 1], ["CSL.AX", 1], ["NAB.AX", 1], ["WBC.AX", 1], ["WES.AX", 1], ["FMG.AX", 1], ["WDS.AX", 1], ["GMG.AX", 1], ["TLS.AX", 1]],
+    "ASX Dividends": [["CBA.AX", 1], ["NAB.AX", 1], ["WBC.AX", 1], ["TLS.AX", 1], ["WES.AX", 1], ["WOW.AX", 1], ["COL.AX", 1], ["SUN.AX", 1], ["QBE.AX", 1], ["WDS.AX", 1]],
+    "US Tech": [["AAPL", 1], ["MSFT", 1], ["NVDA", 1], ["AMZN", 1], ["META", 1], ["TSLA", 1], ["AVGO", 1]],
+    "US Blue Chips": [["JPM", 1], ["V", 1], ["MA", 1], ["UNH", 1], ["XOM", 1], ["JNJ", 1], ["PG", 1], ["KO", 1], ["WMT", 1], ["COST", 1], ["LLY", 1], ["HD", 1]],
+    "Japan Leaders": [["7203.T", 1], ["6758.T", 1], ["8306.T", 1], ["9984.T", 1], ["6861.T", 1], ["8035.T", 1], ["9983.T", 1], ["4063.T", 1], ["6501.T", 1], ["7974.T", 1]],
+    "UK Leaders": [["SHEL.L", 1], ["AZN.L", 1], ["HSBA.L", 1], ["BP.L", 1], ["RIO.L", 1], ["GSK.L", 1], ["BATS.L", 1], ["LSEG.L", 1], ["DGE.L", 1], ["REL.L", 1]],
+    "Canada Leaders": [["RY.TO", 1], ["TD.TO", 1], ["SHOP.TO", 1], ["ENB.TO", 1], ["CNR.TO", 1], ["BN.TO", 1], ["CP.TO", 1], ["BMO.TO", 1], ["CNQ.TO", 1], ["TRI.TO", 1]],
+    "Bitcoin Barbell": [["AAA.AX", 50], ["IVV.AX", 35], ["IBIT.AX", 10], ["BITU", 5]]
+  };
+  var NAMES = Object.keys(SAMPLES), lastSample = NAMES[0];
+  var CAT = { "Stocks": "--stock", "Index ETFs": "--index", "Bitcoin": "--btc", "Cash": "--cash" };
+  var KEY = "er.mine", YRS = [1, 3, 5], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], NS = "http://www.w3.org/2000/svg";
+  var ISVG = '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="1.6" r="1.15" fill="currentColor"/><rect x="4.05" y="3.6" width="1.9" height="5.6" rx=".5" fill="currentColor"/></svg>';
+  var D, ids = [], st = { pf: "Index Mix", h: 0, view: "ret", sort: "typ", dir: -1 }, mine = [], dom = [0, 1];
+  try { st.pf = localStorage.getItem("er.pf") || st.pf; st.h = +(localStorage.getItem("er.h") || 0); st.view = localStorage.getItem("er.v") || "ret"; } catch (e) {}
+  try { mine = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { mine = []; }
+  if (!(st.h >= 0 && st.h <= 2)) st.h = 0;
+  if (st.pf !== "mine" && st.pf !== "Optimal Mix" && !SAMPLES[st.pf]) st.pf = "Index Mix";
+  if (st.pf !== "mine") lastSample = st.pf;
+  if (["ret", "now", "own"].indexOf(st.view) < 0) st.view = "ret";
+  if (!Array.isArray(mine)) mine = [];
+  mine = mine.filter(function (x) { return Array.isArray(x) && typeof x[0] === "string"; });
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return "&#" + c.charCodeAt(0) + ";"; }); }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(mine)); localStorage.setItem("er.pf", st.pf); localStorage.setItem("er.h", st.h); localStorage.setItem("er.v", st.view); } catch (e) {}
+  }
+  function code(id) { return id.replace(/\.[A-Z]+$/, ""); }
+  function list() { return st.pf === "mine" ? mine : SAMPLES[st.pf]; }
+  function pa(v, y) { return v == null ? null : Math.pow(Math.max(1 + v, 1e-9), 1 / y) - 1; }
+  function pct(v, html) {
+    if (v == null || !isFinite(v)) return html === false ? "—" : "<span class='na'>&mdash;</span>";
+    var p = Math.round(v * 100);
+    return (p > 0 ? "+" : p < 0 ? "−" : "") + Math.abs(p) + "%";
+  }
+  function sgn(v) { return v == null ? "" : v > 0.005 ? "pos" : v < -0.005 ? "neg" : ""; }
+  function plain(v, d) { return v == null ? "<span class='na'>&mdash;</span>" : (v * 100).toFixed(d || 0) + "%"; }
+  function cat(b) { return !b || b.indexOf("Stock") === 0 ? "Stocks" : b === "Index peers" ? "Index ETFs" : b === "Bitcoin forecast" ? "Bitcoin" : "Cash"; }
+  function col(c) { return "var(" + (CAT[c] || "--cash") + ")"; }
+
+  function rows() {
+    var L = list(), y = YRS[st.h], tot = L.reduce(function (s, x) { return s + (+x[1] || 0); }, 0) || 1;
+    return L.map(function (x, i) {
+      var n = D.names[x[0]] || {}, r = n.r ? n.r[st.h] : [];
+      return { i: i, id: x[0], code: code(x[0]), co: n.c || "", mk: n.m || "", w: (+x[1] || 0) / tot, raw: x[1], cat: n.r ? cat(n.b) : "",
+               dd: n.dd, d52: n.d52, v: n.v, y: n.y, typ: pa(r[0], y), avg: pa(r[1], y), q25: pa(r[2], y), q75: pa(r[3], y),
+               up: r[4] == null ? null : r[4], own: pa(r[5], y), own_n: r[6] || null,
+               mid: r[2] == null ? null : (pa(r[2], y) + pa(r[3], y)) / 2, avgTot: r[1] == null ? null : r[1] };
+    });
+  }
+  function sorted(R) {
+    var k = st.sort, dir = st.dir;
+    return R.slice().sort(function (a, b) {
+      var x = a[k], y = b[k];
+      if (k === "code") return dir * String(x).localeCompare(String(y));
+      if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
+      return dir * (x - y);
+    });
+  }
+  // log scale of growth, shared by the range bars and the chart
+  function g(v) { return Math.log(1 + Math.max(v, -0.9)); }
+  // each table's range bars share one scale, fitted to its rows and always holding 0; Bitcoin may run off the end
+  function fit(R) {
+    var lo = 0, hi = 0.1;
+    R.forEach(function (r) { if (r.q25 != null) { lo = Math.min(lo, r.q25); hi = Math.max(hi, r.q75); } });
+    lo = Math.max(lo, -0.6); hi = Math.min(hi, 1.5);
+    var pad = (g(hi) - g(lo)) * 0.08;
+    return [g(lo) - pad, g(hi) + pad];
+  }
+  function xr(v, d) { d = d || dom; return Math.max(0, Math.min(100, (g(v) - d[0]) / (d[1] - d[0]) * 100)); }
+  function rangeCell(r, d) {
+    if (r.q25 == null) return pct(null);
+    return "<span class='rng'><span class='rtrk'><span class='zero' style='left:" + xr(0, d) + "%'></span>" +
+      "<span class='q' style='left:" + xr(r.q25, d) + "%;width:" + Math.max(1.5, xr(r.q75, d) - xr(r.q25, d)) + "%'></span>" +
+      "<span class='t' style='left:" + xr(r.typ, d) + "%'></span></span>" +
+      "<span class='rtxt'>" + pct(r.q25) + " to " + pct(r.q75) + "</span></span>";
+  }
+  // the scale above the bars: 0 and a round figure near each end
+  function rangeAxis(d, label) {
+    var T = [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 1.5].filter(function (v) { var x = xr(v, d); return x > 4 && x < 96; });
+    var neg = T.filter(function (v) { return v < 0; }), ps = T.filter(function (v) { return v > 0; }), L = [0];
+    if (neg.length && xr(0, d) - xr(neg[0], d) > 22) L.unshift(neg[0]);
+    if (ps.length && xr(ps[ps.length - 1], d) - xr(0, d) > 22) L.push(ps[ps.length - 1]);
+    return "<span class='rng'><span class='rtrk rax' aria-hidden='true'>" + L.map(function (v) {
+      return "<span style='left:" + xr(v, d) + "%'>" + (v ? pct(v) : "0") + "</span>"; }).join("") + "</span><span class='rtxt lb'>" + label + "</span></span>";
+  }
+  function chance(v) {
+    if (v == null) return pct(null);
+    return "<span class='chance'><span class='ctrk'><i style='width:" + Math.round(v * 100) + "%'></i></span>" + Math.round(v * 100) + "%</span>";
+  }
+  // company names without the legal suffix
+  function short(c) { return (c || "").replace(/,?\s+(Inc\.?|Incorporated|Corporation|Corp\.?|Limited|Ltd\.?|plc|PLC|Co\.,? Ltd\.?|N\.V\.|S\.A\.|SE|AG|L\.P\.|LP)$/, ""); }
+  function hold(r) {
+    var init = ((r.co || r.code).replace(/^the\s+/i, "").match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase();
+    return "<span class='hold'><span class='av' style='background:" + col(r.cat) + "'>" + esc(init) + "</span><span class='badge'>" + esc(r.code) +
+      "</span><span class='co'>" + esc(short(r.co) || "Not covered") + "</span><span class='mk'>" + esc(r.mk) + "</span></span>";
+  }
+  function weight(r) {
+    return st.pf === "mine" ? "<input class='w' type='number' min='0' step='1' inputmode='decimal' value='" + esc(r.raw) + "' data-i='" + r.i +
+      "' aria-label='Weight of " + esc(r.code) + "'><span class='norm nph'>" + Math.round(r.w * 100) + "%</span>" : Math.round(r.w * 100) + "%";
+  }
+  // columns per view: key, label, width, phone-hidden, help, cell
+  var VIEWS = {
+    ret: [["typ", "Median", 104, 0, "What one holding usually returns a year.", function (r) { return "<td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) + "</b></td>"; }],
+          ["avg", "Mean", 96, 1, "The average result, lifted by rare big winners. The portfolio total uses this.", function (r) { return "<td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td>"; }],
+          ["mid", "Middle 50%", 272, 1, "The bar is the range half of similar holdings ended in; the line inside it is the median.", function (r) { return "<td class='l2'>" + rangeCell(r) + "</td>"; }],
+          ["up", "P(Gain)", 120, 0, "Share of similar holdings that ended above today's price over the whole period.", function (r) { return "<td>" + chance(r.up) + "</td>"; }]],
+    now: [["dd", "Off High", 110, 0, "Today's price against its highest close.", function (r) { return "<td>" + pct(r.dd) + "</td>"; }],
+          ["d52", "Off 1-Year High", 140, 1, "Against the highest close in the past year. Closer to it has meant better years ahead.", function (r) { return "<td class='nph'>" + pct(r.d52) + "</td>"; }],
+          ["v", "Volatility", 110, 0, "How much the price swings in a year. Higher has meant worse typical outcomes.", function (r) { return "<td class='dim'>" + plain(r.v) + "</td>"; }],
+          ["y", "Yield", 96, 1, "Yearly dividends over today's price, using the lower of last year's and the three-year median.", function (r) { return "<td class='nph dim'>" + (r.y ? plain(r.y, 1) : plain(null)) + "</td>"; }]],
+    own: [["typ", "Median", 104, 0, "What one holding usually returns a year.", function (r) { return "<td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) + "</b></td>"; }],
+          ["own", "Own Record", 120, 0, "What this holding did after its own past falls like today's. It counts for at most 16% of the median, and much less with only one or two such falls.", function (r) { return "<td class='" + sgn(r.own) + "'>" + pct(r.own) + "</td>"; }],
+          ["own_n", "Episodes", 100, 1, "Separate past falls like today's in its own history.", function (r) { return "<td class='nph dim'>" + (r.own_n || "<span class='na'>&mdash;</span>") + "</td>"; }]]
+  };
+
+  // phone-hidden columns are left out of the markup, so their declared widths cannot push the table wider
+  var PH = matchMedia("(max-width: 640px)");
+  function cols() { return VIEWS[st.view].filter(function (c) { return !(c[3] && PH.matches); }); }
+  function header() {
+    var V = cols(), ed = st.pf === "mine";
+    var ph = PH.matches;  // a phone keeps ~100px for the holding: weight, two figures and the remove button share the rest
+    document.getElementById("cg").innerHTML = "<col><col style='width:" + (ed ? (ph ? 66 : 110) : (ph ? 54 : 84)) + "px'>" + V.map(function (c) {
+      return "<col style='width:" + (ph ? 74 : c[2]) + "px'>"; }).join("") + "<col style='width:" + (ed ? (ph ? 30 : 36) : 8) + "px'>";
+    document.getElementById("th").innerHTML = "<tr><th class='l' data-k='code'>Holding</th><th data-k='w'>Weight</th>" + V.map(function (c) {
+      return "<th class='" + (c[3] ? "nph" : "") + "' data-k='" + c[0] + "' data-help='" + esc(c[4]) + "' tabindex='0'>" + (c[0] === "mid" ? rangeAxis(dom, c[1]) : "<span class='lb'>" + c[1] + "</span>") + "</th>"; }).join("") + "<th aria-label='Remove'></th></tr>";
+    document.querySelectorAll("th[data-k]").forEach(function (th) {
+      th.tabIndex = 0;
+      th.setAttribute("aria-sort", th.dataset.k === st.sort ? (st.dir > 0 ? "ascending" : "descending") : "none");
+    });
+    document.querySelectorAll(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.v === st.view ? "true" : "false"); });
+  }
+
+  // portfolio risk from each holding's yearly swing and how closely holdings move together. Shares: measured on
+  // weekly returns of each market's 100 largest companies, 2022-11 to 2025-11 (same market 0.14-0.26, about 0.20;
+  // US against Australia 0.11). Smaller names read lower, so the large-company figure is used.
+  // Index ETFs, Bitcoin funds and cash: standard estimates.
+  var OI = {};
+  function rho(a, b) {
+    if (a.cat === "Cash" || b.cat === "Cash") return 0;
+    var i = OI[a.id], j = OI[b.id];
+    if (i != null && j != null && i !== j) { if (i > j) { var t0 = i; i = j; j = t0; } return D.opt.c[i * D.opt.ids.length - i * (i + 1) / 2 + j - i - 1]; }
+    if (a.cat === "Bitcoin" || b.cat === "Bitcoin") return a.cat === b.cat ? 0.95 : 0.2;
+    if (a.cat === "Index ETFs" && b.cat === "Index ETFs") return 0.8;
+    if (a.cat === "Index ETFs" || b.cat === "Index ETFs") return 0.4;
+    return a.mk === b.mk ? 0.20 : 0.11;
+  }
+  function cashRate() { var c = D.names["AAA.AX"]; return c && c.r[st.h][0] != null ? pa(c.r[st.h][0], YRS[st.h]) : 0.04; }
+  function ncdf(z) { var t = 1 / (1 + 0.2316419 * Math.abs(z)), d = 0.3989423 * Math.exp(-z * z / 2);
+    var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return z > 0 ? 1 - p : p; }
+  function pstats(R, y) {
+    var H = R.filter(function (r) { return r.avg != null && r.v != null && r.w > 0; }), tw = H.reduce(function (s0, r) { return s0 + r.w; }, 0);
+    if (!H.length || !tw) return null;
+    var mu = 0, v2 = 0, cs = 0, cw = 0;
+    H.forEach(function (a) { mu += a.w / tw * a.avg; H.forEach(function (b) { var p = a === b ? 1 : rho(a, b), ww = (a.w / tw) * (b.w / tw);
+      v2 += ww * (a.cat === "Cash" ? 0.01 : a.v) * (b.cat === "Cash" ? 0.01 : b.v) * p;
+      if (a !== b && a.cat !== "Cash" && b.cat !== "Cash") { cs += ww * p; cw += ww; } }); });
+    var vol = Math.sqrt(v2), rf = cashRate(), m = Math.log(1 + mu) - v2 / 2;
+    return { cor: cw > 0 ? cs / cw : null, mu: mu, vol: vol, rf: rf, sharpe: vol > 0 ? (mu - rf) / vol : 0, up: ncdf(m * y / (vol * Math.sqrt(y) || 1e-9)), bad: Math.expm1(m - 1.645 * vol) };
+  }
+  function render() {
+    if (!D) return;
+    var mineOn = st.pf === "mine";
+    document.getElementById("pfName").textContent = lastSample;
+    document.getElementById("pfBtn").classList.toggle("off", mineOn);
+    document.getElementById("mineBtn").setAttribute("aria-pressed", mineOn ? "true" : "false");
+    document.querySelectorAll("[data-h]").forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.h === st.h ? "true" : "false"); });
+    var R = rows(), y = YRS[st.h], V = cols(), ed = st.pf === "mine";
+    dom = fit(R);
+    header();
+    var S = sorted(R);
+    var html = S.map(function (r) {
+      return "<tr data-n='" + esc(r.id) + "'><td class='l'>" + hold(r) + "</td><td>" + weight(r) + "</td>" + V.map(function (c) { return c[5](r); }).join("") +
+        "<td>" + (ed ? "<button class='rm' type='button' data-i='" + r.i + "' aria-label='Remove " + esc(r.code) + "'>&times;</button>" : "") + "</td></tr>";
+    }).join("");
+    var cov = R.filter(function (r) { return r.avgTot != null; }), cw = cov.reduce(function (s, r) { return s + r.w; }, 0);
+    var avgPa = pa(cw ? cov.reduce(function (s, r) { return s + r.w * r.avgTot; }, 0) / cw : null, y);
+    if (!R.length) html = "<tr><td colspan='" + (V.length + 3) + "' class='l' style='color:var(--soft);padding:1.2rem 0'>Add a holding below.</td></tr>";
+    document.getElementById("tb").innerHTML = html;
+    // headline cards
+    var se = document.getElementById("sAvg"); se.textContent = pct(avgPa, false); se.className = "v " + sgn(avgPa);
+    document.getElementById("sAvgS").textContent = (y === 1 ? "over the next year" : "per year, over " + y + " years") + (cw < 0.995 && R.length ? ", " + Math.round((1 - cw) * 100) + "% not covered" : "");
+    var P = pstats(R, y);
+    function put(id, txt, cls) { var e = document.getElementById(id); e.textContent = txt; e.className = "v " + (cls || ""); }
+    put("sVol", P ? Math.round(P.vol * 100) + "%" : "\u2014");
+    put("sSh", P ? P.sharpe.toFixed(2) : "\u2014", P ? sgn(P.sharpe) : "");
+    document.getElementById("sShS").textContent = P ? "cash at " + (P.rf * 100).toFixed(1) + "% a year" : "";
+    put("sPg", P ? Math.round(P.up * 100) + "%" : "\u2014");
+    document.getElementById("sPgS").textContent = y === 1 ? "of ending the year higher" : "of ending " + y + " years higher";
+    put("sBad", P ? pct(P.bad, false) : "\u2014", P ? sgn(P.bad) : "");
+    put("sCor", P && P.cor != null ? P.cor.toFixed(2) : "\u2014");
+    document.getElementById("sCorS").textContent = P && P.cor != null ? "average between holdings" : "needs two or more holdings";
+    var by = {}; R.forEach(function (r) { var c = r.cat || "Not covered"; by[c] = (by[c] || 0) + r.w; });
+    var cats = ["Stocks", "Index ETFs", "Bitcoin", "Cash", "Not covered"].filter(function (c) { return by[c]; }), off = 0;
+    // pie as dashed rings: circumference 100, so each dash is the share in percent
+    document.getElementById("pie").innerHTML = cats.map(function (c) {
+      var p = by[c] * 100, seg = "<circle cx='21' cy='21' r='15.915' fill='none' stroke='" + (c === "Not covered" ? "var(--rule)" : col(c)) +
+        "' stroke-width='10' stroke-dasharray='" + Math.max(p - (cats.length > 1 ? .6 : 0), .1) + " " + (100 - p + (cats.length > 1 ? .6 : 0)) + "' stroke-dashoffset='" + (-off) + "'/>";
+      off += p; return seg;
+    }).join("");
+    document.getElementById("legend").innerHTML = cats.map(function (c) {
+      return "<span><i style='background:" + (c === "Not covered" ? "var(--axis)" : col(c)) + "'></i>" + c + " <b>" + Math.round(by[c] * 100) + "%</b></span>"; }).join("");
+    document.getElementById("addBox").hidden = !ed;
+    charts(); topList();
+  }
+
+  // ---- charts ----
+  var tip = document.getElementById("tip");
+  function showTip(e, h) {
+    tip.innerHTML = h; tip.style.display = "block";
+    tip.style.left = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = (e.clientY + 14) + "px";
+  }
+  function hideTip() { tip.style.display = "none"; }
+  function el(t, a, p) { var n = document.createElementNS(NS, t); for (var k in a) n.setAttribute(k, a[k]); if (p) p.appendChild(n); return n; }
+  function hl(id, on) { document.querySelectorAll("[data-n='" + CSS.escape(id) + "']").forEach(function (n) { n.classList.toggle("hl", on); }); }
+
+  function c1() {
+    var box = document.getElementById("c1"); box.innerHTML = "";
+    var R = sorted(rows()).filter(function (r) { return r.typ != null; }); if (!R.length) return;
+    var seen = {}; R.forEach(function (r) { seen[r.cat] = 1; });
+    var tdots = "<svg width='12' height='12' aria-hidden='true'><circle cx='6' cy='6' r='5' fill='var(--accent)'/></svg>";
+    var KEYS = [["typ", tdots, "Median", "What one holding usually returns."],
+      ["mid", "<svg width='22' height='12' aria-hidden='true'><rect x='0' y='3' width='22' height='6' rx='3' fill='var(--band)'/></svg>", "Middle 50%", "The range half of similar holdings ended in."],
+      ["avg", "<svg width='6' height='14' aria-hidden='true'><rect x='1.5' y='1' width='3' height='12' rx='1' fill='var(--ink)'/></svg>", "Mean", "The average result, lifted by rare big winners."],
+      ["own", "<svg width='12' height='12' aria-hidden='true'><circle cx='6' cy='6' r='4.2' fill='none' stroke='var(--own)' stroke-width='2.2'/></svg>", "Own Record", "What this holding did after its own past falls like today's."]];
+    document.getElementById("key1").innerHTML = KEYS.map(function (k) {
+      var on = st.sort === k[0];
+      return "<button class='kb' type='button' data-sort='" + k[0] + "' data-help='" + esc(k[3]) + "' aria-pressed='" + on + "' aria-label='Sort by " + k[2] + "'>" + k[1] + k[2] +
+        (on ? "<span class='ar'>" + (st.dir > 0 ? "\u2191" : "\u2193") + "</span>" : "") + "</button>"; }).join("");
+    var W = Math.max(box.getBoundingClientRect().width, 300), narrow = W < 600, rowH = narrow ? 28 : 30, m = { l: narrow ? 54 : 78, r: 22, t: 4, b: 50 };
+    var H = m.t + m.b + rowH * R.length, svg = el("svg", { class: "chart", viewBox: "0 0 " + W + " " + H, height: H, role: "img",
+      "aria-label": "Median, middle 50%, mean and own record for each holding, log scale" }, box);
+    var vals = [0]; R.forEach(function (r) { ["q25", "q75", "own", "avg", "typ"].forEach(function (k) { if (r[k] != null) vals.push(r[k]); }); });
+    var lo = g(Math.min.apply(null, vals)), hi = g(Math.max.apply(null, vals)), pad = (hi - lo) * 0.04; lo -= pad; hi += pad;
+    var x = function (v) { return m.l + (g(v) - lo) / (hi - lo) * (W - m.l - m.r); };
+    var TICKS = [-0.75, -0.5, -0.25, -0.1, 0, 0.1, 0.25, 0.5, 1, 2, 4, 8, 16].filter(function (t) { return g(t) >= lo && g(t) <= hi; });
+    if (TICKS.length > 8) TICKS = TICKS.filter(function (t) { return Math.abs(t) !== 0.1; });
+    if (narrow && TICKS.length > 6) TICKS = TICKS.filter(function (t) { return [-0.5, 0, 0.5, 1, 2, 4, 8, 16].indexOf(t) > -1; });
+    TICKS.forEach(function (t) {
+      el("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b, stroke: t === 0 ? "var(--axis)" : "var(--rule)" }, svg);
+      el("text", { x: x(t), y: H - m.b + 17, "text-anchor": "middle" }, svg).textContent = pct(t, false);
+    });
+    var y = YRS[st.h];
+    el("text", { x: m.l + (W - m.l - m.r) / 2, y: H - 6, "text-anchor": "middle", class: "axt" }, svg).textContent =
+      (y === 1 ? "Return over the next year" : "Yearly return over the next " + y + " years") + " (log scale)";
+    R.forEach(function (r, i) {
+      var yy = m.t + rowH * i + rowH / 2, gg = el("g", { class: "r", "data-n": r.id }, svg);
+      el("rect", { class: "bg", x: 0, y: yy - rowH / 2, width: W, height: rowH, fill: "transparent", rx: 4 }, gg);
+      el("text", { x: m.l - 12, y: yy + 4, "text-anchor": "end", class: "lab" }, gg).textContent = r.code;
+      if (r.q25 != null) el("rect", { x: x(r.q25), y: yy - 3.5, width: Math.max(2, x(r.q75) - x(r.q25)), height: 7, rx: 3.5, fill: "var(--band)" }, gg);
+      if (r.avg != null) el("rect", { x: x(r.avg) - 1.5, y: yy - 7, width: 3, height: 14, rx: 1, fill: "var(--ink)" }, gg);
+      if (r.own != null) el("circle", { cx: x(r.own), cy: yy, r: 5, fill: "none", stroke: "var(--own)", "stroke-width": 2.2 }, gg);
+      el("circle", { cx: x(r.typ), cy: yy, r: 6, fill: "var(--accent)", stroke: "var(--bg)", "stroke-width": 2 }, gg);
+      gg.addEventListener("pointermove", function (e) {
+        hl(r.id, true);
+        showTip(e, "<b>" + esc(r.code) + "</b> <span>" + esc(r.co) + "</span><br>Median " + pct(r.typ, false) + " &middot; Mean " + pct(r.avg, false) +
+          "<br>Middle 50% " + pct(r.q25, false) + " to " + pct(r.q75, false) + "<br>P(Gain) " + Math.round(r.up * 100) + "%" +
+          (r.own != null ? "<br><span>Own Record " + pct(r.own, false) + ", " + r.own_n + " episodes</span>" : ""));
+      });
+      gg.addEventListener("pointerleave", function () { hl(r.id, false); hideTip(); });
+      gg.addEventListener("click", function () {
+        var tr = document.querySelector("#tb tr[data-n='" + CSS.escape(r.id) + "']"); if (!tr) return;
+        tr.scrollIntoView({ block: "center", behavior: "smooth" }); tr.classList.remove("flash"); void tr.offsetWidth; tr.classList.add("flash");
+      });
+    });
+  }
+
+  function c2() {
+    var box = document.getElementById("c2"); box.innerHTML = ""; var E = D.evid || []; if (!E.length) return;
+    var W = Math.max(box.getBoundingClientRect().width, 300), narrow = W < 600, rowH = 30, m = { l: narrow ? 150 : 210, r: 22, t: 4, b: 50 };
+    var H = m.t + m.b + rowH * E.length, svg = el("svg", { class: "chart", viewBox: "0 0 " + W + " " + H, height: H, role: "img",
+      "aria-label": "Rank correlation of each measure with next-year stock returns" }, box);
+    var mx = 0.1; E.forEach(function (d) { mx = Math.max(mx, Math.abs(d.ic) * 1.1); });
+    var x = function (v) { return m.l + (v + mx) / (2 * mx) * (W - m.l - m.r); };
+    var step = mx > 0.12 ? 0.05 : 0.025;
+    for (var t = -Math.floor(mx / step) * step; t <= mx + 1e-9; t += step) {
+      el("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b, stroke: Math.abs(t) < 1e-9 ? "var(--axis)" : "var(--rule)" }, svg);
+      if (!narrow || Math.abs(Math.round(t / step)) % 2 === 0)
+        el("text", { x: x(t), y: H - m.b + 17, "text-anchor": "middle" }, svg).textContent = (t > 1e-9 ? "+" : t < -1e-9 ? "−" : "") + (Math.abs(t) < 1e-9 ? "0" : Math.abs(t).toFixed(step < 0.05 ? 3 : 2));
+    }
+    el("text", { x: m.l + (W - m.l - m.r) / 2, y: H - 6, "text-anchor": "middle", class: "axt" }, svg).textContent = "Predictive strength (0 = none)";
+    E.forEach(function (d, i) {
+      var yy = m.t + rowH * i + rowH / 2, x0 = x(0), x1 = x(d.ic);
+      el("text", { x: m.l - 12, y: yy + 4, "text-anchor": "end", class: "lab" }, svg).textContent = d.f;
+      el("rect", { x: Math.min(x0, x1), y: yy - 7, width: Math.max(2, Math.abs(x1 - x0)), height: 14, rx: 3, fill: d.pass ? "var(--accent)" : "var(--soft)", "fill-opacity": d.pass ? 1 : .6 }, svg);
+      var hit = el("rect", { x: 0, y: yy - rowH / 2, width: W, height: rowH, fill: "transparent" }, svg);
+      hit.addEventListener("pointermove", function (e) {
+        showTip(e, "<b>" + esc(d.f) + "</b> " + (d.ic > 0 ? "+" : "−") + Math.abs(d.ic).toFixed(3) + "<br>" + Object.keys(d.eras).map(function (k) {
+          var v = d.eras[k]; return "<span>" + k + "-" + (k === "2010" ? 2014 : +k + 9) + "</span> " + (v > 0 ? "+" : "−") + Math.abs(v).toFixed(3);
+        }).join("<br>") + "<br><span>" + (d.pass ? "In the estimate" : "Left out: failed the yearly test or added nothing to it") + "</span>");
+      });
+      hit.addEventListener("pointerleave", hideTip);
+    });
+  }
+  function charts() { if (D) { c1(); c2(); } }
+
+  // the whole universe's highest median returns, shares only, filtered by market and size
+  var MKTS = ["All", "US", "Australia", "Japan", "UK", "Canada", "Other"], CAPS = [["Over US$10bn", 10], ["Over US$1bn", 1], ["Under US$10bn", -10], ["Any size", 0]];
+  var top = { m: "All", cap: 1, page: 0 }, PER = 10;
+  try { top.m = localStorage.getItem("er.tm") || "All"; top.cap = +(localStorage.getItem("er.tc") || 1); } catch (e) {}
+  if (MKTS.indexOf(top.m) < 0) top.m = "All";
+  function topList() {
+    if (!D) return;
+    document.getElementById("topMkt").innerHTML = MKTS.map(function (m) { return "<button class='pill' type='button' data-m='" + m + "' aria-pressed='" + (top.m === m) + "'>" + m + "</button>"; }).join("");
+    document.getElementById("topCap").innerHTML = CAPS.map(function (c) { return "<button class='pill' type='button' data-c='" + c[1] + "' aria-pressed='" + (top.cap === c[1]) + "'>" + c[0] + "</button>"; }).join("");
+    var y = YRS[st.h], main = ["US", "Australia", "Japan", "UK", "Canada"], have = {}; mine.forEach(function (x) { have[x[0]] = 1; });
+    var L = [];
+    for (var id in D.names) {
+      var n = D.names[id]; if (!n.b || n.b.indexOf("Stock") !== 0) continue;
+      if (top.m !== "All" && (top.m === "Other" ? main.indexOf(n.m) > -1 : n.m !== top.m)) continue;
+      if (top.cap > 0 && !(n.cap >= top.cap)) continue;
+      if (top.cap < 0 && !(n.cap != null && n.cap < -top.cap)) continue;
+      var r = n.r[st.h]; if (r[0] == null) continue;
+      L.push({ id: id, code: code(id), co: n.c, mk: n.m, cat: "Stocks", typ: pa(r[0], y), avg: pa(r[1], y), q25: pa(r[2], y), q75: pa(r[3], y), up: r[4] });
+    }
+    L.sort(function (a, b) { return b.typ - a.typ; });
+    L = L.slice(0, 100); var td = fit(L);
+    document.getElementById("topMid").innerHTML = rangeAxis(td, "Middle 50%");
+    var pages = Math.max(1, Math.ceil(L.length / PER)); top.page = Math.min(top.page, pages - 1);
+    var off = top.page * PER;
+    document.getElementById("topPg").innerHTML = L.length > PER ? "<button type='button' data-pg='-1' aria-label='Previous ten'" + (top.page ? "" : " disabled") + ">&lsaquo;</button><span>" +
+      (off + 1) + "-" + Math.min(off + PER, L.length) + " of " + L.length + "</span><button type='button' data-pg='1' aria-label='Next ten'" + (top.page < pages - 1 ? "" : " disabled") + ">&rsaquo;</button>" : "";
+    document.getElementById("topB").innerHTML = L.slice(off, off + PER).map(function (r, i) {
+      return "<tr data-n='" + esc(r.id) + "'><td class='l rk'>" + (off + i + 1) + "</td><td class='l'>" + hold(r) + "</td><td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) +
+        "</b></td><td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td><td class='nph'>" + rangeCell(r, td) + "</td><td>" + chance(r.up) +
+        "</td><td><button class='addb' type='button' data-add='" + esc(r.id) + "'" + (have[r.id] ? " disabled aria-label='In My Portfolio'>&#10003;" : " aria-label='Add " + esc(r.code) + " to My Portfolio'>+") + "</button></td></tr>";
+    }).join("") || "<tr><td colspan='7' class='l' style='color:var(--soft);padding:1.2rem 0'>No shares match.</td></tr>";
+  }
+  document.querySelector(".topctl").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-m],[data-c]"); if (!b) return;
+    if (b.dataset.m) top.m = b.dataset.m; else top.cap = +b.dataset.c;
+    top.page = 0;
+    try { localStorage.setItem("er.tm", top.m); localStorage.setItem("er.tc", top.cap); } catch (x) {}
+    topList();
+  });
+  document.getElementById("topPg").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-pg]"); if (!b || b.disabled) return; top.page += +b.dataset.pg; topList();
+  });
+  document.getElementById("topB").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-add]"); if (!b || b.disabled) return;
+    if (!mine.some(function (x) { return x[0] === b.dataset.add; })) mine.push([b.dataset.add, mine.length ? Math.round(100 / (mine.length + 1)) : 100]);
+    save(); render();
+  });
+
+  // ---- controls ----
+  function pick(name) { st.pf = name; if (name !== "mine") lastSample = name; save(); render(); }
+  // portfolio picker: a menu of the samples, each with a line on what it holds
+  var DESC = { "Index Mix": "Index ETFs, a few large stocks and a little Bitcoin", "Global ETFs": "Five broad index ETFs",
+    "ASX Leaders": "Ten of Australia's largest companies", "ASX Dividends": "Ten Australian dividend payers",
+    "US Tech": "Seven large US technology companies", "US Blue Chips": "Twelve established US companies",
+    "Japan Leaders": "Ten large Japanese companies", "UK Leaders": "Ten large UK companies", "Canada Leaders": "Ten large Canadian companies",
+    "Bitcoin Barbell": "Half cash, a third US shares, the rest Bitcoin funds",
+    "Optimal Mix": "Shares with high medians, weighted for the most return for the risk" };
+  var pfBtn = document.getElementById("pfBtn"), pfMenu = document.getElementById("pfMenu"), act = 0;
+  function menu(open) {
+    pfMenu.hidden = !open; pfBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (!open) return;
+    act = Math.max(0, NAMES.indexOf(lastSample));
+    pfMenu.innerHTML = NAMES.map(function (k, i) {
+      return "<li role='option' data-k='" + esc(k) + "' aria-selected='" + (k === st.pf) + "'" + (i === act ? " class='act'" : "") + "><b>" + esc(k) + "</b><span>" + esc(DESC[k] || "") + "</span></li>"; }).join("");
+  }
+  function mark2() { pfMenu.querySelectorAll("li").forEach(function (li, i) { li.classList.toggle("act", i === act); }); }
+  pfBtn.addEventListener("click", function (e) { e.stopPropagation(); if (st.pf === "mine" && pfMenu.hidden) { pick(lastSample); } else menu(pfMenu.hidden); });
+  pfMenu.addEventListener("click", function (e) { var li = e.target.closest("li"); if (!li) return; e.stopPropagation(); menu(false); pick(li.dataset.k); pfBtn.focus(); });
+  pfBtn.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault(); if (pfMenu.hidden) { menu(true); return; }
+      act = (act + (e.key === "ArrowDown" ? 1 : NAMES.length - 1)) % NAMES.length; mark2();
+    } else if ((e.key === "Enter" || e.key === " ") && !pfMenu.hidden) { e.preventDefault(); menu(false); pick(NAMES[act]); }
+    else if (e.key === "Escape") menu(false);
+  });
+  document.addEventListener("click", function () { if (!pfMenu.hidden) menu(false); });
+  document.getElementById("mineBtn").addEventListener("click", function () { pick("mine"); });
+  document.getElementById("key1").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-sort]"); if (!b) return; var k = b.dataset.sort;
+    st.dir = st.sort === k ? -st.dir : -1; st.sort = k; render();
+  });
+  document.querySelectorAll("[data-h]").forEach(function (b) {
+    b.addEventListener("click", function () { st.h = +b.dataset.h; save(); render(); });
+  });
+  document.querySelectorAll(".tab").forEach(function (b) {
+    b.addEventListener("click", function () {
+      st.view = b.dataset.v; var keys = VIEWS[st.view].map(function (c) { return c[0]; });
+      if (["code", "w"].indexOf(st.sort) < 0 && keys.indexOf(st.sort) < 0) { st.sort = keys[0]; st.dir = -1; }
+      save(); render();
+    });
+  });
+  var thead = document.getElementById("th");
+  function sortBy(th) { var k = th.dataset.k; st.dir = st.sort === k ? -st.dir : (k === "code" ? 1 : -1); st.sort = k; render(); }
+  thead.addEventListener("click", function (e) { var th = e.target.closest("th[data-k]"); if (th) sortBy(th); });
+  thead.addEventListener("keydown", function (e) { var th = e.target.closest("th[data-k]"); if (th && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); sortBy(th); } });
+  thead.addEventListener("pointermove", function (e) { var th = e.target.closest("th[data-help]"); if (th && e.pointerType === "mouse") showTip(e, esc(th.dataset.help)); else hideTip(); });
+  thead.addEventListener("pointerleave", hideTip);
+  thead.addEventListener("focusin", function (e) { var th = e.target.closest("th[data-help]"); if (!th) return; var b = th.getBoundingClientRect(); showTip({ clientX: b.left, clientY: b.bottom }, esc(th.dataset.help)); });
+  thead.addEventListener("focusout", hideTip);
+  // one-line help on tabs and chart keys: hover with a mouse, or keyboard focus
+  function helpAt(el2) { var b = el2.getBoundingClientRect(); showTip({ clientX: b.left, clientY: b.bottom }, esc(el2.dataset.help)); }
+  [document.querySelector('.tabs'), document.getElementById('key1')].forEach(function (box) {
+    box.addEventListener('pointermove', function (e) { var h = e.target.closest('[data-help]'); if (h && e.pointerType === 'mouse') showTip(e, esc(h.dataset.help)); else hideTip(); });
+    box.addEventListener('pointerleave', hideTip);
+    box.addEventListener('focusin', function (e) { var h = e.target.closest('[data-help]'); if (h) helpAt(h); });
+    box.addEventListener('focusout', hideTip);
+  });
+  // (i) help: shows on hover; a click or tap pins it open until clicked again or elsewhere
+  function setOpen(b, on) { b.closest(".card, .tophead").classList.toggle("open", on); b.setAttribute("aria-expanded", on); }
+  document.querySelectorAll(".info").forEach(function (b) {
+    b.innerHTML = ISVG;
+    b.addEventListener("mouseenter", function () { setOpen(b, true); });
+    b.addEventListener("mouseleave", function () { if (!b.dataset.pin) setOpen(b, false); });
+    b.addEventListener("focus", function () { setOpen(b, true); });
+    b.addEventListener("blur", function () { if (!b.dataset.pin) setOpen(b, false); });
+    b.addEventListener("click", function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var pin = !b.dataset.pin; if (pin) b.dataset.pin = "1"; else delete b.dataset.pin; setOpen(b, pin);
+    });
+  });
+  document.addEventListener("click", function () {
+    document.querySelectorAll(".info[data-pin]").forEach(function (b) { delete b.dataset.pin; setOpen(b, false); });
+  });
+  var tb = document.getElementById("tb");
+  tb.addEventListener("input", function (e) {
+    if (!e.target.matches("input.w")) return;
+    mine[+e.target.dataset.i][1] = Math.max(0, +e.target.value || 0); save();
+    var i = e.target.dataset.i; render();
+    var el2 = tb.querySelector("input.w[data-i='" + i + "']"); if (el2) el2.focus();
+  });
+  tb.addEventListener("click", function (e) {
+    var b = e.target.closest(".rm"); if (!b) return;
+    mine.splice(+b.dataset.i, 1); save(); render();
+  });
+  tb.addEventListener("pointerover", function (e) { var tr = e.target.closest("tr[data-n]"); if (tr) hl(tr.dataset.n, true); });
+  tb.addEventListener("pointerout", function (e) { var tr = e.target.closest("tr[data-n]"); if (tr) hl(tr.dataset.n, false); });
+
+  // add a holding: ticker prefix first, then company names (starting with the query, then shortest)
+  var q = document.getElementById("q"), sg = document.getElementById("sugg"), hits = [], sel = 0;
+  function search(s) {
+    s = s.trim().toUpperCase(); if (!s) return [];
+    var a = [], b = [], i;
+    for (i = 0; i < ids.length && a.length < 8; i++) { if (code(ids[i]).indexOf(s) === 0 || ids[i] === s) a.push(ids[i]); }
+    for (i = 0; i < ids.length; i++) {
+      var c = (D.names[ids[i]].c || "").toUpperCase(), at = c.indexOf(s);
+      if (at > -1 && a.indexOf(ids[i]) < 0) b.push([at === 0 ? 0 : 1, c.length, ids[i]]);
+    }
+    b.sort(function (x, y) { return x[0] - y[0] || x[1] - y[1]; });
+    return a.concat(b.map(function (x) { return x[2]; })).slice(0, 8);
+  }
+  function hideSugg() { sg.hidden = true; q.setAttribute("aria-expanded", "false"); q.removeAttribute("aria-activedescendant"); }
+  function mark() {
+    sg.querySelectorAll("li").forEach(function (li, i) { li.setAttribute("aria-selected", i === sel ? "true" : "false"); });
+    if (hits.length) q.setAttribute("aria-activedescendant", "o" + sel);
+  }
+  function showSugg() {
+    hits = search(q.value); sel = 0;
+    sg.innerHTML = hits.map(function (id, i) {
+      var n = D.names[id];
+      return "<li role='option' id='o" + i + "' data-id='" + esc(id) + "'><span class='badge'>" + esc(code(id)) + "</span><span class='co'>" + esc(n.c || "") +
+             "</span><span class='mk'>" + esc(n.m) + "</span></li>";
+    }).join("");
+    if (!hits.length) return hideSugg();
+    sg.hidden = false; q.setAttribute("aria-expanded", "true"); mark();
+  }
+  function add(id) {
+    if (!id) return;
+    if (!mine.some(function (x) { return x[0] === id; })) mine.push([id, mine.length ? Math.round(100 / (mine.length + 1)) : 100]);
+    q.value = ""; hideSugg(); save(); render();
+    if (matchMedia("(min-width: 641px)").matches) q.focus();
+  }
+  q.addEventListener("input", showSugg);
+  q.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault(); if (!hits.length) return;
+      sel = (sel + (e.key === "ArrowDown" ? 1 : hits.length - 1)) % hits.length; mark();
+    } else if (e.key === "Enter") { e.preventDefault(); add(hits[sel]); }
+    else if (e.key === "Escape") { hideSugg(); }
+  });
+  sg.addEventListener("mousedown", function (e) { var li = e.target.closest("li"); if (li) { e.preventDefault(); add(li.dataset.id); } });
+  sg.addEventListener("mousemove", function (e) {
+    var li = e.target.closest("li"); if (!li) return;
+    var i = [].indexOf.call(sg.children, li); if (i !== sel) { sel = i; mark(); }
+  });
+  q.addEventListener("blur", function () { setTimeout(hideSugg, 100); });
+
+  // #mine=TICKER:weight,... loads a portfolio into "My Portfolio" (kept in this browser only), then clears the hash
+  function fromHash() {
+    try {
+      var m = location.hash.match(/mine=([^&]+)/); if (!m) return;
+      mine = decodeURIComponent(m[1]).split(",").map(function (p) { var a = p.split(":"); return [a[0].trim().toUpperCase(), +a[1] || 1]; })
+        .filter(function (x) { return /^[A-Z0-9.\-^]{1,15}$/.test(x[0]); });
+      st.pf = "mine"; save();
+    } catch (e) {}
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+
+  if (PH.addEventListener) PH.addEventListener("change", render);
+  // the worked example: one stock's next-year estimate built step by step, ending on its median return
+  function example() {
+    var E = D.ex && D.ex["CBA.AX"], n = D.names["CBA.AX"]; if (!E || !n) return;
+    var steps = [["Starting point: average share since 1962", E.base], ["Near its 52-week high, listed for many years", E.score],
+                 ["Companies that later delisted", -Math.abs(E.surv)], ["Its own record after past falls", E.own], ["Dividends", E.div]];
+    // one column: each line's points, taken from the running total so the lines add up to the result exactly
+    var run = 0, prev = 0;
+    document.getElementById("exT").innerHTML = steps.map(function (st0) {
+      run += st0[1]; var tot = Math.expm1(run), ch = Math.round(tot * 100) - Math.round(prev * 100); prev = tot;
+      return "<tr><td>" + st0[0] + "</td><td>" + (ch > 0 ? "+" : ch < 0 ? "−" : "") + Math.abs(ch) + "%</td></tr>";
+    }).join("") + "<tr class='sum'><td>Median return, next year</td><td>" + pct(Math.expm1(E.typ)) + "</td></tr>";
+    document.getElementById("exIntro").textContent = "Commonwealth Bank (CBA) over the next year:";
+    document.getElementById("exOut").innerHTML = "Mean return " + pct(E.avg) + ", middle 50% " + pct(E.q25) + " to " + pct(E.q75) + ", P(gain) " + Math.round(E.up * 100) + "%.";
+    document.getElementById("exRow").hidden = false;
+  }
+
+  var rt; addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(charts, 120); });
+  fetch("data.json").then(function (r) { if (!r.ok) throw r; return r.json(); }).then(function (d) {
+    D = d; ids = Object.keys(D.names).sort();
+    // asof is the Monday that labels Yahoo's weekly bar; its close is that Friday's (or the latest day, if sooner)
+    var t = new Date(Math.min(Date.parse(D.asof + "T00:00:00Z") + 4 * 864e5, Date.now()));
+    document.getElementById("asof").textContent = ", prices to " + t.getUTCDate() + " " + MON[t.getUTCMonth()] + " " + t.getUTCFullYear();
+    if (D.opt) D.opt.ids.forEach(function (id, k) { OI[id] = k; });
+    var S0 = SAMPLES; SAMPLES = { "Index Mix": S0["Index Mix"] };
+    if (D.opt) SAMPLES["Optimal Mix"] = D.opt.w;
+    for (var k0 in S0) if (!SAMPLES[k0]) SAMPLES[k0] = S0[k0];
+    NAMES = Object.keys(SAMPLES);
+    example(); fromHash(); render();
+  }).catch(function () {
+    document.getElementById("tb").innerHTML = "<tr><td class='l' style='color:var(--soft);padding:1.2rem 0'>The figures did not load. Reload the page to try again.</td></tr>";
+  });
+})();
+</script>
+</body>
+</html>

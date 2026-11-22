@@ -77,7 +77,7 @@ const registered = new Set(
 /* DISMISS, READY, SCHEME and ANCHOR sit below SITES and are keyed by the same slugs.
    Reading to the end of the file put every slug in this set, so the check passed
    whatever was in it - a probe that renamed a SITES key raised nothing. */
-check(registered.size > 10 && registered.size < 25,
+check(registered.size > 10 && registered.size < 40,
       `${registered.size} thumbnail slugs parsed - the SITES literal in shoot_thumbnails.py has moved`);
 
 for (const c of cards) {

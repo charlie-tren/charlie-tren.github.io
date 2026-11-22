@@ -77,6 +77,7 @@ SITES = {
     "worst-case-scenario": "https://charlietrenorden.com/worst-case-scenario/?demo=1",
     "bookmark": "https://charlietrenorden.com/bookmark/",
     "bitcoin-power-law-forecast": "https://charlietrenorden.com/bitcoin-power-law-forecast/",
+    "portfolio-outlook": "https://charlietrenorden.com/portfolio-outlook/",
 }
 
 # One Story, The Aftertimes and Photocopy republish every day, so their
@@ -134,6 +135,7 @@ READY = {
     "196-plates": ".leaflet-marker-icon .pin",
     # The chart is drawn by script from data.json; the svg is empty in the markup.
     "bitcoin-power-law-forecast": "#chart path",
+    "portfolio-outlook": "#tb tr .badge",
 }
 READY_TIMEOUT = 30000
 
@@ -324,6 +326,7 @@ SCHEME = {
     "statecraft": "dark",
     # Dark unless the browser asks for light, like Crosscheck.
     "bitcoin-power-law-forecast": "dark",
+    "portfolio-outlook": "dark",
 }
 
 # Pages whose top is a masthead rather than the product: frame on an element

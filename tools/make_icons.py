@@ -31,11 +31,15 @@ ROOT = Path(__file__).resolve().parent.parent
 # page that links its own PNG never falls back to it.
 DIR = ROOT / sys.argv[1] if len(sys.argv) > 1 else ROOT
 SVG = (DIR / "favicon.svg").read_text(encoding="utf-8")
-TILE = re.search(r'<rect[^>]*fill="(#[0-9a-fA-F]{6})"', SVG).group(1)
+TILE = re.search(r'<(?:rect|circle)[^>]*fill="(#[0-9a-fA-F]{6})"', SVG).group(1)
 
 # apple-touch: same glyph, full-bleed tile, square corners. The tile is the
-# first rect, whatever its radius.
-SVG_SQUARE = re.sub(r'(<rect[^>]*?)\srx="[^"]*"', r"\1", SVG, count=1)
+# first rect, whatever its radius; a disc mark (Bitcoin coin, Portfolio Outlook)
+# has its first circle swapped for a square that covers the whole viewBox.
+if re.search(r"<svg[^>]*>\s*<circle", SVG):
+    SVG_SQUARE = re.sub(r"<circle[^>]*/>", f'<rect x="-1000" y="-1000" width="3000" height="3000" fill="{TILE}"/>', SVG, count=1)
+else:
+    SVG_SQUARE = re.sub(r'(<rect[^>]*?)\srx="[^"]*"', r"\1", SVG, count=1)
 
 
 def render(pw, svg: str, size: int, transparent: bool) -> Image.Image:
