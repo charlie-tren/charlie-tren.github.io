@@ -37,10 +37,12 @@
   *, *::before, *::after { box-sizing: border-box; }
   :root, :root[data-theme="dark"] { color-scheme: dark; --bg:#0f1319; --raised:#171c24; --card:#141922; --ink:#e6e9ee; --soft:#8a94a3;
     --rule:#262d38; --axis:#3a4352; --accent:#82a8ca; --pos:#5fc4b5; --neg:#ec8f78; --fill:rgba(130,168,202,.10);
-    --band:#5a82a8; --own:#f0a24e; --stock:#6fa0d6; --index:#a78bfa; --btc:#f0973f; --cash:#8a94a3; }
+    --band:#5a82a8; --own:#f0a24e; --stock:#6fa0d6; --index:#a78bfa; --btc:#f0973f; --cash:#8a94a3;
+    --c1:#3987e5; --c2:#199e70; --c3:#c98500; --c4:#d55181; --c5:#0ca30c; --c6:#9085e9; --c7:#e66767; }
   :root[data-theme="light"] { color-scheme: light; --bg:#eef0f3; --raised:#fbfcfd; --card:#fbfcfd; --ink:#14171c; --soft:#565d68;
     --rule:#d7dbe2; --axis:#b9bfc9; --accent:#3a5f80; --pos:#16786b; --neg:#a8432c; --fill:rgba(58,95,128,.07);
-    --band:#8fadc9; --own:#b4600f; --stock:#2f6fb2; --index:#6d4fd8; --btc:#c8681a; --cash:#6b7380; }
+    --band:#8fadc9; --own:#b4600f; --stock:#2f6fb2; --index:#6d4fd8; --btc:#c8681a; --cash:#6b7380;
+    --c1:#2a78d6; --c2:#1baf7a; --c3:#eda100; --c4:#e87ba4; --c5:#008300; --c6:#6250d6; --c7:#e34948; }
   :root { --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
           --t-l: 20px; --t-m: 17px; --t-s: 14px; --t-xs: 12px; }
   html { -webkit-text-size-adjust: 100%; background: var(--bg); }
@@ -116,7 +118,7 @@
   .pie { width: 112px; height: 112px; flex: none; transform: rotate(-90deg); }
   .alloclist { list-style: none; margin: 0; padding: 0; font-size: var(--t-s); color: var(--soft); flex: 1 1 170px; min-width: 170px; }
   .alloclist li { display: flex; align-items: center; gap: .45rem; padding: .08rem 0 .08rem 1.05rem; white-space: nowrap; }
-  .alloclist li.fam { padding-left: 0; color: var(--ink); margin-top: .35rem; } .alloclist li.fam:first-child { margin-top: 0; }
+  .alloclist li.fam { padding-left: 0; color: var(--ink); margin-top: .35rem; font-weight: 600; } .alloclist li.fam:first-child { margin-top: 0; }
   .alloclist i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .alloclist b { margin-left: auto; padding-left: .8rem; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
   .legend { display: flex; flex-wrap: wrap; gap: .2rem 1rem; font-size: var(--t-s); color: var(--soft); }
@@ -618,18 +620,23 @@
     R.forEach(function (r) { var c = r.cat || "Not covered", k = r.g && r.g !== c && c !== "Bitcoin" && c !== "Cash" ? r.g : "";
       by[c] = (by[c] || 0) + r.w; sub[c] = sub[c] || {}; sub[c][k] = (sub[c][k] || 0) + r.w; });
     var cats = ["Stocks", "Index ETFs", "Bitcoin", "Cash", "Not covered"].filter(function (c) { return by[c]; }), off = 0, segs = [], leg = [];
-    var SH = [100, 70, 50, 36, 26, 19];
+    // a hue for each of the seven largest sectors or indexes over 3% (orange stays Bitcoin's), dealt in display order;
+    // the rest fold into their family's Other
+    var cand = [];
+    ["Stocks", "Index ETFs"].forEach(function (c) { if (sub[c]) Object.keys(sub[c]).forEach(function (k) { if (k && sub[c][k] >= 0.03) cand.push([c + "|" + k, sub[c][k]]); }); });
+    var lit = {}, hue = 0;
+    cand.sort(function (x, y) { return y[1] - x[1]; }).slice(0, 7).forEach(function (x) { lit[x[0]] = 1; });
     cats.forEach(function (c) {
-      // groups under 3% of the portfolio fold into Other, so the legend stays short
       var G = Object.keys(sub[c]).map(function (k) { return [k, sub[c][k]]; }).sort(function (x, y) { return y[1] - x[1]; }), keep = [], rest = 0;
-      G.forEach(function (x) { if (x[0] && (x[1] >= 0.03 || G.length <= 3) && keep.length < 5) keep.push(x); else rest += x[1]; });
-      if (rest > 1e-9) keep.push(["Other", rest]);
-      var base = c === "Not covered" ? "var(--axis)" : col(c);
-      leg.push("<li class='fam'><i style='background:" + base + "'></i>" + c + "<b>" + Math.round(by[c] * 100) + "%</b></li>");
-      keep.forEach(function (x, i) {
-        var shade = keep.length > 1 ? "color-mix(in srgb, " + base + " " + SH[Math.min(i, SH.length - 1)] + "%, var(--card))" : base;
-        segs.push([x[1], shade]);
-        if (keep.length > 1) leg.push("<li><i style='background:" + shade + "'></i>" + esc(x[0]) + "<b>" + Math.round(x[1] * 100) + "%</b></li>");
+      var parts = c === "Stocks" || c === "Index ETFs";
+      G.forEach(function (x) { if (parts && lit[c + "|" + x[0]]) { keep.push([x[0], x[1], "var(--c" + (++hue) + ")"]); } else rest += x[1]; });
+      var own = c === "Bitcoin" ? "var(--btc)" : c === "Cash" ? "var(--cash)" : "var(--axis)";
+      if (rest > 1e-9) keep.push([parts ? "Other" : c, rest, own]);
+      var solo = keep.length === 1 && !parts;
+      leg.push("<li class='fam'>" + (solo ? "<i style='background:" + own + "'></i>" : "") + c + "<b>" + Math.round(by[c] * 100) + "%</b></li>");
+      keep.forEach(function (x) {
+        segs.push([x[1], x[2]]);
+        if (!solo) leg.push("<li><i style='background:" + x[2] + "'></i>" + esc(x[0]) + "<b>" + Math.round(x[1] * 100) + "%</b></li>");
       });
     });
     // pie as dashed rings: circumference 100, so each dash is the share in percent
