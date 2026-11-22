@@ -168,13 +168,7 @@
   .co { color: var(--ink); min-width: 0; white-space: normal; line-height: 1.25; }
   .mk { color: var(--soft); font-size: var(--t-xs); flex: none; }
   td.dim, .na { color: var(--soft); }
-  .rng { display: inline-flex; align-items: center; gap: 10px; justify-content: flex-end; }
-  .rtrk { position: relative; width: 150px; height: 20px; flex: none; }
-  .rtrk .zero { position: absolute; top: -4px; bottom: -4px; width: 0; border-left: 1px dashed var(--soft); z-index: 1; opacity: .8; }
-  .rtrk .q { position: absolute; top: 4px; height: 12px; border-radius: 3px; background: color-mix(in srgb, var(--accent) 38%, transparent); }
-  .rtrk .q.over { border-radius: 3px 0 0 3px; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 38%, transparent) 60%, transparent); }
-  .rtrk .t { position: absolute; top: 4px; width: 12px; height: 12px; border-radius: 50%; margin-left: -6px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg); z-index: 2; }
-  .rtxt { color: var(--soft); min-width: 108px; text-align: right; }
+  .rtxt { color: var(--soft); }
   .chance { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
   .ctrk { width: 44px; height: 5px; border-radius: 3px; background: var(--rule); position: relative; overflow: hidden; }
   .ctrk i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--pos); border-radius: 3px; }
@@ -294,7 +288,6 @@
     .av { width: 24px; height: 24px; font-size: var(--t-xs); }
     .hold { gap: .5rem; }
     td, th { padding-left: 10px; }
-    .rtrk { width: 72px; } .rtxt { display: none; }
     input.w { width: 46px; font-size: 16px; }
     .figs { grid-template-columns: 1fr 1fr; }
     table.ex td { padding-left: .9rem; }
@@ -427,8 +420,8 @@
     <div class="seg" role="group" aria-label="Company size" id="topCap"></div>
     <div class="seg" role="group" aria-label="Horizon" id="topH"></div>
   </div>
-  <table id="topT" class="top"><colgroup><col style="width:2.4rem"><col><col style="width:104px"><col style="width:96px" class="nph"><col style="width:272px" class="nph"><col style="width:120px"><col style="width:52px"></colgroup>
-    <thead><tr><th class="l">#</th><th class="l">Holding</th><th>Median</th><th class="nph">Mean</th><th class="nph" id="topMid">Middle 50%</th><th>P(Gain)</th><th></th></tr></thead>
+  <table id="topT" class="top"><colgroup><col style="width:2.4rem"><col><col style="width:104px"><col style="width:96px" class="nph"><col style="width:140px" class="nph"><col style="width:120px"><col style="width:52px"></colgroup>
+    <thead><tr><th class="l">#</th><th class="l">Holding</th><th>Median</th><th class="nph">Mean</th><th class="nph">Middle 50%</th><th>P(Gain)</th><th></th></tr></thead>
     <tbody id="topB"></tbody></table>
   <div class="pager" id="topPg"></div>
 
@@ -467,7 +460,7 @@
   var CAT = { "Stocks": "--stock", "Index ETFs": "--index", "Bitcoin": "--btc", "Cash": "--cash" };
   var KEY = "er.mine", YRS = [1, 3, 5], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], NS = "http://www.w3.org/2000/svg";
   var ISVG = '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="1.6" r="1.15" fill="currentColor"/><rect x="4.05" y="3.6" width="1.9" height="5.6" rx=".5" fill="currentColor"/></svg>';
-  var D, ids = [], st = { pf: "Index Mix", h: 0, view: "ret", sort: "typ", dir: -1 }, mine = [], dom = [0, 1];
+  var D, ids = [], st = { pf: "Index Mix", h: 0, view: "ret", sort: "typ", dir: -1 }, mine = [];
   try { st.pf = localStorage.getItem("er.pf") || st.pf; st.h = +(localStorage.getItem("er.h") || 0); st.view = localStorage.getItem("er.v") || "ret"; } catch (e) {}
   try { mine = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { mine = []; }
   if (!(st.h >= 0 && st.h <= 2)) st.h = 0;
@@ -513,27 +506,9 @@
       return dir * (x - y);
     });
   }
-  // log scale of growth, shared by the range bars and the chart
+  // log scale of growth, for the chart
   function g(v) { return Math.log(1 + Math.max(v, -0.9)); }
-  // each table's range bars share one scale, fitted to its rows and always holding 0; Bitcoin may run off the end
-  function fit(R) {
-    var lo = 0, hi = 0.1;
-    R.forEach(function (r) { if (r.q25 != null) { lo = Math.min(lo, r.q25); hi = Math.max(hi, r.q75); } });
-    lo = Math.max(lo, -0.5); hi = Math.min(hi, 0.6);
-    var pad = (g(hi) - g(lo)) * 0.08;
-    return [g(lo) - pad, g(hi) + pad];
-  }
-  function xr(v, d) { d = d || dom; return Math.max(0, Math.min(100, (g(v) - d[0]) / (d[1] - d[0]) * 100)); }
-  function rangeCell(r, d) {
-    if (r.q25 == null) return pct(null);
-    d = d || dom;
-    return "<span class='rng'><span class='rtrk'><span class='zero' style='left:" + xr(0, d) + "%'></span>" +
-      "<span class='q" + (g(r.q75) > d[1] ? " over" : "") + "' style='left:" + xr(r.q25, d) + "%;width:" + Math.max(1.5, xr(r.q75, d) - xr(r.q25, d)) + "%'></span>" +
-      (g(r.typ) < d[1] ? "<span class='t' style='left:" + xr(r.typ, d) + "%'></span>" : "") + "</span>" +
-      "<span class='rtxt'>" + pct(r.q25) + " to " + pct(r.q75) + "</span></span>";
-  }
-  // the label sits over the range text, the bars below it carry no scale labels
-  function rangeHead(label) { return "<span class='rng'><span class='rtrk' aria-hidden='true' style='height:0'></span><span class='rtxt lb'>" + label + "</span></span>"; }
+  function rangeCell(r) { return r.q25 == null ? pct(null) : "<span class='rtxt'>" + pct(r.q25) + " to " + pct(r.q75) + "</span>"; }
   function chance(v) {
     if (v == null) return pct(null);
     return "<span class='chance'><span class='ctrk'><i style='width:" + Math.round(v * 100) + "%'></i></span>" + Math.round(v * 100) + "%</span>";
@@ -553,7 +528,7 @@
   var VIEWS = {
     ret: [["typ", "Median", 104, 0, "What one holding usually returns a year.", function (r) { return "<td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) + "</b></td>"; }],
           ["avg", "Mean", 96, 1, "The average result, lifted by rare big winners. The portfolio total uses this.", function (r) { return "<td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td>"; }],
-          ["mid", "Middle 50%", 272, 1, "Half of similar holdings ended inside the bar. The dot is the median.", function (r) { return "<td class='l2'>" + rangeCell(r) + "</td>"; }],
+          ["mid", "Middle 50%", 140, 1, "Half of similar holdings ended in this range.", function (r) { return "<td>" + rangeCell(r) + "</td>"; }],
           ["up", "P(Gain)", 120, 0, "Share of similar holdings that ended above today's price over the whole period.", function (r) { return "<td>" + chance(r.up) + "</td>"; }]],
     now: [["dd", "Off High", 110, 0, "Today's price against its highest close.", function (r) { return "<td>" + pct(r.dd) + "</td>"; }],
           ["d52", "Off 1-Year High", 140, 1, "Against the highest close in the past year. Closer to it has meant better years ahead.", function (r) { return "<td class='nph'>" + pct(r.d52) + "</td>"; }],
@@ -573,7 +548,7 @@
     document.getElementById("cg").innerHTML = "<col><col style='width:" + (ed ? (ph ? 66 : 110) : (ph ? 54 : 84)) + "px'>" + V.map(function (c) {
       return "<col style='width:" + (ph ? 74 : c[2]) + "px'>"; }).join("") + "<col style='width:" + (ed ? (ph ? 30 : 36) : 8) + "px'>";
     document.getElementById("th").innerHTML = "<tr><th class='l' data-k='code'>Holding</th><th data-k='w'>Weight</th>" + V.map(function (c) {
-      return "<th class='" + (c[3] ? "nph" : "") + "' data-k='" + c[0] + "' data-help='" + esc(c[4]) + "' tabindex='0'>" + (c[0] === "mid" ? rangeHead(c[1]) : "<span class='lb'>" + c[1] + "</span>") + "</th>"; }).join("") + "<th aria-label='Remove'></th></tr>";
+      return "<th class='" + (c[3] ? "nph" : "") + "' data-k='" + c[0] + "' data-help='" + esc(c[4]) + "' tabindex='0'>" + "<span class='lb'>" + c[1] + "</span>" + "</th>"; }).join("") + "<th aria-label='Remove'></th></tr>";
     document.querySelectorAll("th[data-k]").forEach(function (th) {
       th.tabIndex = 0;
       th.setAttribute("aria-sort", th.dataset.k === st.sort ? (st.dir > 0 ? "ascending" : "descending") : "none");
@@ -616,7 +591,6 @@
     document.getElementById("mineBtn").setAttribute("aria-pressed", mineOn ? "true" : "false");
     document.querySelectorAll("[data-h]").forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.h === st.h ? "true" : "false"); });
     var R = rows(), y = YRS[st.h], V = cols(), ed = st.pf === "mine";
-    dom = fit(R);
     header();
     var S = sorted(R);
     var html = S.map(function (r) {
@@ -781,15 +755,14 @@
       L.push({ id: id, code: code(id), co: n.c, mk: n.m, cat: "Stocks", typ: pa(r[0], y), avg: pa(r[1], y), q25: pa(r[2], y), q75: pa(r[3], y), up: r[4] });
     }
     L.sort(function (a, b) { return b.typ - a.typ; });
-    L = L.slice(0, 100); var td = fit(L);
-    document.getElementById("topMid").innerHTML = rangeHead("Middle 50%");
+    L = L.slice(0, 100);
     var pages = Math.max(1, Math.ceil(L.length / PER)); top.page = Math.min(top.page, pages - 1);
     var off = top.page * PER;
     document.getElementById("topPg").innerHTML = L.length > PER ? "<button type='button' data-pg='-1' aria-label='Previous ten'" + (top.page ? "" : " disabled") + ">&lsaquo;</button><span>" +
       (off + 1) + "-" + Math.min(off + PER, L.length) + " of " + L.length + "</span><button type='button' data-pg='1' aria-label='Next ten'" + (top.page < pages - 1 ? "" : " disabled") + ">&rsaquo;</button>" : "";
     document.getElementById("topB").innerHTML = L.slice(off, off + PER).map(function (r, i) {
       return "<tr data-n='" + esc(r.id) + "'><td class='l rk'>" + (off + i + 1) + "</td><td class='l'>" + hold(r) + "</td><td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) +
-        "</b></td><td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td><td class='nph'>" + rangeCell(r, td) + "</td><td>" + chance(r.up) +
+        "</b></td><td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td><td class='nph'>" + rangeCell(r) + "</td><td>" + chance(r.up) +
         "</td><td><button class='addb' type='button' data-add='" + esc(r.id) + "'" + (have[r.id] ? " disabled aria-label='In My Portfolio'>&#10003;" : " aria-label='Add " + esc(r.code) + " to My Portfolio'>+") + "</button></td></tr>";
     }).join("") || "<tr><td colspan='7' class='l' style='color:var(--soft);padding:1.2rem 0'>No shares match.</td></tr>";
   }
