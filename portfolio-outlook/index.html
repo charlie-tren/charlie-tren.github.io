@@ -167,7 +167,8 @@
   .rtrk { position: relative; width: 150px; height: 20px; flex: none; }
   .rtrk .zero { position: absolute; top: -4px; bottom: -4px; width: 0; border-left: 1px dashed var(--soft); z-index: 1; opacity: .8; }
   .rtrk .q { position: absolute; top: 4px; height: 12px; border-radius: 3px; background: color-mix(in srgb, var(--accent) 38%, transparent); }
-  .rtrk .t { position: absolute; top: 1px; width: 3px; height: 18px; border-radius: 2px; margin-left: -1.5px; background: var(--ink); }
+  .rtrk .q.over { border-radius: 3px 0 0 3px; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 38%, transparent) 60%, transparent); }
+  .rtrk .t { position: absolute; top: 4px; width: 12px; height: 12px; border-radius: 50%; margin-left: -6px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg); z-index: 2; }
   .rtrk.rax { height: 14px; }
   .rtrk.rax span { position: absolute; top: 0; transform: translateX(-50%); font: 400 var(--t-xs)/14px var(--sans); color: var(--soft); white-space: nowrap; }
   .rtxt { color: var(--soft); min-width: 108px; text-align: right; }
@@ -512,16 +513,17 @@
   function fit(R) {
     var lo = 0, hi = 0.1;
     R.forEach(function (r) { if (r.q25 != null) { lo = Math.min(lo, r.q25); hi = Math.max(hi, r.q75); } });
-    lo = Math.max(lo, -0.6); hi = Math.min(hi, 1.5);
+    lo = Math.max(lo, -0.5); hi = Math.min(hi, 0.6);
     var pad = (g(hi) - g(lo)) * 0.08;
     return [g(lo) - pad, g(hi) + pad];
   }
   function xr(v, d) { d = d || dom; return Math.max(0, Math.min(100, (g(v) - d[0]) / (d[1] - d[0]) * 100)); }
   function rangeCell(r, d) {
     if (r.q25 == null) return pct(null);
+    d = d || dom;
     return "<span class='rng'><span class='rtrk'><span class='zero' style='left:" + xr(0, d) + "%'></span>" +
-      "<span class='q' style='left:" + xr(r.q25, d) + "%;width:" + Math.max(1.5, xr(r.q75, d) - xr(r.q25, d)) + "%'></span>" +
-      "<span class='t' style='left:" + xr(r.typ, d) + "%'></span></span>" +
+      "<span class='q" + (g(r.q75) > d[1] ? " over" : "") + "' style='left:" + xr(r.q25, d) + "%;width:" + Math.max(1.5, xr(r.q75, d) - xr(r.q25, d)) + "%'></span>" +
+      (g(r.typ) < d[1] ? "<span class='t' style='left:" + xr(r.typ, d) + "%'></span>" : "") + "</span>" +
       "<span class='rtxt'>" + pct(r.q25) + " to " + pct(r.q75) + "</span></span>";
   }
   // the scale above the bars: 0 and a round figure near each end
@@ -552,7 +554,7 @@
   var VIEWS = {
     ret: [["typ", "Median", 104, 0, "What one holding usually returns a year.", function (r) { return "<td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) + "</b></td>"; }],
           ["avg", "Mean", 96, 1, "The average result, lifted by rare big winners. The portfolio total uses this.", function (r) { return "<td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td>"; }],
-          ["mid", "Middle 50%", 272, 1, "The bar is the range half of similar holdings ended in; the line inside it is the median.", function (r) { return "<td class='l2'>" + rangeCell(r) + "</td>"; }],
+          ["mid", "Middle 50%", 272, 1, "Half of similar holdings ended inside the bar. The dot is the median.", function (r) { return "<td class='l2'>" + rangeCell(r) + "</td>"; }],
           ["up", "P(Gain)", 120, 0, "Share of similar holdings that ended above today's price over the whole period.", function (r) { return "<td>" + chance(r.up) + "</td>"; }]],
     now: [["dd", "Off High", 110, 0, "Today's price against its highest close.", function (r) { return "<td>" + pct(r.dd) + "</td>"; }],
           ["d52", "Off 1-Year High", 140, 1, "Against the highest close in the past year. Closer to it has meant better years ahead.", function (r) { return "<td class='nph'>" + pct(r.d52) + "</td>"; }],
@@ -969,7 +971,8 @@
     for (var k0 in S0) if (!SAMPLES[k0]) SAMPLES[k0] = S0[k0];
     NAMES = Object.keys(SAMPLES);
     example(); fromHash(); render();
-  }).catch(function () {
+  }).catch(function (e) {
+    console.error(e);
     document.getElementById("tb").innerHTML = "<tr><td class='l' style='color:var(--soft);padding:1.2rem 0'>The figures did not load. Reload the page to try again.</td></tr>";
   });
 })();
