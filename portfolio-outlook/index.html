@@ -255,6 +255,7 @@
   .tophead h2 { margin-top: 0; }
   .trs { margin-bottom: 1.4rem; }
   .trs td.l { color: var(--soft); }
+  #trades .tophead.trhead { margin: 1.2rem 0 1.2rem; gap: .5rem; }
   .topctl { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; margin: 0 0 1rem; }
   td.rk { color: var(--soft); width: 2rem; }
   .pager { display: flex; align-items: center; justify-content: flex-end; gap: .7rem; margin: .8rem 0 0; font-size: var(--t-s); color: var(--soft); font-variant-numeric: tabular-nums; }
@@ -355,8 +356,8 @@
   <div class="tabbar">
   <div class="tabs" role="tablist" aria-label="Table view">
     <button class="tab" type="button" role="tab" data-v="ret" data-help="Median, mean, range and chance of a gain.">Expected Return</button>
-    <button class="tab" type="button" role="tab" data-v="now" data-help="Distance from its highs, price swings and dividend.">Price and Yield</button>
-    <button class="tab" type="button" role="tab" data-v="own" data-help="What it did from past times this far below its high.">Track Record</button>
+    <button class="tab" type="button" role="tab" data-v="now" data-help="Distance from its highs, odds of getting back, price swings, dividend and its own record.">Price and Record</button>
+    <button class="tab" type="button" role="tab" data-v="tr" id="trTab" data-help="What to sell and buy for more return for the risk." hidden>Suggested Trades</button>
   </div>
     <div class="add" id="addBox">
     <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Add a holding: ticker or company" aria-label="Add a holding"
@@ -367,11 +368,10 @@
   <table id="tbl"><colgroup id="cg"></colgroup><thead id="th"></thead><tbody id="tb"></tbody></table>
 
   <section id="trades" hidden>
-  <div class="tophead"><h2>Suggested Trades</h2><button class="info" type="button" aria-expanded="false" aria-controls="hTr" aria-label="About suggested trades"></button>
+  <div class="tophead trhead"><div class="seg" role="group" aria-label="What to trade" id="trMode"></div><button class="info" type="button" aria-expanded="false" aria-controls="hTr" aria-label="About suggested trades"></button>
     <p class="help" id="hTr" role="tooltip">The mix with the most mean return for its risk, with cash left as it is, no holding above 15% and Bitcoin funds 15% together. Within My Holdings only reweights what you own; From Anything can also buy the large shares Optimal Mix is chosen from. Changes under 2% are left out. Brokerage and tax are not counted.</p></div>
-  <div class="topctl"><div class="seg" role="group" aria-label="What to trade" id="trMode"></div></div>
-  <table class="top trs"><colgroup><col style="width:5.5rem"><col><col><col><col class="nph"><col class="nph"></colgroup>
-    <thead><tr><th class="l"></th><th>Mean</th><th>Volatility</th><th>Sharpe</th><th class="nph">P(Gain)</th><th class="nph">Bad Year</th></tr></thead>
+  <table class="top trs"><colgroup><col style="width:5.5rem"><col><col class="nph"><col><col><col class="nph"><col class="nph"></colgroup>
+    <thead><tr><th class="l"></th><th>Median</th><th class="nph">Mean</th><th>Volatility</th><th>Sharpe</th><th class="nph">P(Gain)</th><th class="nph">Bad Year</th></tr></thead>
     <tbody id="trS"></tbody></table>
   <table class="top" id="trT"><colgroup><col><col style="width:90px" class="nph"><col style="width:90px"><col style="width:90px"></colgroup>
     <thead><tr><th class="l">Holding</th><th class="nph">Now</th><th>After</th><th>Change</th></tr></thead>
@@ -487,7 +487,7 @@
   if (!(st.h >= 0 && st.h <= 2)) st.h = 0;
   if (st.pf !== "mine" && st.pf !== "Optimal Mix" && !SAMPLES[st.pf]) st.pf = "Index Mix";
   if (st.pf !== "mine") lastSample = st.pf;
-  if (["ret", "now", "own"].indexOf(st.view) < 0) st.view = "ret";
+  if (["ret", "now", "tr"].indexOf(st.view) < 0) st.view = "ret";
   if (!Array.isArray(mine)) mine = [];
   mine = mine.filter(function (x) { return Array.isArray(x) && typeof x[0] === "string"; });
 
@@ -554,20 +554,17 @@
     ret: [["typ", "Median", 104, 0, "What one holding usually returns a year.", function (r) { return "<td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) + "</b></td>"; }],
           ["avg", "Mean", 96, 1, "The average result, lifted by rare big winners, so a more volatile holding shows a higher mean even with the same median. The portfolio total uses this.", function (r) { return "<td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td>"; }],
           ["mid", "Middle 50%", 140, 1, "Half of similar holdings ended in this range.", function (r) { return "<td>" + rangeCell(r) + "</td>"; }],
-          ["up", "P(Gain)", 120, 0, "Share of similar holdings that ended above today's price over the whole period.", function (r) { return "<td>" + chance(r.up) + "</td>"; }]],
+          ["up", "P(Gain)", 120, 0, "Share of similar holdings that ended above today's price over the whole period. Right on average, but it does not tell one share from another.", function (r) { return "<td>" + chance(r.up) + "</td>"; }]],
     now: [["dd", "Off High", 100, 0, "Today's price against its highest close.", function (r) { return "<td>" + pct(r.dd) + "</td>"; }],
-          ["bh", "Back to High", 118, 1, "Share of similar shares this far below their high that got back to it within three years.", function (r) { return "<td class='nph'>" + plain(r.bh) + "</td>"; }],
-          ["d52", "Off 1-Year High", 126, 1, "Against the highest close in the past year. Closer to it has meant better years ahead.", function (r) { return "<td class='nph'>" + pct(r.d52) + "</td>"; }],
+          ["bh", "Back to High", 112, 1, "Share of similar shares this far below their high that got back to it within three years.", function (r) { return "<td class='nph'>" + plain(r.bh) + "</td>"; }],
           ["v", "Volatility", 100, 0, "How much the price swings in a year. Higher has meant worse typical outcomes.", function (r) { return "<td class='dim'>" + plain(r.v) + "</td>"; }],
-          ["y", "Yield", 96, 1, "Yearly dividends over today's price, using the lower of last year's and the three-year median.", function (r) { return "<td class='nph dim'>" + (r.y ? plain(r.y, 1) : plain(null)) + "</td>"; }]],
-    own: [["typ", "Median", 104, 0, "What one holding usually returns a year.", function (r) { return "<td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) + "</b></td>"; }],
-          ["own", "Own Record", 120, 0, "What this holding did from past times this far below its high. It counts for at most 16% of the median, and much less with only one or two.", function (r) { return "<td class='" + sgn(r.own) + "'>" + pct(r.own) + "</td>"; }],
-          ["own_n", "Episodes", 100, 1, "Separate past times this far below its high.", function (r) { return "<td class='nph dim'>" + (r.own_n || "<span class='na'>&mdash;</span>") + "</td>"; }]]
+          ["y", "Yield", 80, 1, "Yearly dividends over today's price, using the lower of last year's and the three-year median.", function (r) { return "<td class='nph dim'>" + (r.y ? plain(r.y, 1) : plain(null)) + "</td>"; }],
+          ["own", "Own Record", 108, 1, "What this holding did from past times this far below its high. It counts for at most 16% of the median, and much less with only one or two.", function (r) { return "<td class='nph " + sgn(r.own) + "'>" + pct(r.own) + "</td>"; }]]
   };
 
   // phone-hidden columns are left out of the markup, so their declared widths cannot push the table wider
   var PH = matchMedia("(max-width: 640px)");
-  function cols() { return VIEWS[st.view].filter(function (c) { return !(c[3] && PH.matches); }); }
+  function cols() { return (VIEWS[st.view] || VIEWS.ret).filter(function (c) { return !(c[3] && PH.matches); }); }
   function header() {
     var V = cols(), ed = st.pf === "mine";
     var ph = PH.matches;  // a phone keeps ~100px for the holding: weight, two figures and the remove button share the rest
@@ -586,7 +583,8 @@
   // calm 2022-25 level (0.22 same market, 0.145 across) and half the crash level (2008, 2020, 2022, 2000-02: 0.35 and
   // 0.26), so 0.275 and 0.185 (optmix_rebuild.py, 23/11/2026: one-year swings and calm correlations under-predicted
   // the realised swing 1.48x).
-  // Index ETFs, Bitcoin funds and cash: standard estimates.
+  // Index ETFs 0.8 together, 0.3 against a share; Bitcoin funds 0.95 together, 0.2 against the rest (measured on his
+  // holdings 2022-25 in AUD: 0.77, 0.20, 0.89, 0.10-0.18; raised toward crash levels like the shares).
   var OI = {};
   function rho(a, b) {
     if (a.cat === "Cash" || b.cat === "Cash") return 0;
@@ -594,7 +592,7 @@
     if (i != null && j != null && i !== j) { if (i > j) { var t0 = i; i = j; j = t0; } return D.opt.c[i * D.opt.ids.length - i * (i + 1) / 2 + j - i - 1]; }
     if (a.cat === "Bitcoin" || b.cat === "Bitcoin") return a.cat === b.cat ? 0.95 : 0.2;
     if (a.cat === "Index ETFs" && b.cat === "Index ETFs") return 0.8;
-    if (a.cat === "Index ETFs" || b.cat === "Index ETFs") return 0.4;
+    if (a.cat === "Index ETFs" || b.cat === "Index ETFs") return 0.3;
     return a.mk === b.mk ? 0.275 : 0.185;
   }
   function cashRate() { var c = D.names["AAA.AX"]; return c && c.r[st.h][0] != null ? pa(c.r[st.h][0], YRS[st.h]) : 0.04; }
@@ -608,11 +606,14 @@
       v2 += ww * (a.cat === "Cash" ? 0.01 : a.vr) * (b.cat === "Cash" ? 0.01 : b.vr) * p;
       if (a !== b && a.cat !== "Cash" && b.cat !== "Cash") { cs += ww * p; cw += ww; } }); });
     var vol = Math.sqrt(v2), rf = cashRate(), m = Math.log(1 + mu) - v2 / 2;
-    return { cor: cw > 0 ? cs / cw : null, mu: mu, vol: vol, rf: rf, sharpe: vol > 0 ? (mu - rf) / vol : 0, up: ncdf(m * y / (vol * Math.sqrt(y) || 1e-9)), bad: Math.expm1(m - 1.645 * vol) };
+    return { cor: cw > 0 ? cs / cw : null, med: Math.expm1(m), mu: mu, vol: vol, rf: rf, sharpe: vol > 0 ? (mu - rf) / vol : 0, up: ncdf(m * y / (vol * Math.sqrt(y) || 1e-9)), bad: Math.expm1(m - 1.645 * vol) };
   }
   function render() {
     if (!D) return;
     var mineOn = st.pf === "mine";
+    if (st.view === "tr" && !mineOn) st.view = "ret";
+    document.getElementById("trTab").hidden = !mineOn;
+    document.getElementById("tbl").hidden = st.view === "tr";
     document.getElementById("pfName").textContent = lastSample;
     document.getElementById("pfBtn").classList.toggle("off", mineOn);
     document.getElementById("mineBtn").setAttribute("aria-pressed", mineOn ? "true" : "false");
@@ -823,20 +824,22 @@
     for (var it = 0; it < 60; it++) { t = (lo + hi) / 2; s = 0; for (k = 0; k < v.length; k++) s += Math.min(cap, Math.max(0, v[k] - t)); if (s > B) lo = t; else hi = t; }
     return v.map(function (x) { return Math.min(cap, Math.max(0, x - hi)); });
   }
+  // the nearest weights between 0 and cap that add to B, with flagged (Bitcoin) weights adding to at most gcap
+  function projG(v, isG, cap, B, gcap) {
+    var w = capProj(v, cap, B), gs = 0, G = [], O = [];
+    isG.forEach(function (g, i) { (g ? G : O).push(i); if (g) gs += w[i]; });
+    if (gs <= gcap + 1e-9 || !O.length) return w;
+    var wg = capProj(G.map(function (i) { return v[i]; }), cap, gcap), wo = capProj(O.map(function (i) { return v[i]; }), cap, B - gcap);
+    G.forEach(function (i, k) { w[i] = wg[k]; }); O.forEach(function (i, k) { w[i] = wo[k]; });
+    return w;
+  }
   function maxSharpe(A, B, rf) {
     var n = A.length, cap = Math.max(0.15, B / n + 1e-9), C = A.map(function (a, i) { return A.map(function (b, j) { return (i === j ? 1 : rho(a, b)) * a.vr * b.vr; }); });
-    var mu = A.map(function (a) { return a.avg - rf; }), G = [], O = [];
-    A.forEach(function (a, i) { (a.cat === "Bitcoin" ? G : O).push(i); });
-    function proj(v) {
-      var w = capProj(v, cap, B), gs = 0; G.forEach(function (i) { gs += w[i]; });
-      if (G.length < 2 || gs <= cap + 1e-9 || !O.length) return w;
-      G.forEach(function (i) { w[i] *= cap / gs; });
-      var wo = capProj(O.map(function (i) { return v[i]; }), cap, B - cap); O.forEach(function (i, k) { w[i] = wo[k]; });
-      return w;
-    }
+    var mu = A.map(function (a) { return a.avg - rf; }), isG = A.map(function (a) { return a.cat === "Bitcoin"; });
+    function proj(v) { return projG(v, isG, cap, B, cap); }
     function sh(w) { var m = 0, q = 0, i, j; for (i = 0; i < n; i++) { m += w[i] * mu[i]; for (j = 0; j < n; j++) q += w[i] * w[j] * C[i][j]; } return m / Math.sqrt(q || 1e-12); }
     var w = proj(A.map(function (a) { return a.w; })), best = sh(w), step = 0.05;
-    for (var it = 0; it < 500 && step > 1e-6; it++) {
+    for (var it = 0; it < 2000 && step > 1e-7; it++) {
       var Cw = [], m = 0, q = 0, i, j;
       for (i = 0; i < n; i++) { var s0 = 0; for (j = 0; j < n; j++) s0 += C[i][j] * w[j]; Cw[i] = s0; m += w[i] * mu[i]; q += w[i] * s0; }
       var sd = Math.sqrt(q) || 1e-9, nw = proj(w.map(function (x, i2) { return x + step * (mu[i2] / sd - m * Cw[i2] / (sd * sd * sd)); })), ns = sh(nw);
@@ -845,7 +848,7 @@
     return w;
   }
   function trades() {
-    var sec = document.getElementById("trades"); sec.hidden = st.pf !== "mine" || !D;
+    var sec = document.getElementById("trades"); sec.hidden = st.pf !== "mine" || st.view !== "tr" || !D;
     if (sec.hidden) return;
     document.getElementById("trMode").innerHTML = ["Within My Holdings", "From Anything"].map(function (t, i) {
       return "<button class='pill' type='button' data-tm='" + i + "' aria-pressed='" + (trMode === i) + "'>" + t + "</button>"; }).join("");
@@ -857,17 +860,30 @@
     var F = U.filter(function (a) { return a.cat !== "Cash" && a.avg != null && a.vr != null; }), B = F.reduce(function (s0, a) { return s0 + a.w; }, 0);
     var tb = document.getElementById("trB"), ts = document.getElementById("trS");
     if (F.length < 2 || B <= 0) { ts.innerHTML = ""; tb.innerHTML = "<tr><td colspan='4' class='l' style='color:var(--soft);padding:1.2rem 0'>Needs two or more holdings.</td></tr>"; return; }
-    var t = maxSharpe(F, B, rf);
-    F.forEach(function (a, i) { a.mv = Math.abs(t[i] - a.w) >= 0.02; a.to = a.mv ? t[i] : a.w; });
-    var tot = U.reduce(function (s0, a) { return s0 + (a.to == null ? a.w : a.to); }, 0) || 1;
-    U.forEach(function (a) { a.to = (a.to == null ? a.w : a.to) / tot; });
+    var t = maxSharpe(F, B, rf), cap = Math.max(0.15, B / F.length + 1e-9);
+    F.forEach(function (a, i) { a.t = t[i]; a.mv = Math.abs(t[i] - a.w) >= 0.02 || a.w > cap + 1e-9; });
+    var M = F.filter(function (a) { return a.mv; }), un = F.filter(function (a) { return !a.mv; });
+    var Bm = B - un.reduce(function (s0, a) { return s0 + a.w; }, 0), gU = un.reduce(function (s0, a) { return s0 + (a.cat === "Bitcoin" ? a.w : 0); }, 0);
+    // scale the moved names to what is left, so a sale stays a full sale; a name or the Bitcoin funds that would pass
+    // their cap are held at it and the rest rescaled
+    var gcap = Math.max(0, cap - gU), fx = M.map(function () { return false; }), wm = M.map(function (a) { return a.t; });
+    for (var it2 = 0; it2 < 30; it2++) {
+      var fs = 0, fr = 0, gs = 0, ch = false;
+      M.forEach(function (a, k) { if (fx[k]) fs += wm[k]; else fr += a.t; });
+      M.forEach(function (a, k) { if (!fx[k]) wm[k] = fr > 0 ? a.t * (Bm - fs) / fr : 0; if (a.cat === "Bitcoin") gs += wm[k]; });
+      if (gs > gcap + 1e-9) { M.forEach(function (a, k) { if (a.cat === "Bitcoin") { wm[k] *= gcap / gs; fx[k] = true; } }); ch = true; }
+      M.forEach(function (a, k) { if (!fx[k] && wm[k] > cap + 1e-9) { wm[k] = cap; fx[k] = true; ch = true; } });
+      if (!ch) break;
+    }
+    M.forEach(function (a, k) { a.to = wm[k]; });
+    U.forEach(function (a) { if (a.to == null) a.to = a.w; });
     var P0 = pstats(U, y), P1 = pstats(U.map(function (a) { return Object.assign({}, a, { w: a.to }); }), y);
     function line(lbl, P) {
-      return "<tr><td class='l'>" + lbl + "</td><td class='" + sgn(P.mu) + "'>" + pct(P.mu) + "</td><td>" + Math.round(P.vol * 100) + "%</td><td>" + P.sharpe.toFixed(2) +
+      return "<tr><td class='l'>" + lbl + "</td><td class='" + sgn(P.med) + "'>" + pct(P.med) + "</td><td class='nph " + sgn(P.mu) + "'>" + pct(P.mu) + "</td><td>" + Math.round(P.vol * 100) + "%</td><td>" + P.sharpe.toFixed(2) +
         "</td><td class='nph'>" + Math.round(P.up * 100) + "%</td><td class='nph " + sgn(P.bad) + "'>" + pct(P.bad) + "</td></tr>";
     }
     ts.innerHTML = P0 && P1 ? line("Now", P0) + line("After", P1) : "";
-    var T = U.filter(function (a) { return a.mv; }).sort(function (a, b) { return (a.to - a.w) - (b.to - b.w); });
+    var T = U.filter(function (a) { return a.mv && Math.abs(a.to - a.w) >= 0.005; }).sort(function (a, b) { return (a.to - a.w) - (b.to - b.w); });
     tb.innerHTML = T.map(function (a) {
       var d = a.to - a.w;
       return "<tr data-n='" + esc(a.id) + "'><td class='l'>" + hold(a) + "</td><td class='nph'>" + share(a.w) + "%</td><td>" + share(a.to) + "%</td><td class='" + sgn(d) + "'>" +
@@ -918,7 +934,7 @@
   });
   document.querySelectorAll(".tab").forEach(function (b) {
     b.addEventListener("click", function () {
-      st.view = b.dataset.v; var keys = VIEWS[st.view].map(function (c) { return c[0]; });
+      st.view = b.dataset.v; var keys = (VIEWS[st.view] || VIEWS.ret).map(function (c) { return c[0]; });
       if (["code", "w"].indexOf(st.sort) < 0 && keys.indexOf(st.sort) < 0) { st.sort = keys[0]; st.dir = -1; }
       save(); render();
     });
