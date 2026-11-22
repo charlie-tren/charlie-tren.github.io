@@ -144,10 +144,17 @@
 
   @media (max-width: 640px) {
     .wrap { padding: 1.4rem 1rem 4rem; }
-    .bar { margin-bottom: 1.8rem; gap: .6rem; }
-    .barright { gap: .6rem; }
-    h1.wm { font-size: clamp(16px, 4.5vw, 20px); }
-    .home .hl { display: none; }
+    .bar { margin-bottom: 1.2rem; gap: .6rem; align-items: center; }
+    .barright { gap: .55rem; }
+    h1.wm { font-size: 17px; line-height: 1.15; }
+    h1.wm span { max-width: 7.2em; }
+    .home { font-size: 11.5px; letter-spacing: .06em; }
+    .theme-toggle { padding: .4rem .62rem; }
+    .lede { font-size: 16px; margin-bottom: 1rem; }
+    .over { display: none; }
+    .tool { display: flex; flex-direction: column; }
+    .tool > .chartbox { order: -2; }
+    .tool > .key { order: -1; margin: .5rem 0 1.6rem; }
     .now { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.2rem; }
     .controls { grid-template-columns: 1fr; gap: 1.3rem; }
     h2 { margin-top: 3.2rem; }
@@ -177,6 +184,7 @@
   <p class="lede">Bitcoin's price compared with its long-run power-law trend, and a forecast of where it could be in one to four years. Updated daily.</p>
   <p class="over">The forecast blends two models. The first expects price to move back toward the trend, as it did after the 2015, 2018 and 2022 lows. The second expects each four-year cycle to grow less than the one before.</p>
 
+  <div class="tool">
   <div class="now">
     <div class="stat"><span class="k caps">Price</span><span class="v" id="sPrice">-</span><span class="sub" id="sPriceS"></span></div>
     <div class="stat"><span class="k caps"><span>Power-Law Trend</span><button class="info" type="button" aria-expanded="false" aria-controls="hT" aria-label="About the power-law trend"></button></span><span class="v" id="sTrend">-</span><span class="sub" id="sTrendS"></span><p class="help" id="hT" role="tooltip">Today's value of the long-run trend line. Past cycle lows were 0.4-0.5x it.</p></div>
@@ -216,6 +224,8 @@
     <div class="ctl"><label for="rC"><span class="name">Reversion Forecast Cut<button class="info" type="button" aria-expanded="false" aria-controls="hC" aria-label="About the forecast cut"></button></span><output id="oC"></output></label>
       <p class="help" id="hC" role="tooltip">Lowers the reversion model's forecast by this much. Since 2021 its 1-2 year forecasts have come in 8-16% too high.</p>
       <input id="rC" type="range" min="0" max="40" step="2" value="0"></div>
+  </div>
+
   </div>
 
   <h2>Price Against Trend</h2>
