@@ -253,6 +253,8 @@
   .tophead.open .help { display: block; }
   .tophead { position: relative; margin: 4rem 0 1rem; }
   .tophead h2 { margin-top: 0; }
+  .trs { margin-bottom: 1.4rem; }
+  .trs td.l { color: var(--soft); }
   .topctl { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; margin: 0 0 1rem; }
   td.rk { color: var(--soft); width: 2rem; }
   .pager { display: flex; align-items: center; justify-content: flex-end; gap: .7rem; margin: .8rem 0 0; font-size: var(--t-s); color: var(--soft); font-variant-numeric: tabular-nums; }
@@ -364,6 +366,18 @@
   </div>
   <table id="tbl"><colgroup id="cg"></colgroup><thead id="th"></thead><tbody id="tb"></tbody></table>
 
+  <section id="trades" hidden>
+  <div class="tophead"><h2>Suggested Trades</h2><button class="info" type="button" aria-expanded="false" aria-controls="hTr" aria-label="About suggested trades"></button>
+    <p class="help" id="hTr" role="tooltip">The mix with the most mean return for its risk, with cash left as it is, no holding above 15% and Bitcoin funds 15% together. Within My Holdings only reweights what you own; From Anything can also buy the 60 shares Optimal Mix is chosen from. Changes under 2% are left out. Brokerage and tax are not counted.</p></div>
+  <div class="topctl"><div class="seg" role="group" aria-label="What to trade" id="trMode"></div></div>
+  <table class="top trs"><colgroup><col style="width:5.5rem"><col><col><col><col class="nph"><col class="nph"></colgroup>
+    <thead><tr><th class="l"></th><th>Mean</th><th>Volatility</th><th>Sharpe</th><th class="nph">P(Gain)</th><th class="nph">Bad Year</th></tr></thead>
+    <tbody id="trS"></tbody></table>
+  <table class="top" id="trT"><colgroup><col><col style="width:90px" class="nph"><col style="width:90px"><col style="width:90px"></colgroup>
+    <thead><tr><th class="l">Holding</th><th class="nph">Now</th><th>After</th><th>Change</th></tr></thead>
+    <tbody id="trB"></tbody></table>
+  </section>
+
   <h2>Range of Outcomes</h2>
   <div class="key" id="key1" role="group" aria-label="Sort by"></div>
   <div id="c1"></div>
@@ -406,13 +420,13 @@
       <p>What the holding did from its own past times this far below its high counts for at most 16% of the estimate, and less when there have been only one or two.</p>
     </div></div>
     <div class="mrow"><h3>ETFs, Bitcoin and Cash</h3><div>
-      <p>Index ETFs get the average return of 58 country, sector and style ETFs, including Greece and Turkey. Bitcoin funds use the <a href="https://charlietrenorden.com/bitcoin-power-law-forecast/">Bitcoin Power Law Forecast</a>, and a 2x fund also pays about 6% a year in fees and borrowing. Cash ETFs use their own record.</p>
+      <p>Index ETFs get the average return of 58 country, sector and style ETFs, including Greece and Turkey. Bitcoin funds use the <a href="https://charlietrenorden.com/bitcoin-power-law-forecast/">Bitcoin Power Law Forecast</a>, trimmed where its past forecasts ran high, and a 2x fund has trailed twice the plain fund by about 15% a year. Cash ETFs use their own record.</p>
     </div></div>
     <div class="mrow"><h3>Currency</h3><div>
       <p>No exchange-rate move is assumed. Nothing tested predicted exchange rates better than assuming no change. Past currency moves widen the range for overseas holdings.</p>
     </div></div>
     <div class="mrow"><h3>Reading the Figures</h3><div>
-      <p>The median return is what one holding usually returns. The mean return is the average result, and a few big winners lift it above the median. The portfolio total uses the mean.</p>
+      <p>The median return is what one holding usually returns. The mean return is the average result, and a few big winners lift it above the median. Means are then cut to what past forecasts like them actually returned, by a third to a half for the most-traded shares. The portfolio total uses the mean.</p>
       <p>Middle 50% is the range half of similar holdings ended in, and P(Gain) is how often they finished higher. Three and five year figures are per year.</p>
     </div></div>
     <div class="mrow"><h3>Limits</h3><div>
@@ -422,7 +436,7 @@
 
   <div class="tophead"><h2>Highest Median Returns</h2><button class="info" type="button" aria-expanded="false" aria-controls="hTop" aria-label="About this list"></button>
     <p class="help" id="hTop" role="tooltip">Shares only, ranked by median return over the horizon chosen above. A list of the highest-ranked shares did not beat owning the whole market in testing, so treat it as a place to start looking, not a buy list.</p></div>
-  <div class="topctl">
+  <div class="topctl" id="topCtl">
     <div class="seg" role="group" aria-label="Market" id="topMkt"></div>
     <div class="seg" role="group" aria-label="Company size" id="topCap"></div>
     <div class="seg" role="group" aria-label="Horizon" id="topH"></div>
@@ -483,6 +497,7 @@
   }
   function code(id) { return id.replace(/\.[A-Z]+$/, ""); }
   function list() { return st.pf === "mine" ? mine : SAMPLES[st.pf]; }
+  function tmean(r) { return r[7] != null ? r[7] : r[1]; }
   function pa(v, y) { return v == null ? null : Math.pow(Math.max(1 + v, 1e-9), 1 / y) - 1; }
   function pct(v, html) {
     if (v == null || !isFinite(v)) return html === false ? "—" : "<span class='na'>&mdash;</span>";
@@ -499,9 +514,9 @@
     return L.map(function (x, i) {
       var n = D.names[x[0]] || {}, r = n.r ? n.r[st.h] : [];
       return { i: i, id: x[0], code: code(x[0]), co: n.c || "", mk: n.m || "", w: (+x[1] || 0) / tot, raw: x[1], off: Math.abs(tot - 100) > 0.5, cat: n.r ? cat(n.b) : "", g: n.g || "",
-               dd: n.dd, d52: n.d52, v: n.v, y: n.y, typ: pa(r[0], y), avg: pa(r[1], y), q25: pa(r[2], y), q75: pa(r[3], y),
+               dd: n.dd, d52: n.d52, v: n.v, y: n.y, typ: pa(r[0], y), avg: pa(tmean(r), y), q25: pa(r[2], y), q75: pa(r[3], y),
                up: r[4] == null ? null : r[4], own: pa(r[5], y), own_n: r[6] || null,
-               mid: r[2] == null ? null : (pa(r[2], y) + pa(r[3], y)) / 2, avgTot: r[1] == null ? null : r[1] };
+               mid: r[2] == null ? null : (pa(r[2], y) + pa(r[3], y)) / 2, avgTot: tmean(r) == null ? null : tmean(r) };
     });
   }
   function sorted(R) {
@@ -537,7 +552,7 @@
   // columns per view: key, label, width, phone-hidden, help, cell
   var VIEWS = {
     ret: [["typ", "Median", 104, 0, "What one holding usually returns a year.", function (r) { return "<td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) + "</b></td>"; }],
-          ["avg", "Mean", 96, 1, "The average result, lifted by rare big winners. The portfolio total uses this.", function (r) { return "<td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td>"; }],
+          ["avg", "Mean", 96, 1, "The average result, lifted by rare big winners, so a more volatile holding shows a higher mean even with the same median. The portfolio total uses this.", function (r) { return "<td class='nph " + sgn(r.avg) + "'>" + pct(r.avg) + "</td>"; }],
           ["mid", "Middle 50%", 140, 1, "Half of similar holdings ended in this range.", function (r) { return "<td>" + rangeCell(r) + "</td>"; }],
           ["up", "P(Gain)", 120, 0, "Share of similar holdings that ended above today's price over the whole period.", function (r) { return "<td>" + chance(r.up) + "</td>"; }]],
     now: [["dd", "Off High", 110, 0, "Today's price against its highest close.", function (r) { return "<td>" + pct(r.dd) + "</td>"; }],
@@ -655,7 +670,7 @@
     }).join("");
     document.getElementById("legend").innerHTML = leg.join("");
     document.getElementById("addBox").hidden = !ed;
-    charts(); topList();
+    charts(); topList(); trades();
   }
 
   // ---- charts ----
@@ -767,7 +782,7 @@
       if (top.cap > 0 && !(n.cap >= top.cap)) continue;
       if (top.cap < 0 && !(n.cap != null && n.cap < -top.cap)) continue;
       var r = n.r[top.h]; if (r[0] == null) continue;
-      L.push({ id: id, code: code(id), co: n.c, mk: n.m, cat: "Stocks", typ: pa(r[0], y), avg: pa(r[1], y), q25: pa(r[2], y), q75: pa(r[3], y), up: r[4] });
+      L.push({ id: id, code: code(id), co: n.c, mk: n.m, cat: "Stocks", typ: pa(r[0], y), avg: pa(tmean(r), y), q25: pa(r[2], y), q75: pa(r[3], y), up: r[4] });
     }
     L.sort(function (a, b) { return b.typ - a.typ; });
     L = L.slice(0, 100);
@@ -781,7 +796,7 @@
         "</td><td><button class='addb' type='button' data-add='" + esc(r.id) + "'" + (have[r.id] ? " disabled aria-label='In My Portfolio'>&#10003;" : " aria-label='Add " + esc(r.code) + " to My Portfolio'>+") + "</button></td></tr>";
     }).join("") || "<tr><td colspan='7' class='l' style='color:var(--soft);padding:1.2rem 0'>No shares match.</td></tr>";
   }
-  document.querySelector(".topctl").addEventListener("click", function (e) {
+  document.getElementById("topCtl").addEventListener("click", function (e) {
     var b = e.target.closest("[data-m],[data-c],[data-th]"); if (!b) return;
     if (b.dataset.m) top.m = b.dataset.m; else if (b.dataset.th) top.h = +b.dataset.th; else top.cap = +b.dataset.c;
     top.page = 0;
@@ -795,6 +810,72 @@
     var b = e.target.closest("[data-add]"); if (!b || b.disabled) return;
     if (!mine.some(function (x) { return x[0] === b.dataset.add; })) mine.push([b.dataset.add, mine.length ? Math.round(100 / (mine.length + 1)) : 100]);
     save(); render();
+  });
+
+  // ---- suggested trades: the most mean return for the risk, cash kept, no holding over 15%, changes under 2% left out ----
+  var trMode = 0;
+  try { trMode = +(localStorage.getItem("er.tr") || 0) === 1 ? 1 : 0; } catch (e) {}
+  // the nearest weights between 0 and cap that add to B
+  function capProj(v, cap, B) {
+    var lo = -10, hi = 10, k, t, s;
+    for (var it = 0; it < 60; it++) { t = (lo + hi) / 2; s = 0; for (k = 0; k < v.length; k++) s += Math.min(cap, Math.max(0, v[k] - t)); if (s > B) lo = t; else hi = t; }
+    return v.map(function (x) { return Math.min(cap, Math.max(0, x - hi)); });
+  }
+  function maxSharpe(A, B, rf) {
+    var n = A.length, cap = Math.max(0.15, B / n + 1e-9), C = A.map(function (a, i) { return A.map(function (b, j) { return (i === j ? 1 : rho(a, b)) * a.v * b.v; }); });
+    var mu = A.map(function (a) { return a.avg - rf; }), G = [], O = [];
+    A.forEach(function (a, i) { (a.cat === "Bitcoin" ? G : O).push(i); });
+    function proj(v) {
+      var w = capProj(v, cap, B), gs = 0; G.forEach(function (i) { gs += w[i]; });
+      if (G.length < 2 || gs <= cap + 1e-9 || !O.length) return w;
+      G.forEach(function (i) { w[i] *= cap / gs; });
+      var wo = capProj(O.map(function (i) { return v[i]; }), cap, B - cap); O.forEach(function (i, k) { w[i] = wo[k]; });
+      return w;
+    }
+    function sh(w) { var m = 0, q = 0, i, j; for (i = 0; i < n; i++) { m += w[i] * mu[i]; for (j = 0; j < n; j++) q += w[i] * w[j] * C[i][j]; } return m / Math.sqrt(q || 1e-12); }
+    var w = proj(A.map(function (a) { return a.w; })), best = sh(w), step = 0.05;
+    for (var it = 0; it < 500 && step > 1e-6; it++) {
+      var Cw = [], m = 0, q = 0, i, j;
+      for (i = 0; i < n; i++) { var s0 = 0; for (j = 0; j < n; j++) s0 += C[i][j] * w[j]; Cw[i] = s0; m += w[i] * mu[i]; q += w[i] * s0; }
+      var sd = Math.sqrt(q) || 1e-9, nw = proj(w.map(function (x, i2) { return x + step * (mu[i2] / sd - m * Cw[i2] / (sd * sd * sd)); })), ns = sh(nw);
+      if (ns > best) { w = nw; best = ns; step *= 1.3; } else step *= 0.5;
+    }
+    return w;
+  }
+  function trades() {
+    var sec = document.getElementById("trades"); sec.hidden = st.pf !== "mine" || !D;
+    if (sec.hidden) return;
+    document.getElementById("trMode").innerHTML = ["Within My Holdings", "From Anything"].map(function (t, i) {
+      return "<button class='pill' type='button' data-tm='" + i + "' aria-pressed='" + (trMode === i) + "'>" + t + "</button>"; }).join("");
+    var R = rows(), y = YRS[st.h], rf = cashRate(), have = {}, U = R.map(function (r) { have[r.id] = 1; return Object.assign({}, r); });
+    if (trMode === 1 && D.opt) D.opt.ids.forEach(function (id) {
+      var n = D.names[id]; if (have[id] || !n || !n.r) return;
+      U.push({ id: id, code: code(id), co: n.c || "", mk: n.m || "", cat: cat(n.b), g: n.g || "", v: n.v, avg: pa(tmean(n.r[st.h]), y), w: 0 });
+    });
+    var F = U.filter(function (a) { return a.cat !== "Cash" && a.avg != null && a.v != null; }), B = F.reduce(function (s0, a) { return s0 + a.w; }, 0);
+    var tb = document.getElementById("trB"), ts = document.getElementById("trS");
+    if (F.length < 2 || B <= 0) { ts.innerHTML = ""; tb.innerHTML = "<tr><td colspan='4' class='l' style='color:var(--soft);padding:1.2rem 0'>Needs two or more holdings.</td></tr>"; return; }
+    var t = maxSharpe(F, B, rf);
+    F.forEach(function (a, i) { a.mv = Math.abs(t[i] - a.w) >= 0.02; a.to = a.mv ? t[i] : a.w; });
+    var tot = U.reduce(function (s0, a) { return s0 + (a.to == null ? a.w : a.to); }, 0) || 1;
+    U.forEach(function (a) { a.to = (a.to == null ? a.w : a.to) / tot; });
+    var P0 = pstats(U, y), P1 = pstats(U.map(function (a) { return Object.assign({}, a, { w: a.to }); }), y);
+    function line(lbl, P) {
+      return "<tr><td class='l'>" + lbl + "</td><td class='" + sgn(P.mu) + "'>" + pct(P.mu) + "</td><td>" + Math.round(P.vol * 100) + "%</td><td>" + P.sharpe.toFixed(2) +
+        "</td><td class='nph'>" + Math.round(P.up * 100) + "%</td><td class='nph " + sgn(P.bad) + "'>" + pct(P.bad) + "</td></tr>";
+    }
+    ts.innerHTML = P0 && P1 ? line("Now", P0) + line("After", P1) : "";
+    var T = U.filter(function (a) { return a.mv; }).sort(function (a, b) { return (a.to - a.w) - (b.to - b.w); });
+    tb.innerHTML = T.map(function (a) {
+      var d = a.to - a.w;
+      return "<tr data-n='" + esc(a.id) + "'><td class='l'>" + hold(a) + "</td><td class='nph'>" + share(a.w) + "%</td><td>" + share(a.to) + "%</td><td class='" + sgn(d) + "'>" +
+        (d > 0 ? "+" : "−") + Math.round(Math.abs(d) * 100) + "%</td></tr>";
+    }).join("") || "<tr><td colspan='4' class='l' style='color:var(--soft);padding:1.2rem 0'>No change over 2% would add return for the risk.</td></tr>";
+  }
+  document.getElementById("trMode").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-tm]"); if (!b) return;
+    trMode = +b.dataset.tm; try { localStorage.setItem("er.tr", trMode); } catch (x) {}
+    trades();
   });
 
   // ---- controls ----
@@ -964,7 +1045,7 @@
       return "<tr><td>" + st0[0] + "</td><td>" + (ch > 0 ? "+" : ch < 0 ? "−" : "") + Math.abs(ch) + "%</td></tr>";
     }).join("") + "<tr class='sum'><td>Median return, next year</td><td>" + pct(Math.expm1(E.typ)) + "</td></tr>";
     document.getElementById("exIntro").textContent = "Commonwealth Bank (CBA) over the next year:";
-    document.getElementById("exOut").innerHTML = "Mean return " + pct(E.avg) + ", middle 50% " + pct(E.q25) + " to " + pct(E.q75) + ", P(gain) " + Math.round(E.up * 100) + "%.";
+    document.getElementById("exOut").innerHTML = "Mean return " + pct(n.r && n.r[0][7] != null ? n.r[0][7] : E.avg) + ", middle 50% " + pct(E.q25) + " to " + pct(E.q75) + ", P(gain) " + Math.round(E.up * 100) + "%.";
     document.getElementById("exRow").hidden = false;
   }
 
