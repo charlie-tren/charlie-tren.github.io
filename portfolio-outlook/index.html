@@ -161,6 +161,9 @@
   th.l[aria-sort="ascending"]::before, th.l[aria-sort="descending"]::before { content: none; }
   td { text-align: right; padding: .62rem 0 .62rem 16px; border-bottom: 1px solid var(--rule); vertical-align: middle; white-space: nowrap; }
   tbody tr:hover td, tbody tr.hl td { background: var(--fill); }
+  /* the highlight runs a little past the avatar and the last column, without moving the layout */
+  #tbl tbody tr:hover td:first-child, #tbl tbody tr.hl td:first-child, #topT tbody tr:hover td:first-child { box-shadow: -12px 0 0 var(--fill); }
+  #tbl tbody tr:hover td:last-child, #tbl tbody tr.hl td:last-child, #topT tbody tr:hover td:last-child { box-shadow: 12px 0 0 var(--fill); }
   tbody tr.flash td { animation: fl 1.2s; }
   @keyframes fl { 0% { background: var(--band); } 100% { background: transparent; } }
   .hold { display: flex; align-items: center; gap: .7rem; min-width: 0; }
