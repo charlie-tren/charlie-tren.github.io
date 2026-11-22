@@ -102,7 +102,7 @@
   .pfn { color: var(--soft); font-size: var(--t-xs); margin: 0 .3rem; font-variant-numeric: tabular-nums; }
 
   /* headline cards */
-  .cards { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1.15fr); gap: .9rem; margin: 0 0 2rem; }
+  .cards { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1.4fr); gap: .9rem; margin: 0 0 2rem; }
   .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--card); border: 1px solid var(--rule); border-radius: 12px; }
   .stats .card { padding: 1.05rem 1.3rem 1.15rem; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
   .stats .card:nth-child(3n) { border-right: 0; } .stats .card:nth-child(n+4) { border-bottom: 0; }
@@ -112,9 +112,13 @@
   .card .k { display: flex; align-items: center; margin-bottom: .35rem; }
   .card .v { font-size: 28px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.15; white-space: nowrap; }
   .card .sub { display: block; font-size: var(--t-s); color: var(--soft); margin-top: .25rem; line-height: 1.35; }
-  .allocrow { display: flex; align-items: center; gap: 1.1rem; margin-top: .25rem; }
+  .allocrow { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.3rem; margin-top: .35rem; }
   .pie { width: 112px; height: 112px; flex: none; transform: rotate(-90deg); }
-  .allocrow .legend { flex-direction: column; gap: .15rem; }
+  .alloclist { list-style: none; margin: 0; padding: 0; font-size: var(--t-s); color: var(--soft); flex: 1 1 170px; min-width: 170px; }
+  .alloclist li { display: flex; align-items: center; gap: .45rem; padding: .08rem 0 .08rem 1.05rem; white-space: nowrap; }
+  .alloclist li.fam { padding-left: 0; color: var(--ink); margin-top: .35rem; } .alloclist li.fam:first-child { margin-top: 0; }
+  .alloclist i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .alloclist b { margin-left: auto; padding-left: .8rem; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
   .legend { display: flex; flex-wrap: wrap; gap: .2rem 1rem; font-size: var(--t-s); color: var(--soft); }
   .legend span { display: inline-flex; align-items: center; gap: .4rem; white-space: nowrap; }
   .legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
@@ -130,6 +134,7 @@
           background: var(--raised); border: 1px solid var(--rule); border-radius: 8px; padding: .7rem .85rem;
           box-shadow: 0 8px 24px rgba(0,0,0,.22); font: 400 var(--t-s)/1.5 var(--sans); color: var(--ink); }
   .card.open .help { display: block; }
+  .stats .card:nth-child(3n) .help { left: auto; right: .8rem; }
 
   /* holdings table */
   .tabbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--rule); margin: 0 0 .2rem; }
@@ -169,8 +174,6 @@
   .rtrk .q { position: absolute; top: 4px; height: 12px; border-radius: 3px; background: color-mix(in srgb, var(--accent) 38%, transparent); }
   .rtrk .q.over { border-radius: 3px 0 0 3px; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 38%, transparent) 60%, transparent); }
   .rtrk .t { position: absolute; top: 4px; width: 12px; height: 12px; border-radius: 50%; margin-left: -6px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg); z-index: 2; }
-  .rtrk.rax { height: 14px; }
-  .rtrk.rax span { position: absolute; top: 0; transform: translateX(-50%); font: 400 var(--t-xs)/14px var(--sans); color: var(--soft); white-space: nowrap; }
   .rtxt { color: var(--soft); min-width: 108px; text-align: right; }
   .chance { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
   .ctrk { width: 44px; height: 5px; border-radius: 3px; background: var(--rule); position: relative; overflow: hidden; }
@@ -297,6 +300,8 @@
     table.ex td { padding-left: .9rem; }
     .mrow { grid-template-columns: 1fr; gap: .4rem; }
     .help { width: min(290px, 84vw); }
+    .stats .card:nth-child(3n) .help { left: .8rem; right: auto; } .stats .card:nth-child(2n) .help { left: auto; right: .8rem; }
+    .home { padding: 12px 0 12px 10px; margin: -12px 0 -12px -10px; }
   }
 </style>
 <script>/* Analytics, gated: opted out with ?nostats=1, or automation (navigator.webdriver). See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var E=["pointermove","pointerdown","scroll","keydown","touchstart","wheel"],go=function(){if(go.d)return;go.d=1;E.forEach(function(e){removeEventListener(e,go,true)});var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2", "spa": false}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);};E.forEach(function(e){addEventListener(e,go,{capture:true,passive:true})});}catch(e){}})();</script>
@@ -343,14 +348,14 @@
       <div class="card"><span class="k caps"><span>Correlation</span><button class="info" type="button" aria-expanded="false" aria-controls="hC" aria-label="About Correlation"></button></span><span class="v" id="sCor">&mdash;</span><span class="sub" id="sCorS"></span>
         <p class="help" id="hC" role="tooltip">How closely the holdings have moved together, from 0 (unrelated) to 1 (in step). Shares: three years of weekly prices.</p></div>
     </div>
-    <div class="card alloc"><span class="k caps">Allocation</span><div class="allocrow"><svg class="pie" id="pie" viewBox="0 0 42 42" role="img" aria-label="Allocation by asset type"></svg><div class="legend" id="legend"></div></div></div>
+    <div class="card alloc"><span class="k caps">Allocation</span><div class="allocrow"><svg class="pie" id="pie" viewBox="0 0 42 42" role="img" aria-label="Allocation by asset type"></svg><ul class="alloclist" id="legend"></ul></div></div>
   </div>
 
   <div class="tabbar">
   <div class="tabs" role="tablist" aria-label="Table view">
     <button class="tab" type="button" role="tab" data-v="ret" data-help="Median, mean, range and chance of a gain.">Expected Return</button>
     <button class="tab" type="button" role="tab" data-v="now" data-help="Distance from its highs, price swings and dividend.">Price and Yield</button>
-    <button class="tab" type="button" role="tab" data-v="own" data-help="What it did after past falls like today's.">Track Record</button>
+    <button class="tab" type="button" role="tab" data-v="own" data-help="What it did from past times this far below its high.">Track Record</button>
   </div>
     <div class="add" id="addBox">
     <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Add a holding: ticker or company" aria-label="Add a holding"
@@ -398,7 +403,7 @@
       <p>Dividends count in full up to 6% a year and for less above that. Shares yielding 6-10% did no better than average the following year, and those yielding over 10% did worse.</p>
     </div></div>
     <div class="mrow"><h3>Track Record</h3><div>
-      <p>What the holding did after its own past falls of a similar size counts for at most 16% of the estimate, and less when there have been only one or two.</p>
+      <p>What the holding did from its own past times this far below its high counts for at most 16% of the estimate, and less when there have been only one or two.</p>
     </div></div>
     <div class="mrow"><h3>ETFs, Bitcoin and Cash</h3><div>
       <p>Index ETFs get the average return of 58 country, sector and style ETFs, including Greece and Turkey. Bitcoin funds use the <a href="https://charlietrenorden.com/bitcoin-power-law-forecast/">Bitcoin Power Law Forecast</a>, and a 2x fund also pays about 6% a year in fees and borrowing. Cash ETFs use their own record.</p>
@@ -420,8 +425,9 @@
   <div class="topctl">
     <div class="seg" role="group" aria-label="Market" id="topMkt"></div>
     <div class="seg" role="group" aria-label="Company size" id="topCap"></div>
+    <div class="seg" role="group" aria-label="Horizon" id="topH"></div>
   </div>
-  <table id="topT" class="top"><colgroup><col style="width:2.4rem"><col><col style="width:104px"><col style="width:96px" class="nph"><col style="width:272px" class="nph"><col style="width:120px"><col style="width:40px"></colgroup>
+  <table id="topT" class="top"><colgroup><col style="width:2.4rem"><col><col style="width:104px"><col style="width:96px" class="nph"><col style="width:272px" class="nph"><col style="width:120px"><col style="width:52px"></colgroup>
     <thead><tr><th class="l">#</th><th class="l">Holding</th><th>Median</th><th class="nph">Mean</th><th class="nph" id="topMid">Middle 50%</th><th>P(Gain)</th><th></th></tr></thead>
     <tbody id="topB"></tbody></table>
   <div class="pager" id="topPg"></div>
@@ -492,7 +498,7 @@
     var L = list(), y = YRS[st.h], tot = L.reduce(function (s, x) { return s + (+x[1] || 0); }, 0) || 1;
     return L.map(function (x, i) {
       var n = D.names[x[0]] || {}, r = n.r ? n.r[st.h] : [];
-      return { i: i, id: x[0], code: code(x[0]), co: n.c || "", mk: n.m || "", w: (+x[1] || 0) / tot, raw: x[1], cat: n.r ? cat(n.b) : "",
+      return { i: i, id: x[0], code: code(x[0]), co: n.c || "", mk: n.m || "", w: (+x[1] || 0) / tot, raw: x[1], cat: n.r ? cat(n.b) : "", g: n.g || "",
                dd: n.dd, d52: n.d52, v: n.v, y: n.y, typ: pa(r[0], y), avg: pa(r[1], y), q25: pa(r[2], y), q75: pa(r[3], y),
                up: r[4] == null ? null : r[4], own: pa(r[5], y), own_n: r[6] || null,
                mid: r[2] == null ? null : (pa(r[2], y) + pa(r[3], y)) / 2, avgTot: r[1] == null ? null : r[1] };
@@ -526,21 +532,14 @@
       (g(r.typ) < d[1] ? "<span class='t' style='left:" + xr(r.typ, d) + "%'></span>" : "") + "</span>" +
       "<span class='rtxt'>" + pct(r.q25) + " to " + pct(r.q75) + "</span></span>";
   }
-  // the scale above the bars: 0 and a round figure near each end
-  function rangeAxis(d, label) {
-    var T = [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 1.5].filter(function (v) { var x = xr(v, d); return x > 4 && x < 96; });
-    var neg = T.filter(function (v) { return v < 0; }), ps = T.filter(function (v) { return v > 0; }), L = [0];
-    if (neg.length && xr(0, d) - xr(neg[0], d) > 22) L.unshift(neg[0]);
-    if (ps.length && xr(ps[ps.length - 1], d) - xr(0, d) > 22) L.push(ps[ps.length - 1]);
-    return "<span class='rng'><span class='rtrk rax' aria-hidden='true'>" + L.map(function (v) {
-      return "<span style='left:" + xr(v, d) + "%'>" + (v ? pct(v) : "0") + "</span>"; }).join("") + "</span><span class='rtxt lb'>" + label + "</span></span>";
-  }
+  // the label sits over the range text, the bars below it carry no scale labels
+  function rangeHead(label) { return "<span class='rng'><span class='rtrk' aria-hidden='true' style='height:0'></span><span class='rtxt lb'>" + label + "</span></span>"; }
   function chance(v) {
     if (v == null) return pct(null);
     return "<span class='chance'><span class='ctrk'><i style='width:" + Math.round(v * 100) + "%'></i></span>" + Math.round(v * 100) + "%</span>";
   }
   // company names without the legal suffix
-  function short(c) { return (c || "").replace(/,?\s+(Inc\.?|Incorporated|Corporation|Corp\.?|Limited|Ltd\.?|plc|PLC|Co\.,? Ltd\.?|N\.V\.|S\.A\.|SE|AG|L\.P\.|LP)$/, ""); }
+  function short(c) { return (c || "").replace(/(?:,\s*|\s+)(Inc\.?|Incorporated|Corporation|Corp\.?|Limited|Ltd\.?|plc|PLC|Co\.,? Ltd\.?|N\.V\.|S\.A\.|SE|AG|L\.P\.|LP)$/, ""); }
   function hold(r) {
     var init = ((r.co || r.code).replace(/^the\s+/i, "").match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase();
     return "<span class='hold'><span class='av' style='background:" + col(r.cat) + "'>" + esc(init) + "</span><span class='badge'>" + esc(r.code) +
@@ -561,8 +560,8 @@
           ["v", "Volatility", 110, 0, "How much the price swings in a year. Higher has meant worse typical outcomes.", function (r) { return "<td class='dim'>" + plain(r.v) + "</td>"; }],
           ["y", "Yield", 96, 1, "Yearly dividends over today's price, using the lower of last year's and the three-year median.", function (r) { return "<td class='nph dim'>" + (r.y ? plain(r.y, 1) : plain(null)) + "</td>"; }]],
     own: [["typ", "Median", 104, 0, "What one holding usually returns a year.", function (r) { return "<td class='" + sgn(r.typ) + "'><b>" + pct(r.typ) + "</b></td>"; }],
-          ["own", "Own Record", 120, 0, "What this holding did after its own past falls like today's. It counts for at most 16% of the median, and much less with only one or two such falls.", function (r) { return "<td class='" + sgn(r.own) + "'>" + pct(r.own) + "</td>"; }],
-          ["own_n", "Episodes", 100, 1, "Separate past falls like today's in its own history.", function (r) { return "<td class='nph dim'>" + (r.own_n || "<span class='na'>&mdash;</span>") + "</td>"; }]]
+          ["own", "Own Record", 120, 0, "What this holding did from past times this far below its high. It counts for at most 16% of the median, and much less with only one or two.", function (r) { return "<td class='" + sgn(r.own) + "'>" + pct(r.own) + "</td>"; }],
+          ["own_n", "Episodes", 100, 1, "Separate past times this far below its high.", function (r) { return "<td class='nph dim'>" + (r.own_n || "<span class='na'>&mdash;</span>") + "</td>"; }]]
   };
 
   // phone-hidden columns are left out of the markup, so their declared widths cannot push the table wider
@@ -574,7 +573,7 @@
     document.getElementById("cg").innerHTML = "<col><col style='width:" + (ed ? (ph ? 66 : 110) : (ph ? 54 : 84)) + "px'>" + V.map(function (c) {
       return "<col style='width:" + (ph ? 74 : c[2]) + "px'>"; }).join("") + "<col style='width:" + (ed ? (ph ? 30 : 36) : 8) + "px'>";
     document.getElementById("th").innerHTML = "<tr><th class='l' data-k='code'>Holding</th><th data-k='w'>Weight</th>" + V.map(function (c) {
-      return "<th class='" + (c[3] ? "nph" : "") + "' data-k='" + c[0] + "' data-help='" + esc(c[4]) + "' tabindex='0'>" + (c[0] === "mid" ? rangeAxis(dom, c[1]) : "<span class='lb'>" + c[1] + "</span>") + "</th>"; }).join("") + "<th aria-label='Remove'></th></tr>";
+      return "<th class='" + (c[3] ? "nph" : "") + "' data-k='" + c[0] + "' data-help='" + esc(c[4]) + "' tabindex='0'>" + (c[0] === "mid" ? rangeHead(c[1]) : "<span class='lb'>" + c[1] + "</span>") + "</th>"; }).join("") + "<th aria-label='Remove'></th></tr>";
     document.querySelectorAll("th[data-k]").forEach(function (th) {
       th.tabIndex = 0;
       th.setAttribute("aria-sort", th.dataset.k === st.sort ? (st.dir > 0 ? "ascending" : "descending") : "none");
@@ -641,16 +640,31 @@
     put("sBad", P ? pct(P.bad, false) : "\u2014", P ? sgn(P.bad) : "");
     put("sCor", P && P.cor != null ? P.cor.toFixed(2) : "\u2014");
     document.getElementById("sCorS").textContent = P && P.cor != null ? "average between holdings" : "needs two or more holdings";
-    var by = {}; R.forEach(function (r) { var c = r.cat || "Not covered"; by[c] = (by[c] || 0) + r.w; });
-    var cats = ["Stocks", "Index ETFs", "Bitcoin", "Cash", "Not covered"].filter(function (c) { return by[c]; }), off = 0;
+    var by = {}, sub = {};
+    R.forEach(function (r) { var c = r.cat || "Not covered", k = r.g && r.g !== c && c !== "Bitcoin" && c !== "Cash" ? r.g : "";
+      by[c] = (by[c] || 0) + r.w; sub[c] = sub[c] || {}; sub[c][k] = (sub[c][k] || 0) + r.w; });
+    var cats = ["Stocks", "Index ETFs", "Bitcoin", "Cash", "Not covered"].filter(function (c) { return by[c]; }), off = 0, segs = [], leg = [];
+    var SH = [100, 70, 50, 36, 26, 19];
+    cats.forEach(function (c) {
+      // groups under 3% of the portfolio fold into Other, so the legend stays short
+      var G = Object.keys(sub[c]).map(function (k) { return [k, sub[c][k]]; }).sort(function (x, y) { return y[1] - x[1]; }), keep = [], rest = 0;
+      G.forEach(function (x) { if (x[0] && (x[1] >= 0.03 || G.length <= 3) && keep.length < 5) keep.push(x); else rest += x[1]; });
+      if (rest > 1e-9) keep.push(["Other", rest]);
+      var base = c === "Not covered" ? "var(--axis)" : col(c);
+      leg.push("<li class='fam'><i style='background:" + base + "'></i>" + c + "<b>" + Math.round(by[c] * 100) + "%</b></li>");
+      keep.forEach(function (x, i) {
+        var shade = keep.length > 1 ? "color-mix(in srgb, " + base + " " + SH[Math.min(i, SH.length - 1)] + "%, var(--card))" : base;
+        segs.push([x[1], shade]);
+        if (keep.length > 1) leg.push("<li><i style='background:" + shade + "'></i>" + esc(x[0]) + "<b>" + Math.round(x[1] * 100) + "%</b></li>");
+      });
+    });
     // pie as dashed rings: circumference 100, so each dash is the share in percent
-    document.getElementById("pie").innerHTML = cats.map(function (c) {
-      var p = by[c] * 100, seg = "<circle cx='21' cy='21' r='15.915' fill='none' stroke='" + (c === "Not covered" ? "var(--rule)" : col(c)) +
-        "' stroke-width='10' stroke-dasharray='" + Math.max(p - (cats.length > 1 ? .6 : 0), .1) + " " + (100 - p + (cats.length > 1 ? .6 : 0)) + "' stroke-dashoffset='" + (-off) + "'/>";
+    document.getElementById("pie").innerHTML = segs.map(function (x) {
+      var p = x[0] * 100, gap = segs.length > 1 ? .6 : 0, seg = "<circle cx='21' cy='21' r='15.915' fill='none' stroke='" + x[1] +
+        "' stroke-width='10' stroke-dasharray='" + Math.max(p - gap, .1) + " " + (100 - p + gap) + "' stroke-dashoffset='" + (-off) + "'/>";
       off += p; return seg;
     }).join("");
-    document.getElementById("legend").innerHTML = cats.map(function (c) {
-      return "<span><i style='background:" + (c === "Not covered" ? "var(--axis)" : col(c)) + "'></i>" + c + " <b>" + Math.round(by[c] * 100) + "%</b></span>"; }).join("");
+    document.getElementById("legend").innerHTML = leg.join("");
     document.getElementById("addBox").hidden = !ed;
     charts(); topList();
   }
@@ -673,7 +687,7 @@
     var KEYS = [["typ", tdots, "Median", "What one holding usually returns."],
       ["mid", "<svg width='22' height='12' aria-hidden='true'><rect x='0' y='3' width='22' height='6' rx='3' fill='var(--band)'/></svg>", "Middle 50%", "The range half of similar holdings ended in."],
       ["avg", "<svg width='6' height='14' aria-hidden='true'><rect x='1.5' y='1' width='3' height='12' rx='1' fill='var(--ink)'/></svg>", "Mean", "The average result, lifted by rare big winners."],
-      ["own", "<svg width='12' height='12' aria-hidden='true'><circle cx='6' cy='6' r='4.2' fill='none' stroke='var(--own)' stroke-width='2.2'/></svg>", "Own Record", "What this holding did after its own past falls like today's."]];
+      ["own", "<svg width='12' height='12' aria-hidden='true'><circle cx='6' cy='6' r='4.2' fill='none' stroke='var(--own)' stroke-width='2.2'/></svg>", "Own Record", "What this holding did from past times this far below its high."]];
     document.getElementById("key1").innerHTML = KEYS.map(function (k) {
       var on = st.sort === k[0];
       return "<button class='kb' type='button' data-sort='" + k[0] + "' data-help='" + esc(k[3]) + "' aria-pressed='" + on + "' aria-label='Sort by " + k[2] + "'>" + k[1] + k[2] +
@@ -747,26 +761,28 @@
 
   // the whole universe's highest median returns, shares only, filtered by market and size
   var MKTS = ["All", "US", "Australia", "Japan", "UK", "Canada", "Other"], CAPS = [["Over US$10bn", 10], ["Over US$1bn", 1], ["Under US$10bn", -10], ["Any size", 0]];
-  var top = { m: "All", cap: 1, page: 0 }, PER = 10;
-  try { top.m = localStorage.getItem("er.tm") || "All"; top.cap = +(localStorage.getItem("er.tc") || 1); } catch (e) {}
+  var top = { m: "All", cap: 1, h: 0, page: 0 }, PER = 10;
+  try { top.m = localStorage.getItem("er.tm") || "All"; top.cap = +(localStorage.getItem("er.tc") || 1); top.h = +(localStorage.getItem("er.th") || 0); } catch (e) {}
+  if (!(top.h >= 0 && top.h <= 2)) top.h = 0;
   if (MKTS.indexOf(top.m) < 0) top.m = "All";
   function topList() {
     if (!D) return;
     document.getElementById("topMkt").innerHTML = MKTS.map(function (m) { return "<button class='pill' type='button' data-m='" + m + "' aria-pressed='" + (top.m === m) + "'>" + m + "</button>"; }).join("");
     document.getElementById("topCap").innerHTML = CAPS.map(function (c) { return "<button class='pill' type='button' data-c='" + c[1] + "' aria-pressed='" + (top.cap === c[1]) + "'>" + c[0] + "</button>"; }).join("");
-    var y = YRS[st.h], main = ["US", "Australia", "Japan", "UK", "Canada"], have = {}; mine.forEach(function (x) { have[x[0]] = 1; });
+    document.getElementById("topH").innerHTML = ["1 Year", "3 Years", "5 Years"].map(function (t, i) { return "<button class='pill' type='button' data-th='" + i + "' aria-pressed='" + (top.h === i) + "'>" + t + "</button>"; }).join("");
+    var y = YRS[top.h], main = ["US", "Australia", "Japan", "UK", "Canada"], have = {}; mine.forEach(function (x) { have[x[0]] = 1; });
     var L = [];
     for (var id in D.names) {
       var n = D.names[id]; if (!n.b || n.b.indexOf("Stock") !== 0) continue;
       if (top.m !== "All" && (top.m === "Other" ? main.indexOf(n.m) > -1 : n.m !== top.m)) continue;
       if (top.cap > 0 && !(n.cap >= top.cap)) continue;
       if (top.cap < 0 && !(n.cap != null && n.cap < -top.cap)) continue;
-      var r = n.r[st.h]; if (r[0] == null) continue;
+      var r = n.r[top.h]; if (r[0] == null) continue;
       L.push({ id: id, code: code(id), co: n.c, mk: n.m, cat: "Stocks", typ: pa(r[0], y), avg: pa(r[1], y), q25: pa(r[2], y), q75: pa(r[3], y), up: r[4] });
     }
     L.sort(function (a, b) { return b.typ - a.typ; });
     L = L.slice(0, 100); var td = fit(L);
-    document.getElementById("topMid").innerHTML = rangeAxis(td, "Middle 50%");
+    document.getElementById("topMid").innerHTML = rangeHead("Middle 50%");
     var pages = Math.max(1, Math.ceil(L.length / PER)); top.page = Math.min(top.page, pages - 1);
     var off = top.page * PER;
     document.getElementById("topPg").innerHTML = L.length > PER ? "<button type='button' data-pg='-1' aria-label='Previous ten'" + (top.page ? "" : " disabled") + ">&lsaquo;</button><span>" +
@@ -778,10 +794,10 @@
     }).join("") || "<tr><td colspan='7' class='l' style='color:var(--soft);padding:1.2rem 0'>No shares match.</td></tr>";
   }
   document.querySelector(".topctl").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-m],[data-c]"); if (!b) return;
-    if (b.dataset.m) top.m = b.dataset.m; else top.cap = +b.dataset.c;
+    var b = e.target.closest("[data-m],[data-c],[data-th]"); if (!b) return;
+    if (b.dataset.m) top.m = b.dataset.m; else if (b.dataset.th) top.h = +b.dataset.th; else top.cap = +b.dataset.c;
     top.page = 0;
-    try { localStorage.setItem("er.tm", top.m); localStorage.setItem("er.tc", top.cap); } catch (x) {}
+    try { localStorage.setItem("er.tm", top.m); localStorage.setItem("er.tc", top.cap); localStorage.setItem("er.th", top.h); } catch (x) {}
     topList();
   });
   document.getElementById("topPg").addEventListener("click", function (e) {
@@ -947,7 +963,7 @@
   function example() {
     var E = D.ex && D.ex["CBA.AX"], n = D.names["CBA.AX"]; if (!E || !n) return;
     var steps = [["Starting point: average share since 1962", E.base], ["Near its 52-week high, listed for many years", E.score],
-                 ["Companies that later delisted", -Math.abs(E.surv)], ["Its own record after past falls", E.own], ["Dividends", E.div]];
+                 ["Companies that later delisted", -Math.abs(E.surv)], ["Its own record from this far below its high", E.own], ["Dividends", E.div]];
     // one column: each line's points, taken from the running total so the lines add up to the result exactly
     var run = 0, prev = 0;
     document.getElementById("exT").innerHTML = steps.map(function (st0) {

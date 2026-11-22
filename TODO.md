@@ -49,6 +49,18 @@ project's own repo, since most directories here are deploy targets.
   projects `dcf-studio` and `crowdwise-live` (team `charlierochfordgroups-projects`,
   paused 14/11) are the rollback until the pause clears.
 
+- [ ] **A chatbot on the hub that answers from every project, with links (asked 22/11/2026).**
+  Ask it things like "which ASX dividend payers look cheap and have clean accounts?" and get an
+  answer pulled from Portfolio Outlook, Shortfall, Consensus Drift, Crosscheck, DCF Studio, Crowdwise,
+  the Bitcoin forecast and Property Atlas, each claim linked to the page (and row) it came from.
+  - Model: Claude through the API, called from a small server (Cloudflare Worker, like DCF Studio and
+    Crowdwise), never from the static page; the key never reaches the browser.
+  - Data: each project's published JSON (`portfolio-outlook/data.json` etc.), indexed by ticker and
+    topic, handed to the model as tool calls rather than pasted whole.
+  - Before building: a per-day spend cap and rate limit on the Worker, and a cost per question at the
+    chosen model. Ties to `drawdown-odds/TODO.md` row 7 (per-ticker cross-links), which builds the
+    same ticker-to-page map.
+
 ## Shipped
 
 - ~~Link the podcast from the homepage~~ - the Elsewhere row links the Thinkerings
