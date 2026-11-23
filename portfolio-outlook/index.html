@@ -257,6 +257,14 @@
   .trs { margin-bottom: 1.4rem; }
   .trs td.l { color: var(--soft); }
   #trades .tophead.trhead { margin: 1.2rem 0 1.2rem; gap: .5rem; }
+  .cmpbar { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin: 0 0 .8rem; }
+  .cmpadd { position: relative; flex: 1 1 240px; max-width: 360px; }
+  .cmplist { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .8rem; }
+  .cmplist:empty { display: none; }
+  .cmplist button { appearance: none; font: inherit; font-size: var(--t-xs); color: var(--soft); background: var(--fill); border: 1px solid var(--rule);
+                    border-radius: 999px; padding: .2rem .6rem; cursor: pointer; }
+  .cmplist button:hover { color: var(--ink); }
+  .chart text.lab.cmp { fill: var(--soft); font-style: italic; }
   .topctl { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; margin: 0 0 1rem; }
   td.rk { color: var(--soft); width: 2rem; }
   .pager { display: flex; align-items: center; justify-content: flex-end; gap: .7rem; margin: .8rem 0 0; font-size: var(--t-s); color: var(--soft); font-variant-numeric: tabular-nums; }
@@ -384,6 +392,18 @@
   </section>
 
   <h2>Range of Outcomes</h2>
+  <div class="cmpbar">
+    <div class="seg" role="group" aria-label="Show" id="cmpSeg">
+      <button class="pill" type="button" data-show="hold">Holdings</button>
+      <button class="pill" type="button" data-show="cmp">Compared</button>
+    </div>
+    <div class="add cmpadd">
+      <input id="q2" type="text" autocomplete="off" spellcheck="false" placeholder="Compare a holding: ticker or company" aria-label="Compare a holding"
+             role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg2">
+      <ul class="sugg" id="sugg2" role="listbox" hidden></ul>
+    </div>
+  </div>
+  <div class="cmplist" id="cmpList"></div>
   <div class="key" id="key1" role="group" aria-label="Sort by"></div>
   <div id="c1"></div>
 
@@ -393,6 +413,18 @@
     <span><svg width="16" height="10" aria-hidden="true"><rect width="16" height="10" rx="3" fill="var(--soft)" fill-opacity=".6"/></svg>Left Out</span>
   </div>
   <div id="c2"></div>
+
+  <div class="tophead"><h2>Highest Median Returns</h2><button class="info" type="button" aria-expanded="false" aria-controls="hTop" aria-label="About this list"></button>
+    <p class="help" id="hTop" role="tooltip">Shares only, ranked by median return over the horizon chosen above. A list of the highest-ranked shares did not beat owning the whole market in testing, so treat it as a place to start looking, not a buy list.</p></div>
+  <div class="topctl" id="topCtl">
+    <div class="seg" role="group" aria-label="Market" id="topMkt"></div>
+    <div class="seg" role="group" aria-label="Company size" id="topCap"></div>
+    <div class="seg" role="group" aria-label="Horizon" id="topH"></div>
+  </div>
+  <table id="topT" class="top"><colgroup><col style="width:2.4rem"><col><col style="width:104px"><col style="width:96px" class="nph"><col style="width:140px" class="nph"><col style="width:120px"><col style="width:52px"></colgroup>
+    <thead><tr><th class="l">#</th><th class="l">Holding</th><th>Median</th><th class="nph">Mean</th><th class="nph">Middle 50%</th><th>P(Gain)</th><th></th></tr></thead>
+    <tbody id="topB"></tbody></table>
+  <div class="pager" id="topPg"></div>
 
   <h2>Method</h2>
   <div class="models">
@@ -439,17 +471,6 @@
     </div></div>
   </div>
 
-  <div class="tophead"><h2>Highest Median Returns</h2><button class="info" type="button" aria-expanded="false" aria-controls="hTop" aria-label="About this list"></button>
-    <p class="help" id="hTop" role="tooltip">Shares only, ranked by median return over the horizon chosen above. A list of the highest-ranked shares did not beat owning the whole market in testing, so treat it as a place to start looking, not a buy list.</p></div>
-  <div class="topctl" id="topCtl">
-    <div class="seg" role="group" aria-label="Market" id="topMkt"></div>
-    <div class="seg" role="group" aria-label="Company size" id="topCap"></div>
-    <div class="seg" role="group" aria-label="Horizon" id="topH"></div>
-  </div>
-  <table id="topT" class="top"><colgroup><col style="width:2.4rem"><col><col style="width:104px"><col style="width:96px" class="nph"><col style="width:140px" class="nph"><col style="width:120px"><col style="width:52px"></colgroup>
-    <thead><tr><th class="l">#</th><th class="l">Holding</th><th>Median</th><th class="nph">Mean</th><th class="nph">Middle 50%</th><th>P(Gain)</th><th></th></tr></thead>
-    <tbody id="topB"></tbody></table>
-  <div class="pager" id="topPg"></div>
 
 </div>
 <div class="tip" id="tip"></div>
@@ -487,7 +508,10 @@
   var KEY = "er.mine", YRS = [1, 3, 5], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], NS = "http://www.w3.org/2000/svg";
   var ISVG = '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="1.6" r="1.15" fill="currentColor"/><rect x="4.05" y="3.6" width="1.9" height="5.6" rx=".5" fill="currentColor"/></svg>';
   var D, ids = [], st = { pf: "Index Mix", h: 0, view: "ret", sort: "typ", dir: -1 }, mine = [];
-  st.vw = true;
+  st.vw = true; st.showHold = true; st.showCmp = true; var cmp = [];
+  try { cmp = JSON.parse(localStorage.getItem("er.cmp") || "[]").filter(function (t) { return typeof t === "string"; }).slice(0, 20);
+        st.showHold = localStorage.getItem("er.sh") !== "0"; st.showCmp = localStorage.getItem("er.sc") !== "0"; } catch (e) { cmp = []; }
+  function saveCmp() { try { localStorage.setItem("er.cmp", JSON.stringify(cmp)); localStorage.setItem("er.sh", st.showHold ? "1" : "0"); localStorage.setItem("er.sc", st.showCmp ? "1" : "0"); } catch (e) {} }
   try { st.vw = localStorage.getItem("er.vw") !== "0"; } catch (e) {}
   try { st.pf = localStorage.getItem("er.pf") || st.pf; st.h = +(localStorage.getItem("er.h") || 0); st.view = localStorage.getItem("er.v") || "ret"; } catch (e) {}
   try { mine = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { mine = []; }
@@ -517,8 +541,8 @@
   function col(c) { return "var(" + (CAT[c] || "--cash") + ")"; }
 
   function hasViews() { return st.pf === "mine" && mine.some(function (x) { return Array.isArray(x[2]); }); }
-  function rows() {
-    var L = list(), y = YRS[st.h], tot = L.reduce(function (s, x) { return s + (+x[1] || 0); }, 0) || 1;
+  function rows(L0) {
+    var L = L0 || list(), y = YRS[st.h], tot = L.reduce(function (s, x) { return s + (+x[1] || 0); }, 0) || 1;
     return L.map(function (x, i) {
       var n = D.names[x[0]] || {}, r = n.r ? n.r[st.h] : [];
       return { i: i, id: x[0], code: code(x[0]), co: n.c || "", mk: n.m || "", w: (+x[1] || 0) / tot, raw: x[1], off: Math.abs(tot - 100) > 0.5, cat: n.r ? cat(n.b) : "", g: n.g || "",
@@ -709,7 +733,12 @@
 
   function c1() {
     var box = document.getElementById("c1"); box.innerHTML = "";
-    var R = sorted(rows()).filter(function (r) { return r.typ != null; }); if (!R.length) return;
+    var have = {}; list().forEach(function (x) { have[x[0]] = 1; });
+    var C = cmp.filter(function (t) { return D.names[t] && !have[t]; });
+    document.getElementById("cmpList").innerHTML = C.map(function (t) { return "<button type='button' data-rm='" + esc(t) + "' aria-label='Stop comparing " + esc(code(t)) + "'>" + esc(code(t)) + " &times;</button>"; }).join("");
+    document.querySelectorAll("#cmpSeg [data-show]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.show === "hold" ? st.showHold : st.showCmp); });
+    var R = (st.showHold ? sorted(rows()) : []).concat(st.showCmp ? sorted(rows(C.map(function (t) { return [t, 0]; }))).map(function (r) { r.cmp = true; return r; }) : [])
+      .filter(function (r) { return r.typ != null; }); if (!R.length) return;
     var seen = {}; R.forEach(function (r) { seen[r.cat] = 1; });
     var tdots = "<svg width='12' height='12' aria-hidden='true'><circle cx='6' cy='6' r='5' fill='var(--accent)'/></svg>";
     var KEYS = [["typ", tdots, "Median", "What one holding usually returns."],
@@ -739,7 +768,7 @@
     R.forEach(function (r, i) {
       var yy = m.t + rowH * i + rowH / 2, gg = el("g", { class: "r", "data-n": r.id }, svg);
       el("rect", { class: "bg", x: 0, y: yy - rowH / 2, width: W, height: rowH, fill: "transparent", rx: 4 }, gg);
-      el("text", { x: m.l - 12, y: yy + 4, "text-anchor": "end", class: "lab" }, gg).textContent = r.code;
+      el("text", { x: m.l - 12, y: yy + 4, "text-anchor": "end", class: "lab" + (r.cmp ? " cmp" : "") }, gg).textContent = r.code;
       if (r.q25 != null) el("rect", { x: x(r.q25), y: yy - 3.5, width: Math.max(2, x(r.q75) - x(r.q25)), height: 7, rx: 3.5, fill: "var(--band)" }, gg);
       if (r.avg != null) el("rect", { x: x(r.avg) - 1.5, y: yy - 7, width: 3, height: 14, rx: 1, fill: "var(--ink)" }, gg);
       if (r.own != null) el("circle", { cx: x(r.own), cy: yy, r: 5, fill: "none", stroke: "var(--own)", "stroke-width": 2.2 }, gg);
@@ -965,6 +994,31 @@
   });
   document.addEventListener("click", function () { if (!pfMenu.hidden) menu(false); });
   document.getElementById("mineBtn").addEventListener("click", function () { pick("mine"); });
+  document.getElementById("cmpSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-show]"); if (!b) return;
+    if (b.dataset.show === "hold") st.showHold = !st.showHold; else st.showCmp = !st.showCmp;
+    saveCmp(); charts();
+  });
+  document.getElementById("cmpList").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-rm]"); if (!b) return; cmp = cmp.filter(function (t) { return t !== b.dataset.rm; }); saveCmp(); charts();
+  });
+  (function () {
+    var q2 = document.getElementById("q2"), sg2 = document.getElementById("sugg2"), h2 = [], s2 = 0;
+    function hide2() { sg2.hidden = true; q2.setAttribute("aria-expanded", "false"); }
+    function pick2(id) { if (!id) return; if (cmp.indexOf(id) < 0) cmp.push(id); if (cmp.length > 20) cmp.shift(); st.showCmp = true; q2.value = ""; hide2(); saveCmp(); charts(); }
+    function draw2() {
+      sg2.innerHTML = h2.map(function (id, i) { var n = D.names[id];
+        return "<li role='option' id='c2o" + i + "' data-id='" + esc(id) + "' aria-selected='" + (i === s2) + "'><span class='badge'>" + esc(code(id)) + "</span><span class='co'>" + esc(short(n.c) || "") + "</span><span class='mk'>" + esc(n.m || "") + "</span></li>"; }).join("");
+      sg2.hidden = !h2.length; q2.setAttribute("aria-expanded", h2.length ? "true" : "false");
+    }
+    q2.addEventListener("input", function () { h2 = D ? search(q2.value) : []; s2 = 0; draw2(); });
+    q2.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (!h2.length) return; s2 = (s2 + (e.key === "ArrowDown" ? 1 : h2.length - 1)) % h2.length; draw2(); }
+      else if (e.key === "Enter") { e.preventDefault(); pick2(h2[s2]); } else if (e.key === "Escape") hide2();
+    });
+    sg2.addEventListener("mousedown", function (e) { var li = e.target.closest("[data-id]"); if (li) { e.preventDefault(); pick2(li.dataset.id); } });
+    q2.addEventListener("blur", function () { setTimeout(hide2, 100); });
+  })();
   document.getElementById("key1").addEventListener("click", function (e) {
     var b = e.target.closest("[data-sort]"); if (!b) return; var k = b.dataset.sort;
     st.dir = st.sort === k ? -st.dir : -1; st.sort = k; render();
