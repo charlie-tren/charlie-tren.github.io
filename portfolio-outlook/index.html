@@ -333,6 +333,10 @@
       <button class="pill" type="button" data-h="1">3 Years</button>
       <button class="pill" type="button" data-h="2">5 Years</button>
     </div>
+    <div class="seg" role="group" aria-label="Views" id="vwSeg" hidden>
+      <button class="pill" type="button" data-vw="1">With My Views</button>
+      <button class="pill" type="button" data-vw="0">Model Only</button>
+    </div>
   </div>
 
   <div class="cards">
@@ -369,7 +373,7 @@
 
   <section id="trades" hidden>
   <div class="tophead trhead"><div class="seg" role="group" aria-label="What to trade" id="trMode"></div><button class="info" type="button" aria-expanded="false" aria-controls="hTr" aria-label="About suggested trades"></button>
-    <p class="help" id="hTr" role="tooltip">The mix with the most mean return for its risk, with cash left as it is, no holding above 15% and Bitcoin funds 15% together. Within My Holdings only reweights what you own; From Anything can also buy the large shares Optimal Mix is chosen from. Changes under 2% are left out. Brokerage and tax are not counted.</p></div>
+    <p class="help" id="hTr" role="tooltip">Within My Holdings starts from equal weights, because the model cannot rank shares within a portfolio, and leans toward holdings you have a view on. From Anything builds the mix with the most mean return for its risk from your holdings and the large shares Optimal Mix is chosen from. Up to 10% in a holding without a view; with one, up to 40% but no more than a repeat of its worst fall in ten years costing 10% of the portfolio; and 25% Bitcoin exposure, with a 2x fund counting double. Cash and pinned holdings stay as they are, and changes under 1% are left out. Brokerage and tax are not counted.</p></div>
   <table class="top trs"><colgroup><col style="width:5.5rem"><col><col class="nph"><col><col><col class="nph"><col class="nph"></colgroup>
     <thead><tr><th class="l"></th><th>Median</th><th class="nph">Mean</th><th>Volatility</th><th>Sharpe</th><th class="nph">P(Gain)</th><th class="nph">Bad Year</th></tr></thead>
     <tbody id="trS"></tbody></table>
@@ -482,6 +486,8 @@
   var KEY = "er.mine", YRS = [1, 3, 5], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], NS = "http://www.w3.org/2000/svg";
   var ISVG = '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="1.6" r="1.15" fill="currentColor"/><rect x="4.05" y="3.6" width="1.9" height="5.6" rx=".5" fill="currentColor"/></svg>';
   var D, ids = [], st = { pf: "Index Mix", h: 0, view: "ret", sort: "typ", dir: -1 }, mine = [];
+  st.vw = true;
+  try { st.vw = localStorage.getItem("er.vw") !== "0"; } catch (e) {}
   try { st.pf = localStorage.getItem("er.pf") || st.pf; st.h = +(localStorage.getItem("er.h") || 0); st.view = localStorage.getItem("er.v") || "ret"; } catch (e) {}
   try { mine = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { mine = []; }
   if (!(st.h >= 0 && st.h <= 2)) st.h = 0;
@@ -493,7 +499,7 @@
 
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return "&#" + c.charCodeAt(0) + ";"; }); }
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(mine)); localStorage.setItem("er.pf", st.pf); localStorage.setItem("er.h", st.h); localStorage.setItem("er.v", st.view); } catch (e) {}
+    try { localStorage.setItem(KEY, JSON.stringify(mine)); localStorage.setItem("er.pf", st.pf); localStorage.setItem("er.h", st.h); localStorage.setItem("er.v", st.view); localStorage.setItem("er.vw", st.vw ? "1" : "0"); } catch (e) {}
   }
   function code(id) { return id.replace(/\.[A-Z]+$/, ""); }
   function list() { return st.pf === "mine" ? mine : SAMPLES[st.pf]; }
@@ -509,14 +515,22 @@
   function cat(b) { return !b || b.indexOf("Stock") === 0 ? "Stocks" : b === "Index peers" ? "Index ETFs" : b === "Bitcoin forecast" ? "Bitcoin" : "Cash"; }
   function col(c) { return "var(" + (CAT[c] || "--cash") + ")"; }
 
+  function hasViews() { return st.pf === "mine" && mine.some(function (x) { return Array.isArray(x[2]); }); }
   function rows() {
     var L = list(), y = YRS[st.h], tot = L.reduce(function (s, x) { return s + (+x[1] || 0); }, 0) || 1;
     return L.map(function (x, i) {
       var n = D.names[x[0]] || {}, r = n.r ? n.r[st.h] : [];
       return { i: i, id: x[0], code: code(x[0]), co: n.c || "", mk: n.m || "", w: (+x[1] || 0) / tot, raw: x[1], off: Math.abs(tot - 100) > 0.5, cat: n.r ? cat(n.b) : "", g: n.g || "",
-               dd: n.dd, d52: n.d52, bh: n.bh == null ? null : n.bh, v: n.v, vr: n.v3 != null ? n.v3 : n.v, y: n.y, typ: pa(r[0], y), avg: pa(tmean(r), y), q25: pa(r[2], y), q75: pa(r[3], y),
+               dd: n.dd, d52: n.d52, bh: n.bh == null ? null : n.bh, mdd: n.mdd, v: n.v, vr: n.v3 != null ? n.v3 : n.v, y: n.y, typ: pa(r[0], y), avg: pa(tmean(r), y), q25: pa(r[2], y), q75: pa(r[3], y),
                up: r[4] == null ? null : r[4], own: pa(r[5], y), own_n: r[6] || null,
-               mid: r[2] == null ? null : (pa(r[2], y) + pa(r[3], y)) / 2, avgTot: tmean(r) == null ? null : tmean(r) };
+               mid: r[2] == null ? null : (pa(r[2], y) + pa(r[3], y)) / 2, avgTot: tmean(r) == null ? null : tmean(r),
+               view: st.pf === "mine" && Array.isArray(x[2]) && x[2][st.h] != null && isFinite(x[2][st.h]) ? x[2][st.h] / 100 : null, pin: st.pf === "mine" && x[3] === "p" };
+    }).map(function (o) {
+      if (o.view != null && st.vw && o.avg != null) {
+        ["typ", "avg", "q25", "q75", "mid"].forEach(function (k) { if (o[k] != null) o[k] += o.view; });
+        o.avgTot = Math.pow(1 + o.avg, y) - 1;
+      }
+      return o;
     });
   }
   function sorted(R) {
@@ -564,7 +578,8 @@
 
   // phone-hidden columns are left out of the markup, so their declared widths cannot push the table wider
   var PH = matchMedia("(max-width: 640px)");
-  function cols() { return (VIEWS[st.view] || VIEWS.ret).filter(function (c) { return !(c[3] && PH.matches); }); }
+  var VIEWCOL = ["view", "Your View", 100, 1, "Your adjustment from reading the company's reports, in points a year. Model Only turns it off.", function (r) { return "<td class='nph " + sgn(r.view) + "'>" + (r.view == null ? plain(null) : pct(r.view)) + "</td>"; }];
+  function cols() { var V0 = (VIEWS[st.view] || VIEWS.ret); if (st.view === "ret" && hasViews()) V0 = V0.slice(0, 2).concat([VIEWCOL], V0.slice(2)); return V0.filter(function (c) { return !(c[3] && PH.matches); }); }
   function header() {
     var V = cols(), ed = st.pf === "mine";
     var ph = PH.matches;  // a phone keeps ~100px for the holding: weight, two figures and the remove button share the rest
@@ -614,6 +629,8 @@
   function render() {
     if (!D) return;
     var mineOn = st.pf === "mine";
+    var vs = document.getElementById("vwSeg"); vs.hidden = !hasViews();
+    vs.querySelectorAll("[data-vw]").forEach(function (b) { b.setAttribute("aria-pressed", (b.dataset.vw === "1") === st.vw ? "true" : "false"); });
     if (st.view === "tr" && !mineOn) st.view = "ret";
     document.getElementById("trTab").hidden = !mineOn;
     document.getElementById("tbl").hidden = st.view === "tr";
@@ -818,28 +835,43 @@
     save(); render();
   });
 
+  // Suggested Trades settings (his choices 23/11/2026; view sizing from caps_view_sizing study)
+  var LEV = { BITU: 2 };
+  function lev(a) { return LEV[a.id] || 1; }
+  // view_sizing_test.py policy grid: f 0.25 with a 10% loss limit was best under a skeptical prior on his skill
+  // (+0.27 pts/yr) and gave up 0.6 under a neutral one; revisit f after ~100 scored views
+  var CAP_NOVIEW = 0.10, CAP_VIEW = 0.40, LOSS_L = 0.10, BTC_CAP = 0.25, MIN_TRADE = 0.01, VIEW_F = 0.25;
   // ---- suggested trades: the most mean return for the risk, cash kept, no holding over 15%, changes under 2% left out ----
   var trMode = 0;
   try { trMode = +(localStorage.getItem("er.tr") || 0) === 1 ? 1 : 0; } catch (e) {}
   // the nearest weights between 0 and cap that add to B
   function capProj(v, cap, B) {
-    var lo = -10, hi = 10, k, t, s;
-    for (var it = 0; it < 60; it++) { t = (lo + hi) / 2; s = 0; for (k = 0; k < v.length; k++) s += Math.min(cap, Math.max(0, v[k] - t)); if (s > B) lo = t; else hi = t; }
-    return v.map(function (x) { return Math.min(cap, Math.max(0, x - hi)); });
+    var lo = -10, hi = 10, k, t, s, c = function (i) { return Array.isArray(cap) ? cap[i] : cap; };
+    for (var it = 0; it < 60; it++) { t = (lo + hi) / 2; s = 0; for (k = 0; k < v.length; k++) s += Math.min(c(k), Math.max(0, v[k] - t)); if (s > B) lo = t; else hi = t; }
+    return v.map(function (x, i) { return Math.min(c(i), Math.max(0, x - hi)); });
   }
   // the nearest weights between 0 and cap that add to B, with flagged (Bitcoin) weights adding to at most gcap
-  function projG(v, isG, cap, B, gcap) {
+  // gcap limits the flagged names' exposure (weight x lv); lv defaults to 1
+  function projG(v, isG, cap, B, gcap, lv) {
+    var L = function (i) { return lv ? lv[i] : 1; }, cp = function (i) { return Array.isArray(cap) ? cap[i] : cap; };
     var w = capProj(v, cap, B), gs = 0, G = [], O = [];
-    isG.forEach(function (g, i) { (g ? G : O).push(i); if (g) gs += w[i]; });
+    isG.forEach(function (g, i) { (g ? G : O).push(i); if (g) gs += w[i] * L(i); });
     if (gs <= gcap + 1e-9 || !O.length) return w;
-    var wg = capProj(G.map(function (i) { return v[i]; }), cap, gcap), wo = capProj(O.map(function (i) { return v[i]; }), cap, B - gcap);
-    G.forEach(function (i, k) { w[i] = wg[k]; }); O.forEach(function (i, k) { w[i] = wo[k]; });
+    var eg = capProj(G.map(function (i) { return v[i] * L(i); }), G.map(function (i) { return cp(i) * L(i); }), gcap), bg = 0;
+    G.forEach(function (i, k) { w[i] = eg[k] / L(i); bg += w[i]; });
+    var wo = capProj(O.map(function (i) { return v[i]; }), O.map(cp), B - bg); O.forEach(function (i, k) { w[i] = wo[k]; });
     return w;
   }
+  // a viewed name may reach 40%, but a repeat of its worst 10-year fall may cost at most 10% of the book
+  function capOf(a, B, n) {
+    var c = a.cat === "Bitcoin" ? BTC_CAP : a.view != null && st.vw ? Math.max(CAP_NOVIEW, Math.min(CAP_VIEW, a.mdd ? LOSS_L / Math.abs(a.mdd) : CAP_VIEW)) : CAP_NOVIEW;
+    return Math.max(c, B / n + 1e-9);
+  }
   function maxSharpe(A, B, rf) {
-    var n = A.length, cap = Math.max(0.15, B / n + 1e-9), C = A.map(function (a, i) { return A.map(function (b, j) { return (i === j ? 1 : rho(a, b)) * a.vr * b.vr; }); });
+    var n = A.length, cap = A.map(function (a) { return capOf(a, B, n); }), C = A.map(function (a, i) { return A.map(function (b, j) { return (i === j ? 1 : rho(a, b)) * a.vr * b.vr; }); });
     var mu = A.map(function (a) { return a.avg - rf; }), isG = A.map(function (a) { return a.cat === "Bitcoin"; });
-    function proj(v) { return projG(v, isG, cap, B, cap); }
+    var lv = A.map(lev);
+    function proj(v) { return projG(v, isG, cap, B, BTC_CAP, lv); }
     function sh(w) { var m = 0, q = 0, i, j; for (i = 0; i < n; i++) { m += w[i] * mu[i]; for (j = 0; j < n; j++) q += w[i] * w[j] * C[i][j]; } return m / Math.sqrt(q || 1e-12); }
     var w = proj(A.map(function (a) { return a.w; })), best = sh(w), step = 0.05;
     for (var it = 0; it < 2000 && step > 1e-7; it++) {
@@ -858,24 +890,28 @@
     var R = rows(), y = YRS[st.h], rf = cashRate(), have = {}, U = R.map(function (r) { have[r.id] = 1; return Object.assign({}, r); });
     if (trMode === 1 && D.opt) D.opt.ids.forEach(function (id) {
       var n = D.names[id]; if (have[id] || !n || !n.r) return;
-      U.push({ id: id, code: code(id), co: n.c || "", mk: n.m || "", cat: cat(n.b), g: n.g || "", v: n.v, vr: n.v3 != null ? n.v3 : n.v, avg: pa(tmean(n.r[st.h]), y), w: 0 });
+      U.push({ id: id, code: code(id), co: n.c || "", mk: n.m || "", cat: cat(n.b), g: n.g || "", mdd: n.mdd, v: n.v, vr: n.v3 != null ? n.v3 : n.v, avg: pa(tmean(n.r[st.h]), y), w: 0 });
     });
-    var F = U.filter(function (a) { return a.cat !== "Cash" && a.avg != null && a.vr != null; }), B = F.reduce(function (s0, a) { return s0 + a.w; }, 0);
+    var F = U.filter(function (a) { return a.cat !== "Cash" && !a.pin && a.avg != null && a.vr != null; }), B = F.reduce(function (s0, a) { return s0 + a.w; }, 0);
     var tb = document.getElementById("trB"), ts = document.getElementById("trS");
     if (F.length < 2 || B <= 0) { ts.innerHTML = ""; tb.innerHTML = "<tr><td colspan='4' class='l' style='color:var(--soft);padding:1.2rem 0'>Needs two or more holdings.</td></tr>"; return; }
-    var t = maxSharpe(F, B, rf), cap = Math.max(0.15, B / F.length + 1e-9);
-    F.forEach(function (a, i) { a.t = t[i]; a.mv = Math.abs(t[i] - a.w) >= 0.02 || a.w > cap + 1e-9; });
+    var capF = F.map(function (a) { return capOf(a, B, F.length); }), isGF = F.map(function (a) { return a.cat === "Bitcoin"; });
+    // Within: the model cannot rank shares inside a portfolio (caps study, rank correlation -0.01), so equal weight,
+    // leaning toward a holding by a fraction of its view over its variance
+    var t = trMode === 0 ? projG(F.map(function (a) { return B / F.length + (a.view != null && st.vw ? VIEW_F * a.view / (a.vr * a.vr) : 0); }), isGF, capF, B, BTC_CAP, F.map(lev))
+                         : maxSharpe(F, B, rf);
+    F.forEach(function (a, i) { a.t = t[i]; a.cap = capF[i]; a.mv = Math.abs(t[i] - a.w) >= MIN_TRADE || a.w > a.cap + 1e-9; });
     var M = F.filter(function (a) { return a.mv; }), un = F.filter(function (a) { return !a.mv; });
-    var Bm = B - un.reduce(function (s0, a) { return s0 + a.w; }, 0), gU = un.reduce(function (s0, a) { return s0 + (a.cat === "Bitcoin" ? a.w : 0); }, 0);
+    var Bm = B - un.reduce(function (s0, a) { return s0 + a.w; }, 0), gU = un.reduce(function (s0, a) { return s0 + (a.cat === "Bitcoin" ? a.w * lev(a) : 0); }, 0);
     // scale the moved names to what is left, so a sale stays a full sale; a name or the Bitcoin funds that would pass
     // their cap are held at it and the rest rescaled
-    var gcap = Math.max(0, cap - gU), fx = M.map(function () { return false; }), wm = M.map(function (a) { return a.t; });
+    var gcap = Math.max(0, BTC_CAP - gU), fx = M.map(function () { return false; }), wm = M.map(function (a) { return a.t; });
     for (var it2 = 0; it2 < 30; it2++) {
       var fs = 0, fr = 0, gs = 0, ch = false;
       M.forEach(function (a, k) { if (fx[k]) fs += wm[k]; else fr += a.t; });
-      M.forEach(function (a, k) { if (!fx[k]) wm[k] = fr > 0 ? a.t * (Bm - fs) / fr : 0; if (a.cat === "Bitcoin") gs += wm[k]; });
+      M.forEach(function (a, k) { if (!fx[k]) wm[k] = fr > 0 ? a.t * (Bm - fs) / fr : 0; if (a.cat === "Bitcoin") gs += wm[k] * lev(a); });
       if (gs > gcap + 1e-9) { M.forEach(function (a, k) { if (a.cat === "Bitcoin") { wm[k] *= gcap / gs; fx[k] = true; } }); ch = true; }
-      M.forEach(function (a, k) { if (!fx[k] && wm[k] > cap + 1e-9) { wm[k] = cap; fx[k] = true; ch = true; } });
+      M.forEach(function (a, k) { if (!fx[k] && wm[k] > a.cap + 1e-9) { wm[k] = a.cap; fx[k] = true; ch = true; } });
       if (!ch) break;
     }
     M.forEach(function (a, k) { a.to = wm[k]; });
@@ -934,6 +970,9 @@
   });
   document.querySelectorAll("[data-h]").forEach(function (b) {
     b.addEventListener("click", function () { st.h = +b.dataset.h; save(); render(); });
+  });
+  document.getElementById("vwSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-vw]"); if (!b) return; st.vw = b.dataset.vw === "1"; save(); render();
   });
   document.querySelectorAll(".tab").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -1042,11 +1081,15 @@
     var t = mine.reduce(function (s, x) { return s + (+x[1] || 0); }, 0);
     if (t > 0 && Math.abs(t - 100) > 0.5) { mine.forEach(function (x) { x[1] = Math.round((+x[1] || 0) / t * 1000) / 10; }); save(); }
   }
-  // #mine=TICKER:weight,... loads a portfolio into "My Portfolio" (kept in this browser only), then clears the hash
+  // #mine=TICKER:weight[:1y/3y/5y view points][:p for pinned],... loads a portfolio into "My Portfolio" (kept in this browser only), then clears the hash
   function fromHash() {
     try {
       var m = location.hash.match(/mine=([^&]+)/); if (!m) return;
-      mine = decodeURIComponent(m[1]).split(",").map(function (p) { var a = p.split(":"); return [a[0].trim().toUpperCase(), +a[1] || 1]; })
+      mine = decodeURIComponent(m[1]).split(",").map(function (p) {
+        var a = p.split(":"), x = [a[0].trim().toUpperCase(), +a[1] || 1];
+        if (a[2]) { var v = a[2].split("/").map(function (z) { return z === "" ? null : Math.max(-15, Math.min(15, +z)); }); x[2] = [v[0], v[1], v[2]]; }
+        if (a[3] === "p") { if (!x[2]) x[2] = null; x[3] = "p"; }
+        return x; })
         .filter(function (x) { return /^[A-Z0-9.\-^]{1,15}$/.test(x[0]); });
       st.pf = "mine"; save();
     } catch (e) {}
