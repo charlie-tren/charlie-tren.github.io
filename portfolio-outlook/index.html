@@ -75,6 +75,7 @@
   h2 { font-weight: 600; font-size: var(--t-l); margin: 4rem 0 1.2rem; letter-spacing: -.015em; }
 
   .controls { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.6rem; margin: 0 0 1.6rem; }
+  [hidden] { display: none !important; }  /* a display rule (.seg, .tab) must never beat hidden: the views switch is private */
   .seg { display: inline-flex; flex-wrap: wrap; gap: .45rem; }
   .pill { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule);
           border-radius: 999px; padding: .5rem .9rem; font: 400 var(--t-s)/1 var(--sans); display: inline-flex; align-items: center; gap: .45rem;
