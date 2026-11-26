@@ -101,8 +101,13 @@ def _last_commit_date(path: Path) -> str:
 def indexable_pages() -> list[tuple[str, str]]:
     """(url, lastmod) for every page that should be submitted."""
     rows = []
+    # Tracked files only: an untracked page is not served, and listing one let the daily data job publish a
+    # sitemap entry for a page still awaiting review (26/11/2026, gold-price-forecast).
+    tracked = set(subprocess.run(["git", "-C", str(ROOT), "ls-files", "*.html"], capture_output=True, text=True).stdout.split())
     for path in sorted(ROOT.rglob("*.html")):
         rel = path.relative_to(ROOT).as_posix()
+        if rel not in tracked:
+            continue
         if rel.startswith(".") or "/node_modules/" in rel or rel.startswith("node_modules/"):
             continue
         if any(rel.startswith(p) for p in SKIP_PREFIXES):
