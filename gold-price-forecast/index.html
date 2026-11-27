@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gold Price Forecast</title>
+<!-- Written for search and AI answer engines, and deliberately NOT the visible lede. -->
+<meta name="description" content="Gold price forecast and prediction for one to five years, from gold's long-run growth since 1968, its 12-month momentum and its value against the US money supply, with ranges from the model's own past forecast misses. Updated monthly.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gold Price Forecast">
+<meta property="og:description" content="Gold's price and a forecast of where it could be in one to five years.">
+<meta property="og:url" content="https://charlietrenorden.com/gold-price-forecast/">
+<link rel="canonical" href="https://charlietrenorden.com/gold-price-forecast/">
+<meta property="og:image" content="https://charlietrenorden.com/gold-price-forecast/og-card.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt" content="A gold ingot mark above the page's name, over its forecast chart">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/gold-price-forecast/favicon.svg?v=2" type="image/svg+xml">
+<link rel="icon" href="/gold-price-forecast/favicon-192.png?v=2" type="image/png" sizes="192x192">
+<link rel="icon" href="/gold-price-forecast/favicon-48.png?v=2" type="image/png" sizes="48x48">
+<link rel="apple-touch-icon" href="/gold-price-forecast/apple-touch-icon.png?v=2">
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      var dark = saved ? saved === "dark"
+        : !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  :root, :root[data-theme="dark"] { --bg:#0f1319; --raised:#171c24; --ink:#e6e9ee; --soft:#8a94a3;
+    --rule:#262d38; --accent:#82a8ca; --fc:#D4A73A; --fc-text:#E2B95A;
+    --band:rgba(212,167,58,.32); --band2:rgba(212,167,58,.14); }
+  :root[data-theme="light"] { --bg:#eef0f3; --raised:#fbfcfd; --ink:#14171c; --soft:#565d68;
+    --rule:#d7dbe2; --accent:#3a5f80; --fc:#A87F12; --fc-text:#80600B;
+    --band:rgba(168,127,18,.30); --band2:rgba(168,127,18,.12); }
+  :root { --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+          --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+          --t-l: 20px; --t-m: 17px; --t-s: 14px; --t-xs: 12px; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--t-m)/1.6 var(--sans);
+         -webkit-font-smoothing: antialiased; transition: background .3s, color .3s; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 2.2rem 2rem 5rem; }
+  .caps { font: 600 var(--t-xs)/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2.6rem; }
+  .barright { display: flex; align-items: center; gap: 1rem; flex: none; }
+  .home, .sib { font: 500 13px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
+          color: var(--soft); text-decoration: none; display: inline-flex; align-items: center; transition: color .2s; position: relative; }
+  .home:hover, .sib:hover { color: var(--accent); }
+  .home .back { font-size: 15.5px; position: relative; top: -.5px; }
+  .home::after, .sib::after { content: ""; position: absolute; inset: -12px -10px; }
+  .sib svg { width: 15px; height: 15px; margin-right: .45em; flex: none; }
+  .sep { width: 1px; height: 14px; background: var(--rule); flex: none; }
+  .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
+                  border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem;
+                  font: 500 12.5px/1 var(--sans); letter-spacing: .02em;
+                  display: inline-flex; align-items: center; gap: .45rem; transition: border-color .2s, color .2s; }
+  .theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .theme-toggle .lbl[data-t]::after { content: attr(data-t); }
+  .lbl-short { display: none; }
+
+  h1.wm { font-weight: 600; font-size: clamp(18px, 1.4vw + 12px, 30px); line-height: 1.15; letter-spacing: -.02em; margin: 0;
+          display: flex; align-items: center; gap: .4em; min-width: 0; }
+  h1.wm svg { width: 1.2em; height: 1.2em; flex: none; overflow: visible; }
+  .lede { max-width: 62ch; margin: 0 0 .5rem; }
+  .over { color: var(--soft); max-width: 80ch; margin: 0 0 2.8rem; }
+  h2 { font-weight: 600; font-size: var(--t-l); margin: 4rem 0 1.2rem; letter-spacing: -.015em; }
+
+  .now { display: flex; flex-wrap: wrap; gap: .6rem 2.6rem; margin: 0 0 2rem; }
+  .stat { position: relative; }
+  .stat .k { display: flex; align-items: center; margin-bottom: .25rem; }
+  .stat .v { font-size: var(--t-l); font-weight: 600; letter-spacing: -.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stat .sub { display: block; font-size: var(--t-s); color: var(--soft); margin-top: .1rem; white-space: nowrap; }
+
+  .presets { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 .7rem; }
+  .pdesc { font-size: var(--t-s); line-height: 1.5; color: var(--soft); margin: 0 0 1.4rem; min-height: 1.5em; max-width: 70ch; }
+  .preset { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule);
+            border-radius: 999px; padding: .5rem .9rem; font: 400 var(--t-s)/1 var(--sans);
+            transition: border-color .2s, color .2s, background .2s; position: relative; }
+  .preset::after { content: ""; position: absolute; inset: -5px -2px; }
+  .preset:hover { color: var(--ink); border-color: var(--accent); }
+  .preset[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-color: var(--fc); background: var(--band2); }
+
+  .chartbox { position: relative; }
+  .chart { width: 100%; display: block; touch-action: pan-y; }
+  #chart { height: clamp(300px, 52vw, 460px); }
+  .chart text { font: 400 var(--t-xs) var(--sans); fill: var(--soft); }
+  .tip { position: absolute; pointer-events: none; background: var(--raised); border: 1px solid var(--rule); border-radius: 6px;
+         padding: .45rem .65rem; font: 400 var(--t-s)/1.45 var(--sans); color: var(--ink);
+         white-space: nowrap; font-variant-numeric: tabular-nums; display: none; box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+  .tip b { font-weight: 600; } .tip span { color: var(--soft); }
+  .key { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; margin: .7rem 0 0; font: 400 var(--t-s)/1.4 var(--sans); color: var(--soft); }
+  .key span { display: inline-flex; align-items: center; gap: .45rem; }
+  .key i { display: inline-block; width: 18px; height: 0; border-top: 2px solid; }
+  .key i.sw { height: 10px; border: 0; }
+  .key i.sw2 { height: 10px; border: 1px solid var(--band); }
+  .key .rng { margin-left: auto; gap: .3rem; }
+  .rb { appearance: none; cursor: pointer; background: transparent; color: var(--soft); border: 1px solid var(--rule); border-radius: 999px;
+        padding: .3rem .7rem; font: 400 var(--t-xs)/1 var(--sans); position: relative; }
+  .rb::after { content: ""; position: absolute; inset: -6px -2px; }
+  .rb:hover { color: var(--ink); border-color: var(--accent); }
+  .rb[aria-pressed="true"] { color: var(--ink); border-color: var(--fc); }
+
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem 2.8rem; margin: 2.4rem 0 0; }
+  .ctl { position: relative; }
+  .ctl label { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+               font: 600 var(--t-s)/1.3 var(--sans); color: var(--ink); margin-bottom: .55rem; }
+  .ctl label .name { display: inline-flex; align-items: center; }
+  .ctl output { font-variant-numeric: tabular-nums; color: var(--fc-text); white-space: nowrap; }
+  input[type=range] { width: 100%; margin: 0; accent-color: var(--fc); height: 28px; cursor: pointer; }
+  .info { appearance: none; cursor: pointer; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--soft);
+          background: transparent; color: var(--soft); padding: 0; margin-left: .45rem; display: inline-grid; place-items: center;
+          position: relative; flex: none; opacity: .8; }
+  .info svg { width: 10px; height: 10px; display: block; }
+  .info::after { content: ""; position: absolute; inset: -11px; }
+  .info:hover, .info[aria-expanded="true"] { color: var(--ink); border-color: var(--fc); opacity: 1; }
+  .help { position: absolute; z-index: 6; left: 0; top: 1.9rem; width: min(380px, 100%); margin: 0; display: none;
+          background: var(--raised); border: 1px solid var(--rule); border-radius: 8px; padding: .7rem .85rem;
+          box-shadow: 0 8px 24px rgba(0,0,0,.22); font: 400 var(--t-s)/1.5 var(--sans); color: var(--ink); }
+  .ctl.open .help, .stat.open .help { display: block; }
+  .stat .help { top: 1.5rem; width: 300px; text-transform: none; letter-spacing: 0; }
+
+  table { width: 100%; border-collapse: collapse; font: 400 var(--t-s)/1.4 var(--sans); font-variant-numeric: tabular-nums; }
+  th { font: 600 var(--t-xs)/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--soft);
+       text-align: right; padding: 0 0 .6rem .9rem; border-bottom: 1px solid var(--rule); vertical-align: bottom; }
+  td { text-align: right; padding: .6rem 0 .6rem .9rem; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th:first-child, td:first-child { padding-left: 0; text-align: left; }
+  td.m { color: var(--fc-text); font-weight: 600; }
+
+  .models { border-bottom: 1px solid var(--rule); }
+  .mrow { display: grid; grid-template-columns: 220px 1fr; gap: 1.6rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
+  .mrow h3 { font-size: var(--t-m); font-weight: 600; margin: 0; line-height: 1.5; }
+  .mrow p { margin: 0 0 .8rem; color: var(--soft); max-width: 72ch; }
+  code { font: 400 var(--t-s)/1.6 var(--mono); color: var(--ink); display: block;
+         background: var(--raised); border: 1px solid var(--rule); border-radius: 6px; padding: .6rem .85rem; width: fit-content; max-width: 100%; }
+  .symbols { margin: 0; display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) 4.5rem minmax(0, 1fr); gap: .5rem 1rem;
+             font-size: var(--t-s); line-height: 1.5; max-width: 760px; }
+  .symbols dt { font-family: var(--mono); }
+  .symbols dd { margin: 0; color: var(--soft); }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 1.4rem 1rem 4rem; }
+    .bar { margin-bottom: 1.2rem; gap: .6rem; align-items: center; }
+    .barright { gap: .55rem; }
+    h1.wm { font-size: 17px; line-height: 1.15; }
+    h1.wm span { max-width: 5.5em; }
+    .home, .sib { font-size: 11.5px; letter-spacing: .06em; }
+    .lbl-full { display: none; }
+    .lbl-short { display: inline; }
+    .sep { display: none; }
+    .theme-toggle { padding: .4rem .62rem; }
+    .lede { font-size: 16px; margin-bottom: 1rem; }
+    .over { display: none; }
+    .tool { display: flex; flex-direction: column; }
+    .tool > .chartbox { order: -2; }
+    .tool > .key { order: -1; margin: .5rem 0 1.6rem; }
+    .home .back { top: -1.5px; }
+    .controls { margin-top: .9rem; grid-template-columns: 1fr; gap: 1.3rem; }
+    .ctl label { margin-bottom: .2rem; }
+    .now { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem 1.2rem; }
+    .stat .sub, .stat .v { white-space: normal; }
+    h2 { margin-top: 3.2rem; }
+    .mrow { grid-template-columns: 1fr; gap: .6rem; }
+    .help { width: 100%; }
+    .stat .help { width: min(300px, 88vw); }
+    .stat:nth-child(even) .help { left: auto; right: 0; }
+    .symbols { grid-template-columns: 4.5rem minmax(0, 1fr); }
+    .hide-s { display: none; }
+    input[type=range] { height: 34px; }
+    th { letter-spacing: .05em; }
+    .pdesc { min-height: 3em; margin-bottom: .4rem; }
+  }
+</style>
+<script>/* Analytics, gated: opted out with ?nostats=1, or automation (navigator.webdriver). See site-stats/beacon. */(function(){try{var X="ct.nostats",C="ct_nostats",D=";path=/;domain=.charlietrenorden.com",q=location.search,out=false;if(q.indexOf("nostats=1")>-1){try{localStorage.setItem(X,"1")}catch(e){}document.cookie=C+"=1"+D+";max-age=63072000;samesite=lax";}if(q.indexOf("nostats=0")>-1){try{localStorage.removeItem(X)}catch(e){}document.cookie=C+"="+D+";max-age=0";}try{out=!!localStorage.getItem(X)}catch(e){}if(!out)out=document.cookie.indexOf(C+"=1")>-1;if(out||navigator.webdriver)return;var E=["pointermove","pointerdown","scroll","keydown","touchstart","wheel"],go=function(){if(go.d)return;go.d=1;E.forEach(function(e){removeEventListener(e,go,true)});var d=document,s;s=d.createElement("script");s.defer=true;s.src="https://static.cloudflareinsights.com/beacon.min.js";s.setAttribute("data-cf-beacon",'{"token": "32b821209b5441a08df42ccf61c9e6c2", "spa": false}');d.head.appendChild(s);s=d.createElement("script");s.defer=true;s.src="https://beacon.charlietrenorden.com/b.js";d.head.appendChild(s);};E.forEach(function(e){addEventListener(e,go,{capture:true,passive:true})});}catch(e){}})();</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <h1 class="wm"><svg viewBox="-1 -1 34 34" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#D4A63A"/><path d="M7.5 21.5 L11.3 10.5 H20.7 L24.5 21.5 Z" fill="#fff"/><path d="M11.3 10.5 H20.7 L19.7 13.4 H12.3 Z" fill="#F3DDA0"/></svg><span>Gold Price Forecast</span></h1>
+    <div class="barright">
+    <a class="sib" href="../bitcoin-power-law-forecast/"><svg viewBox="-1 -1 34 34" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#E8892F"/><g fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" transform="translate(-1.6 0)"><path d="M12 9.3 H18.1 a3.05 3.05 0 0 1 0 6.1 H12 M12 15.4 H18.9 a3.65 3.65 0 0 1 0 7.3 H12"/><path d="M13.5 9.3 V22.7"/><path d="M14.6 6.6 V9.3 M18 6.6 V9.3 M14.6 22.7 V25.4 M18 22.7 V25.4" stroke-width="2.1"/></g></svg>Bitcoin</a>
+    <span class="sep" aria-hidden="true"></span>
+    <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl" data-t="Dark"></span></button>
+    <a class="home" href="https://charlietrenorden.com/" aria-label="Other projects"><span class="back">&larr;</span><span class="hl">&nbsp;<span class="lbl-full">Other projects</span><span class="lbl-short">Projects</span></span></a>
+    </div>
+  </div>
+
+  <p class="lede">Gold's price and where it could be in one to five years. Updated monthly.</p>
+  <p class="over">Three things drive the forecast: gold's average growth since 1968, its move over the last 12 months, and its price against the US money supply.</p>
+
+  <div class="tool">
+  <div class="now">
+    <div class="stat"><span class="k caps">Price</span><span class="v" id="sPrice">-</span><span class="sub" id="sPriceS"></span></div>
+    <div class="stat"><span class="k caps"><span>Last 12 Months</span><button class="info" type="button" aria-expanded="false" aria-controls="hM" aria-label="About the last 12 months"></button></span><span class="v" id="sMom">-</span><span class="sub" id="sMomS"></span><p class="help" id="hM" role="tooltip">The 12-month price change the momentum tilt uses, ending a month before the latest price.</p></div>
+    <div class="stat"><span class="k caps"><span>Median Forecast</span><button class="info" type="button" aria-expanded="false" aria-controls="hF" aria-label="About the median forecast"></button></span><span class="v" id="sFc">-</span><span class="sub" id="sFcS"></span><p class="help" id="hF" role="tooltip">The middle forecast outcome, and the yearly growth it implies from today.</p></div>
+    <div class="stat"><span class="k caps"><span>Middle 50%</span><button class="info" type="button" aria-expanded="false" aria-controls="hB" aria-label="About the middle 50% range"></button></span><span class="v" id="sBand">-</span><span class="sub" id="sBandS"></span><p class="help" id="hB" role="tooltip">Half of forecast outcomes fall in this range. Ranges come from the model's past misses.</p></div>
+    <div class="stat"><span class="k caps"><span>Chance of a 20% Fall</span><button class="info" type="button" aria-expanded="false" aria-controls="hD" aria-label="About the chance of a 20% fall"></button></span><span class="v" id="sDrop">-</span><span class="sub" id="sDropS"></span><p class="help" id="hD" role="tooltip">Share of 2,000 simulated paths that drop 20% below today's price at some point before the horizon.</p></div>
+  </div>
+
+  <div class="presets" id="presets" role="group" aria-label="Scenarios">
+    <button class="preset" id="pA" type="button">Central Case</button>
+    <button class="preset" id="pB" type="button">Average Since 2005</button>
+    <button class="preset" id="pN" type="button">No Momentum</button>
+    <button class="preset" id="pV" type="button">Back to Money Value</button>
+  </div>
+  <p class="pdesc" id="pdesc"></p>
+
+  <div class="chartbox"><svg class="chart" id="chart" role="img" aria-label="Gold price per ounce and the forecast range, log scale"></svg><div class="tip" id="tip1"></div></div>
+  <div class="key">
+    <span><i style="border-color:var(--ink)"></i>Price</span>
+    <span><i style="border-color:var(--fc)"></i>Median Forecast</span>
+    <span><i class="sw" style="background:var(--band)"></i>Middle 50%</span>
+    <span><i class="sw sw2" style="background:var(--band2)"></i>Middle 80%</span>
+   <span><i style="border-top:1.5px dotted var(--soft)"></i>Horizon</span>
+    <span class="rng" role="group" aria-label="Chart range"><button type="button" class="rb" data-r="20" aria-pressed="true">Last 20 Years</button><button type="button" class="rb" data-r="all" aria-pressed="false">Since 1971</button></span>
+  </div>
+
+  <div class="controls ui">
+    <div class="ctl"><label for="rH"><span class="name">Horizon<button class="info" type="button" aria-expanded="false" aria-controls="hH" aria-label="About horizon"></button></span><output id="oH"></output></label>
+      <p class="help" id="hH" role="tooltip">How far ahead to forecast, up to five years.</p>
+      <input id="rH" type="range" min="1" max="60" step="1" value="36"></div>
+    <div class="ctl"><label for="rG"><span class="name">Long-Run Growth<button class="info" type="button" aria-expanded="false" aria-controls="hG" aria-label="About long-run growth"></button></span><output id="oG"></output></label>
+      <p class="help" id="hG" role="tooltip">Yearly growth the forecast assumes. The default is gold's average since March 1968.</p>
+      <input id="rG" type="range" min="0" max="15" step="0.1" value="8.4"></div>
+    <div class="ctl"><label for="rK"><span class="name">Momentum Tilt<button class="info" type="button" aria-expanded="false" aria-controls="hK" aria-label="About momentum tilt"></button></span><output id="oK"></output></label>
+      <p class="help" id="hK" role="tooltip">How much of the last 12 months' change carries into the next year. 100% is the fitted effect; 0% ignores it.</p>
+      <input id="rK" type="range" min="0" max="150" step="5" value="100"></div>
+    <div class="ctl"><label for="rV"><span class="name">Valuation Model Weight<button class="info" type="button" aria-expanded="false" aria-controls="hV" aria-label="About valuation model weight"></button></span><output id="oV"></output></label>
+      <p class="help" id="hV" role="tooltip">Share of the five-year forecast from the valuation model. It counts for nothing at one year and more each year after.</p>
+      <input id="rV" type="range" min="0" max="100" step="5" value="0"></div>
+  </div>
+
+  </div>
+
+  <h2>By Year</h2>
+  <table>
+    <thead><tr><th>Horizon</th><th class="hide-s">Date</th><th>Median Forecast</th><th>A Year</th><th>Middle 50%</th><th class="hide-s">Middle 80%</th><th class="hide-s">20% Fall</th></tr></thead>
+    <tbody id="tbl"></tbody>
+  </table>
+
+  <h2>Method</h2>
+  <div class="models">
+    <div class="mrow"><h3>Long-Run Growth</h3><div><p>Gold's average monthly change since March 1968, when the London Gold Pool ended.</p>
+      <code>log(P[t+h] / P[t]) = g&nbsp;h</code></div></div>
+    <div class="mrow"><h3>Momentum Tilt</h3><div><p>Gold has tended to keep moving for 3-12 months the way it moved over the last 12. That move carries into the first year of the forecast.</p>
+      <code>log(P[t+h] / P[t]) = a + b&nbsp;log(P[t-1] / P[t-13])</code></div></div>
+    <div class="mrow"><h3>Valuation Model</h3><div><p>Gold's price against the US money supply, allowing 1.7% a year for new mining. When gold is expensive against money, it expects lower returns. Its weight rises from zero at one year to <span id="mW4"></span> at four and <span id="mW"></span> at five, set by how each model's forecasts since 1985 performed.</p>
+      <code>log(P[t+h] / P[t]) = a + b&nbsp;(log(P[t-1] / M[t-1]) + 0.017&nbsp;y[t-1])</code></div></div>
+    <div class="mrow"><h3>Ranges</h3><div><p>How far past forecasts landed from the actual price, for forecasts made every month since 1985 with only data known then.</p></div></div>
+    <div class="mrow"><h3>Chance of a 20% Fall</h3><div><p>Share of 2,000 simulated paths that drop 20% below today's price before the horizon. Each path strings together six-month runs of gold's actual monthly moves since 1968, centred on the median forecast.</p></div></div>
+    <div class="mrow"><h3>Tested and Rejected</h3><div><p>About 2,850 other ideas, alone and combined: power laws, trend curves, cycles, interest rates, the dollar, inflation, central bank buying, jewellery spending and other metals. None beat the long-run average in forecasts made with only data known at the time.</p></div></div>
+    <div class="mrow"><h3>Symbols</h3><dl class="symbols"><dt>P</dt><dd>Price, monthly average</dd><dt>g</dt><dd>Long-run monthly growth</dd><dt>h</dt><dd>Months ahead</dd><dt>M</dt><dd>US money supply (M2)</dd><dt>y</dt><dd>Years since March 1968</dd><dt>a, b</dt><dd>Fitted each month on data known then</dd></dl></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById("themeBtn"), lbl = document.getElementById("themeLbl");
+  function sync() {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    lbl.dataset.t = next === "dark" ? "Dark" : "Light";
+    btn.setAttribute("aria-label", "Switch to " + next + " theme");
+  }
+  sync();
+  btn.addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") !== "dark";
+    root.setAttribute("data-theme", dark ? "dark" : "light");
+    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
+    sync(); draw();
+  });
+
+  var D, F, FD, T0, NS = "http://www.w3.org/2000/svg";
+  var R = { H: document.getElementById("rH"), G: document.getElementById("rG"), K: document.getElementById("rK"), V: document.getElementById("rV") };
+  var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  function usd(v) { return "US$" + Math.round(v).toLocaleString("en-US"); }
+  function pct(r) { return (r >= 0 ? "+" : "") + Math.round(r * 100) + "%"; }
+  function ret(v, h) { return h >= 12 ? pct(Math.pow(v / D.price, 12 / h) - 1) + " a year" : pct(v / D.price - 1) + " in " + h + (h === 1 ? " month" : " months"); }
+  function ym(s) { var p = s.split("-"); return Date.UTC(+p[0], +p[1] - 1, 15); }
+  function addMonths(t, m) { var d = new Date(t); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + m, 15); }
+  function fdate(t) { var d = new Date(t); return MON[d.getUTCMonth()] + " " + d.getUTCFullYear(); }
+  function css(n) { return getComputedStyle(root).getPropertyValue(n).trim(); }
+
+  function forecast(o) {
+    o = o || { g: +R.G.value, k: +R.K.value, v: +R.V.value };
+    var g = Math.log(1 + o.g / 100) / 12, k = o.k / 100, out = [[], [], [], [], []];
+    // valuation weight by horizon: a monotone cubic through the measured set points, flat where it starts, scaled by the slider
+    var S = D.val_sched, ks = Object.keys(S).map(Number).sort(function (a, b) { return a - b; });
+    var ys = ks.map(function (x) { return S[x] / S["60"]; }), n = ks.length, d = [], ms = [0];
+    for (var j = 0; j < n - 1; j++) d.push((ys[j + 1] - ys[j]) / (ks[j + 1] - ks[j]));
+    for (j = 1; j < n - 1; j++) ms.push(d[j - 1] * d[j] > 0 ? 2 / (1 / d[j - 1] + 1 / d[j]) : 0);
+    ms.push(d[n - 2]);
+    function wAt(h) {
+      var r = h >= ks[n - 1] ? 1 : 0;
+      for (var j = 0; j < n - 1; j++) if (h > ks[j] && h < ks[j + 1]) {
+        var L = ks[j + 1] - ks[j], s = (h - ks[j]) / L, s2 = s * s, s3 = s2 * s;
+        r = (2 * s3 - 3 * s2 + 1) * ys[j] + (s3 - 2 * s2 + s) * L * ms[j] + (-2 * s3 + 3 * s2) * ys[j + 1] + (s3 - s2) * L * ms[j + 1];
+      } else if (h === ks[j]) r = ys[j];
+      return Math.min(1, o.v / 100 * r);
+    }
+    for (var h = 0; h <= 60; h++) {
+      var w = wAt(h);
+      var mo = h ? D.months[h - 1] : { tilt: 0, dq: [0, 0, 0, 0], mq: [0, 0, 0, 0], val: 0, vq: [0, 0, 0, 0] };
+      var qc = k > 0 ? mo.mq : mo.dq;
+      // blend the two models' medians and band offsets by the valuation weight
+      var med = Math.log(D.price) + (1 - w) * (g * h + k * mo.tilt) + w * mo.val;
+      var q = qc.map(function (v, i) { return (1 - w) * v + w * mo.vq[i]; });
+      out[0].push(Math.exp(med + q[0])); out[1].push(Math.exp(med + q[1])); out[2].push(Math.exp(med));
+      out[3].push(Math.exp(med + q[2])); out[4].push(Math.exp(med + q[3]));
+    }
+    return out;
+  }
+
+  // Monte Carlo: 2,000 paths of gold's own demeaned monthly moves since 1968, in 6-month blocks, centred on the median.
+  // Seeded, so the same settings always draw the same paths. Returns the share of paths that have touched 80% of
+  // today's price by each month.
+  var NP = 2000, BLOCK = 6;
+  function simulate() {
+    var e = D.ret, m = e.reduce(function (s, v) { return s + v; }, 0) / e.length, n = e.length, seed = 7;
+    var rnd = function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    var step = []; for (var h = 1; h <= 60; h++) step.push(Math.log(F[2][h] / F[2][h - 1]));
+    var hit = new Array(61).fill(0), thr = Math.log(.8);
+    for (var p = 0; p < NP; p++) {
+      var x = 0, low = false, start = 0;
+      for (var k = 0; k < 60; k++) {
+        if (k % BLOCK === 0) start = Math.floor(rnd() * (n - BLOCK));
+        x += step[k] + e[start + k % BLOCK] - m;
+        if (x <= thr) low = true;
+        if (low) hit[k + 1]++;
+      }
+    }
+    return { drop: hit.map(function (c) { return c / NP; }) };
+  }
+
+  function el(n, a, parent) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); parent.appendChild(e); return e; }
+
+  function frame(svg, x0, x1, lo, hi, ticks, fmt) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = svg.clientWidth, H = svg.clientHeight, small = W < 560, m = { l: 74, r: 0, t: 10, b: 26 };
+    var X = function (t) { return m.l + (t - x0) / (x1 - x0) * (W - m.l - m.r); };
+    var Y = function (v) { return m.t + (Math.log10(hi) - Math.log10(Math.max(v, 1e-9))) / (Math.log10(hi) - Math.log10(lo)) * (H - m.t - m.b); };
+    ticks.forEach(function (v) {
+      el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: css("--rule"), "stroke-width": 1 }, svg);
+      el("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end" }, svg).textContent = fmt(v);
+    });
+    var y1 = new Date(x1).getUTCFullYear(), span = y1 - new Date(x0).getUTCFullYear(), step = span > 28 ? 10 : small ? 4 : 2;
+    for (var yr = new Date(x0).getUTCFullYear(); yr <= y1; yr++) {
+      var t = Date.UTC(yr, 0, 1); if (yr % step || t < x0 || X(t) > W - 16) continue;
+      el("text", { x: X(t), y: H - 6, "text-anchor": "middle" }, svg).textContent = yr;
+    }
+    var cp = el("clipPath", { id: svg.id + "c" }, el("defs", {}, svg));
+    el("rect", { x: m.l, y: m.t, width: Math.max(0, W - m.l - m.r), height: Math.max(0, H - m.t - m.b) }, cp);
+    return { X: X, Y: Y, W: W, H: H, m: m, small: small, g: el("g", { "clip-path": "url(#" + svg.id + "c)" }, svg), svg: svg, x0: x0, x1: x1 };
+  }
+  function path(f, pts) { return pts.map(function (p, i) { return (i ? "L" : "M") + f.X(p[0]).toFixed(1) + "," + f.Y(p[1]).toFixed(1); }).join(""); }
+  function band(f, lo, hi, fill) {
+    var up = FD.map(function (t, i) { return [t, hi[i]]; }), dn = FD.map(function (t, i) { return [t, lo[i]]; }).reverse();
+    el("path", { d: path(f, up) + path(f, dn).replace("M", "L") + "Z", fill: fill }, f.g);
+  }
+
+  var C1, HIST, RANGE = "20";
+  document.querySelectorAll(".rb").forEach(function (b) {
+    b.addEventListener("click", function () {
+      RANGE = b.dataset.r;
+      document.querySelectorAll(".rb").forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
+      draw();
+    });
+  });
+  function draw() {
+    if (!D || !document.getElementById("chart").clientWidth) return;
+    F = forecast(); T0 = ym(D.asof);
+    FD = []; for (var i = 0; i <= 60; i++) FD.push(addMonths(T0, i));
+    var h = +R.H.value, th = FD[h], small = document.getElementById("chart").clientWidth < 560;
+    var x0 = RANGE === "all" ? Date.UTC(1971, 0, 1) : Date.UTC(new Date(T0).getUTCFullYear() - 20, 0, 1), x1 = FD[60];
+    var vis = HIST.filter(function (p) { return p[0] >= x0; }), MC = simulate();
+    // axis spans every scenario, so switching between them does not rescale the chart
+    var all = vis.map(function (p) { return p[1]; }).concat(F[0], F[4]);
+    Object.keys(P).forEach(function (id) { var s = forecast(P[id]); all = all.concat(s[0], s[4]); });
+    var lo = Math.min.apply(null, all) * .9, hi = Math.max.apply(null, all) * 1.08;
+    var f = C1 = frame(document.getElementById("chart"), x0, x1, lo, hi,
+      [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000].filter(function (v) { return v >= lo && v <= hi; }), usd);
+    band(f, F[0], F[4], css("--band2")); band(f, F[1], F[3], css("--band"));
+    el("path", { d: path(f, vis), fill: "none", stroke: css("--ink"), "stroke-width": 1.3, "stroke-linejoin": "round" }, f.g);
+    el("path", { d: path(f, FD.map(function (t, i) { return [t, F[2][i]]; })), fill: "none", stroke: css("--fc"), "stroke-width": 2 }, f.g);
+    el("line", { x1: f.X(th), x2: f.X(th), y1: f.m.t, y2: f.H - f.m.b, stroke: css("--soft"), "stroke-width": 1, "stroke-dasharray": "2 3" }, f.svg);
+    el("circle", { cx: f.X(th), cy: f.Y(F[2][h]), r: 3.5, fill: css("--fc") }, f.svg);
+    el("circle", { cx: f.X(T0), cy: f.Y(D.price), r: 3, fill: css("--ink") }, f.svg);
+    f.hl = el("line", { y1: f.m.t, y2: f.H - f.m.b, stroke: css("--soft"), "stroke-width": 1, visibility: "hidden" }, f.svg);
+
+    document.getElementById("sPrice").textContent = usd(D.price);
+    document.getElementById("sPriceS").textContent = fdate(T0) + " average, per ounce";
+    document.getElementById("sMom").textContent = pct(Math.exp(D.mom_in) - 1);
+    document.getElementById("sMomS").textContent = fdate(ym(D.mom_span[0])) + " - " + fdate(ym(D.mom_span[1]));
+    document.getElementById("sFc").textContent = usd(F[2][h]);
+    document.getElementById("sFcS").textContent = fdate(th) + ", " + ret(F[2][h], h);
+    document.getElementById("sBandS").textContent = fdate(th);
+    document.getElementById("sBand").textContent = usd(F[1][h]) + " - " + usd(F[3][h]);
+    document.getElementById("sDrop").textContent = Math.round(MC.drop[h] * 100) + "%";
+    document.getElementById("sDropS").textContent = "Below " + usd(.8 * D.price) + " before " + fdate(th);
+    document.getElementById("tbl").innerHTML = [12, 24, 36, 48, 60].map(function (m) {
+      return "<tr><td>" + m / 12 + (m === 12 ? " year" : " years") + "</td><td class='hide-s'>" + fdate(FD[m]) + "</td><td class='m'>" + usd(F[2][m]) +
+        "</td><td>" + pct(Math.pow(F[2][m] / D.price, 12 / m) - 1) + "</td><td>" + usd(F[1][m]) + " - " + usd(F[3][m]) +
+        "</td><td class='hide-s'>" + usd(F[0][m]) + " - " + usd(F[4][m]) + "</td><td class='hide-s'>" + Math.round(MC.drop[m] * 100) + "%</td></tr>";
+    }).join("");
+  }
+
+  function hover(f, tip, e) {
+    var r = f.svg.getBoundingClientRect(), x = e.clientX - r.left;
+    if (x < f.m.l || x > f.W) { tip.style.display = "none"; f.hl.setAttribute("visibility", "hidden"); return; }
+    var t = f.x0 + (x - f.m.l) / (f.W - f.m.l - f.m.r) * (f.x1 - f.x0), html;
+    if (t <= T0) {
+      var best = HIST[0]; HIST.forEach(function (p) { if (Math.abs(p[0] - t) < Math.abs(best[0] - t)) best = p; });
+      t = best[0]; html = "<b>" + fdate(t) + "</b><br>Price " + usd(best[1]);
+    } else {
+      var i = 1; while (i < FD.length - 1 && FD[i] < t) i++; t = FD[i];
+      html = "<b>" + fdate(t) + "</b><br>Median forecast " + usd(F[2][i]) + "<br><span>Middle 50% " + usd(F[1][i]) + " - " + usd(F[3][i]) +
+        "</span><br><span>Middle 80% " + usd(F[0][i]) + " - " + usd(F[4][i]) + "</span>";
+    }
+    f.hl.setAttribute("x1", f.X(t)); f.hl.setAttribute("x2", f.X(t)); f.hl.setAttribute("visibility", "visible");
+    tip.innerHTML = html; tip.style.display = "block";
+    var left = f.X(t) + 12; if (left + tip.offsetWidth > f.W) left = f.X(t) - tip.offsetWidth - 12;
+    tip.style.left = left + "px"; tip.style.top = (f.m.t + 6) + "px";
+  }
+  (function () {
+    var svg = document.getElementById("chart"), tip = document.getElementById("tip1");
+    svg.addEventListener("pointermove", function (e) { hover(C1, tip, e); });
+    svg.addEventListener("pointerdown", function (e) { hover(C1, tip, e); });
+    svg.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { tip.style.display = "none"; C1.hl.setAttribute("visibility", "hidden"); } });
+    document.addEventListener("pointerdown", function (e) { if (!svg.contains(e.target)) { tip.style.display = "none"; C1.hl.setAttribute("visibility", "hidden"); } });
+  })();
+
+  var P = {};
+  function label() {
+    var h = +R.H.value;
+    document.getElementById("oH").textContent = h < 12 ? h + (h === 1 ? " month" : " months") : (h % 12 ? (h / 12).toFixed(1) + " years" : h / 12 + (h === 12 ? " year" : " years"));
+    document.getElementById("oG").textContent = (+R.G.value).toFixed(1) + "% a year";
+    document.getElementById("oK").textContent = R.K.value + "%";
+    document.getElementById("oV").textContent = R.V.value + "%";
+    var desc = "Custom settings.";
+    Object.keys(P).forEach(function (id) {
+      var p = P[id], on = Math.abs(+R.G.value - p.g) < .05 && +R.K.value === p.k && +R.V.value === p.v;
+      document.getElementById(id).setAttribute("aria-pressed", on ? "true" : "false"); if (on) desc = p.d;
+    });
+    document.getElementById("pdesc").textContent = desc;
+  }
+  Object.keys(R).forEach(function (k) { R[k].addEventListener("input", function () { label(); draw(); }); });
+  ["pA", "pB", "pN", "pV"].forEach(function (id) {
+    document.getElementById(id).addEventListener("click", function () { R.G.value = P[id].g; R.K.value = P[id].k; R.V.value = P[id].v; label(); draw(); });
+  });
+  var ISVG = '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="1.6" r="1.15" fill="currentColor"/><rect x="4.05" y="3.6" width="1.9" height="5.6" rx=".5" fill="currentColor"/></svg>';
+  function setOpen(b, on) { b.closest(".ctl, .stat").classList.toggle("open", on); b.setAttribute("aria-expanded", on); }
+  document.querySelectorAll(".info").forEach(function (b) {
+    b.innerHTML = ISVG;
+    b.addEventListener("mouseenter", function () { setOpen(b, true); });
+    b.addEventListener("mouseleave", function () { if (!b.dataset.pin) setOpen(b, false); });
+    b.addEventListener("focus", function () { setOpen(b, true); });
+    b.addEventListener("blur", function () { if (!b.dataset.pin) setOpen(b, false); });
+    b.addEventListener("click", function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var pin = !b.dataset.pin; if (pin) b.dataset.pin = "1"; else delete b.dataset.pin; setOpen(b, pin);
+    });
+  });
+  document.addEventListener("click", function () {
+    document.querySelectorAll(".info[data-pin]").forEach(function (b) { delete b.dataset.pin; setOpen(b, false); });
+  });
+  var rt; addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(draw, 80); });
+
+  fetch("data.json").then(function (r) { return r.json(); }).then(function (d) {
+    D = d; HIST = D.hist.map(function (r) { return [ym(r[0]), r[1]]; });
+    var a = Math.round(D.rate_all * 1000) / 10, b = Math.round(D.rate_2005 * 1000) / 10, as = a.toFixed(1), bs = b.toFixed(1);
+    var w0 = D.val_weight || 0;
+    P = { pA: { g: a, k: 100, v: w0, d: "Growth at gold's average since 1968, " + as + "% a year, with the momentum tilt" + (w0 ? ", and the valuation model at " + w0 + "% of the five-year forecast." : ".") },
+          pB: { g: b, k: 100, v: w0, d: "Growth at gold's average since 2005, " + bs + "% a year, with the momentum tilt." },
+          pN: { g: a, k: 0, v: w0, d: "Growth at gold's average since 1968, " + as + "% a year, ignoring the last 12 months." },
+          pV: { g: a, k: 100, v: 100, d: "Valuation model only at five years: gold's price moves back toward its long-run level against the US money supply." } };
+    R.G.value = a; R.V.value = w0;
+    document.getElementById("mW").textContent = w0 + "%";
+    document.getElementById("mW4").textContent = Math.round(w0 * D.val_sched["48"] / D.val_sched["60"]) + "%";
+    document.getElementById("hG").textContent = "Yearly growth the forecast assumes. The default " + as + "% a year is gold's average since March 1968.";
+    label(); draw();
+  });
+})();
+</script>
+</body>
+</html>

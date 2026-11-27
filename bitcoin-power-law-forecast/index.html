@@ -57,7 +57,13 @@
   .home:hover { color: var(--accent); }
   .home .back { font-size: 15.5px; position: relative; top: -.5px; }
   .home { position: relative; }
-  .home::after { content: ""; position: absolute; inset: -12px -10px; }
+  .home::after, .sib::after { content: ""; position: absolute; inset: -12px -10px; }
+  .sib { font: 500 13px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--soft); text-decoration: none;
+         display: inline-flex; align-items: center; transition: color .2s; position: relative; }
+  .sib:hover { color: var(--accent); }
+  .sib svg { width: 15px; height: 15px; margin-right: .45em; flex: none; }
+  .sep { width: 1px; height: 14px; background: var(--rule); flex: none; }
+  .lbl-short { display: none; }
   .theme-toggle { appearance: none; cursor: pointer; background: transparent; color: var(--soft);
                   border: 1px solid var(--rule); border-radius: 999px; padding: .42rem .82rem;
                   font: 500 12.5px/1 var(--sans); letter-spacing: .02em;
@@ -148,7 +154,10 @@
     .barright { gap: .55rem; }
     h1.wm { font-size: 17px; line-height: 1.15; }
     h1.wm span { max-width: 7.2em; }
-    .home { font-size: 11.5px; letter-spacing: .06em; }
+    .home, .sib { font-size: 11.5px; letter-spacing: .06em; }
+    .sep { display: none; }
+    .lbl-full { display: none; }
+    .lbl-short { display: inline; }
     .theme-toggle { padding: .4rem .62rem; }
     .lede { font-size: 16px; margin-bottom: 1rem; }
     .over { display: none; }
@@ -180,8 +189,10 @@
   <div class="bar">
     <h1 class="wm"><svg viewBox="-1 -1 34 34" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#E8892F"/><g fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" transform="translate(-1.6 0)"><path d="M12 9.3 H18.1 a3.05 3.05 0 0 1 0 6.1 H12 M12 15.4 H18.9 a3.65 3.65 0 0 1 0 7.3 H12"/><path d="M13.5 9.3 V22.7"/><path d="M14.6 6.6 V9.3 M18 6.6 V9.3 M14.6 22.7 V25.4 M18 22.7 V25.4" stroke-width="2.1"/></g></svg><span>Bitcoin Power Law Forecast</span></h1>
     <div class="barright">
+    <a class="sib" href="../gold-price-forecast/"><svg viewBox="-1 -1 34 34" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#D4A63A"/><path d="M7.5 21.5 L11.3 10.5 H20.7 L24.5 21.5 Z" fill="#fff"/><path d="M11.3 10.5 H20.7 L19.7 13.4 H12.3 Z" fill="#F3DDA0"/></svg>Gold</a>
+    <span class="sep" aria-hidden="true"></span>
     <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch to dark theme"><span class="dot" aria-hidden="true"></span><span class="lbl" id="themeLbl" data-t="Dark"></span></button>
-    <a class="home" href="https://charlietrenorden.com/" aria-label="Other projects"><span class="back">&larr;</span><span class="hl">&nbsp;Other projects</span></a>
+    <a class="home" href="https://charlietrenorden.com/" aria-label="Other projects"><span class="back">&larr;</span><span class="hl">&nbsp;<span class="lbl-full">Other projects</span><span class="lbl-short">Projects</span></span></a>
     </div>
   </div>
 
